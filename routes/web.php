@@ -7,6 +7,7 @@ use App\Http\Controllers\KonsultanController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\UmkmController;
+use App\Http\Controllers\MemberController;
 use Illuminate\Support\Facades\Route;
 
 // Beranda
@@ -44,7 +45,22 @@ Route::prefix('konsultan')->group(function () {
   Route::get('/', [KonsultanController::class , 'index'])->name('konsultan');
   Route::get('/layanan', [KonsultanController::class , 'layanan'])->name('konsultan.layanan');
   Route::get('/paket', [KonsultanController::class , 'paket'])->name('konsultan.paket');
+  Route::get('/produk/{id}', [UmkmController::class, 'produkDetail'])->name('produk.show');
 });
 
 // Media
 Route::get('/media', [MediaController::class , 'index'])->name('media');
+
+
+// Member
+// Route::get('/members', [MemberController::class , 'index']);
+
+//PRODUK
+Route::get('/produk/{id}', [UmkmController::class, 'produkDetail'])->name('produk.show');
+
+// Pembimbing
+Route::get('/pembimbing/{id}', [UmkmController::class, 'showPembimbing'])->name('pembimbing.show');
+
+//Lokasi
+Route::get('/umkm/lokasi', [UmkmController::class, 'lokasi'])->name('umkm.lokasi');
+Route::get('/umkm-peta-data', [UmkmController::class, 'apiPeta']);

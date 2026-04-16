@@ -173,7 +173,7 @@
          {{-- Kiri: Logo --}}
 <div class="flex items-center justify-center" style="min-height: 280px;">
     <img
-        src="{{ asset('storage/logo/logo_kaji.png') }}"
+        src="{{ asset('storage/logo/logo.png') }}"
         alt="Logo Kaji Indonesia"
         class="object-contain"
         style="height: 280px; width: auto;"
