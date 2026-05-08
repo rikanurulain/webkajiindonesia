@@ -24,7 +24,7 @@
 
         <!-- IMAGE -->
         <div>
-            <img src="{{ asset('images/KARYAKAMI.png') }}"  
+            <img src="{{ asset('storage/logo/KARYAKAMI.png') }}"  
                  alt="Logo Karya Kami"
                  class="w-64 md:w-80 object-contain">
         </div>
@@ -330,7 +330,7 @@
 
             {{-- Logo kanan --}}
             <div class="flex-shrink-0">
-                <img src="{{ asset('images/LOGO KARYAKAMI.png') }}" alt="Karya Kami" class="w-48 md:w-64 object-contain">
+                <img src="{{ asset('storage/logo/KARYAKAMI.png') }}" alt="Karya Kami" class="w-48 md:w-64 object-contain">
             </div>
 
                 </div>

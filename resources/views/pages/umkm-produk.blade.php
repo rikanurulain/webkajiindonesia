@@ -15,7 +15,7 @@
 
             <!-- IMAGE -->
             <div>
-                <img src="{{ asset('images/KARYAKAMI.png') }}"
+                <img src="{{ asset('storage/logo/KARYAKAMI.png') }}"
                      alt="Logo Karya Kami"
                      class="w-64 md:w-80 object-contain">
             </div>
@@ -61,7 +61,7 @@
                             class="w-full h-44 object-cover"
                         >
                         <img
-                            src="{{ asset('images/KARYAKAMI.png') }}"
+                            src="{{ asset('storage/logo/KARYAKAMI.png') }}"
                             alt="Logo"
                             class="absolute top-2 right-2 w-20 h-10 object-contain rounded-md p-1 bg-white/80"
                         >

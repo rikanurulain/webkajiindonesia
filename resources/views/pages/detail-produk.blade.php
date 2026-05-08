@@ -31,10 +31,6 @@
                     alt="{{ $produk->nama }}"
                     class="w-full rounded-sm object-cover"
                 >
-                {{-- <img 
-                src="{{ $produk->foto_detail ? asset('storage/produk-detail/' . $produk->foto_detail) : asset('images/no-image.png') }}"
-                alt="{{ $produk->nama }}"
-                class="..."> --}}
             @else
                 <div class="w-full h-64 bg-gray-200 rounded-xl flex items-center justify-center">
                     <span class="text-gray-400 text-sm">Tidak ada foto detail</span>

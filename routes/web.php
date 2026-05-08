@@ -7,60 +7,105 @@ use App\Http\Controllers\KonsultanController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\UmkmController;
-use App\Http\Controllers\MemberController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 
-// Beranda
-Route::get('/', [HomeController::class , 'index'])->name('home');
-
-// Auth
-Route::get('/login', [AuthController::class , 'login'])->name('login');
-Route::get('/register', [AuthController::class , 'register'])->name('register');
-
-// Pelatihan
-Route::prefix('pelatihan')->group(function () {
-  Route::get('/', [PelatihanController::class , 'index'])->name('pelatihan');
-  Route::get('/program', [PelatihanController::class , 'program'])->name('pelatihan.program');
-  Route::get('/event', [PelatihanController::class , 'event'])->name('pelatihan.event');
-  Route::get('/pembimbing', [PelatihanController::class , 'pembimbing'])->name('pelatihan.pembimbing');
-});
-
-// UMKM
-Route::prefix('umkm')->group(function () {
-  Route::get('/', [UmkmController::class , 'index'])->name('umkm');
-  Route::get('/produk', [UmkmController::class , 'produk'])->name('umkm.produk');
-  Route::get('/pembimbing', [UmkmController::class , 'pembimbing'])->name('umkm.pembimbing');
-  Route::get('/lokasi', [UmkmController::class , 'lokasi'])->name('umkm.lokasi');
-});
-
-// Halal Center
-Route::prefix('halal-center')->group(function () {
-  Route::get('/', [HalalCenterController::class , 'index'])->name('halal-center');
-  Route::get('/gratis', [HalalCenterController::class , 'gratis'])->name('halal-center.gratis');
-  Route::get('/berbayar', [HalalCenterController::class , 'berbayar'])->name('halal-center.berbayar');
-});
-
-// Konsultan
-Route::prefix('konsultan')->group(function () {
-  Route::get('/', [KonsultanController::class , 'index'])->name('konsultan');
-  Route::get('/layanan', [KonsultanController::class , 'layanan'])->name('konsultan.layanan');
-  Route::get('/paket', [KonsultanController::class , 'paket'])->name('konsultan.paket');
-  Route::get('/produk/{id}', [UmkmController::class, 'produkDetail'])->name('produk.show');
-});
-
-// Media
-Route::get('/media', [MediaController::class , 'index'])->name('media');
-
-
-// Member
-// Route::get('/members', [MemberController::class , 'index']);
-
-//PRODUK
+// =====================
+// HALAMAN UMUM (Bebas Akses)
+// =====================
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/media', [MediaController::class, 'index'])->name('media');
 Route::get('/produk/{id}', [UmkmController::class, 'produkDetail'])->name('produk.show');
 
-// Pembimbing
-Route::get('/pembimbing/{id}', [UmkmController::class, 'showPembimbing'])->name('pembimbing.show');
+// Auth System
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
-//Lokasi
-Route::get('/umkm/lokasi', [UmkmController::class, 'lokasi'])->name('umkm.lokasi');
-Route::get('/umkm-peta-data', [UmkmController::class, 'apiPeta']);
+// Pelatihan, UMKM, Halal, Konsultan (Prefix Groups)
+Route::prefix('pelatihan')->name('pelatihan.')->group(function () {
+    Route::get('/', [PelatihanController::class, 'program'])->name('index');
+    Route::get('/program', [PelatihanController::class, 'program'])->name('program');
+    Route::get('/program/{id}', [PelatihanController::class, 'detailProgram'])->name('detail');
+    Route::get('/event', [PelatihanController::class, 'event'])->name('event');
+    Route::get('/event/{id}', [PelatihanController::class, 'detailEvent'])->name('event.detail');
+    Route::get('/mentor', [PelatihanController::class, 'pembimbing'])->name('pembimbing');
+    Route::get('/mentor/{id}', [PelatihanController::class, 'detailMentor'])->name('mentor.detail');
+    Route::post('/mentor/{id}/ulasan', [PelatihanController::class, 'simpanUlasan'])->name('mentor.ulasan')->middleware('auth');
+    });
+
+Route::prefix('umkm')->group(function () {
+    Route::get('/', [UmkmController::class, 'index'])->name('umkm');
+    Route::get('/produk', [UmkmController::class, 'produk'])->name('umkm.produk');
+    Route::get('/pembimbing', [UmkmController::class, 'pembimbing'])->name('umkm.pembimbing');
+    Route::get('/lokasi', [UmkmController::class, 'lokasi'])->name('umkm.lokasi');
+});
+
+Route::prefix('halal-center')->group(function () {
+    Route::get('/', [HalalCenterController::class, 'index'])->name('halal-center');
+    Route::get('/gratis', [HalalCenterController::class, 'gratis'])->name('halal-center.gratis');
+    Route::get('/berbayar', [HalalCenterController::class, 'berbayar'])->name('halal-center.berbayar');
+});
+
+Route::prefix('konsultan')->group(function () {
+    Route::get('/', [KonsultanController::class, 'index'])->name('konsultan');
+    Route::get('/layanan', [KonsultanController::class, 'layanan'])->name('konsultan.layanan');
+    Route::get('/paket', [KonsultanController::class, 'paket'])->name('konsultan.paket');
+});
+
+// =========================================================
+// 1. GRUP AUTH (Semua User Login)
+// =========================================================
+Route::middleware(['auth'])->group(function () {
+    
+    // Halaman Utama Profil
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    
+    // Proses Update Profil & Foto
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    
+    // Proses Update Password (TAMBAHKAN INI)
+    Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+    
+    // Fitur Pendaftaran Mentor
+    Route::post('/profile/daftar-mentor', [ProfileController::class, 'daftarMentor'])->name('profile.daftar-mentor');
+
+    // Menampilkan halaman formulir pendaftaran trainer
+    Route::get('/profile/daftar-trainer', [App\Http\Controllers\ProfileController::class, 'showDaftarTrainer'])->name('profile.daftar-trainer');
+
+    // Menyimpan data dari formulir tersebut
+    Route::post('/profile/simpan-trainer', [App\Http\Controllers\ProfileController::class, 'simpanTrainer'])->name('profile.simpan-trainer');
+   
+});
+
+// =========================================================
+// 2. GRUP ADMIN (KHUSUS ADMIN)
+// =========================================================
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('dashboard');
+
+    // Approval Groups
+    Route::get('/approval/program', [AdminController::class, 'approvalProgram'])->name('approval.program');
+    Route::patch('/approval/program/{program}/approve', [AdminController::class, 'approveProgram'])->name('approval.program.approve');
+    Route::patch('/approval/program/{program}/reject', [AdminController::class, 'rejectProgram'])->name('approval.program.reject');
+    
+    Route::get('/approval/produk', [AdminController::class, 'approvalProduk'])->name('approval.produk');
+    Route::patch('/approval/produk/{produk}/approve', [AdminController::class, 'approveProduk'])->name('approval.produk.approve');
+    Route::patch('/approval/produk/{produk}/reject', [AdminController::class, 'rejectProduk'])->name('approval.produk.reject');
+
+    Route::get('/approval/event', [AdminController::class, 'approvalEvent'])->name('approval.event');
+    Route::patch('/approval/event/{event}/approve', [AdminController::class, 'approveEvent'])->name('approval.event.approve');
+    Route::patch('/approval/event/{event}/reject', [AdminController::class, 'rejectEvent'])->name('approval.event.reject');
+
+    Route::get('/approval/trainer', [AdminController::class, 'approvalTrainer'])->name('approval.trainer');
+    Route::post('/approval/trainer/{user}/approve', [AdminController::class, 'approveTrainer'])->name('trainer.approve');
+    Route::post('/approval/trainer/{user}/reject', [AdminController::class, 'rejectTrainer'])->name('trainer.reject');
+
+    // Pengguna
+    Route::get('/pengguna', [AdminController::class, 'pengguna'])->name('pengguna');
+    Route::patch('/pengguna/{user}/verifikasi', [AdminController::class, 'verifikasiPengguna'])->name('pengguna.verifikasi');
+    Route::patch('/pengguna/{user}/suspend', [AdminController::class, 'suspendPengguna'])->name('pengguna.suspend');
+});

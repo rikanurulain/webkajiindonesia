@@ -14,7 +14,7 @@
             </p>
         </div>
         <div>
-            <img src="{{ asset('images/KARYAKAMI.png') }}"
+                <img src="{{ asset('storage/logo/KARYAKAMI.png') }}"
                  alt="Logo Karya Kami"
                  class="w-64 md:w-80 object-contain">
         </div>
@@ -136,7 +136,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 // ── Marker: coba load logo, fallback ke huruf K ──────────
 function buatMarkerIcon() {
-    const logoUrl = '{{ asset("images/KARYAKAMI.png") }}';
+    const logoUrl = '{{ asset("storage/logo/KARYAKAMI.png") }}';
     const html = `
         <div style="position:relative;width:44px;height:56px;">
             <div style="

@@ -31,7 +31,7 @@
      @mouseenter="clearTimeout(timer); timer = setTimeout(() => open = true, 100)"
      @mouseleave="clearTimeout(timer); open = false">
                 <button class="flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-200
-                               {{ Request::routeIs('pelatihan') ? 'text-primary bg-primary/10' : 'text-gray-700 hover:bg-primary/10 hover:text-primary' }}">
+                               {{ Request::routeIs('pelatihan.index') ? 'text-primary bg-primary/10' : 'text-gray-700 hover:bg-primary/10 hover:text-primary' }}">
                     Pelatihan
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform duration-300" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -97,8 +97,8 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Pembimbing</p>
-                            <p class="text-xs text-gray-400">Instruktur & tenaga pengajar</p>
+                            <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Trainer</p>
+                            <p class="text-xs text-gray-400">Instruktur</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary group-hover/item:translate-x-0.5 transition-all duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -108,7 +108,7 @@
                     <div class="mx-5 border-t border-gray-100"></div>
 
                     {{-- Selengkapnya --}}
-                    <a href="{{ route('pelatihan') }}" @click="open = false"
+                    <a href="{{ route('pelatihan.index') }}" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -182,8 +182,8 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Pembimbing</p>
-                            <p class="text-xs text-gray-400">Tim pendamping UMKM</p>
+                            <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Mentor</p>
+                            <p class="text-xs text-gray-400">Pendamping dan Fasilitator</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary group-hover/item:translate-x-0.5 transition-all duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -474,18 +474,46 @@
 
         </div>
 
-        {{-- Kanan: Tombol + Hamburger --}}
-        <div class="flex shrink-0 items-center gap-3">
-            <div class="hidden md:flex items-center gap-3">
-                <a href="{{ route('login') }}"
-                   class="rounded-xl border-2 border-primary px-5 py-2.5 text-sm font-semibold text-primary transition-all duration-200 hover:bg-primary/10 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                    Masuk
-                </a>
-                <a href="{{ route('register') }}"
-                   class="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:bg-primary-dark hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                    Daftar
-                </a>
+        {{-- Kanan: Tombol profile --}}
+        <div class="flex shrink-0 items-center gap-4">
+    @auth
+        <!-- Profil Minimalis (Kotak Inisial) -->
+        <a href="{{ route('profile') }}" class="group flex flex-col items-center gap-1">
+            <!-- Kotak Inisial -->
+            <div class="h-11 w-11 flex items-center justify-center rounded-xl bg-primary text-white font-bold text-base shadow-sm transition group-hover:scale-105 border-2 border-white ring-2 ring-primary/20">
+                {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
             </div>
+            
+            <!-- Label Status di Bawah Kotak -->
+            <span class="text-[9px] font-black uppercase tracking-[0.15em] text-gray-400 group-hover:text-primary transition-colors">
+                {{ Auth::user()->role === 'mentor' ? 'MENTOR' : 'MEMBER' }}
+            </span>
+        </a>
+
+        <!-- Garis Pemisah Tipis -->
+        <div class="h-8 w-[1px] bg-gray-200"></div>
+
+        <!-- Tombol Logout -->
+        <form action="{{ route('logout') }}" method="POST" class="flex items-center">
+            @csrf
+            <button type="submit" class="p-2 text-gray-400 hover:text-red-500 transition-all hover:bg-red-50 rounded-lg" title="Keluar">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+            </button>
+        </form>
+    @else
+        <!-- Tombol Masuk/Daftar jika belum login -->
+        <div class="hidden md:flex items-center gap-3">
+            <a href="{{ route('login') }}" class="rounded-xl border-2 border-primary px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/10">
+                Masuk
+            </a>
+            <a href="{{ route('register') }}" class="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-primary-dark">
+                Daftar
+            </a>
+        </div>
+    @endauth
+</div>
 
             {{-- Mobile: hamburger --}}
             <button type="button"
@@ -536,7 +564,7 @@
                     <a href="{{ route('pelatihan.program') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Program</a>
                     <a href="{{ route('pelatihan.event') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Event</a>
                     <a href="{{ route('pelatihan.pembimbing') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Pembimbing</a>
-                    <a href="{{ route('pelatihan') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Selengkapnya</a>
+                    <a href="{{ route('pelatihan.index') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Selengkapnya</a>
                 </div>
             </div>
 

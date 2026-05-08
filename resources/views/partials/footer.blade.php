@@ -15,7 +15,7 @@
             <div>
                 <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-900">Layanan</h3>
                 <ul class="mt-4 space-y-2">
-                    <li><a href="{{ route('pelatihan') }}" class="text-sm text-gray-600 hover:text-primary">Pelatihan</a></li>
+                    <li><a href="{{ route('pelatihan.index') }}" class="text-sm text-gray-600 hover:text-primary">Pelatihan</a></li>
                     <li><a href="{{ route('umkm') }}" class="text-sm text-gray-600 hover:text-primary">UMKM</a></li>
                     <li><a href="{{ route('halal-center') }}" class="text-sm text-gray-600 hover:text-primary">Halal Center</a></li>
                     <li><a href="{{ route('konsultan') }}" class="text-sm text-gray-600 hover:text-primary">Konsultan</a></li>

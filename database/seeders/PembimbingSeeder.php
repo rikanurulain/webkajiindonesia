@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Mentor;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Pembimbing;
@@ -30,7 +31,7 @@ class PembimbingSeeder extends Seeder
             ];
  
         foreach ($pembimbings as $item) {
-            Pembimbing::firstOrCreate(['nama' => $item['nama']], $item);
+            Mentor::firstOrCreate(['nama' => $item['nama']], $item);
         }
     }
 }

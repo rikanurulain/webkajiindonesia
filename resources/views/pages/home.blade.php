@@ -114,7 +114,7 @@
             <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 @php
                     $layanan = [
-                        ['route' => 'pelatihan', 'icon' => 'academic', 'title' => 'Pelatihan', 'desc' => 'Program pelatihan berkualitas untuk peningkatan kompetensi SDM dan profesional.'],
+                        ['route' => 'pelatihan.index', 'icon' => 'academic', 'title' => 'Pelatihan.index', 'desc' => 'Program pelatihan berkualitas untuk peningkatan kompetensi SDM dan profesional.'],
                         ['route' => 'umkm', 'icon' => 'store', 'title' => 'UMKM', 'desc' => 'Pendampingan dan penguatan kapasitas usaha mikro, kecil, dan menengah.'],
                         ['route' => 'halal-center', 'icon' => 'halal', 'title' => 'Halal Center', 'desc' => 'Sertifikasi dan konsultasi halal untuk produk dan proses bisnis Anda.'],
                         ['route' => 'konsultan', 'icon' => 'consult', 'title' => 'Konsultan', 'desc' => 'Konsultasi strategi bisnis, manajemen, dan pengembangan organisasi.'],

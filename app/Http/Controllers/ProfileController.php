@@ -1,0 +1,252 @@
+<?php
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\Password;
+use App\Models\ActivityLog;
+
+class ProfileController extends Controller
+{
+    public function edit()
+    {
+        return view('profile.edit');
+    }
+
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'name'    => 'required|string|max:255',
+            'phone'   => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500',
+            'bio'     => 'nullable|string|max:500',
+            'photo'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        $user->name    = $request->name;
+        $user->phone   = $request->phone;
+        $user->address = $request->address;
+        $user->bio     = $request->bio;
+
+        if ($request->hasFile('photo')) {
+            if ($user->profile_photo_path) {
+                Storage::disk('public')->delete($user->profile_photo_path);
+            }
+            $path = $request->file('photo')->store('profile-photos', 'public');
+            $user->profile_photo_path = $path;
+
+            ActivityLog::create([
+                'user_id'     => $user->id,
+                'type'        => 'photo',
+                'label'       => 'Ganti foto profil',
+                'description' => 'Foto profil diperbarui',
+                'ip_address'  => $request->ip(),
+                'user_agent'  => $request->userAgent(),
+                'is_success'  => true,
+            ]);
+        }
+
+        $user->save();
+
+        ActivityLog::create([
+            'user_id'     => $user->id,
+            'type'        => 'profile',
+            'label'       => 'Update profil',
+            'description' => 'Nama, telepon, alamat, atau bio diperbarui',
+            'ip_address'  => $request->ip(),
+            'user_agent'  => $request->userAgent(),
+            'is_success'  => true,
+        ]);
+
+        return redirect()->route('profile.edit')
+            ->with('success', 'Profil berhasil diperbarui!');
+    }
+
+    public function deletePhoto()
+    {
+        $user = Auth::user();
+
+        if ($user->profile_photo_path) {
+            Storage::disk('public')->delete($user->profile_photo_path);
+            $user->profile_photo_path = null;
+            $user->save();
+
+            ActivityLog::create([
+                'user_id'     => $user->id,
+                'type'        => 'photo',
+                'label'       => 'Hapus foto profil',
+                'description' => 'Foto profil dihapus',
+                'ip_address'  => request()->ip(),
+                'user_agent'  => request()->userAgent(),
+                'is_success'  => true,
+            ]);
+        }
+
+        return redirect()->route('profile.edit')
+            ->with('success', 'Foto profil berhasil dihapus.');
+    }
+
+    public function password()
+    {
+        return view('profile.password');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required'],
+            'password'         => ['required', 'confirmed', Password::min(8)],
+        ]);
+
+        if (!Hash::check($request->current_password, Auth::user()->password)) {
+            return back()->withErrors([
+                'current_password' => 'Password saat ini tidak sesuai.',
+            ]);
+        }
+
+        Auth::user()->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        ActivityLog::create([
+            'user_id'     => Auth::id(),
+            'type'        => 'password',
+            'label'       => 'Ubah password',
+            'description' => 'Password berhasil diperbarui',
+            'ip_address'  => $request->ip(),
+            'user_agent'  => $request->userAgent(),
+            'is_success'  => true,
+        ]);
+
+        return back()->with('success', 'Password berhasil diubah!');
+    }
+
+    // =====================
+// NOTIFIKASI
+// =====================
+public function notifications()
+{
+    return view('profile.notifications');
+}
+
+public function updateNotifications(Request $request)
+{
+    $user = Auth::user();
+
+    $user->update([
+        'notif_email_pelatihan'  => $request->has('notif_email_pelatihan')  ? 1 : 0,
+        'notif_email_umkm'       => $request->has('notif_email_umkm')       ? 1 : 0,
+        'notif_email_halal'      => $request->has('notif_email_halal')       ? 1 : 0,
+        'notif_email_newsletter' => $request->has('notif_email_newsletter')  ? 1 : 0,
+        'notif_browser'          => $request->has('notif_browser')           ? 1 : 0,
+    ]);
+
+    // Catat aktivitas
+    ActivityLog::create([
+        'user_id'     => $user->id,
+        'type'        => 'profile',
+        'label'       => 'Update pengaturan notifikasi',
+        'description' => 'Preferensi notifikasi diperbarui',
+        'ip_address'  => $request->ip(),
+        'user_agent'  => $request->userAgent(),
+        'is_success'  => true,
+    ]);
+
+    return back()->with('success', 'Pengaturan notifikasi berhasil disimpan!');
+}
+
+    // HALAMAN PROFIL UTAMA 
+    public function index()
+    {
+        $user = Auth::user();
+        // Mengambil log aktivitas terbaru untuk ditampilkan di profil
+        $activities = ActivityLog::where('user_id', $user->id)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('profile.index', compact('user', 'activities'));
+    }
+
+    public function daftarMentor(Request $request)
+{
+    $user = Auth::user();
+    
+    ActivityLog::create([
+        'user_id'     => $user->id,
+        'type'        => 'profile',
+        'label'       => 'Pengajuan Trainer', 
+        'description' => 'User mengajukan diri menjadi Trainer profesional',
+        'ip_address'  => $request->ip(),
+        'user_agent'  => $request->userAgent(),
+        'is_success'  => true,
+    ]);
+
+    return back()->with('success', 'Pengajuan sebagai trainer telah dikirim!');
+}
+/**
+ * Menampilkan halaman formulir persyaratan trainer
+ */
+public function showDaftarTrainer()
+{
+    // Mengambil data user yang sedang login
+    $user = Auth::user();
+
+    // Mengirim variabel $user ke halaman view
+    return view('profile.daftar-trainer', compact('user'));
+}
+
+/**
+ * Menyimpan data bio dan lokasi calon trainer
+ */
+public function simpanTrainer(Request $request)
+{
+    $user = Auth::user();
+
+    // Validasi (Contoh sederhana, bisa diperketat)
+    $request->validate([
+        'academic_degree' => 'required|string',
+        'ktp_scan' => 'required|image|max:2048',
+        'bnsp_certificate' => 'required|mimes:pdf,jpg,png|max:2048',
+        'white_bg_photo' => 'required|image|max:2048',
+    ]);
+
+    // Proses Upload File
+    // Kita ambil data dari input form
+    $data = $request->only(['academic_degree', 'nik', 'npwp', 'location', 'experience', 'bio']);
+    $data['drive_link_documentation'] = $request->drive_link;
+
+    // TAMBAHKAN BARIS INI: Set status pendaftaran menjadi pending
+    $data['trainer_status'] = 'pending'; 
+
+    if ($request->hasFile('ktp_scan')) {
+        $data['ktp_scan'] = $request->file('ktp_scan')->store('trainer_docs', 'public');
+    }
+    if ($request->hasFile('bnsp_certificate')) {
+        $data['bnsp_certificate'] = $request->file('bnsp_certificate')->store('trainer_docs', 'public');
+    }
+    if ($request->hasFile('white_bg_photo')) {
+        $data['white_bg_photo'] = $request->file('white_bg_photo')->store('trainer_docs', 'public');
+    }
+
+    // Update data user yang sedang login
+    $user->update($data);
+
+    // Catat ke Log Aktivitas
+    \App\Models\ActivityLog::create([
+        'user_id'     => $user->id,
+        'type'        => 'profile',
+        'label'       => 'Menunggu Persetujuan Trainer',
+        'description' => 'User melengkapi 13 persyaratan dan menunggu verifikasi admin',
+        'ip_address'  => $request->ip(),
+        'user_agent'  => $request->userAgent(),
+        'is_success'  => true,
+    ]);
+
+    return redirect()->route('profile')->with('success', 'Persyaratan dikirim! Admin akan segera meninjau pengajuan Anda.');
+}
+}
