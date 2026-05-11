@@ -124,7 +124,7 @@
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
 
 <script>
-const API_URL    = '{{ url("/umkm-peta-data") }}';
+const API_URL = '{{ route("umkm.peta-data") }}';
 const DETAIL_URL = '{{ url("/produk") }}'; // base URL detail produk
 
 const map = L.map('map').setView([-2.5, 118], 5);

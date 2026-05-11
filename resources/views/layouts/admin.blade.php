@@ -203,23 +203,31 @@
         .user-role-label { font-size: 11px; color: rgba(255,255,255,.5); }
 
         .logout-link {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 10px;
-            border-radius: 9px;
-            color: rgba(255,255,255,.5);
-            font-size: 12px;
-            font-weight: 500;
-            margin-top: 4px;
-            cursor: pointer;
-            transition: all .2s;
-            text-decoration: none;
-        }
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 9px;
+    color: rgba(255,255,255,.85); /* ← lebih terang */
+    font-size: 13px;
+    font-weight: 600; /* ← lebih tebal */
+    margin-top: 6px;
+    cursor: pointer;
+    transition: all .2s;
+    text-decoration: none;
+    background: rgba(255,255,255,.08); /* ← sedikit background */
+    border: 1px solid rgba(255,255,255,.15); /* ← border tipis */
+    width: 100%;
+    text-align: left;
+}
 
-        .logout-link:hover { background: rgba(231,111,81,.2); color: #fca89a; }
-        .logout-link svg { width: 14px; height: 14px; }
+.logout-link:hover { 
+    background: rgba(231,111,81,.25); 
+    color: #fca89a;
+    border-color: rgba(231,111,81,.4);
+}
 
+.logout-link svg { width: 15px; height: 15px; }
         /* ===================== MAIN ===================== */
         .main-wrap {
             margin-left: 265px;

@@ -272,8 +272,7 @@ class AdminController extends Controller
 
     public function pengguna(Request $request)
     {
-        $users = User::whereIn('role', ['umkm', 'pembimbing'])
-            ->when($request->role, fn($q) => $q->where('role', $request->role))
+        $users = User::when($request->role, fn($q) => $q->where('role', $request->role))
             ->when($request->search, fn($q) => $q->where(function ($q2) use ($request) {
                 $q2->where('name', 'like', "%{$request->search}%")
                    ->orWhere('email', 'like', "%{$request->search}%");
@@ -281,10 +280,9 @@ class AdminController extends Controller
             ->latest()
             ->paginate(20)
             ->withQueryString();
-
+    
         return view('admin.pengguna', compact('users'));
     }
-
     public function verifikasiPengguna(Request $request, User $user)
     {
         $user->update(['status' => 'active', 'email_verified_at' => now()]);

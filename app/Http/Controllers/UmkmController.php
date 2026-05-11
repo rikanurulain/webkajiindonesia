@@ -109,6 +109,31 @@ class UmkmController extends Controller
         ]);
     }
 
+    public function petaData()
+    {
+        $this->geocodeBelumAda();
+    
+        $produks = Produk::whereNotNull('lat')
+            ->whereNotNull('lng')
+            ->where('status', 'approved')
+            ->select(['id', 'nama', 'foto', 'alamat', 'lat', 'lng'])
+            ->get();
+    
+        $data = [];
+        foreach ($produks as $p) {
+            $data[] = [
+                'id'     => $p->id,
+                'nama'   => $p->nama,
+                'alamat' => $p->alamat,
+                'foto'   => $p->foto ? asset('storage/produk-pict/' . $p->foto) : null,
+                'lat'    => $p->lat,
+                'lng'    => $p->lng,
+            ];
+        }
+    
+        return response()->json(['data' => $data]);
+    }
+
     private function geocodeBelumAda(): void
     {
        $belum = Produk::whereNull('lat')

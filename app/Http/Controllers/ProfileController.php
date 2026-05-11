@@ -62,8 +62,7 @@ class ProfileController extends Controller
             'is_success'  => true,
         ]);
 
-        return redirect()->route('profile.edit')
-            ->with('success', 'Profil berhasil diperbarui!');
+        return redirect()->route('profile')->with('success', 'Profil berhasil diperbarui!');
     }
 
     public function deletePhoto()
@@ -94,6 +93,37 @@ class ProfileController extends Controller
     {
         return view('profile.password');
     }
+
+    public function updatePhoto(Request $request)
+{
+    $user = Auth::user();
+
+    $request->validate([
+        'photo' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+    ]);
+
+    if ($request->hasFile('photo')) {
+        if ($user->profile_photo_path) {
+            Storage::disk('public')->delete($user->profile_photo_path);
+        }
+        $path = $request->file('photo')->store('profile-photos', 'public');
+        $user->profile_photo_path = $path;
+        $user->save();
+    }
+
+    return redirect()->route('profile')->with('success', 'Foto profil berhasil diperbarui!');
+}
+
+public function unsuspendPengguna(Request $request, User $user)
+{
+    $user->update(['suspended_at' => null]);
+
+    if ($request->expectsJson()) {
+        return response()->json(['message' => 'Pengguna berhasil diaktifkan kembali.']);
+    }
+
+    return back()->with('success', 'Pengguna berhasil diaktifkan kembali.');
+}
 
     public function updatePassword(Request $request)
     {

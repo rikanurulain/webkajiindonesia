@@ -51,4 +51,14 @@ class Produk extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function petaData()
+{
+    $data = \App\Models\Produk::whereNotNull('lat')
+                ->whereNotNull('lng')
+                ->where('status', 'approved')
+                ->get(['id', 'nama', 'alamat', 'lat', 'lng', 'foto']);
+
+    return response()->json(['data' => $data]);
+}
 }

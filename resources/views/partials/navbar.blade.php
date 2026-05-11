@@ -18,8 +18,8 @@
 
             {{-- Beranda (tanpa dropdown) --}}
             <a href="{{ route('home') }}"
-               class="relative rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-200
-                      {{ Request::routeIs('home') ? 'text-primary bg-primary/10' : 'text-gray-700 hover:bg-primary/10 hover:text-primary' }}">
+            class="relative rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-200
+                {{ Request::routeIs('home') ? 'text-primary bg-primary/10' : 'text-gray-700 hover:bg-primary/10 hover:text-primary' }}">
                 @if (Request::routeIs('home'))
                     <span class="absolute inset-x-2 bottom-1.5 h-0.5 rounded-full bg-primary"></span>
                 @endif
@@ -107,8 +107,8 @@
 
                     <div class="mx-5 border-t border-gray-100"></div>
 
-                    {{-- Selengkapnya --}}
-                    <a href="{{ route('pelatihan.index') }}" @click="open = false"
+                    {{-- Selengkapnya (eksternal) --}}
+                    <a href="https://kamilatih.com/" target="_blank" rel="noopener noreferrer" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -116,11 +116,14 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Selengkapnya</p>
-                            <p class="text-xs text-gray-400">Semua program pelatihan</p>
+                            <div class="flex items-center gap-1.5">
+                                <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Selengkapnya</p>
+                                <span class="inline-flex items-center rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-medium text-primary ring-1 ring-primary/20">Eksternal</span>
+                            </div>
+                            <p class="text-xs text-gray-400">kamilatih.com</p>
                         </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary group-hover/item:translate-x-0.5 transition-all duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                         </svg>
                     </a>
 
@@ -300,8 +303,8 @@
 
                     <div class="mx-5 border-t border-gray-100"></div>
 
-                    {{-- Selengkapnya --}}
-                    <a href="{{ route('halal-center') }}" @click="open = false"
+                    {{-- Selengkapnya (eksternal) --}}
+                    <a href="https://kopigayashop.my.canva.site/syntara" target="_blank" rel="noopener noreferrer" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -309,11 +312,14 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Selengkapnya</p>
+                            <div class="flex items-center gap-1.5">
+                                <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Selengkapnya</p>
+                                <span class="inline-flex items-center rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-medium text-primary ring-1 ring-primary/20">Eksternal</span>
+                            </div>
                             <p class="text-xs text-gray-400">Semua layanan halal center</p>
                         </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary group-hover/item:translate-x-0.5 transition-all duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                         </svg>
                     </a>
 
@@ -385,8 +391,8 @@
 
                     <div class="mx-5 border-t border-gray-100"></div>
 
-                    {{-- Selengkapnya --}}
-                    <a href="{{ route('konsultan') }}" @click="open = false"
+                    {{-- Selengkapnya (eksternal) --}}
+                    <a href="https://kopigaya.com/" target="_blank" rel="noopener noreferrer" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -394,11 +400,14 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Selengkapnya</p>
-                            <p class="text-xs text-gray-400">Semua layanan konsultan</p>
+                            <div class="flex items-center gap-1.5">
+                                <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Selengkapnya</p>
+                                <span class="inline-flex items-center rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-medium text-primary ring-1 ring-primary/20">Eksternal</span>
+                            </div>
+                            <p class="text-xs text-gray-400">kopigaya.com</p>
                         </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary group-hover/item:translate-x-0.5 transition-all duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                         </svg>
                     </a>
 
@@ -431,23 +440,8 @@
                     <div class="bg-gradient-to-r from-primary/10 to-primary/5 px-5 py-3 border-b border-gray-100">
                         <p class="text-xs font-semibold text-primary uppercase tracking-wider">Kanal Media</p>
                     </div>
-                    <a href="{{ route('media') }}" @click="open = false"
-                       class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
-                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l6 6v8a2 2 0 01-2 2z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6M9 17h4"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Halaman Media</p>
-                            <p class="text-xs text-gray-400">Berita & artikel terkini</p>
-                        </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary group-hover/item:translate-x-0.5 transition-all duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                        </svg>
-                    </a>
-                    <div class="mx-5 border-t border-gray-100"></div>
+
+                    {{-- Info Jawa Timur (lama) --}}
                     <a href="https://www.infojawatimur.com/" target="_blank" rel="noopener noreferrer" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 group-hover/item:bg-emerald-100 transition-colors duration-200">
@@ -466,6 +460,29 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                         </svg>
                     </a>
+
+                    <div class="mx-5 border-t border-gray-100"></div>
+
+                    {{-- Ini Jawa Timur (baru) --}}
+                    <a href="https://www.inijawatimur.com/" target="_blank" rel="noopener noreferrer" @click="open = false"
+                       class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
+                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 group-hover/item:bg-emerald-100 transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Ini Jawa Timur</p>
+                                <span class="inline-flex items-center rounded-full bg-emerald-50 px-1.5 py-0.5 text-xs font-medium text-emerald-600 ring-1 ring-emerald-200">Eksternal</span>
+                            </div>
+                            <p class="text-xs text-gray-400">www.inijawatimur.com</p>
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                    </a>
+
                     <div class="bg-gray-50/80 px-5 py-2.5 border-t border-gray-100">
                         <p class="text-xs text-gray-400 text-center">Kaji Indonesia © {{ date('Y') }}</p>
                     </div>
@@ -475,13 +492,19 @@
         </div>
 
         {{-- Kanan: Tombol profile --}}
-        <div class="flex shrink-0 items-center gap-4">
+<div class="flex shrink-0 items-center gap-4">
     @auth
-        <!-- Profil Minimalis (Kotak Inisial) -->
+        <!-- Profil Minimalis (Kotak Inisial / Foto) -->
         <a href="{{ route('profile') }}" class="group flex flex-col items-center gap-1">
-            <!-- Kotak Inisial -->
-            <div class="h-11 w-11 flex items-center justify-center rounded-xl bg-primary text-white font-bold text-base shadow-sm transition group-hover:scale-105 border-2 border-white ring-2 ring-primary/20">
-                {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+            <!-- Kotak Foto atau Inisial -->
+            <div class="h-11 w-11 flex items-center justify-center rounded-xl bg-white text-white font-bold text-base shadow-sm transition group-hover:scale-105 border-2 border-white ring-2 ring-primary/20 overflow-hidden">
+                @if(Auth::user()->profile_photo_path)
+                    <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}"
+                         alt="Foto Profil"
+                         class="w-full h-full object-cover">
+                @else
+                    {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                @endif
             </div>
             
             <!-- Label Status di Bawah Kotak -->
@@ -489,7 +512,6 @@
                 {{ Auth::user()->role === 'mentor' ? 'MENTOR' : 'MEMBER' }}
             </span>
         </a>
-
         <!-- Garis Pemisah Tipis -->
         <div class="h-8 w-[1px] bg-gray-200"></div>
 
@@ -564,7 +586,7 @@
                     <a href="{{ route('pelatihan.program') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Program</a>
                     <a href="{{ route('pelatihan.event') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Event</a>
                     <a href="{{ route('pelatihan.pembimbing') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Pembimbing</a>
-                    <a href="{{ route('pelatihan.index') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Selengkapnya</a>
+                    <a href="https://kamilatih.com/" target="_blank" rel="noopener noreferrer" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Selengkapnya ↗</a>
                 </div>
             </div>
 
@@ -595,7 +617,7 @@
                 <div x-show="sub" x-cloak class="pl-4 pb-1">
                     <a href="{{ route('halal-center.gratis') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Gratis</a>
                     <a href="{{ route('halal-center.berbayar') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Berbayar</a>
-                    <a href="{{ route('halal-center') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Selengkapnya</a>
+                    <a href="https://kopigayashop.my.canva.site/syntara" target="_blank" rel="noopener noreferrer" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Selengkapnya ↗</a>
                 </div>
             </div>
 
@@ -610,7 +632,7 @@
                 <div x-show="sub" x-cloak class="pl-4 pb-1">
                     <a href="{{ route('konsultan.layanan') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Layanan</a>
                     <a href="{{ route('konsultan.paket') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Paket</a>
-                    <a href="{{ route('konsultan') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Selengkapnya</a>
+                    <a href="https://kopigaya.com/" target="_blank" rel="noopener noreferrer" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Selengkapnya ↗</a>
                 </div>
             </div>
 
@@ -623,8 +645,8 @@
                     </svg>
                 </button>
                 <div x-show="sub" x-cloak class="pl-4 pb-1">
-                    <a href="{{ route('media') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Halaman Media</a>
-                    <a href="https://www.infojawatimur.com/" target="_blank" rel="noopener noreferrer" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Info Jawa Timur</a>
+                    <a href="https://www.infojawatimur.com/" target="_blank" rel="noopener noreferrer" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Info Jawa Timur ↗</a>
+                    <a href="https://www.inijawatimur.com/" target="_blank" rel="noopener noreferrer" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Ini Jawa Timur ↗</a>
                 </div>
             </div>
 

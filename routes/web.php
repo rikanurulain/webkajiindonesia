@@ -37,12 +37,13 @@ Route::prefix('pelatihan')->name('pelatihan.')->group(function () {
     Route::post('/mentor/{id}/ulasan', [PelatihanController::class, 'simpanUlasan'])->name('mentor.ulasan')->middleware('auth');
     });
 
-Route::prefix('umkm')->group(function () {
-    Route::get('/', [UmkmController::class, 'index'])->name('umkm');
-    Route::get('/produk', [UmkmController::class, 'produk'])->name('umkm.produk');
-    Route::get('/pembimbing', [UmkmController::class, 'pembimbing'])->name('umkm.pembimbing');
-    Route::get('/lokasi', [UmkmController::class, 'lokasi'])->name('umkm.lokasi');
-});
+    Route::prefix('umkm')->group(function () {
+      Route::get('/', [UmkmController::class, 'index'])->name('umkm');
+      Route::get('/produk', [UmkmController::class, 'produk'])->name('umkm.produk');
+      Route::get('/pembimbing', [UmkmController::class, 'pembimbing'])->name('umkm.pembimbing');
+      Route::get('/lokasi', [UmkmController::class, 'lokasi'])->name('umkm.lokasi');
+      Route::get('/peta-data', [UmkmController::class, 'petaData'])->name('umkm.peta-data'); // ← tambah ini
+  });
 
 Route::prefix('halal-center')->group(function () {
     Route::get('/', [HalalCenterController::class, 'index'])->name('halal-center');
@@ -61,24 +62,13 @@ Route::prefix('konsultan')->group(function () {
 // =========================================================
 Route::middleware(['auth'])->group(function () {
     
-    // Halaman Utama Profil
-    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
-    
-    // Proses Update Profil & Foto
-    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
-    
-    // Proses Update Password (TAMBAHKAN INI)
-    Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
-    
-    // Fitur Pendaftaran Mentor
-    Route::post('/profile/daftar-mentor', [ProfileController::class, 'daftarMentor'])->name('profile.daftar-mentor');
-
-    // Menampilkan halaman formulir pendaftaran trainer
-    Route::get('/profile/daftar-trainer', [App\Http\Controllers\ProfileController::class, 'showDaftarTrainer'])->name('profile.daftar-trainer');
-
-    // Menyimpan data dari formulir tersebut
-    Route::post('/profile/simpan-trainer', [App\Http\Controllers\ProfileController::class, 'simpanTrainer'])->name('profile.simpan-trainer');
-   
+  Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+  Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+  Route::post('/profile/update-photo', [ProfileController::class, 'updatePhoto'])->name('profile.update-photo'); // ← tambah ini
+  Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+  Route::post('/profile/daftar-mentor', [ProfileController::class, 'daftarMentor'])->name('profile.daftar-mentor');
+  Route::get('/profile/daftar-trainer', [ProfileController::class, 'showDaftarTrainer'])->name('profile.daftar-trainer');
+  Route::post('/profile/simpan-trainer', [ProfileController::class, 'simpanTrainer'])->name('profile.simpan-trainer');
 });
 
 // =========================================================
@@ -108,4 +98,5 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/pengguna', [AdminController::class, 'pengguna'])->name('pengguna');
     Route::patch('/pengguna/{user}/verifikasi', [AdminController::class, 'verifikasiPengguna'])->name('pengguna.verifikasi');
     Route::patch('/pengguna/{user}/suspend', [AdminController::class, 'suspendPengguna'])->name('pengguna.suspend');
+    Route::patch('/pengguna/{user}/unsuspend', [AdminController::class, 'unsuspendPengguna'])->name('pengguna.unsuspend');
 });

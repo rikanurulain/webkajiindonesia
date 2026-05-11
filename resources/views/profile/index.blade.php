@@ -5,10 +5,19 @@
     <div class="max-w-6xl mx-auto px-4">
         
         <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-2xl font-bold text-gray-800">Profil Saya</h1>
-            <p class="text-gray-500 text-sm">Kelola informasi profil dan keamanan akun Anda.</p>
-        </div>
+<div class="mb-8 flex items-center justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-800">Profil Saya</h1>
+        <p class="text-gray-500 text-sm">Kelola informasi profil dan keamanan akun Anda.</p>
+    </div>
+    <a href="{{ route('home') }}" 
+       class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-emerald-700 border border-emerald-600 rounded-xl hover:bg-emerald-50 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Kembali ke Beranda
+    </a>
+</div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
@@ -17,23 +26,28 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                     <h3 class="text-lg font-semibold mb-6 pb-2 border-b">Foto Profil</h3>
                     <div class="flex flex-col items-center">
-                        <div class="w-full aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden mb-4 border border-gray-200 flex items-center justify-center">
-                            @if($user->profile_photo_path)
-                                <img src="{{ asset('storage/' . $user->profile_photo_path) }}" class="w-full h-full object-cover">
-                            @else
-                                <div class="text-6xl font-bold text-emerald-600 uppercase">
-                                    {{ substr($user->name, 0, 1) }}
-                                </div>
-                            @endif
-                        </div>
-                        
-                        <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="w-full">
-                            @csrf
-                            <input type="file" name="photo" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 mb-4">
-                            <button type="submit" class="w-full py-2 text-sm font-medium text-emerald-700 border border-emerald-600 rounded-md hover:bg-emerald-50 transition">
-                                Update Foto
-                            </button>
-                        </form>
+                    <div class="w-full aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden mb-4 border border-gray-200 flex items-center justify-center">
+    @if($user->profile_photo_path)
+        <img id="preview-foto" src="{{ asset('storage/' . $user->profile_photo_path) }}" class="w-full h-full object-cover">
+    @else
+        <div id="preview-placeholder" class="text-6xl font-bold text-emerald-600 uppercase">
+            {{ substr($user->name, 0, 1) }}
+        </div>
+        <img id="preview-foto" src="" class="w-full h-full object-cover hidden">
+    @endif
+</div>
+
+<form action="{{ route('profile.update-photo') }}" method="POST" enctype="multipart/form-data" class="w-full">
+    @csrf
+    <input type="file" name="photo" id="input-foto"
+        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
+               file:rounded-md file:border-0 file:text-sm file:font-semibold 
+               file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 mb-4"
+        accept="image/*">
+    <button type="submit" class="w-full py-2 text-sm font-medium text-emerald-700 border border-emerald-600 rounded-md hover:bg-emerald-50 transition">
+        Update Foto
+    </button>
+</form>
                     </div>
                 </div>
 
@@ -141,36 +155,83 @@
                         </div>
 
                         <div class="pt-4">
-                            <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                        <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition flex items-center justify-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                                 </svg>
-                                Simpan Perubahan
+                                Simpan 
                             </button>
                         </div>
                     </form>
                 </div>
 
                 <!-- Box Ubah Password -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-                    <h3 class="text-lg font-semibold mb-6 pb-2 border-b">Ubah Password</h3>
-                    <form action="{{ route('profile.update-password') }}" method="POST" class="space-y-4">
-                        @csrf
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Password Baru</label>
-                                <input type="password" name="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-emerald-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password</label>
-                                <input type="password" name="password_confirmation" class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-emerald-500">
-                            </div>
-                        </div>
-                        <button type="submit" class="mt-2 text-sm font-bold text-emerald-700 hover:text-emerald-800 transition">Update Password →</button>
-                    </form>
-                </div>
+               <!-- Box Ubah Password -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+    <h3 class="text-lg font-semibold mb-6 pb-2 border-b">Ubah Password</h3>
+
+    @if(session('success'))
+        <div class="mb-4 px-4 py-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-lg">
+            ✅ {{ session('success') }}
+        </div>
+    @endif
+
+    @if($errors->has('current_password'))
+        <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg">
+            ❌ {{ $errors->first('current_password') }}
+        </div>
+    @endif
+
+    <form action="{{ route('profile.update-password') }}" method="POST" class="space-y-4">
+        @csrf
+        {{-- TAMBAH FIELD INI --}}
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Password Saat Ini</label>
+            <input type="password" name="current_password"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"
+                placeholder="Masukkan password lama">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Password Baru</label>
+                <input type="password" name="password"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="Minimal 8 karakter">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password</label>
+                <input type="password" name="password_confirmation"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="Ulangi password baru">
+            </div>
+        </div>
+        <button type="submit" class="mt-2 text-sm font-bold text-emerald-700 hover:text-emerald-800 transition">
+            Update Password →
+        </button>
+    </form>
+</div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('input-foto').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const preview = document.getElementById('preview-foto');
+            const placeholder = document.getElementById('preview-placeholder');
+
+            preview.src = event.target.result;
+            preview.classList.remove('hidden');
+
+            if (placeholder) placeholder.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    });
+</script>
 @endsection
