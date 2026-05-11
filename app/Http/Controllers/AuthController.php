@@ -22,9 +22,24 @@ class AuthController extends Controller
             'password' => 'required|min:8|confirmed',
         ]);
 
+        // --- LOGIKA AUTO-GENERATE USERNAME ---
+        // 1. Ambil teks sebelum @ (contoh: rika.nurul@gmail.com -> rika.nurul)
+        $baseUsername = explode('@', $request->email)[0];
+        
+        // 2. Buat jadi huruf kecil semua dan hapus karakter aneh jika ada
+        $username = strtolower(str_replace([' ', '.'], '_', $baseUsername));
+
+        // 3. Cek apakah username ini sudah ada yang pakai?
+        // Jika ada, tambahkan angka random di belakangnya
+        if (User::where('username', $username)->exists()) {
+            $username = $username . rand(10, 99);
+        }
+        // --------------------------------------
+
         $user = User::create([
             'name'     => $request->name,
             'email'    => $request->email,
+            'username' => $username, // Masukkan username yang sudah kita buat tadi
             'password' => Hash::make($request->password),
             'role'     => 'user',
         ]);
