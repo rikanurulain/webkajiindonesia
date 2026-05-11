@@ -16,55 +16,64 @@ class ProfileController extends Controller
         return view('profile.edit');
     }
 
-    public function update(Request $request)
-    {
-        $user = Auth::user();
+    
+public function update(Request $request)
+{
+    $user = Auth::user();
 
-        $request->validate([
-            'name'    => 'required|string|max:255',
-            'phone'   => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:500',
-            'bio'     => 'nullable|string|max:500',
-            'photo'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
+    // 1. Tambahkan 'username' di validasi
+    $request->validate([
+        'name'     => 'required|string|max:255',
+        // alpha_dash memastikan username hanya huruf, angka, dash (-), dan underscore (_)
+        'username' => 'required|string|alpha_dash|max:255|unique:users,username,' . $user->id,
+        'phone'    => 'nullable|string|max:20',
+        'address'  => 'nullable|string|max:500',
+        'bio'      => 'nullable|string|max:500',
+        'photo'    => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+    ]);
 
-        $user->name    = $request->name;
-        $user->phone   = $request->phone;
-        $user->address = $request->address;
-        $user->bio     = $request->bio;
+    // 2. Masukkan data username ke model
+    $user->name     = $request->name;
+    $user->username = strtolower($request->username); // Disimpan huruf kecil semua agar rapi
+    $user->phone    = $request->phone;
+    $user->address  = $request->address;
+    $user->bio      = $request->bio;
 
-        if ($request->hasFile('photo')) {
-            if ($user->profile_photo_path) {
-                Storage::disk('public')->delete($user->profile_photo_path);
-            }
-            $path = $request->file('photo')->store('profile-photos', 'public');
-            $user->profile_photo_path = $path;
-
-            ActivityLog::create([
-                'user_id'     => $user->id,
-                'type'        => 'photo',
-                'label'       => 'Ganti foto profil',
-                'description' => 'Foto profil diperbarui',
-                'ip_address'  => $request->ip(),
-                'user_agent'  => $request->userAgent(),
-                'is_success'  => true,
-            ]);
+    if ($request->hasFile('photo')) {
+        // ... (kode upload foto tetap sama seperti sebelumnya)
+        if ($user->profile_photo_path) {
+            Storage::disk('public')->delete($user->profile_photo_path);
         }
-
-        $user->save();
-
+        $path = $request->file('photo')->store('profile-photos', 'public');
+        $user->profile_photo_path = $path;
+        
+        // Log Aktivitas Foto
         ActivityLog::create([
             'user_id'     => $user->id,
-            'type'        => 'profile',
-            'label'       => 'Update profil',
-            'description' => 'Nama, telepon, alamat, atau bio diperbarui',
+            'type'        => 'photo',
+            'label'       => 'Ganti foto profil',
+            'description' => 'Foto profil diperbarui',
             'ip_address'  => $request->ip(),
             'user_agent'  => $request->userAgent(),
             'is_success'  => true,
         ]);
-
-        return redirect()->route('profile')->with('success', 'Profil berhasil diperbarui!');
     }
+
+    $user->save();
+
+    // Log Aktivitas Profil
+    ActivityLog::create([
+        'user_id'     => $user->id,
+        'type'        => 'profile',
+        'label'       => 'Update profil',
+        'description' => 'Nama, Username, atau informasi lainnya diperbarui', // Update deskripsi
+        'ip_address'  => $request->ip(),
+        'user_agent'  => $request->userAgent(),
+        'is_success'  => true,
+    ]);
+
+    return redirect()->route('profile')->with('success', 'Profil berhasil diperbarui!');
+}
 
     public function deletePhoto()
     {
@@ -289,20 +298,61 @@ public function showDaftarUmkm()
 
 // Simpan pendaftaran UMKM
 public function simpanUmkm(Request $request)
+<<<<<<< HEAD
 {
     // logika simpan data UMKM
 }
+=======
+    {
+    $request->validate([
+        'nama' => 'required|string|max:255',
+        'kategori' => 'required',
+        'owner' => 'required',
+        'foto' => 'required|image|max:2048', // Poster
+        'foto_produk' => 'required|image|max:2048', // Produk Unggulan
+        'deskripsi' => 'required',
+        'alamat' => 'required',
+        'kontak' => 'required|numeric',
+    ]);
+
+    // Proses Upload
+    $pathPoster = $request->file('foto')->store('produk-pict', 'public');
+    $pathProduk = $request->file('foto_produk')->store('produk-pict', 'public');
+
+    \App\Models\Produk::create([
+        'user_id' => auth()->id(),
+        'nama' => $request->nama,
+        'kategori' => $request->kategori,
+        'owner' => $request->owner,
+        'nib' => $request->nib,
+        'id_tkm' => $request->id_tkm,
+        'foto'        => basename($pathPoster), 
+        'foto_produk' => basename($pathProduk), 
+        'deskripsi' => $request->deskripsi,
+        'alamat' => $request->alamat,
+        'kontak' => $request->kontak,
+        'status' => 'pending', 
+    ]);
+
+    return redirect()->route('profile')->with('success', 'Pendaftaran UMKM berhasil dikirim! Menunggu verifikasi Admin.');
+    }
+>>>>>>> aa4cdecb36c8e9c7c3c72dcaf90468b309427073
 
 // Show form daftar Mentor
 public function showDaftarMentor()
 {
+<<<<<<< HEAD
     $user = auth()->user();
     return view('profile.daftar-mentor', compact('user'));
+=======
+    return view('profile.daftar-mentor');
+>>>>>>> aa4cdecb36c8e9c7c3c72dcaf90468b309427073
 }
 
 // Simpan pendaftaran Mentor
 public function simpanMentor(Request $request)
 {
+<<<<<<< HEAD
     $request->validate([
         'full_name'      => 'required|string|max:255',
         'phone'          => 'required|string|max:20',
@@ -332,5 +382,8 @@ public function simpanMentor(Request $request)
     ]);
 
     return redirect()->route('profile')->with('success', 'Pendaftaran mentor berhasil dikirim, menunggu review admin.');
+=======
+    // logika simpan data Mentor
+>>>>>>> aa4cdecb36c8e9c7c3c72dcaf90468b309427073
 }
 }

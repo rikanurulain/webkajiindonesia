@@ -162,11 +162,26 @@
                     
                     <form action="{{ route('profile.update') }}" method="POST" class="space-y-5">
                         @csrf
+<<<<<<< HEAD
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
                             <input type="text" value="{{ $user->username }}" disabled class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 cursor-not-allowed">
                         </div>
+=======
+>>>>>>> aa4cdecb36c8e9c7c3c72dcaf90468b309427073
 
+                        <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                        <input type="text" 
+                        name="username" 
+                        value="{{ old('username', $user->username) }}" 
+                        class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500">
+    
+                            @error('username')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nama *</label>
                             <input type="text" name="name" value="{{ old('name', $user->name) }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500">

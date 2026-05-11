@@ -22,21 +22,17 @@
     <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
 
         {{-- KOLOM KIRI: Foto Detail --}}
-        <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-            <h3 class="font-serif font-bold text-gray-900 text-xl text-center mb-4">{{ $produk->nama }}</h3>
-
-            @if ($produk->foto_detail)
-                <img
-                    src="{{ $produk->foto_detail ? asset('storage/produk-detail/' . $produk->foto_detail) : asset('images/no-image.png') }}"
-                    alt="{{ $produk->nama }}"
-                    class="w-full rounded-sm object-cover"
-                >
-            @else
-                <div class="w-full h-64 bg-gray-200 rounded-xl flex items-center justify-center">
-                    <span class="text-gray-400 text-sm">Tidak ada foto detail</span>
-                </div>
-            @endif
+        <div class="lg:col-span-1">
+    <div class="bg-white p-4 rounded-2xl border shadow-sm text-center">
+        <h4 class="font-bold mb-4">{{ $produk->nama }}</h4>
+        <div class="rounded-xl overflow-hidden shadow-md">
+            {{-- Menampilkan POSTER di sini --}}
+            <img src="{{ asset('storage/produk-pict/' . $produk->foto) }}" 
+                 class="w-full h-auto" 
+                 alt="Poster Usaha">
         </div>
+    </div>
+</div>
 
         {{-- KOLOM TENGAH: Info & Tombol --}}
         <div class="flex flex-col gap-6">

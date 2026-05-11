@@ -70,6 +70,10 @@ Route::prefix('konsultan')->group(function () {
 //   Route::get('/profile/daftar-trainer', [ProfileController::class, 'showDaftarTrainer'])->name('profile.daftar-trainer');
 //   Route::post('/profile/simpan-trainer', [ProfileController::class, 'simpanTrainer'])->name('profile.simpan-trainer');
 // });
+<<<<<<< HEAD
+=======
+
+>>>>>>> aa4cdecb36c8e9c7c3c72dcaf90468b309427073
 Route::middleware(['auth'])->group(function () {
     
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
