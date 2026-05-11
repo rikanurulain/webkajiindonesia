@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use App\Models\ActivityLog;
+use App\Models\Mentor;
 
 class ProfileController extends Controller
 {
@@ -278,5 +279,58 @@ public function simpanTrainer(Request $request)
     ]);
 
     return redirect()->route('profile')->with('success', 'Persyaratan dikirim! Admin akan segera meninjau pengajuan Anda.');
+}
+
+// Show form daftar UMKM
+public function showDaftarUmkm()
+{
+    return view('profile.daftar-umkm');
+}
+
+// Simpan pendaftaran UMKM
+public function simpanUmkm(Request $request)
+{
+    // logika simpan data UMKM
+}
+
+// Show form daftar Mentor
+public function showDaftarMentor()
+{
+    $user = auth()->user();
+    return view('profile.daftar-mentor', compact('user'));
+}
+
+// Simpan pendaftaran Mentor
+public function simpanMentor(Request $request)
+{
+    $request->validate([
+        'full_name'      => 'required|string|max:255',
+        'phone'          => 'required|string|max:20',
+        'email'          => 'required|email',
+        'gmaps_location' => 'required|string',
+        'bio'            => 'required|string',
+        'white_bg_photo' => 'required|image|max:2048',
+        'ktp_scan'       => 'required|max:2048',
+    ]);
+
+    $fotoPath = $request->file('white_bg_photo')->store('mentor/foto', 'public');
+    $ktpPath  = $request->file('ktp_scan')->store('mentor/ktp', 'public');
+
+    Mentor::create([
+        'user_id'        => auth()->id(),
+        'full_name'      => $request->full_name,
+        'nama'           => $request->full_name,
+        'phone'          => $request->phone,
+        'email'          => $request->email,
+        'gmaps_location' => $request->gmaps_location,
+        'lokasi'         => $request->gmaps_location,
+        'bio'            => $request->bio,
+        'deskripsi'      => $request->bio,
+        'white_bg_photo' => $fotoPath,
+        'ktp_scan'       => $ktpPath,
+        'status'         => 'pending',
+    ]);
+
+    return redirect()->route('profile')->with('success', 'Pendaftaran mentor berhasil dikirim, menunggu review admin.');
 }
 }

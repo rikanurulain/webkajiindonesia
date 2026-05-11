@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\Produk;
 use App\Models\Program;
 use App\Models\User;
+use App\Models\Mentor;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -26,6 +27,7 @@ class AdminController extends Controller
             'pending_program' => Program::where('status', 'pending')->count(),
             'pending_event'   => Event::where('status', 'pending')->count(),
             'pending_trainer' => User::where('trainer_status', 'pending')->count(),
+            'pending_mentor' => User::where('mentor_status', 'pending')->count(),
             'pending_hari_ini'=> Produk::where('status', 'pending')->whereDate('created_at', today())->count()
                                + Program::where('status', 'pending')->whereDate('created_at', today())->count()
                                + Event::where('status', 'pending')->whereDate('created_at', today())->count()
@@ -347,4 +349,51 @@ class AdminController extends Controller
 
         return back()->with('success', "Pendaftaran {$user->name} telah ditolak.");
     }
+
+// ____________________________________________________________________
+// APPROVEL MENTOR (BARU)
+// ─────────────────────────────────────────────    
+public function approvalMentor()
+{
+    $pending  = Mentor::where('status', 'pending')->get();
+    $approved = Mentor::where('status', 'approved')->get();
+    $rejected = Mentor::where('status', 'rejected')->get();
+
+    $stats = [
+        'pending'  => $pending->count(),
+        'approved' => $approved->count(),
+        'rejected' => $rejected->count(),
+    ];
+
+    return view('admin.approval-mentor', compact('pending', 'approved', 'rejected', 'stats'));
+}
+
+public function approveMentor(Mentor $mentor)
+{
+    $mentor->update([
+        'status'      => 'approved',
+        'reviewed_at' => now(),
+    ]);
+
+    return back()->with('success', "{$mentor->full_name} berhasil disetujui sebagai Mentor.");
+}
+
+public function rejectMentor(Request $request, Mentor $mentor)
+{
+    $request->validate(['rejection_reason' => 'required|string|max:1000']);
+
+    $mentor->update([
+        'status'           => 'rejected',
+        'rejection_reason' => $request->rejection_reason,
+        'reviewed_at'      => now(),
+    ]);
+
+    return back()->with('success', "Pendaftaran {$mentor->full_name} telah ditolak.");
+}
+
+public function destroyMentor(Mentor $mentor)
+{
+    $mentor->delete();
+    return back()->with('success', 'Data mentor berhasil dihapus.');
+}
 }

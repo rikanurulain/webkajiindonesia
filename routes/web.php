@@ -60,15 +60,34 @@ Route::prefix('konsultan')->group(function () {
 // =========================================================
 // 1. GRUP AUTH (Semua User Login)
 // =========================================================
+// Route::middleware(['auth'])->group(function () {
+    
+//   Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+//   Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+//   Route::post('/profile/update-photo', [ProfileController::class, 'updatePhoto'])->name('profile.update-photo'); // ← tambah ini
+//   Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+//   Route::post('/profile/daftar-mentor', [ProfileController::class, 'daftarMentor'])->name('profile.daftar-mentor');
+//   Route::get('/profile/daftar-trainer', [ProfileController::class, 'showDaftarTrainer'])->name('profile.daftar-trainer');
+//   Route::post('/profile/simpan-trainer', [ProfileController::class, 'simpanTrainer'])->name('profile.simpan-trainer');
+// });
 Route::middleware(['auth'])->group(function () {
     
-  Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
-  Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
-  Route::post('/profile/update-photo', [ProfileController::class, 'updatePhoto'])->name('profile.update-photo'); // ← tambah ini
-  Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
-  Route::post('/profile/daftar-mentor', [ProfileController::class, 'daftarMentor'])->name('profile.daftar-mentor');
-  Route::get('/profile/daftar-trainer', [ProfileController::class, 'showDaftarTrainer'])->name('profile.daftar-trainer');
-  Route::post('/profile/simpan-trainer', [ProfileController::class, 'simpanTrainer'])->name('profile.simpan-trainer');
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/update-photo', [ProfileController::class, 'updatePhoto'])->name('profile.update-photo');
+    Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+
+    // Daftar UMKM
+    Route::get('/profile/daftar-umkm', [ProfileController::class, 'showDaftarUmkm'])->name('profile.daftar-umkm');
+    Route::post('/profile/simpan-umkm', [ProfileController::class, 'simpanUmkm'])->name('profile.simpan-umkm');
+
+    // Daftar Mentor
+    Route::get('/profile/daftar-mentor', [ProfileController::class, 'showDaftarMentor'])->name('profile.daftar-mentor');
+    Route::post('/profile/simpan-mentor', [ProfileController::class, 'simpanMentor'])->name('profile.simpan-mentor');
+
+    // Daftar Trainer (sudah ada)
+    Route::get('/profile/daftar-trainer', [ProfileController::class, 'showDaftarTrainer'])->name('profile.daftar-trainer');
+    Route::post('/profile/simpan-trainer', [ProfileController::class, 'simpanTrainer'])->name('profile.simpan-trainer');
 });
 
 // =========================================================
@@ -93,6 +112,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/approval/trainer', [AdminController::class, 'approvalTrainer'])->name('approval.trainer');
     Route::post('/approval/trainer/{user}/approve', [AdminController::class, 'approveTrainer'])->name('trainer.approve');
     Route::post('/approval/trainer/{user}/reject', [AdminController::class, 'rejectTrainer'])->name('trainer.reject');
+
+    Route::get('/approval/mentor',                     [AdminController::class, 'approvalMentor'])->name('approval.mentor');
+    Route::post('/approval/mentor/{user}/approve',     [AdminController::class, 'approveMentor'])->name('approval.mentor.approve');
+    Route::post('/approval/mentor/{user}/reject',      [AdminController::class, 'rejectMentor'])->name('approval.mentor.reject');
+    Route::delete('/approval/mentor/{user}',           [AdminController::class, 'destroyMentor'])->name('approval.mentor.destroy');
 
     // Pengguna
     Route::get('/pengguna', [AdminController::class, 'pengguna'])->name('pengguna');

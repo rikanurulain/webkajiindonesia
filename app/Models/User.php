@@ -133,4 +133,9 @@ class User extends Authenticatable
               ->orWhere('role', 'pembimbing');
         });
     }
+
+    public function getUsernameAttribute()
+    {
+        return explode(' ', trim($this->name))[0];
+    }
 }
