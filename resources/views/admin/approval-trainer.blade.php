@@ -1,112 +1,705 @@
+{{-- resources/views/admin/approval/trainer.blade.php --}}
 @extends('layouts.admin')
 
+@section('page-title', 'Approval Trainer')
+
+@push('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.all.min.js"></script>
+<style>
+    .doc-btn-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    .doc-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+        text-decoration: none;
+        border: 1px solid transparent;
+        transition: all 0.15s;
+        white-space: nowrap;
+        line-height: 1;
+    }
+    .doc-btn-ktp  { background:#E6F1FB; color:#0C447C; border-color:#B5D4F4; }
+    .doc-btn-ktp:hover  { background:#C9E1F7; }
+    .doc-btn-bnsp { background:#EEEDFE; color:#3C3489; border-color:#CECBF6; }
+    .doc-btn-bnsp:hover { background:#DDDCFC; }
+    .doc-btn-drive { background:#E6F7F2; color:#0F6E56; border-color:#A7DED0; }
+    .doc-btn-drive:hover { background:#C6EDE3; }
+    .doc-btn-disabled { background:#f3f4f6; color:#c0c4cc; border-color:#e5e7eb; cursor:not-allowed; opacity:0.6; }
+
+    /* SweetAlert2 custom buttons */
+    .swal-btn-confirm-approve {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600;
+        background: #10b981; color: #fff; border: none; cursor: pointer;
+        transition: background 0.15s;
+    }
+    .swal-btn-confirm-approve:hover { background: #059669; }
+    .swal-btn-confirm-reject {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600;
+        background: #ef4444; color: #fff; border: none; cursor: pointer;
+        transition: background 0.15s;
+    }
+    .swal-btn-confirm-reject:hover { background: #dc2626; }
+    .swal-btn-cancel {
+        display: inline-flex; align-items: center;
+        padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 500;
+        background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; cursor: pointer;
+        transition: background 0.15s;
+    }
+    .swal-btn-cancel:hover { background: #e5e7eb; }
+    .swal2-popup { border-radius: 16px !important; padding: 32px 28px !important; }
+    .swal2-title { font-size: 18px !important; font-weight: 700 !important; color: #111827 !important; }
+    .swal2-actions { gap: 10px !important; margin-top: 24px !important; }
+
+    .relative-time {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+    .relative-time::before {
+        content: '';
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #34d399;
+        flex-shrink: 0;
+        animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50%       { opacity: 0.4; transform: scale(0.7); }
+    }
+</style>
+@endpush
+
+@php
+    use App\Models\User;
+
+    $pending  = User::where('trainer_status', 'pending')->whereNotNull('nik')->latest('trainer_applied_at')->get();
+    $approved = User::where('trainer_status', 'approved')->latest('updated_at')->get();
+    $rejected = User::where('trainer_status', 'rejected')->latest('updated_at')->get();
+
+    $counts = [
+        'pending'  => $pending->count(),
+        'approved' => $approved->count(),
+        'rejected' => $rejected->count(),
+    ];
+@endphp
+
 @section('content')
-<div class="p-6">
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h2 class="text-2xl font-bold text-gray-800">Approval Trainer</h2>
-            <p class="text-sm text-gray-500">Kelola dan verifikasi pendaftaran trainer baru.</p>
-        </div>
-        <div class="flex gap-2">
-            <span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold">Pending: {{ $counts['pending'] }}</span>
-        </div>
-    </div>
-    //tab
-    <div class="tab-bar mb-6">
-    <button class="tab-btn {{ $status === 'pending' ? 'active' : '' }}"
-        onclick="location.href='{{ route('admin.approval.trainer') }}?status=pending'">
-        Pending
+
+{{-- Tab Bar --}}
+<div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('pending', this)">
+        Menunggu
         @if($counts['pending'] > 0)
             <span class="count-pill">{{ $counts['pending'] }}</span>
         @endif
     </button>
-    
-    <button class="tab-btn {{ $status === 'approved' ? 'active' : '' }}"
-        onclick="location.href='{{ route('admin.approval.trainer') }}?status=approved'">
+    <button class="tab-btn" onclick="switchTab('approved', this)">
         Disetujui
+        @if($counts['approved'] > 0)
+            <span class="count-pill" style="background:var(--accent);">{{ $counts['approved'] }}</span>
+        @endif
     </button>
-    
-    <button class="tab-btn {{ $status === 'rejected' ? 'active' : '' }}"
-        onclick="location.href='{{ route('admin.approval.trainer') }}?status=rejected'">
+    <button class="tab-btn" onclick="switchTab('rejected', this)">
         Ditolak
+        @if($counts['rejected'] > 0)
+            <span class="count-pill" style="background:#9ca3af;">{{ $counts['rejected'] }}</span>
+        @endif
     </button>
 </div>
 
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-        <table class="w-full text-left border-collapse">
-            <thead class="bg-gray-50/50 border-b">
-                <tr class="text-gray-500 text-xs uppercase tracking-wider">
-                    <th class="p-6">Calon Trainer</th>
-                    <th class="p-6">Detail & Dokumen</th>
-                    <th class="p-6">Pengalaman</th>
-                    <th class="p-6 text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                @forelse($applicants as $user)
-                <tr class="hover:bg-gray-50/50 transition-all duration-200">
-                    <td class="p-6">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center font-bold shadow-sm">
-                                {{ strtoupper(substr($user->name, 0, 2)) }}
+{{-- ======================== TAB PENDING ======================== --}}
+<div id="tab-pending">
+    <div class="table-card">
+        <div class="table-card-header">
+            <div class="table-card-title">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Pendaftaran Menunggu Review
+                <span class="table-card-subtitle">{{ $counts['pending'] }} pendaftar</span>
+            </div>
+        </div>
+
+        @if($pending->isEmpty())
+            <div class="empty-state">
+                <div class="empty-state-icon">🎉</div>
+                <div class="empty-state-text">Tidak ada pendaftaran trainer yang menunggu review.</div>
+            </div>
+        @else
+            <table>
+                <thead>
+                    <tr>
+                        <th>Calon Trainer</th>
+                        <th>NIK</th>
+                        <th>Dokumen</th>
+                        <th>Pengalaman</th>
+                        <th>Dikirim</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($pending as $user)
+                    <tr>
+                        <td>
+                            <div class="submitter">
+                                <div class="submitter-avatar" style="background:var(--accent);">
+                                    {{ strtoupper(substr($user->name, 0, 2)) }}
+                                </div>
+                                <div>
+                                    <div class="submitter-name">{{ $user->academic_degree ?? $user->name }}</div>
+                                    <div class="submitter-sub">{{ $user->email }}</div>
+                                </div>
                             </div>
-                            <div>
-                                <p class="font-bold text-gray-800">{{ $user->academic_degree ?? $user->name }}</p>
-                                <p class="text-xs text-gray-500">NIK: {{ $user->nik }}</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="p-6">
-                        <div class="space-y-2">
-                            <div class="flex gap-2">
+                        </td>
+                        <td style="font-size:12px;color:var(--text-muted);">{{ $user->nik ?? '-' }}</td>
+                        <td>
+                            <div class="doc-btn-group">
                                 @if($user->ktp_scan)
                                     @php $ktpPath = str_replace('public/', '', $user->ktp_scan); @endphp
-                                    <a href="{{ asset('storage/' . $ktpPath) }}" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-1 rounded-lg border border-blue-100 hover:bg-blue-100 transition-all">Lihat KTP</a>
+                                    <a href="{{ asset('storage/' . $ktpPath) }}" target="_blank" class="doc-btn doc-btn-ktp">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                        KTP
+                                    </a>
+                                @else
+                                    <span class="doc-btn doc-btn-disabled">KTP</span>
                                 @endif
                                 @if($user->bnsp_certificate)
                                     @php $bnspPath = str_replace('public/', '', $user->bnsp_certificate); @endphp
-                                    <a href="{{ asset('storage/' . $bnspPath) }}" target="_blank" class="text-[10px] bg-purple-50 text-purple-600 px-2 py-1 rounded-lg border border-purple-100 hover:bg-purple-100 transition-all">Sertifikat BNSP</a>
+                                    <a href="{{ asset('storage/' . $bnspPath) }}" target="_blank" class="doc-btn doc-btn-bnsp">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                        BNSP
+                                    </a>
+                                @else
+                                    <span class="doc-btn doc-btn-disabled">BNSP</span>
+                                @endif
+                                @if($user->drive_link_documentation)
+                                    <a href="{{ $user->drive_link_documentation }}" target="_blank" class="doc-btn doc-btn-drive">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                                        Drive
+                                    </a>
                                 @endif
                             </div>
-                            <a href="{{ $user->drive_link_documentation }}" target="_blank" class="text-[10px] text-emerald-600 underline font-medium hover:text-emerald-700 block">Link Drive Dokumentasi</a>
-                        </div>
-                    </td>
-                    <td class="p-6 text-sm text-gray-600 leading-relaxed italic">
-                        "{{ Str::limit($user->experience, 100) }}"
-                    </td>
-                    <td class="p-6">
-                        @if($user->trainer_status == 'pending')
-                        <div class="flex flex-row gap-2 justify-center">
-                            <form action="{{ route('admin.trainer.approve', $user->id) }}" method="POST" onsubmit="return confirm('Setujui pendaftar ini sebagai Trainer?')">
-                                @csrf
-                                <button type="submit" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-emerald-700 transition shadow-sm active:scale-95">Setujui</button>
-                            </form>
-                            <form action="{{ route('admin.trainer.reject', $user->id) }}" method="POST" onsubmit="return confirm('Tolak pendaftaran ini?')">
-                                @csrf
-                                <button type="submit" class="bg-white text-red-600 border border-red-100 px-4 py-2 rounded-xl text-xs font-bold hover:bg-red-50 transition active:scale-95">Tolak</button>
-                            </form>
-                        </div>
-                        @else
-                            <div class="flex justify-center">
-                                <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $user->trainer_status == 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700' }}">
-                                    {{ $user->trainer_status }}
-                                </span>
+                        </td>
+                        <td style="max-width:180px;font-size:12px;color:var(--text-muted);">
+                            {{ Str::limit($user->experience, 55) }}
+                        </td>
+                        <td>
+                            <span class="relative-time"
+                                  data-time="{{ ($user->trainer_applied_at ?? $user->created_at)->toIso8601String() }}"
+                                  title="{{ ($user->trainer_applied_at ?? $user->created_at)->format('d M Y, H:i') }}">
+                                {{ ($user->trainer_applied_at ?? $user->created_at)->diffForHumans() }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-group">
+                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal({{ $user->id }})">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    Detail
+                                </button>
+                                <form method="POST" action="{{ route('admin.trainer.approve', $user->id) }}"
+                                      id="form-approve-{{ $user->id }}" style="display:inline;">
+                                    @csrf
+                                    <button type="button" class="btn btn-approve btn-sm"
+                                        onclick="confirmApprove({{ $user->id }}, '{{ addslashes($user->academic_degree ?? $user->name) }}')">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Setujui
+                                    </button>
+                                </form>
+                                <button class="btn btn-reject btn-sm"
+                                    onclick="confirmReject({{ $user->id }}, '{{ addslashes($user->academic_degree ?? $user->name) }}')">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                    Tolak
+                                </button>
                             </div>
-                        @endif
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="4" class="p-20 text-center">
-                        <p class="text-gray-400 italic">Tidak ada data pengajuan trainer.</p>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-    <div class="mt-4">
-        {{ $applicants->links() }}
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
     </div>
 </div>
+
+{{-- ======================== TAB APPROVED ======================== --}}
+<div id="tab-approved" style="display:none;">
+    <div class="table-card">
+        <div class="table-card-header">
+            <div class="table-card-title">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Trainer Disetujui
+                <span class="table-card-subtitle">{{ $counts['approved'] }} trainer aktif</span>
+            </div>
+        </div>
+
+        @if($approved->isEmpty())
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <div class="empty-state-text">Belum ada trainer yang disetujui.</div>
+            </div>
+        @else
+            <table>
+                <thead>
+                    <tr>
+                        <th>Trainer</th>
+                        <th>NIK</th>
+                        <th>Dokumen</th>
+                        <th>Pengalaman</th>
+                        <th>Disetujui</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($approved as $user)
+                    <tr>
+                        <td>
+                            <div class="submitter">
+                                <div class="submitter-avatar" style="background:var(--accent);">
+                                    {{ strtoupper(substr($user->name, 0, 2)) }}
+                                </div>
+                                <div>
+                                    <div class="submitter-name">{{ $user->academic_degree ?? $user->name }}</div>
+                                    <div class="submitter-sub">{{ $user->email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-size:12px;color:var(--text-muted);">{{ $user->nik ?? '-' }}</td>
+                        <td>
+                            <div class="doc-btn-group">
+                                @if($user->ktp_scan)
+                                    @php $ktpPath = str_replace('public/', '', $user->ktp_scan); @endphp
+                                    <a href="{{ asset('storage/' . $ktpPath) }}" target="_blank" class="doc-btn doc-btn-ktp">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                        KTP
+                                    </a>
+                                @else
+                                    <span class="doc-btn doc-btn-disabled">KTP</span>
+                                @endif
+                                @if($user->bnsp_certificate)
+                                    @php $bnspPath = str_replace('public/', '', $user->bnsp_certificate); @endphp
+                                    <a href="{{ asset('storage/' . $bnspPath) }}" target="_blank" class="doc-btn doc-btn-bnsp">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                        BNSP
+                                    </a>
+                                @else
+                                    <span class="doc-btn doc-btn-disabled">BNSP</span>
+                                @endif
+                                @if($user->drive_link_documentation)
+                                    <a href="{{ $user->drive_link_documentation }}" target="_blank" class="doc-btn doc-btn-drive">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                                        Drive
+                                    </a>
+                                @endif
+                            </div>
+                        </td>
+                        <td style="max-width:180px;font-size:12px;color:var(--text-muted);">
+                            {{ Str::limit($user->experience, 55) }}
+                        </td>
+                        <td>
+                            <span class="relative-time" data-time="{{ $user->updated_at->toIso8601String() }}"
+                                  title="{{ $user->updated_at->format('d M Y, H:i') }}">
+                                {{ $user->updated_at->diffForHumans() }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-approved"><span class="badge-dot"></span>Aktif</span>
+                        </td>
+                        <td>
+                            <div class="action-group">
+                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal({{ $user->id }})">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    Detail
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+    </div>
+</div>
+
+{{-- ======================== TAB REJECTED ======================== --}}
+<div id="tab-rejected" style="display:none;">
+    <div class="table-card">
+        <div class="table-card-header">
+            <div class="table-card-title">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Pendaftaran Ditolak
+                <span class="table-card-subtitle">{{ $counts['rejected'] }} ditolak</span>
+            </div>
+        </div>
+
+        @if($rejected->isEmpty())
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <div class="empty-state-text">Tidak ada pendaftaran trainer yang ditolak.</div>
+            </div>
+        @else
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pendaftar</th>
+                        <th>NIK</th>
+                        <th>Dokumen</th>
+                        <th>Alasan Penolakan</th>
+                        <th>Ditolak</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($rejected as $user)
+                    <tr>
+                        <td>
+                            <div class="submitter">
+                                <div class="submitter-avatar" style="background:#9ca3af;">
+                                    {{ strtoupper(substr($user->name, 0, 2)) }}
+                                </div>
+                                <div>
+                                    <div class="submitter-name">{{ $user->academic_degree ?? $user->name }}</div>
+                                    <div class="submitter-sub">{{ $user->email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-size:12px;color:var(--text-muted);">{{ $user->nik ?? '-' }}</td>
+                        <td>
+                            <div class="doc-btn-group">
+                                @if($user->ktp_scan)
+                                    @php $ktpPath = str_replace('public/', '', $user->ktp_scan); @endphp
+                                    <a href="{{ asset('storage/' . $ktpPath) }}" target="_blank" class="doc-btn doc-btn-ktp">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                        KTP
+                                    </a>
+                                @else
+                                    <span class="doc-btn doc-btn-disabled">KTP</span>
+                                @endif
+                                @if($user->bnsp_certificate)
+                                    @php $bnspPath = str_replace('public/', '', $user->bnsp_certificate); @endphp
+                                    <a href="{{ asset('storage/' . $bnspPath) }}" target="_blank" class="doc-btn doc-btn-bnsp">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                        BNSP
+                                    </a>
+                                @else
+                                    <span class="doc-btn doc-btn-disabled">BNSP</span>
+                                @endif
+                            </div>
+                        </td>
+                        <td style="max-width:200px;">
+                            <div style="font-size:12px;color:var(--accent2);">
+                                {{ Str::limit($user->rejection_reason ?? '-', 60) }}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="relative-time" data-time="{{ $user->updated_at->toIso8601String() }}"
+                                  title="{{ $user->updated_at->format('d M Y, H:i') }}">
+                                {{ $user->updated_at->diffForHumans() }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-group">
+                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal({{ $user->id }})">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    Detail
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+    </div>
+</div>
+
+
+{{-- ======================== MODAL DETAIL ======================== --}}
+<div class="modal-overlay" id="modal-detail">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Detail Pendaftaran Trainer</div>
+            <button class="modal-close" onclick="closeModal('modal-detail')">✕</button>
+        </div>
+
+        <div class="img-preview" id="detail-avatar-wrap" style="display:flex;align-items:center;justify-content:center;">
+            <span id="detail-avatar-initials" style="font-size:32px;font-weight:700;color:#0F6E56;"></span>
+        </div>
+
+        <div class="detail-grid">
+            <div class="detail-item">
+                <div class="detail-label">Nama Lengkap</div>
+                <div class="detail-value" id="d-nama">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Status</div>
+                <div class="detail-value" id="d-status">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">NIK</div>
+                <div class="detail-value" id="d-nik">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Email</div>
+                <div class="detail-value" id="d-email" style="font-weight:400;font-size:13px;">-</div>
+            </div>
+            <div class="detail-item full">
+                <div class="detail-label">Pengalaman</div>
+                <div class="detail-value" id="d-experience" style="font-weight:400;line-height:1.6;font-size:13px;color:var(--text-muted);">-</div>
+            </div>
+            <div class="detail-item full" id="d-reject-wrap" style="display:none;">
+                <div class="detail-label" style="color:var(--accent2);">Alasan Penolakan</div>
+                <div class="detail-value" id="d-reject" style="font-weight:400;font-size:13px;color:var(--accent2);">-</div>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:4px;">
+            <a id="d-ktp-link" href="#" target="_blank" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center;">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                </svg>
+                Lihat Scan KTP
+            </a>
+            <a id="d-bnsp-link" href="#" target="_blank" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center;">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                </svg>
+                Lihat Sertifikat BNSP
+            </a>
+        </div>
+
+        <div id="d-drive-wrap" style="margin-top:8px;display:none;">
+            <a id="d-drive-link" href="#" target="_blank" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;">
+                &#x2197; Buka Drive Dokumentasi
+            </a>
+        </div>
+    </div>
+</div>
+
+{{-- ======================== MODAL TOLAK ======================== --}}
+<div class="modal-overlay" id="modal-reject">
+    <div class="modal" style="max-width:460px;">
+        <div class="modal-header">
+            <div class="modal-title">Tolak Pendaftaran Trainer</div>
+            <button class="modal-close" onclick="closeModal('modal-reject')">✕</button>
+        </div>
+        <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:18px;line-height:1.6;">
+            Berikan alasan penolakan untuk <strong id="reject-name"></strong>. Alasan ini akan tersimpan sebagai catatan.
+        </p>
+        <form id="reject-form" method="POST">
+            @csrf
+            <div class="form-group">
+                <label class="form-label">Alasan Penolakan *</label>
+                <textarea name="rejection_reason" class="form-textarea" rows="4"
+                    placeholder="Contoh: Dokumen KTP tidak jelas, sertifikat BNSP tidak valid..."
+                    required></textarea>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:6px;">
+                <button type="button" class="btn btn-ghost" style="flex:1;" onclick="closeModal('modal-reject')">Batal</button>
+                <button type="submit" class="btn btn-reject" style="flex:1;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    Konfirmasi Tolak
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Data JSON untuk JS --}}
+<script>
+const trainerData = @json(
+    $pending->concat($approved)->concat($rejected)->keyBy('id')
+);
+
+// ─── Realtime Relative Time ───────────────────────────────────────────────────
+
+function formatRelativeTime(isoString) {
+    const now  = new Date();
+    const past = new Date(isoString);
+    const diff = Math.floor((now - past) / 1000); // selisih dalam detik
+
+    if (diff < 60)      return 'Baru saja';
+    if (diff < 3600)  { const m  = Math.floor(diff / 60);       return m  + ' menit yang lalu'; }
+    if (diff < 86400) { const h  = Math.floor(diff / 3600);     return h  + ' jam yang lalu'; }
+    if (diff < 2592000){ const d = Math.floor(diff / 86400);    return d  + ' hari yang lalu'; }
+    if (diff < 31536000){ const mo= Math.floor(diff / 2592000); return mo + ' bulan yang lalu'; }
+    const y = Math.floor(diff / 31536000);
+    return y + ' tahun yang lalu';
+}
+
+function updateAllRelativeTimes() {
+    document.querySelectorAll('.relative-time[data-time]').forEach(function(el) {
+        el.textContent = formatRelativeTime(el.dataset.time);
+    });
+}
+
+// Jalankan langsung saat load, lalu perbarui tiap 30 detik
+updateAllRelativeTimes();
+setInterval(updateAllRelativeTimes, 30000);
+
+// ─── SweetAlert2 Confirmations ────────────────────────────────────────────────
+
+// Warna custom agar selaras dengan tema admin
+const swalApprove = Swal.mixin({
+    customClass: {
+        confirmButton: 'swal-btn-confirm-approve',
+        cancelButton:  'swal-btn-cancel',
+    },
+    buttonsStyling: false,
+});
+
+const swalReject = Swal.mixin({
+    customClass: {
+        confirmButton: 'swal-btn-confirm-reject',
+        cancelButton:  'swal-btn-cancel',
+    },
+    buttonsStyling: false,
+});
+
+function confirmApprove(id, name) {
+    swalApprove.fire({
+        title: 'Setujui Trainer?',
+        html:  '<span style="font-size:14px;color:#6b7280;">Anda akan menyetujui <strong>' + name + '</strong> sebagai Trainer resmi.</span>',
+        icon:  'question',
+        iconColor: '#10b981',
+        showCancelButton: true,
+        confirmButtonText: '✓ Ya, Setujui',
+        cancelButtonText:  'Batal',
+        reverseButtons: true,
+        focusCancel: true,
+    }).then(function(result) {
+        if (result.isConfirmed) {
+            document.getElementById('form-approve-' + id).submit();
+        }
+    });
+}
+
+function confirmReject(id, name) {
+    swalReject.fire({
+        title: 'Tolak Pendaftaran?',
+        html:  '<span style="font-size:14px;color:#6b7280;">Anda akan menolak pendaftaran <strong>' + name + '</strong>. Lanjutkan untuk mengisi alasan penolakan.</span>',
+        icon:  'warning',
+        iconColor: '#ef4444',
+        showCancelButton: true,
+        confirmButtonText: '→ Lanjut Isi Alasan',
+        cancelButtonText:  'Batal',
+        reverseButtons: true,
+        focusCancel: true,
+    }).then(function(result) {
+        if (result.isConfirmed) {
+            openRejectModal(id, name);
+        }
+    });
+}
+
+
+
+function switchTab(tab, btn) {
+    ['pending', 'approved', 'rejected'].forEach(function(t) {
+        document.getElementById('tab-' + t).style.display = t === tab ? 'block' : 'none';
+    });
+    btn.closest('.tab-bar').querySelectorAll('.tab-btn').forEach(function(b) {
+        b.classList.remove('active');
+    });
+    btn.classList.add('active');
+}
+
+function openDetailModal(id) {
+    const d = trainerData[id];
+    if (!d) return;
+
+    document.getElementById('detail-avatar-initials').textContent = (d.name || '').substring(0, 2).toUpperCase();
+    document.getElementById('detail-avatar-wrap').style.background = '#E1F5EE';
+
+    document.getElementById('d-nama').textContent       = d.academic_degree ?? d.name;
+    document.getElementById('d-nik').textContent        = d.nik ?? '-';
+    document.getElementById('d-email').textContent      = d.email ?? '-';
+    document.getElementById('d-experience').textContent = d.experience ?? '-';
+
+    const statusMap = {
+        pending:  '<span class="badge badge-pending-b"><span class="badge-dot" style="background:#EF9F27;"></span>Menunggu</span>',
+        approved: '<span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>',
+        rejected: '<span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>',
+    };
+    document.getElementById('d-status').innerHTML = statusMap[d.trainer_status] ?? d.trainer_status;
+
+    const rejectWrap = document.getElementById('d-reject-wrap');
+    if (d.trainer_status === 'rejected' && d.rejection_reason) {
+        rejectWrap.style.display = 'block';
+        document.getElementById('d-reject').textContent = d.rejection_reason;
+    } else {
+        rejectWrap.style.display = 'none';
+    }
+
+    const ktpPath  = d.ktp_scan         ? d.ktp_scan.replace('public/', '')         : null;
+    const bnspPath = d.bnsp_certificate  ? d.bnsp_certificate.replace('public/', '') : null;
+
+    const ktpLink  = document.getElementById('d-ktp-link');
+    const bnspLink = document.getElementById('d-bnsp-link');
+    ktpLink.href   = ktpPath  ? '/storage/' + ktpPath  : '#';
+    bnspLink.href  = bnspPath ? '/storage/' + bnspPath : '#';
+    ktpLink.style.opacity  = ktpPath  ? '1' : '0.4';
+    bnspLink.style.opacity = bnspPath ? '1' : '0.4';
+
+    const driveWrap = document.getElementById('d-drive-wrap');
+    const driveLink = document.getElementById('d-drive-link');
+    if (d.drive_link_documentation) {
+        driveWrap.style.display = 'block';
+        driveLink.href = d.drive_link_documentation;
+    } else {
+        driveWrap.style.display = 'none';
+    }
+
+    openModal('modal-detail');
+}
+
+function openRejectModal(id, name) {
+    document.getElementById('reject-name').textContent = name;
+    document.getElementById('reject-form').action = '/admin/approval/trainer/' + id + '/reject';
+    openModal('modal-reject');
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+        if (e.target === el) closeModal(el.id);
+    });
+});
+</script>
+
 @endsection

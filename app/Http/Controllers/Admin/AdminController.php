@@ -27,11 +27,11 @@ class AdminController extends Controller
             'pending_program' => Program::where('status', 'pending')->count(),
             'pending_event'   => Event::where('status', 'pending')->count(),
             'pending_trainer' => User::where('trainer_status', 'pending')->count(),
-            'pending_mentor' => User::where('mentor_status', 'pending')->count(),
+            'pending_mentor'  => User::where('mentor_status', 'pending')->count(),
             'pending_hari_ini'=> Produk::where('status', 'pending')->whereDate('created_at', today())->count()
                                + Program::where('status', 'pending')->whereDate('created_at', today())->count()
                                + Event::where('status', 'pending')->whereDate('created_at', today())->count()
-                               + User::where('trainer_status', 'pending')->whereDate('updated_at', today())->count(),
+                               + User::where('trainer_status', 'pending')->whereDate('trainer_applied_at', today())->count(),
             'disetujui_bulan' => Program::where('status', 'approved')->whereMonth('updated_at', now()->month)->count()
                                + Produk::where('status', 'approved')->whereMonth('updated_at', now()->month)->count()
                                + Event::where('status', 'approved')->whereMonth('updated_at', now()->month)->count(),
@@ -282,9 +282,10 @@ class AdminController extends Controller
             ->latest()
             ->paginate(20)
             ->withQueryString();
-    
+
         return view('admin.pengguna', compact('users'));
     }
+
     public function verifikasiPengguna(Request $request, User $user)
     {
         $user->update(['status' => 'active', 'email_verified_at' => now()]);
@@ -308,34 +309,41 @@ class AdminController extends Controller
     }
 
     // ─────────────────────────────────────────────
-    // APPROVAL TRAINER (BARU)
+    // APPROVAL TRAINER
     // ─────────────────────────────────────────────
 
-    public function approvalTrainer(Request $request)
+    public function approvalTrainer()
     {
-        $status = $request->get('status', 'pending');
+        // Urutkan pending berdasarkan waktu pengajuan trainer (trainer_applied_at)
+        $pending  = User::where('trainer_status', 'pending')
+                        ->whereNotNull('nik')
+                        ->latest('trainer_applied_at')
+                        ->get();
 
-        $applicants = User::where('trainer_status', '!=', 'none')
-            ->when($status !== 'all', fn($q) => $q->where('trainer_status', $status))
-            ->latest()
-            ->paginate(15);
+        $approved = User::where('trainer_status', 'approved')
+                        ->latest('updated_at')
+                        ->get();
+
+        $rejected = User::where('trainer_status', 'rejected')
+                        ->latest('updated_at')
+                        ->get();
 
         $counts = [
-            'pending'  => User::where('trainer_status', 'pending')->count(),
-            'approved' => User::where('trainer_status', 'approved')->count(),
-            'rejected' => User::where('trainer_status', 'rejected')->count(),
+            'pending'  => $pending->count(),
+            'approved' => $approved->count(),
+            'rejected' => $rejected->count(),
         ];
 
-        return view('admin.approval-trainer', compact('applicants', 'counts', 'status'));
+        return view('admin.approval-trainer', compact('pending', 'approved', 'rejected', 'counts'));
     }
 
     public function approveTrainer(User $user)
     {
         $user->update([
-            'role'           => 'pembimbing', // atau 'trainer' sesuai keinginanmu
-            'trainer_status' => 'approved',
-            'is_pembimbing'  => true,
-            'pembimbing_expired_at' => now()->addYear(), // Aktif 1 tahun
+            'role'                   => 'pembimbing',
+            'trainer_status'         => 'approved',
+            'is_pembimbing'          => true,
+            'pembimbing_expired_at'  => now()->addYear(),
         ]);
 
         return back()->with('success', "{$user->name} berhasil disetujui sebagai Trainer.");
@@ -343,57 +351,63 @@ class AdminController extends Controller
 
     public function rejectTrainer(Request $request, User $user)
     {
+        $request->validate([
+            'rejection_reason' => 'required|string|max:1000',
+        ]);
+
         $user->update([
-            'trainer_status' => 'rejected',
+            'trainer_status'   => 'rejected',
+            'rejection_reason' => $request->rejection_reason,
         ]);
 
         return back()->with('success', "Pendaftaran {$user->name} telah ditolak.");
     }
 
-// ____________________________________________________________________
-// APPROVEL MENTOR (BARU)
-// ─────────────────────────────────────────────    
-public function approvalMentor()
-{
-    $pending  = Mentor::where('status', 'pending')->get();
-    $approved = Mentor::where('status', 'approved')->get();
-    $rejected = Mentor::where('status', 'rejected')->get();
+    // ─────────────────────────────────────────────
+    // APPROVAL MENTOR
+    // ─────────────────────────────────────────────
 
-    $stats = [
-        'pending'  => $pending->count(),
-        'approved' => $approved->count(),
-        'rejected' => $rejected->count(),
-    ];
+    public function approvalMentor()
+    {
+        $pending  = Mentor::where('status', 'pending')->get();
+        $approved = Mentor::where('status', 'approved')->get();
+        $rejected = Mentor::where('status', 'rejected')->get();
 
-    return view('admin.approval-mentor', compact('pending', 'approved', 'rejected', 'stats'));
-}
+        $stats = [
+            'pending'  => $pending->count(),
+            'approved' => $approved->count(),
+            'rejected' => $rejected->count(),
+        ];
 
-public function approveMentor(Mentor $mentor)
-{
-    $mentor->update([
-        'status'      => 'approved',
-        'reviewed_at' => now(),
-    ]);
+        return view('admin.approval-mentor', compact('pending', 'approved', 'rejected', 'stats'));
+    }
 
-    return back()->with('success', "{$mentor->full_name} berhasil disetujui sebagai Mentor.");
-}
+    public function approveMentor(Mentor $mentor)
+    {
+        $mentor->update([
+            'status'      => 'approved',
+            'reviewed_at' => now(),
+        ]);
 
-public function rejectMentor(Request $request, Mentor $mentor)
-{
-    $request->validate(['rejection_reason' => 'required|string|max:1000']);
+        return back()->with('success', "{$mentor->full_name} berhasil disetujui sebagai Mentor.");
+    }
 
-    $mentor->update([
-        'status'           => 'rejected',
-        'rejection_reason' => $request->rejection_reason,
-        'reviewed_at'      => now(),
-    ]);
+    public function rejectMentor(Request $request, Mentor $mentor)
+    {
+        $request->validate(['rejection_reason' => 'required|string|max:1000']);
 
-    return back()->with('success', "Pendaftaran {$mentor->full_name} telah ditolak.");
-}
+        $mentor->update([
+            'status'           => 'rejected',
+            'rejection_reason' => $request->rejection_reason,
+            'reviewed_at'      => now(),
+        ]);
 
-public function destroyMentor(Mentor $mentor)
-{
-    $mentor->delete();
-    return back()->with('success', 'Data mentor berhasil dihapus.');
-}
+        return back()->with('success', "Pendaftaran {$mentor->full_name} telah ditolak.");
+    }
+
+    public function destroyMentor(Mentor $mentor)
+    {
+        $mentor->delete();
+        return back()->with('success', 'Data mentor berhasil dihapus.');
+    }
 }
