@@ -57,19 +57,6 @@ Route::prefix('konsultan')->group(function () {
     Route::get('/paket', [KonsultanController::class, 'paket'])->name('konsultan.paket');
 });
 
-// =========================================================
-// 1. GRUP AUTH (Semua User Login)
-// =========================================================
-// Route::middleware(['auth'])->group(function () {
-    
-//   Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
-//   Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
-//   Route::post('/profile/update-photo', [ProfileController::class, 'updatePhoto'])->name('profile.update-photo'); // ← tambah ini
-//   Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
-//   Route::post('/profile/daftar-mentor', [ProfileController::class, 'daftarMentor'])->name('profile.daftar-mentor');
-//   Route::get('/profile/daftar-trainer', [ProfileController::class, 'showDaftarTrainer'])->name('profile.daftar-trainer');
-//   Route::post('/profile/simpan-trainer', [ProfileController::class, 'simpanTrainer'])->name('profile.simpan-trainer');
-// });
 Route::middleware(['auth'])->group(function () {
     
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
@@ -88,7 +75,45 @@ Route::middleware(['auth'])->group(function () {
     // Daftar Trainer (sudah ada)
     Route::get('/profile/daftar-trainer', [ProfileController::class, 'showDaftarTrainer'])->name('profile.daftar-trainer');
     Route::post('/profile/simpan-trainer', [ProfileController::class, 'simpanTrainer'])->name('profile.simpan-trainer');
-});
+            
+      // Dashboard Trainer
+    Route::get('/trainer/dashboard', [App\Http\Controllers\TrainerController::class, 'index'])
+         ->name('trainer.dashboard')
+         ->middleware('trainer');
+
+    // =========================
+    // TRAINER PROGRAM
+    // =========================
+    Route::post('/trainer/pelatihan/store', [App\Http\Controllers\TrainerController::class, 'storeProgram'])
+        ->name('trainer.pelatihan.store');
+
+    Route::put('/trainer/pelatihan/{id}', [App\Http\Controllers\TrainerController::class, 'updateProgram'])
+        ->name('trainer.pelatihan.update');
+
+    Route::delete('/trainer/pelatihan/{id}', [App\Http\Controllers\TrainerController::class, 'destroyProgram'])
+        ->name('trainer.pelatihan.destroy');
+
+
+    // =========================
+    // TRAINER EVENT
+    // =========================
+    Route::post('/trainer/event/store', [App\Http\Controllers\TrainerController::class, 'storeEvent'])
+        ->name('trainer.event.store');
+
+    Route::put('/trainer/event/{id}', [App\Http\Controllers\TrainerController::class, 'updateEvent'])
+        ->name('trainer.event.update');
+
+    Route::delete('/trainer/event/{id}', [App\Http\Controllers\TrainerController::class, 'destroyEvent'])
+        ->name('trainer.event.destroy');
+
+
+    // =========================
+    // TRAINER PROFILE
+    // =========================
+    Route::put('/trainer/profil/update', [App\Http\Controllers\TrainerController::class, 'updateProfil'])
+        ->name('trainer.profil.update');
+
+    });
 
 // =========================================================
 // 2. GRUP ADMIN (KHUSUS ADMIN)

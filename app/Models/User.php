@@ -98,6 +98,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Cek apakah user adalah Trainer yang sudah diverifikasi
+     */
+    public function isTrainer(): bool
+    {
+        return $this->trainer_status === 'approved';
+    }
+    
+    /**
      * Cek apakah user adalah Admin
      */
     public function isAdmin(): bool

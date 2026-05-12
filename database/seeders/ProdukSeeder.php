@@ -17,7 +17,7 @@ class ProdukSeeder extends Seeder
                 'nama'      => 'Panorama Batik',
                 'deskripsi' => 'Panorama batik yaitu usaha yang bergerak dibidang produksi batik tulis yang masih tradisional, sehingga harganya cukup relatif mahal karena nilai seninya yang ditawarkan.',
                 'foto_detail'    => '4-madura collection(pict).png',
-                'foto'    => '1-panorama batik.jpg',
+                'foto'    => '',
                 'whatsapp'  => '628123456789',
                 'alamat'    => 'Jl. Batik No. 123, Yogyakarta',
             ],

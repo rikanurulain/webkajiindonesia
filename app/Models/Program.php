@@ -3,48 +3,127 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class Program extends Model
 {
+
+    protected $table = 'programs';
+
     protected $fillable = [
+        'trainer_id',
         'judul',
-        'deskripsi',
-        'metode',
-        'tingkat',
-        'durasi',
-        'kuota',
+        'slug',
+        'tipe',              // kurikulum / materi
+        'deskripsi',         // ringkasan singkat (tampil di card listing)
+        'deskripsi_panjang', // detail lengkap (tampil di halaman detail)
+        'konten_kurikulum',  // isi rich text kurikulum (Quill → HTML)
+        'konten_materi',     // isi rich text materi (Quill → HTML)
+        'target',            // target peserta
+        'metode',            // online / offline / hybrid
+        'tingkat',           // pemula / menengah / lanjut
         'bahasa',
-        'status',
+        'tanggal',
+        'gambar',
+        'status',            // pending / approved / rejected
         'catatan_admin',
         'approved_at',
         'approved_by',
         'rejected_at',
         'rejected_by',
-        'trainer_id',
     ];
 
     protected $casts = [
+        'tanggal'     => 'date',
         'approved_at' => 'datetime',
         'rejected_at' => 'datetime',
     ];
 
-    // ── Scopes ──────────────────────────────────
-    public function scopePending($query)
+    // ── Auto-generate slug dari judul ─────────────────────────────────────
+    protected static function booted(): void
     {
-        return $query->where('status', 'pending');
+        static::creating(function ($program) {
+            $program->slug = self::generateUniqueSlug($program->judul);
+        });
+
+        static::updating(function ($program) {
+            if ($program->isDirty('judul')) {
+                $program->slug = self::generateUniqueSlug($program->judul, $program->id);
+            }
+        });
     }
 
-    public function scopeApprovedThisMonth($query)
+    private static function generateUniqueSlug(string $judul, ?int $exceptId = null): string
     {
-        return $query->where('status', 'approved')
-                     ->whereMonth('updated_at', now()->month)
-                     ->whereYear('updated_at', now()->year);
+        $slug  = Str::slug($judul);
+        $base  = $slug;
+        $count = 1;
+
+        while (
+            static::where('slug', $slug)
+                  ->when($exceptId, fn($q) => $q->where('id', '!=', $exceptId))
+                  ->exists()
+        ) {
+            $slug = "{$base}-{$count}";
+            $count++;
+        }
+
+        return $slug;
     }
 
-    // ── Relasi ──────────────────────────────────
-    public function pembimbing(): BelongsTo
+    // ── Relasi ────────────────────────────────────────────────────────────
+    public function trainer()
     {
-        return $this->belongsTo(Trainer::class, 'trainer_id');
+        return $this->belongsTo(User::class, 'trainer_id');
+    }
+
+    public function approvedByUser()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    // ── Scopes (untuk query yang sering dipakai) ──────────────────────────
+    // Contoh: Program::published()->get()
+    public function scopePublished($query)
+    {
+        return $query->where('status', 'approved');
+    }
+
+    // Contoh: Program::kurikulum()->get()
+    public function scopeKurikulum($query)
+    {
+        return $query->where('tipe', 'kurikulum');
+    }
+
+    // Contoh: Program::materi()->get()
+    public function scopeMateri($query)
+    {
+        return $query->where('tipe', 'materi');
+    }
+
+    // ── Helper ────────────────────────────────────────────────────────────
+    public function getStatusBadgeAttribute(): string
+    {
+        return match ($this->status) {
+            'approved' => '<span class="badge bg-success">Disetujui</span>',
+            'rejected' => '<span class="badge bg-danger">Ditolak</span>',
+            default    => '<span class="badge bg-warning text-dark">Menunggu</span>',
+        };
+    }
+
+    public function getTipeLabelAttribute(): string
+    {
+        return match ($this->tipe) {
+            'kurikulum' => 'Kurikulum',
+            'materi'    => 'Materi',
+            default     => ucfirst($this->tipe),
+        };
+    }
+
+    public function getGambarUrlAttribute(): string
+    {
+        return $this->gambar
+            ? asset('storage/' . $this->gambar)
+            : asset('images/default-program.jpg');
     }
 }
