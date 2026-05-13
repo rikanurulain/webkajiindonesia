@@ -304,7 +304,7 @@
                     <div class="mx-5 border-t border-gray-100"></div>
 
                     {{-- Selengkapnya (eksternal) --}}
-                    <a href="https://kopigayashop.my.canva.site/syntara" target="_blank" rel="noopener noreferrer" @click="open = false"
+                    <a href="https://halalcenter.co.id/" target="_blank" rel="noopener noreferrer" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -617,7 +617,7 @@
                 <div x-show="sub" x-cloak class="pl-4 pb-1">
                     <a href="{{ route('halal-center.gratis') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Gratis</a>
                     <a href="{{ route('halal-center.berbayar') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Berbayar</a>
-                    <a href="https://kopigayashop.my.canva.site/syntara" target="_blank" rel="noopener noreferrer" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Selengkapnya ↗</a>
+                    <a href="https://halalcenter.co.id/" target="_blank" rel="noopener noreferrer" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Selengkapnya ↗</a>
                 </div>
             </div>
 
