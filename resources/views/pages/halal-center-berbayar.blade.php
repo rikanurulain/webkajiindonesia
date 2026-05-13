@@ -149,6 +149,43 @@
 </section>
 
 
+{{-- Tentang Program --}}
+<section class="bg-gray-50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {{-- Heading tengah --}}
+        <div class="text-center mb-10">
+            <p class="text-sm font-semibold text-primary uppercase tracking-widest mb-2">Tentang Program</p>
+            <h2 class="font-serif text-3xl font-bold text-gray-900 sm:text-4xl">HALAL CENTER</h2><br>
+        </div>
+
+        {{-- Konten --}}
+        <div class="max-w-3xl mx-auto">
+            <p class="text-gray-500 leading-relaxed mb-6">
+                Didukung oleh tim <strong class="text-gray-700">Penyelia Halal bersertifikat </strong>, auditor berpengalaman, dan bekerja sama langsung dengan BPJPH & LPH terakreditasi, kami mendampingi seluruh proses — dari persiapan dokumen NIB hingga penerbitan sertifikat halal resmi.
+            </p>
+            <ul class="space-y-4">
+                @foreach ([
+                    ['title' => 'Tim Bersertifikat BNSP',        'desc' => 'Didampingi Penyelia Halal & Juru Sembelih Halal bersertifikasi resmi yang telah berpengalaman.'],
+                    ['title' => 'Diakui Secara Resmi BPJPH',    'desc' => 'Sertifikat halal yang diterbitkan diakui oleh BPJPH dan Majelis Ulama Indonesia (MUI).'],
+                ] as $f)
+                <li class="flex items-start gap-3">
+                    <div class="shrink-0 mt-1 h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center">
+                        <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-gray-900">{{ $f['title'] }}</p>
+                        <p class="text-sm text-gray-500">{{ $f['desc'] }}</p>
+                    </div>
+                </li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+</section>
+
+
 {{-- ── BEDANYA GRATIS & BERBAYAR  --}}
 <section class="bg-white py-14">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

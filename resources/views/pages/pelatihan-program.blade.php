@@ -1,7 +1,7 @@
 {{-- resources/views/pages/pelatihan-program.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'Program Pelatihan - KAJI INDONESIA')
+@section('title', 'Program Pelatihan - KAJI Indonesia')
 
 @section('content')
 

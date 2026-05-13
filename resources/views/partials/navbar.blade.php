@@ -6,10 +6,10 @@
             <a href="{{ route('home') }}" class="flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-xl">
                 <img
                     src="{{ asset('storage/logo/logo.png') }}"
-                    alt="Logo Kaji Indonesia"
+                    alt="Logo KAJI Indonesia"
                     class="h-10 w-auto object-contain"
                 />
-                <span class="font-serif text-xl font-bold text-primary">Kaji Indonesia</span>
+                <span class="font-serif text-xl font-bold text-primary">KAJI Indonesia</span>
             </a>
         </div>
 
@@ -128,7 +128,7 @@
                     </a>
 
                     <div class="bg-gray-50/80 px-5 py-2.5 border-t border-gray-100">
-                        <p class="text-xs text-gray-400 text-center">Kaji Indonesia © {{ date('Y') }}</p>
+                        <p class="text-xs text-gray-400 text-center">KAJI Indonesia © {{ date('Y') }}</p>
                     </div>
                 </div>
             </div>
@@ -233,7 +233,7 @@
                     </a>
 
                     <div class="bg-gray-50/80 px-5 py-2.5 border-t border-gray-100">
-                        <p class="text-xs text-gray-400 text-center">Kaji Indonesia © {{ date('Y') }}</p>
+                        <p class="text-xs text-gray-400 text-center">KAJI Indonesia © {{ date('Y') }}</p>
                     </div>
                 </div>
             </div>
@@ -324,7 +324,7 @@
                     </a>
 
                     <div class="bg-gray-50/80 px-5 py-2.5 border-t border-gray-100">
-                        <p class="text-xs text-gray-400 text-center">Kaji Indonesia © {{ date('Y') }}</p>
+                        <p class="text-xs text-gray-400 text-center">KAJI Indonesia © {{ date('Y') }}</p>
                     </div>
                 </div>
             </div>
@@ -412,7 +412,7 @@
                     </a>
 
                     <div class="bg-gray-50/80 px-5 py-2.5 border-t border-gray-100">
-                        <p class="text-xs text-gray-400 text-center">Kaji Indonesia © {{ date('Y') }}</p>
+                        <p class="text-xs text-gray-400 text-center">KAJI Indonesia © {{ date('Y') }}</p>
                     </div>
                 </div>
             </div>
@@ -484,7 +484,7 @@
                     </a>
 
                     <div class="bg-gray-50/80 px-5 py-2.5 border-t border-gray-100">
-                        <p class="text-xs text-gray-400 text-center">Kaji Indonesia © {{ date('Y') }}</p>
+                        <p class="text-xs text-gray-400 text-center">KAJI Indonesia © {{ date('Y') }}</p>
                     </div>
                 </div>
             </div>

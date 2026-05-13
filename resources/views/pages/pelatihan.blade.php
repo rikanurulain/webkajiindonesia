@@ -10,7 +10,7 @@
     <section class="bg-white py-16">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="prose prose-lg max-w-none text-gray-600">
-                <p>Kaji Indonesia menyelenggarakan berbagai program pelatihan yang dirancang untuk kebutuhan korporat, UMKM, dan individu. Materi disusun secara aplikatif dan didukung oleh fasilitator berpengalaman.</p>
+                <p>KAJI Indonesia menyelenggarakan berbagai program pelatihan yang dirancang untuk kebutuhan korporat, UMKM, dan individu. Materi disusun secara aplikatif dan didukung oleh fasilitator berpengalaman.</p>
                 <p>Untuk informasi jadwal dan pendaftaran, silakan hubungi kami melalui menu kontak atau WhatsApp.</p>
             </div>
         </div>

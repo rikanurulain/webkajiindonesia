@@ -7,7 +7,7 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 class="font-serif text-4xl font-bold sm:text-5xl">HALAL CENTER</h1>
         <p class="mt-4 max-w-2xl text-lg text-white/90">
-            Pendampingan sertifikasi halal reguler untuk UMKM, Koperasi, dan Komunitas Bisnis — oleh tim konsultan bersertifikat SYNTARA, tanpa biaya konsultasi, tanpa syarat tersembunyi.
+            Pendampingan sertifikasi halal untuk UMKM, Koperasi, dan Komunitas - Bisnis oleh tim konsultan bersertifikat dan kompeten.
         </p>
         </div>
     </div>
@@ -127,36 +127,14 @@
         {{-- Heading tengah --}}
         <div class="text-center mb-10">
             <p class="text-sm font-semibold text-primary uppercase tracking-widest mb-2">Tentang Program</p>
-            <h2 class="font-serif text-3xl font-bold text-gray-900 sm:text-4xl">Apa itu SYNTARA?</h2><br>
+            <h2 class="font-serif text-3xl font-bold text-gray-900 sm:text-4xl">HALAL CENTER GRATIS</h2><br>
         </div>
 
         {{-- Konten --}}
         <div class="max-w-3xl mx-auto">
             <p class="text-gray-500 leading-relaxed mb-3">
-                Program Halal Center Gratis dari <strong class="text-gray-700">SYNTARA Advisory Firm</strong> adalah layanan pendampingan sertifikasi halal reguler yang dirancang khusus untuk pelaku usaha mikro dan kecil (UMK), koperasi, dan komunitas bisnis. Kami hadir memastikan produk Anda memenuhi standar kehalalan yang diakui secara resmi tanpa membebani biaya operasional Anda.
+                Program Halal Center Gratis Merupakan layanan pendampingan sertifikasi halal yang dirancang khusus untuk pelaku usaha mikro dan kecil (UMK), koperasi, dan komunitas bisnis. Kami hadir memastikan produk Anda memenuhi standar kehalalan yang diakui secara resmi tanpa membebani biaya operasional Anda.
             </p>
-            <p class="text-gray-500 leading-relaxed mb-6">
-                Didukung oleh tim <strong class="text-gray-700">Penyelia Halal bersertifikat BNSP</strong>, auditor berpengalaman, dan bekerja sama langsung dengan BPJPH & LPH terakreditasi, kami mendampingi seluruh proses — dari persiapan dokumen NIB hingga penerbitan sertifikat halal resmi.
-            </p>
-            <ul class="space-y-4">
-                @foreach ([
-                    ['title' => 'Tanpa Biaya Konsultasi',       'desc' => 'Seluruh sesi konsultasi, pendampingan, dan pelatihan internal tidak dikenakan biaya apapun.'],
-                    ['title' => 'Tim Bersertifikat BNSP',        'desc' => 'Didampingi Penyelia Halal & Juru Sembelih Halal bersertifikasi resmi yang telah berpengalaman.'],
-                    ['title' => 'Diakui Secara Resmi BPJPH',    'desc' => 'Sertifikat halal yang diterbitkan diakui oleh BPJPH dan Majelis Ulama Indonesia (MUI).'],
-                ] as $f)
-                <li class="flex items-start gap-3">
-                    <div class="shrink-0 mt-1 h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center">
-                        <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold text-gray-900">{{ $f['title'] }}</p>
-                        <p class="text-sm text-gray-500">{{ $f['desc'] }}</p>
-                    </div>
-                </li>
-                @endforeach
-            </ul>
         </div>
     </div>
 </section>

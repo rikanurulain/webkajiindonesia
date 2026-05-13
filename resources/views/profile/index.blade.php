@@ -110,7 +110,7 @@
                             <!-- TAMPILAN AWAL (BELUM DAFTAR) -->
                             <h4 class="font-bold mb-2">Ingin Bergabung?</h4>
                             <p class="text-xs text-emerald-100 mb-4 leading-relaxed">
-                                Pilih peran Anda di Kaji Indonesia.
+                                Pilih peran Anda di KAJI Indonesia.
                             </p>
 
                             <!-- Card UMKM -->

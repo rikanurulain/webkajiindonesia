@@ -303,7 +303,7 @@
         </div>
 
         {{-- Title --}}
-        <h1 class="register-title">Buat Akun <em>Kaji Indonesia</em></h1>
+        <h1 class="register-title">Buat Akun <em>KAJI Indonesia</em></h1>
         <p class="register-subtitle">
             Sudah punya akun? <a href="{{ route('login') }}">Masuk di sini →</a>
         </p>
@@ -404,7 +404,7 @@
             <div class="terms-row">
                 <input type="checkbox" class="terms-checkbox" required>
                 <p class="terms-text">
-                    Saya menyetujui <a href="#">Syarat &amp; Ketentuan</a> serta <a href="#">Kebijakan Privasi</a> Kaji Indonesia
+                    Saya menyetujui <a href="#">Syarat &amp; Ketentuan</a> serta <a href="#">Kebijakan Privasi</a> KAJI Indonesia
                 </p>
             </div>
 

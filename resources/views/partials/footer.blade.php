@@ -5,7 +5,7 @@
             <div class="lg:col-span-1">
                <a href="{{ route('home') }}" class="inline-flex items-center gap-2">
     <img src="{{ asset('storage/logo/logo.png') }}" alt="Logo Kaji Indonesia" class="h-10 w-auto object-contain" />
-    <span class="font-serif text-xl font-bold text-primary">Kaji Indonesia</span>
+    <span class="font-serif text-xl font-bold text-primary">KAJI Indonesia</span>
 </a>
                 <p class="mt-3 text-sm text-gray-600">
                     Membangun Indonesia melalui kajian, pelatihan, dan pendampingan UMKM serta layanan halal & konsultan.
@@ -40,7 +40,7 @@
             </div>
         </div>
         <div class="mt-10 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-8 sm:flex-row">
-            <p class="text-sm text-gray-500">&copy; {{ date('Y') }} Kaji Indonesia. Hak cipta dilindungi.</p>
+            <p class="text-sm text-gray-500">&copy; {{ date('Y') }} KAJI Indonesia. Hak cipta dilindungi.</p>
             <div class="flex gap-6 text-sm text-gray-500">
                 <a href="#" class="hover:text-primary">Kebijakan Privasi</a>
                 <a href="#" class="hover:text-primary">Syarat & Ketentuan</a>
