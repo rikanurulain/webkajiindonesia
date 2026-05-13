@@ -14,6 +14,8 @@ class Mentor extends Model
     'role', 
     'lokasi', 
     'gmaps_location',
+    'lat',
+    'lng',
     'foto', 
     'white_bg_photo', 
     'ktp_scan', 

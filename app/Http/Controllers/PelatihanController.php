@@ -597,7 +597,7 @@ class PelatihanController extends Controller
     {
         $mentor = User::where('trainer_status', 'approved')->findOrFail($id);
 
-        return view('pages.detail-mentor', compact('mentor'));
+        return view('pages.detail-pembimbing', compact('mentor'));
     }
 
     public function simpanUlasan(Request $request, $id)

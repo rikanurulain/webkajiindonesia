@@ -44,6 +44,7 @@ Route::prefix('pelatihan')->name('pelatihan.')->group(function () {
       Route::get('/pembimbing', [UmkmController::class, 'pembimbing'])->name('umkm.pembimbing');
       Route::get('/lokasi', [UmkmController::class, 'lokasi'])->name('umkm.lokasi');
       Route::get('/peta-data', [UmkmController::class, 'petaData'])->name('umkm.peta-data'); // ← tambah ini
+      Route::get('/peta-data-mentor', [UmkmController::class, 'petaDataMentor'])->name('umkm.peta-data-mentor');
   });
 
 Route::prefix('halal-center')->group(function () {

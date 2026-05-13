@@ -186,7 +186,9 @@
                             <input type="text" value="{{ $user->username }}" disabled class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 cursor-not-allowed">
                         </div>
 
-                        <div>
+                {{-- INI GAK USAH DIPAKE. TERUS KOLOM USERNAME DI TABEL USERS JUGA DIHAPUS AJA --}}
+
+                        {{-- <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
                         <input type="text" 
                         name="username" 
@@ -196,7 +198,7 @@
                             @error('username')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
-                        </div>
+                        </div> --}}
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nama *</label>
