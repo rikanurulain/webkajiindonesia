@@ -401,10 +401,29 @@
                         </div>
                         <div>
                             <div class="flex items-center gap-1.5">
-                                <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Selengkapnya</p>
+                                <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Konsultan Bisnis</p>
                                 <span class="inline-flex items-center rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-medium text-primary ring-1 ring-primary/20">Eksternal</span>
                             </div>
                             <p class="text-xs text-gray-400">kopigaya.com</p>
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                    </a>
+
+                    <a href="https://sertifikatin.com/" target="_blank" rel="noopener noreferrer" @click="open = false"
+                       class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
+                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Konsultan Legalitas</p>
+                                <span class="inline-flex items-center rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-medium text-primary ring-1 ring-primary/20">Eksternal</span>
+                            </div>
+                            <p class="text-xs text-gray-400">sertifikatin.com</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
@@ -632,7 +651,8 @@
                 <div x-show="sub" x-cloak class="pl-4 pb-1">
                     <a href="{{ route('konsultan.layanan') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Layanan</a>
                     <a href="{{ route('konsultan.paket') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Paket</a>
-                    <a href="https://kopigaya.com/" target="_blank" rel="noopener noreferrer" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Selengkapnya ↗</a>
+                    <a href="https://kopigaya.com/" target="_blank" rel="noopener noreferrer" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Konsultan Bisnis</a>
+                    <a href="https://sertifikatin.com/" target="_blank" rel="noopener noreferrer" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Konsultan Legalitas</a>
                 </div>
             </div>
 
