@@ -51,13 +51,13 @@ class AdminController extends Controller
         // ── Antrian terbaru (dari file lama) ────────────────────────────
         $antrian_terbaru = collect()
             ->merge(
-                Program::with('pembimbing')->where('status', 'pending')->latest()->take(3)->get()
+                Program::with('trainer')->where('status', 'pending')->latest()->take(3)->get()
                     ->map(fn($p) => [
                         'id'             => $p->id,
                         'type'           => 'program',
                         'nama'           => $p->nama ?? $p->judul ?? 'Program',
-                        'submitter'      => optional($p->pembimbing)->name ?? 'Pembimbing',
-                        'submitter_role' => 'Pembimbing',
+                        'submitter'      => optional($p->trainer)->name ?? 'trainer',
+                        'submitter_role' => 'trainer',
                         'tanggal'        => $p->created_at,
                         'avatar_color'   => 'var(--accent)',
                     ])
@@ -80,13 +80,13 @@ class AdminController extends Controller
             ->values();
 
         // ── Program & event terbaru pending (dari file baru) ────────────
-        $programPending = Program::with('pembimbing')
+        $programPending = Program::with('trainer')
             ->where('status', 'pending')
             ->latest()
             ->take(5)
             ->get();
 
-        $eventPending = Event::with('pembimbing')
+        $eventPending = Event::with('trainer')
             ->where('status', 'pending')
             ->latest()
             ->take(5)
@@ -117,7 +117,7 @@ class AdminController extends Controller
     {
         $status = $request->get('status', 'pending');
 
-        $programs = Program::with('pembimbing')
+        $programs = Program::with('trainer')
             ->when($status !== 'all', fn($q) => $q->where('status', $status))
             ->latest()
             ->paginate(15)
@@ -146,7 +146,7 @@ class AdminController extends Controller
 
     public function detailProgram(Program $program)
     {
-        return response()->json($program->load('pembimbing'));
+        return response()->json($program->load('trainer'));
     }
 
     public function approveProgram(Request $request, Program $program)
@@ -263,7 +263,7 @@ class AdminController extends Controller
     {
         $status = $request->get('status', 'pending');
 
-        $events = Event::with('pembimbing')
+        $events = Event::with('trainer')
             ->when($status !== 'all', fn($q) => $q->where('status', $status))
             ->latest()
             ->paginate(15)
@@ -280,7 +280,7 @@ class AdminController extends Controller
 
     public function detailEvent(Event $event)
     {
-        return response()->json($event->load('pembimbing'));
+        return response()->json($event->load('trainer'));
     }
 
     public function approveEvent(Request $request, Event $event)

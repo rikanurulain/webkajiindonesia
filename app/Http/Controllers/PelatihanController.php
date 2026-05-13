@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Trainer;
 use App\Models\UlasanPembimbing;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User; 
+use App\Models\User;
+use App\Models\Program;
 
 class PelatihanController extends Controller
 {
@@ -143,10 +144,10 @@ class PelatihanController extends Controller
     private function materiData(): array
     {
         return [
-            ['id' => 1, 'judul' => 'Video Belajar Wirausaha',    'deskripsi' => 'Akses puluhan video pembelajaran praktis dari mentor berpengalaman di bidang UMKM, bisnis lokal, dan kewirausahaan Indonesia.', 'ikon' => '🎬', 'warna' => 'linear-gradient(135deg, #d0eac0, #85c96a)'],
-            ['id' => 2, 'judul' => 'Panduan & Template Bisnis',  'deskripsi' => 'Unduh template rencana usaha, laporan keuangan sederhana, dan panduan digital siap pakai khusus untuk pelaku UMKM.',           'ikon' => '📄', 'warna' => 'linear-gradient(135deg, #c0d5f5, #7aaee0)'],
-            ['id' => 3, 'judul' => 'Studi Kasus UMKM Sukses',    'deskripsi' => 'Belajar dari kisah nyata pelaku UMKM Indonesia yang berhasil berkembang, dengan analisis strategi yang bisa langsung diterapkan.','ikon' => '📊', 'warna' => 'linear-gradient(135deg, #fce0b0, #f5b04a)'],
-            ['id' => 4, 'judul' => 'Kuis & Sertifikat Kompetensi','deskripsi' => 'Uji pemahaman Anda di setiap tahap pelatihan dan raih sertifikat kompetensi resmi dari KAJI INDONESIA sebagai bukti keahlian Anda.','ikon' => '🏅', 'warna' => 'linear-gradient(135deg, #e0c8f5, #b07fdc)'],
+            ['id' => 1, 'judul' => 'Video Belajar Wirausaha',     'deskripsi' => 'Akses puluhan video pembelajaran praktis dari mentor berpengalaman di bidang UMKM, bisnis lokal, dan kewirausahaan Indonesia.', 'ikon' => '🎬', 'warna' => 'linear-gradient(135deg, #d0eac0, #85c96a)', 'modul' => [], 'benefit' => [], 'metode' => '-', 'tingkat' => '-', 'durasi' => '-', 'bahasa' => 'Bahasa Indonesia', 'kuota' => '-', 'total_modul' => 0],
+            ['id' => 2, 'judul' => 'Panduan & Template Bisnis',   'deskripsi' => 'Unduh template rencana usaha, laporan keuangan sederhana, dan panduan digital siap pakai khusus untuk pelaku UMKM.',           'ikon' => '📄', 'warna' => 'linear-gradient(135deg, #c0d5f5, #7aaee0)', 'modul' => [], 'benefit' => [], 'metode' => '-', 'tingkat' => '-', 'durasi' => '-', 'bahasa' => 'Bahasa Indonesia', 'kuota' => '-', 'total_modul' => 0],
+            ['id' => 3, 'judul' => 'Studi Kasus UMKM Sukses',     'deskripsi' => 'Belajar dari kisah nyata pelaku UMKM Indonesia yang berhasil berkembang, dengan analisis strategi yang bisa langsung diterapkan.', 'ikon' => '📊', 'warna' => 'linear-gradient(135deg, #fce0b0, #f5b04a)', 'modul' => [], 'benefit' => [], 'metode' => '-', 'tingkat' => '-', 'durasi' => '-', 'bahasa' => 'Bahasa Indonesia', 'kuota' => '-', 'total_modul' => 0],
+            ['id' => 4, 'judul' => 'Kuis & Sertifikat Kompetensi', 'deskripsi' => 'Uji pemahaman Anda di setiap tahap pelatihan dan raih sertifikat kompetensi resmi dari KAJI INDONESIA sebagai bukti keahlian Anda.', 'ikon' => '🏅', 'warna' => 'linear-gradient(135deg, #e0c8f5, #b07fdc)', 'modul' => [], 'benefit' => [], 'metode' => '-', 'tingkat' => '-', 'durasi' => '-', 'bahasa' => 'Bahasa Indonesia', 'kuota' => '-', 'total_modul' => 0],
         ];
     }
 
@@ -156,36 +157,35 @@ class PelatihanController extends Controller
     private function eventData(): array
     {
         return [
-            // ── WORKSHOP ──────────────────────────────────────
             [
-                'id'          => 1,
-                'tipe'        => 'Workshop',
-                'tipe_ikon'   => '🛠️',
-                'judul'       => 'Workshop Pembuatan Produk UMKM',
-                'tanggal'     => 'Sabtu, 26 April 2025',
-                'jam'         => '08.00 – 15.00 WIB',
-                'lokasi'      => 'Gedung KAJI INDONESIA, Surabaya',
-                'kapasitas'   => '30 Peserta',
-                'durasi'      => '7 Jam',
-                'jumlah_mentor' => '2 Mentor',
+                'id'                => 1,
+                'tipe'              => 'Workshop',
+                'tipe_ikon'         => '🛠️',
+                'judul'             => 'Workshop Pembuatan Produk UMKM',
+                'tanggal'           => 'Sabtu, 26 April 2025',
+                'jam'               => '08.00 – 15.00 WIB',
+                'lokasi'            => 'Gedung KAJI INDONESIA, Surabaya',
+                'kapasitas'         => '30 Peserta',
+                'durasi'            => '7 Jam',
+                'jumlah_mentor'     => '2 Mentor',
                 'deskripsi_singkat' => 'Pelatihan langsung cara membuat, mengemas, dan mempresentasikan produk UMKM yang menarik dan layak jual di pasar modern.',
-                'deskripsi_panjang' => 'Workshop ini dirancang khusus untuk pelaku UMKM yang ingin meningkatkan kualitas produk mereka agar lebih siap bersaing di pasar modern. Peserta akan mendapatkan pelatihan langsung cara membuat, mengemas, dan mempresentasikan produk secara menarik — mulai dari pemilihan bahan, teknik produksi efisien, hingga desain kemasan yang profesional. Dipandu langsung oleh mentor berpengalaman dari dunia UMKM Indonesia.',
-                'ikon'        => '🛍️',
-                'warna'       => 'linear-gradient(135deg, #c8e6b0, #7dcf8a)',
-                'rundown'     => [
-                    ['waktu' => '08.00 – 08.30', 'judul' => 'Registrasi & Pembukaan',             'keterangan' => 'Pendaftaran ulang peserta, sambutan dari panitia KAJI INDONESIA.',                                              'tag' => 'Pembukaan', 'tag_warna' => 'hijau'],
-                    ['waktu' => '08.30 – 10.00', 'judul' => 'Sesi 1 — Dasar Pembuatan Produk',    'keterangan' => 'Materi pemilihan bahan baku, standar kualitas, dan teknik produksi yang efisien untuk UMKM.',                  'tag' => 'Materi',    'tag_warna' => 'hijau'],
-                    ['waktu' => '10.00 – 10.15', 'judul' => 'Istirahat',                          'keterangan' => 'Coffee break & sesi networking antar peserta.',                                                                  'tag' => 'Break',     'tag_warna' => 'kuning'],
-                    ['waktu' => '10.15 – 12.00', 'judul' => 'Sesi 2 — Teknik Pengemasan Produk',  'keterangan' => 'Praktik langsung membuat kemasan produk yang menarik, higienis, dan sesuai standar marketplace.',               'tag' => 'Praktik',   'tag_warna' => 'hijau'],
-                    ['waktu' => '12.00 – 13.00', 'judul' => 'Ishoma',                             'keterangan' => 'Istirahat, sholat, dan makan siang bersama.',                                                                    'tag' => 'Break',     'tag_warna' => 'kuning'],
-                    ['waktu' => '13.00 – 14.30', 'judul' => 'Sesi 3 — Presentasi & Penilaian',    'keterangan' => 'Peserta mempresentasikan produk hasil workshop untuk mendapat masukan langsung dari mentor.',                    'tag' => 'Praktik',   'tag_warna' => 'hijau'],
-                    ['waktu' => '14.30 – 15.00', 'judul' => 'Penutupan & Pembagian Sertifikat',   'keterangan' => 'Sesi tanya jawab, foto bersama, dan pembagian sertifikat keikutsertaan resmi KAJI INDONESIA.',                 'tag' => 'Penutupan', 'tag_warna' => 'hijau'],
+                'deskripsi_panjang' => 'Workshop ini dirancang khusus untuk pelaku UMKM yang ingin meningkatkan kualitas produk mereka agar lebih siap bersaing di pasar modern.',
+                'ikon'              => '🛍️',
+                'warna'             => 'linear-gradient(135deg, #c8e6b0, #7dcf8a)',
+                'rundown'           => [
+                    ['waktu' => '08.00 – 08.30', 'judul' => 'Registrasi & Pembukaan',           'keterangan' => 'Pendaftaran ulang peserta, sambutan dari panitia KAJI INDONESIA.',                            'tag' => 'Pembukaan', 'tag_warna' => 'hijau'],
+                    ['waktu' => '08.30 – 10.00', 'judul' => 'Sesi 1 — Dasar Pembuatan Produk',  'keterangan' => 'Materi pemilihan bahan baku, standar kualitas, dan teknik produksi yang efisien untuk UMKM.', 'tag' => 'Materi',    'tag_warna' => 'hijau'],
+                    ['waktu' => '10.00 – 10.15', 'judul' => 'Istirahat',                        'keterangan' => 'Coffee break & sesi networking antar peserta.',                                                'tag' => 'Break',     'tag_warna' => 'kuning'],
+                    ['waktu' => '10.15 – 12.00', 'judul' => 'Sesi 2 — Teknik Pengemasan',       'keterangan' => 'Praktik langsung membuat kemasan produk yang menarik dan sesuai standar marketplace.',         'tag' => 'Praktik',   'tag_warna' => 'hijau'],
+                    ['waktu' => '12.00 – 13.00', 'judul' => 'Ishoma',                           'keterangan' => 'Istirahat, sholat, dan makan siang bersama.',                                                  'tag' => 'Break',     'tag_warna' => 'kuning'],
+                    ['waktu' => '13.00 – 14.30', 'judul' => 'Sesi 3 — Presentasi & Penilaian', 'keterangan' => 'Peserta mempresentasikan produk hasil workshop untuk mendapat masukan dari mentor.',            'tag' => 'Praktik',   'tag_warna' => 'hijau'],
+                    ['waktu' => '14.30 – 15.00', 'judul' => 'Penutupan & Sertifikat',          'keterangan' => 'Sesi tanya jawab, foto bersama, dan pembagian sertifikat resmi KAJI INDONESIA.',               'tag' => 'Penutupan', 'tag_warna' => 'hijau'],
                 ],
-                'pembicara'   => [
+                'pembicara'         => [
                     ['inisial' => 'BW', 'nama' => 'Budi Wicaksono', 'peran' => 'Praktisi UMKM & Founder Produk Lokal'],
                     ['inisial' => 'SR', 'nama' => 'Sari Rahayu',    'peran' => 'Konsultan Kemasan & Branding UMKM'],
                 ],
-                'benefit'     => [
+                'benefit'           => [
                     'Pengetahuan teknik produksi yang efisien',
                     'Praktik langsung membuat kemasan produk',
                     'Feedback langsung dari mentor berpengalaman',
@@ -195,34 +195,34 @@ class PelatihanController extends Controller
                 ],
             ],
             [
-                'id'          => 2,
-                'tipe'        => 'Workshop',
-                'tipe_ikon'   => '🛠️',
-                'judul'       => 'Workshop Foto Produk dengan HP',
-                'tanggal'     => 'Sabtu, 10 Mei 2025',
-                'jam'         => '08.00 – 14.00 WIB',
-                'lokasi'      => 'Gedung KAJI INDONESIA, Surabaya',
-                'kapasitas'   => '30 Peserta',
-                'durasi'      => '6 Jam',
-                'jumlah_mentor' => '2 Mentor',
+                'id'                => 2,
+                'tipe'              => 'Workshop',
+                'tipe_ikon'         => '🛠️',
+                'judul'             => 'Workshop Foto Produk dengan HP',
+                'tanggal'           => 'Sabtu, 10 Mei 2025',
+                'jam'               => '08.00 – 14.00 WIB',
+                'lokasi'            => 'Gedung KAJI INDONESIA, Surabaya',
+                'kapasitas'         => '30 Peserta',
+                'durasi'            => '6 Jam',
+                'jumlah_mentor'     => '2 Mentor',
                 'deskripsi_singkat' => 'Belajar teknik fotografi produk menggunakan smartphone untuk keperluan jualan di marketplace dan media sosial.',
-                'deskripsi_panjang' => 'Workshop ini mengajarkan peserta cara menghasilkan foto produk yang menarik dan profesional hanya menggunakan smartphone. Mulai dari pengaturan pencahayaan sederhana, komposisi foto, latar belakang yang tepat, hingga editing foto menggunakan aplikasi gratis. Cocok untuk pelaku UMKM yang ingin meningkatkan kualitas visual produk mereka di marketplace dan media sosial tanpa biaya mahal.',
-                'ikon'        => '📸',
-                'warna'       => 'linear-gradient(135deg, #fde8b0, #f7c36a)',
-                'rundown'     => [
-                    ['waktu' => '08.00 – 08.30', 'judul' => 'Registrasi & Pembukaan',           'keterangan' => 'Pendaftaran ulang peserta dan sambutan dari panitia KAJI INDONESIA.',                                           'tag' => 'Pembukaan', 'tag_warna' => 'hijau'],
-                    ['waktu' => '08.30 – 10.00', 'judul' => 'Sesi 1 — Dasar Fotografi HP',      'keterangan' => 'Teknik dasar pengaturan kamera smartphone, pencahayaan, dan komposisi foto produk.',                            'tag' => 'Materi',    'tag_warna' => 'hijau'],
-                    ['waktu' => '10.00 – 10.15', 'judul' => 'Istirahat',                        'keterangan' => 'Coffee break & networking antar peserta.',                                                                       'tag' => 'Break',     'tag_warna' => 'kuning'],
-                    ['waktu' => '10.15 – 12.00', 'judul' => 'Sesi 2 — Praktik Foto Produk',     'keterangan' => 'Praktik langsung memotret produk masing-masing peserta dengan bimbingan mentor.',                               'tag' => 'Praktik',   'tag_warna' => 'hijau'],
-                    ['waktu' => '12.00 – 13.00', 'judul' => 'Ishoma',                           'keterangan' => 'Istirahat, sholat, dan makan siang bersama.',                                                                   'tag' => 'Break',     'tag_warna' => 'kuning'],
-                    ['waktu' => '13.00 – 13.45', 'judul' => 'Sesi 3 — Editing Foto dengan App', 'keterangan' => 'Praktik editing foto menggunakan aplikasi gratis di smartphone untuk hasil yang profesional.',                   'tag' => 'Praktik',   'tag_warna' => 'hijau'],
-                    ['waktu' => '13.45 – 14.00', 'judul' => 'Penutupan & Sertifikat',           'keterangan' => 'Sesi tanya jawab, foto bersama, dan pembagian sertifikat resmi KAJI INDONESIA.',                               'tag' => 'Penutupan', 'tag_warna' => 'hijau'],
+                'deskripsi_panjang' => 'Workshop ini mengajarkan peserta cara menghasilkan foto produk yang menarik dan profesional hanya menggunakan smartphone.',
+                'ikon'              => '📸',
+                'warna'             => 'linear-gradient(135deg, #fde8b0, #f7c36a)',
+                'rundown'           => [
+                    ['waktu' => '08.00 – 08.30', 'judul' => 'Registrasi & Pembukaan',           'keterangan' => 'Pendaftaran ulang peserta dan sambutan dari panitia KAJI INDONESIA.',                          'tag' => 'Pembukaan', 'tag_warna' => 'hijau'],
+                    ['waktu' => '08.30 – 10.00', 'judul' => 'Sesi 1 — Dasar Fotografi HP',      'keterangan' => 'Teknik dasar pengaturan kamera smartphone, pencahayaan, dan komposisi foto produk.',            'tag' => 'Materi',    'tag_warna' => 'hijau'],
+                    ['waktu' => '10.00 – 10.15', 'judul' => 'Istirahat',                        'keterangan' => 'Coffee break & networking antar peserta.',                                                       'tag' => 'Break',     'tag_warna' => 'kuning'],
+                    ['waktu' => '10.15 – 12.00', 'judul' => 'Sesi 2 — Praktik Foto Produk',     'keterangan' => 'Praktik langsung memotret produk masing-masing peserta dengan bimbingan mentor.',               'tag' => 'Praktik',   'tag_warna' => 'hijau'],
+                    ['waktu' => '12.00 – 13.00', 'judul' => 'Ishoma',                           'keterangan' => 'Istirahat, sholat, dan makan siang bersama.',                                                   'tag' => 'Break',     'tag_warna' => 'kuning'],
+                    ['waktu' => '13.00 – 13.45', 'judul' => 'Sesi 3 — Editing Foto dengan App', 'keterangan' => 'Praktik editing foto menggunakan aplikasi gratis di smartphone untuk hasil yang profesional.',   'tag' => 'Praktik',   'tag_warna' => 'hijau'],
+                    ['waktu' => '13.45 – 14.00', 'judul' => 'Penutupan & Sertifikat',           'keterangan' => 'Sesi tanya jawab, foto bersama, dan pembagian sertifikat resmi KAJI INDONESIA.',                'tag' => 'Penutupan', 'tag_warna' => 'hijau'],
                 ],
-                'pembicara'   => [
-                    ['inisial' => 'RA', 'nama' => 'Rizky Aditya',  'peran' => 'Fotografer Produk & Content Creator UMKM'],
-                    ['inisial' => 'DN', 'nama' => 'Dewi Nuraini',  'peran' => 'Praktisi Digital Marketing UMKM'],
+                'pembicara'         => [
+                    ['inisial' => 'RA', 'nama' => 'Rizky Aditya', 'peran' => 'Fotografer Produk & Content Creator UMKM'],
+                    ['inisial' => 'DN', 'nama' => 'Dewi Nuraini', 'peran' => 'Praktisi Digital Marketing UMKM'],
                 ],
-                'benefit'     => [
+                'benefit'           => [
                     'Teknik foto produk profesional dengan HP',
                     'Praktik langsung dengan produk sendiri',
                     'Panduan editing foto gratis di smartphone',
@@ -232,34 +232,34 @@ class PelatihanController extends Controller
                 ],
             ],
             [
-                'id'          => 3,
-                'tipe'        => 'Workshop',
-                'tipe_ikon'   => '🛠️',
-                'judul'       => 'Workshop Desain Label & Kemasan',
-                'tanggal'     => 'Sabtu, 24 Mei 2025',
-                'jam'         => '08.00 – 15.00 WIB',
-                'lokasi'      => 'Gedung KAJI INDONESIA, Surabaya',
-                'kapasitas'   => '30 Peserta',
-                'durasi'      => '7 Jam',
-                'jumlah_mentor' => '2 Mentor',
+                'id'                => 3,
+                'tipe'              => 'Workshop',
+                'tipe_ikon'         => '🛠️',
+                'judul'             => 'Workshop Desain Label & Kemasan',
+                'tanggal'           => 'Sabtu, 24 Mei 2025',
+                'jam'               => '08.00 – 15.00 WIB',
+                'lokasi'            => 'Gedung KAJI INDONESIA, Surabaya',
+                'kapasitas'         => '30 Peserta',
+                'durasi'            => '7 Jam',
+                'jumlah_mentor'     => '2 Mentor',
                 'deskripsi_singkat' => 'Praktik membuat desain label dan kemasan produk yang profesional menggunakan tools desain gratis berbasis digital.',
-                'deskripsi_panjang' => 'Workshop ini membekali pelaku UMKM dengan kemampuan mendesain label dan kemasan produk sendiri menggunakan tools desain gratis seperti Canva. Peserta akan belajar prinsip desain yang efektif, pemilihan warna dan tipografi yang tepat, hingga menghasilkan desain kemasan yang siap cetak dan sesuai regulasi produk makanan/minuman di Indonesia.',
-                'ikon'        => '🎨',
-                'warna'       => 'linear-gradient(135deg, #f5c0d0, #e87fa0)',
-                'rundown'     => [
-                    ['waktu' => '08.00 – 08.30', 'judul' => 'Registrasi & Pembukaan',            'keterangan' => 'Pendaftaran ulang peserta dan sambutan dari panitia KAJI INDONESIA.',                                          'tag' => 'Pembukaan', 'tag_warna' => 'hijau'],
-                    ['waktu' => '08.30 – 10.00', 'judul' => 'Sesi 1 — Prinsip Desain Kemasan',   'keterangan' => 'Dasar desain kemasan, psikologi warna, tipografi, dan elemen label yang wajib ada di produk UMKM.',           'tag' => 'Materi',    'tag_warna' => 'hijau'],
-                    ['waktu' => '10.00 – 10.15', 'judul' => 'Istirahat',                         'keterangan' => 'Coffee break & networking antar peserta.',                                                                      'tag' => 'Break',     'tag_warna' => 'kuning'],
-                    ['waktu' => '10.15 – 12.00', 'judul' => 'Sesi 2 — Praktik Desain di Canva',  'keterangan' => 'Praktik langsung membuat desain label produk menggunakan Canva dengan bimbingan mentor.',                      'tag' => 'Praktik',   'tag_warna' => 'hijau'],
-                    ['waktu' => '12.00 – 13.00', 'judul' => 'Ishoma',                            'keterangan' => 'Istirahat, sholat, dan makan siang bersama.',                                                                  'tag' => 'Break',     'tag_warna' => 'kuning'],
-                    ['waktu' => '13.00 – 14.30', 'judul' => 'Sesi 3 — Finalisasi & Review',      'keterangan' => 'Peserta menyelesaikan desain kemasan dan mendapatkan review langsung dari mentor.',                            'tag' => 'Praktik',   'tag_warna' => 'hijau'],
-                    ['waktu' => '14.30 – 15.00', 'judul' => 'Penutupan & Sertifikat',            'keterangan' => 'Sesi tanya jawab, foto bersama, dan pembagian sertifikat resmi KAJI INDONESIA.',                              'tag' => 'Penutupan', 'tag_warna' => 'hijau'],
+                'deskripsi_panjang' => 'Workshop ini membekali pelaku UMKM dengan kemampuan mendesain label dan kemasan produk sendiri menggunakan tools desain gratis seperti Canva.',
+                'ikon'              => '🎨',
+                'warna'             => 'linear-gradient(135deg, #f5c0d0, #e87fa0)',
+                'rundown'           => [
+                    ['waktu' => '08.00 – 08.30', 'judul' => 'Registrasi & Pembukaan',           'keterangan' => 'Pendaftaran ulang peserta dan sambutan dari panitia KAJI INDONESIA.',                       'tag' => 'Pembukaan', 'tag_warna' => 'hijau'],
+                    ['waktu' => '08.30 – 10.00', 'judul' => 'Sesi 1 — Prinsip Desain Kemasan',  'keterangan' => 'Dasar desain kemasan, psikologi warna, tipografi, dan elemen label wajib produk UMKM.',    'tag' => 'Materi',    'tag_warna' => 'hijau'],
+                    ['waktu' => '10.00 – 10.15', 'judul' => 'Istirahat',                        'keterangan' => 'Coffee break & networking antar peserta.',                                                   'tag' => 'Break',     'tag_warna' => 'kuning'],
+                    ['waktu' => '10.15 – 12.00', 'judul' => 'Sesi 2 — Praktik Desain di Canva', 'keterangan' => 'Praktik langsung membuat desain label produk menggunakan Canva dengan bimbingan mentor.',   'tag' => 'Praktik',   'tag_warna' => 'hijau'],
+                    ['waktu' => '12.00 – 13.00', 'judul' => 'Ishoma',                           'keterangan' => 'Istirahat, sholat, dan makan siang bersama.',                                               'tag' => 'Break',     'tag_warna' => 'kuning'],
+                    ['waktu' => '13.00 – 14.30', 'judul' => 'Sesi 3 — Finalisasi & Review',     'keterangan' => 'Peserta menyelesaikan desain kemasan dan mendapatkan review langsung dari mentor.',          'tag' => 'Praktik',   'tag_warna' => 'hijau'],
+                    ['waktu' => '14.30 – 15.00', 'judul' => 'Penutupan & Sertifikat',           'keterangan' => 'Sesi tanya jawab, foto bersama, dan pembagian sertifikat resmi KAJI INDONESIA.',            'tag' => 'Penutupan', 'tag_warna' => 'hijau'],
                 ],
-                'pembicara'   => [
+                'pembicara'         => [
                     ['inisial' => 'AF', 'nama' => 'Ahmad Fauzi',   'peran' => 'Desainer Grafis & Konsultan Kemasan UMKM'],
                     ['inisial' => 'LM', 'nama' => 'Linda Mawarni', 'peran' => 'Praktisi Branding Produk Lokal'],
                 ],
-                'benefit'     => [
+                'benefit'           => [
                     'Kemampuan desain label produk sendiri',
                     'Hasil desain kemasan siap cetak',
                     'Template desain label editable di Canva',
@@ -269,34 +269,34 @@ class PelatihanController extends Controller
                 ],
             ],
             [
-                'id'          => 4,
-                'tipe'        => 'Workshop',
-                'tipe_ikon'   => '🛠️',
-                'judul'       => 'Workshop Jualan di Marketplace',
-                'tanggal'     => 'Sabtu, 7 Juni 2025',
-                'jam'         => '08.00 – 14.00 WIB',
-                'lokasi'      => 'Gedung KAJI INDONESIA, Surabaya',
-                'kapasitas'   => '30 Peserta',
-                'durasi'      => '6 Jam',
-                'jumlah_mentor' => '2 Mentor',
+                'id'                => 4,
+                'tipe'              => 'Workshop',
+                'tipe_ikon'         => '🛠️',
+                'judul'             => 'Workshop Jualan di Marketplace',
+                'tanggal'           => 'Sabtu, 7 Juni 2025',
+                'jam'               => '08.00 – 14.00 WIB',
+                'lokasi'            => 'Gedung KAJI INDONESIA, Surabaya',
+                'kapasitas'         => '30 Peserta',
+                'durasi'            => '6 Jam',
+                'jumlah_mentor'     => '2 Mentor',
                 'deskripsi_singkat' => 'Panduan lengkap membuka toko, mengelola pesanan, dan meningkatkan penjualan di Tokopedia, Shopee, dan TikTok Shop.',
-                'deskripsi_panjang' => 'Workshop ini membantu pelaku UMKM memulai dan mengoptimalkan toko online mereka di platform marketplace terbesar di Indonesia. Dari proses registrasi toko, pengelolaan produk dan stok, strategi penetapan harga, hingga teknik meningkatkan peringkat produk agar lebih mudah ditemukan pembeli. Peserta juga akan belajar cara mengelola pesanan dan ulasan pelanggan secara profesional.',
-                'ikon'        => '🛒',
-                'warna'       => 'linear-gradient(135deg, #c0d5f5, #7aaee0)',
-                'rundown'     => [
-                    ['waktu' => '08.00 – 08.30', 'judul' => 'Registrasi & Pembukaan',             'keterangan' => 'Pendaftaran ulang peserta dan sambutan dari panitia KAJI INDONESIA.',                                          'tag' => 'Pembukaan', 'tag_warna' => 'hijau'],
-                    ['waktu' => '08.30 – 10.00', 'judul' => 'Sesi 1 — Setup Toko Online',         'keterangan' => 'Panduan membuka dan mengoptimalkan toko di Tokopedia, Shopee, dan TikTok Shop dari nol.',                     'tag' => 'Materi',    'tag_warna' => 'hijau'],
-                    ['waktu' => '10.00 – 10.15', 'judul' => 'Istirahat',                          'keterangan' => 'Coffee break & networking antar peserta.',                                                                      'tag' => 'Break',     'tag_warna' => 'kuning'],
-                    ['waktu' => '10.15 – 12.00', 'judul' => 'Sesi 2 — Strategi Penjualan',        'keterangan' => 'Teknik mengoptimalkan listing produk, strategi harga, dan cara mendapatkan ulasan positif.',                   'tag' => 'Materi',    'tag_warna' => 'hijau'],
-                    ['waktu' => '12.00 – 13.00', 'judul' => 'Ishoma',                             'keterangan' => 'Istirahat, sholat, dan makan siang bersama.',                                                                  'tag' => 'Break',     'tag_warna' => 'kuning'],
-                    ['waktu' => '13.00 – 13.45', 'judul' => 'Sesi 3 — Praktik Langsung',          'keterangan' => 'Peserta mempraktikkan langsung membuka toko dan mengupload produk pertama mereka.',                            'tag' => 'Praktik',   'tag_warna' => 'hijau'],
-                    ['waktu' => '13.45 – 14.00', 'judul' => 'Penutupan & Sertifikat',             'keterangan' => 'Sesi tanya jawab, foto bersama, dan pembagian sertifikat resmi KAJI INDONESIA.',                              'tag' => 'Penutupan', 'tag_warna' => 'hijau'],
+                'deskripsi_panjang' => 'Workshop ini membantu pelaku UMKM memulai dan mengoptimalkan toko online mereka di platform marketplace terbesar di Indonesia.',
+                'ikon'              => '🛒',
+                'warna'             => 'linear-gradient(135deg, #c0d5f5, #7aaee0)',
+                'rundown'           => [
+                    ['waktu' => '08.00 – 08.30', 'judul' => 'Registrasi & Pembukaan',        'keterangan' => 'Pendaftaran ulang peserta dan sambutan dari panitia KAJI INDONESIA.',                      'tag' => 'Pembukaan', 'tag_warna' => 'hijau'],
+                    ['waktu' => '08.30 – 10.00', 'judul' => 'Sesi 1 — Setup Toko Online',    'keterangan' => 'Panduan membuka dan mengoptimalkan toko di Tokopedia, Shopee, dan TikTok Shop dari nol.',  'tag' => 'Materi',    'tag_warna' => 'hijau'],
+                    ['waktu' => '10.00 – 10.15', 'judul' => 'Istirahat',                     'keterangan' => 'Coffee break & networking antar peserta.',                                                   'tag' => 'Break',     'tag_warna' => 'kuning'],
+                    ['waktu' => '10.15 – 12.00', 'judul' => 'Sesi 2 — Strategi Penjualan',   'keterangan' => 'Teknik mengoptimalkan listing produk, strategi harga, dan mendapatkan ulasan positif.',    'tag' => 'Materi',    'tag_warna' => 'hijau'],
+                    ['waktu' => '12.00 – 13.00', 'judul' => 'Ishoma',                        'keterangan' => 'Istirahat, sholat, dan makan siang bersama.',                                               'tag' => 'Break',     'tag_warna' => 'kuning'],
+                    ['waktu' => '13.00 – 13.45', 'judul' => 'Sesi 3 — Praktik Langsung',     'keterangan' => 'Peserta mempraktikkan langsung membuka toko dan mengupload produk pertama mereka.',         'tag' => 'Praktik',   'tag_warna' => 'hijau'],
+                    ['waktu' => '13.45 – 14.00', 'judul' => 'Penutupan & Sertifikat',        'keterangan' => 'Sesi tanya jawab, foto bersama, dan pembagian sertifikat resmi KAJI INDONESIA.',            'tag' => 'Penutupan', 'tag_warna' => 'hijau'],
                 ],
-                'pembicara'   => [
+                'pembicara'         => [
                     ['inisial' => 'HN', 'nama' => 'Hendra Nugraha', 'peran' => 'Seller Expert Tokopedia & Shopee'],
                     ['inisial' => 'YP', 'nama' => 'Yuni Pratiwi',   'peran' => 'TikTok Shop Specialist & UMKM Coach'],
                 ],
-                'benefit'     => [
+                'benefit'           => [
                     'Toko online aktif di marketplace pilihan',
                     'Strategi optimasi produk agar mudah ditemukan',
                     'Panduan mengelola pesanan & ulasan pelanggan',
@@ -305,36 +305,35 @@ class PelatihanController extends Controller
                     'Akses grup komunitas UMKM KAJI',
                 ],
             ],
-            // ── SEMINAR ───────────────────────────────────────
             [
-                'id'          => 5,
-                'tipe'        => 'Seminar',
-                'tipe_ikon'   => '🎤',
-                'judul'       => 'Seminar Peluang Bisnis UMKM 2025',
-                'tanggal'     => 'Rabu, 30 April 2025',
-                'jam'         => '09.00 – 13.00 WIB',
-                'lokasi'      => 'Aula KAJI INDONESIA, Surabaya',
-                'kapasitas'   => '100 Peserta',
-                'durasi'      => '4 Jam',
-                'jumlah_mentor' => '3 Pembicara',
-                'deskripsi_singkat' => 'Membedah tren peluang usaha terkini di Indonesia, mulai dari ekonomi kreatif hingga bisnis berbasis digital yang sedang berkembang pesat.',
-                'deskripsi_panjang' => 'Seminar ini menghadirkan para pakar dan praktisi bisnis untuk berbagi wawasan tentang peluang usaha terbesar yang bisa dimanfaatkan pelaku UMKM di tahun 2025. Dari tren ekonomi kreatif, bisnis berbasis teknologi, hingga peluang di sektor makanan dan fashion lokal yang terus berkembang. Peserta akan mendapatkan gambaran jelas tentang langkah konkret memulai atau mengembangkan usaha mereka.',
-                'ikon'        => '💡',
-                'warna'       => 'linear-gradient(135deg, #d0eac0, #85c96a)',
-                'rundown'     => [
-                    ['waktu' => '09.00 – 09.30', 'judul' => 'Registrasi & Pembukaan',             'keterangan' => 'Pendaftaran ulang peserta, sambutan dari panitia dan perwakilan KAJI INDONESIA.',                             'tag' => 'Pembukaan', 'tag_warna' => 'hijau'],
-                    ['waktu' => '09.30 – 10.30', 'judul' => 'Sesi 1 — Tren Bisnis 2025',          'keterangan' => 'Paparan tren peluang usaha terkini di Indonesia oleh pakar ekonomi kreatif.',                                  'tag' => 'Materi',    'tag_warna' => 'hijau'],
-                    ['waktu' => '10.30 – 11.30', 'judul' => 'Sesi 2 — Peluang Bisnis Digital',    'keterangan' => 'Pembahasan peluang bisnis berbasis digital yang bisa langsung dijalankan oleh pelaku UMKM.',                   'tag' => 'Materi',    'tag_warna' => 'hijau'],
-                    ['waktu' => '11.30 – 11.45', 'judul' => 'Istirahat',                          'keterangan' => 'Coffee break & networking antar peserta.',                                                                      'tag' => 'Break',     'tag_warna' => 'kuning'],
-                    ['waktu' => '11.45 – 12.45', 'judul' => 'Sesi 3 — Kisah Sukses UMKM Lokal',   'keterangan' => 'Sharing langsung dari pelaku UMKM yang berhasil memanfaatkan peluang bisnis digital di Indonesia.',            'tag' => 'Sharing',   'tag_warna' => 'hijau'],
-                    ['waktu' => '12.45 – 13.00', 'judul' => 'Tanya Jawab & Penutupan',            'keterangan' => 'Sesi tanya jawab, foto bersama, dan pembagian sertifikat resmi KAJI INDONESIA.',                              'tag' => 'Penutupan', 'tag_warna' => 'hijau'],
+                'id'                => 5,
+                'tipe'              => 'Seminar',
+                'tipe_ikon'         => '🎤',
+                'judul'             => 'Seminar Peluang Bisnis UMKM 2025',
+                'tanggal'           => 'Rabu, 30 April 2025',
+                'jam'               => '09.00 – 13.00 WIB',
+                'lokasi'            => 'Aula KAJI INDONESIA, Surabaya',
+                'kapasitas'         => '100 Peserta',
+                'durasi'            => '4 Jam',
+                'jumlah_mentor'     => '3 Pembicara',
+                'deskripsi_singkat' => 'Membedah tren peluang usaha terkini di Indonesia, mulai dari ekonomi kreatif hingga bisnis berbasis digital.',
+                'deskripsi_panjang' => 'Seminar ini menghadirkan para pakar dan praktisi bisnis untuk berbagi wawasan tentang peluang usaha terbesar yang bisa dimanfaatkan pelaku UMKM di tahun 2025.',
+                'ikon'              => '💡',
+                'warna'             => 'linear-gradient(135deg, #d0eac0, #85c96a)',
+                'rundown'           => [
+                    ['waktu' => '09.00 – 09.30', 'judul' => 'Registrasi & Pembukaan',            'keterangan' => 'Pendaftaran ulang peserta, sambutan dari panitia dan perwakilan KAJI INDONESIA.',          'tag' => 'Pembukaan', 'tag_warna' => 'hijau'],
+                    ['waktu' => '09.30 – 10.30', 'judul' => 'Sesi 1 — Tren Bisnis 2025',         'keterangan' => 'Paparan tren peluang usaha terkini di Indonesia oleh pakar ekonomi kreatif.',               'tag' => 'Materi',    'tag_warna' => 'hijau'],
+                    ['waktu' => '10.30 – 11.30', 'judul' => 'Sesi 2 — Peluang Bisnis Digital',   'keterangan' => 'Pembahasan peluang bisnis berbasis digital yang bisa langsung dijalankan pelaku UMKM.',     'tag' => 'Materi',    'tag_warna' => 'hijau'],
+                    ['waktu' => '11.30 – 11.45', 'judul' => 'Istirahat',                         'keterangan' => 'Coffee break & networking antar peserta.',                                                   'tag' => 'Break',     'tag_warna' => 'kuning'],
+                    ['waktu' => '11.45 – 12.45', 'judul' => 'Sesi 3 — Kisah Sukses UMKM Lokal', 'keterangan' => 'Sharing dari pelaku UMKM yang berhasil memanfaatkan peluang bisnis digital.',               'tag' => 'Sharing',   'tag_warna' => 'hijau'],
+                    ['waktu' => '12.45 – 13.00', 'judul' => 'Tanya Jawab & Penutupan',           'keterangan' => 'Sesi tanya jawab, foto bersama, dan pembagian sertifikat resmi KAJI INDONESIA.',            'tag' => 'Penutupan', 'tag_warna' => 'hijau'],
                 ],
-                'pembicara'   => [
+                'pembicara'         => [
                     ['inisial' => 'PT', 'nama' => 'Prof. Teguh Santoso', 'peran' => 'Pakar Ekonomi Kreatif Indonesia'],
                     ['inisial' => 'MB', 'nama' => 'Maya Budiman',        'peran' => 'Founder Startup UMKM Digital'],
                     ['inisial' => 'RH', 'nama' => 'Ryan Hidayat',        'peran' => 'Pelaku UMKM Sukses & Motivator Bisnis'],
                 ],
-                'benefit'     => [
+                'benefit'           => [
                     'Wawasan tren peluang bisnis terkini 2025',
                     'Peta peluang usaha digital yang konkret',
                     'Inspirasi dari kisah sukses UMKM lokal',
@@ -344,34 +343,34 @@ class PelatihanController extends Controller
                 ],
             ],
             [
-                'id'          => 6,
-                'tipe'        => 'Seminar',
-                'tipe_ikon'   => '🎤',
-                'judul'       => 'Seminar Akses Permodalan UMKM',
-                'tanggal'     => 'Rabu, 14 Mei 2025',
-                'jam'         => '09.00 – 13.00 WIB',
-                'lokasi'      => 'Aula KAJI INDONESIA, Surabaya',
-                'kapasitas'   => '100 Peserta',
-                'durasi'      => '4 Jam',
-                'jumlah_mentor' => '3 Pembicara',
+                'id'                => 6,
+                'tipe'              => 'Seminar',
+                'tipe_ikon'         => '🎤',
+                'judul'             => 'Seminar Akses Permodalan UMKM',
+                'tanggal'           => 'Rabu, 14 Mei 2025',
+                'jam'               => '09.00 – 13.00 WIB',
+                'lokasi'            => 'Aula KAJI INDONESIA, Surabaya',
+                'kapasitas'         => '100 Peserta',
+                'durasi'            => '4 Jam',
+                'jumlah_mentor'     => '3 Pembicara',
                 'deskripsi_singkat' => 'Informasi lengkap seputar KUR, hibah pemerintah, dan platform pinjaman modal yang bisa diakses oleh pelaku UMKM.',
-                'deskripsi_panjang' => 'Salah satu tantangan terbesar UMKM adalah akses modal usaha. Seminar ini hadir untuk memberikan informasi lengkap dan terpercaya tentang berbagai skema pembiayaan yang tersedia bagi pelaku UMKM — mulai dari KUR bank, program hibah pemerintah, koperasi simpan pinjam, hingga platform fintech yang ramah UMKM. Peserta juga akan mendapatkan panduan cara menyiapkan dokumen pengajuan yang tepat.',
-                'ikon'        => '🏦',
-                'warna'       => 'linear-gradient(135deg, #fce0b0, #f5b04a)',
-                'rundown'     => [
-                    ['waktu' => '09.00 – 09.30', 'judul' => 'Registrasi & Pembukaan',              'keterangan' => 'Pendaftaran ulang peserta dan sambutan dari panitia KAJI INDONESIA.',                                         'tag' => 'Pembukaan', 'tag_warna' => 'hijau'],
-                    ['waktu' => '09.30 – 10.30', 'judul' => 'Sesi 1 — KUR & Pembiayaan Bank',      'keterangan' => 'Penjelasan lengkap tentang KUR, syarat pengajuan, dan tips lolos seleksi dari perwakilan bank.',              'tag' => 'Materi',    'tag_warna' => 'hijau'],
-                    ['waktu' => '10.30 – 11.30', 'judul' => 'Sesi 2 — Hibah & Program Pemerintah', 'keterangan' => 'Informasi program hibah UMKM dari Kemenkop, Kemendag, dan pemerintah daerah yang bisa diakses.',              'tag' => 'Materi',    'tag_warna' => 'hijau'],
-                    ['waktu' => '11.30 – 11.45', 'judul' => 'Istirahat',                           'keterangan' => 'Coffee break & networking antar peserta.',                                                                     'tag' => 'Break',     'tag_warna' => 'kuning'],
-                    ['waktu' => '11.45 – 12.45', 'judul' => 'Sesi 3 — Fintech & Modal Alternatif', 'keterangan' => 'Pengenalan platform fintech syariah dan konvensional yang menyediakan modal usaha untuk UMKM.',               'tag' => 'Materi',    'tag_warna' => 'hijau'],
-                    ['waktu' => '12.45 – 13.00', 'judul' => 'Tanya Jawab & Penutupan',             'keterangan' => 'Sesi tanya jawab, foto bersama, dan pembagian sertifikat resmi KAJI INDONESIA.',                             'tag' => 'Penutupan', 'tag_warna' => 'hijau'],
+                'deskripsi_panjang' => 'Seminar ini hadir untuk memberikan informasi lengkap dan terpercaya tentang berbagai skema pembiayaan yang tersedia bagi pelaku UMKM.',
+                'ikon'              => '🏦',
+                'warna'             => 'linear-gradient(135deg, #fce0b0, #f5b04a)',
+                'rundown'           => [
+                    ['waktu' => '09.00 – 09.30', 'judul' => 'Registrasi & Pembukaan',               'keterangan' => 'Pendaftaran ulang peserta dan sambutan dari panitia KAJI INDONESIA.',                    'tag' => 'Pembukaan', 'tag_warna' => 'hijau'],
+                    ['waktu' => '09.30 – 10.30', 'judul' => 'Sesi 1 — KUR & Pembiayaan Bank',       'keterangan' => 'Penjelasan lengkap tentang KUR, syarat pengajuan, dan tips lolos seleksi dari bank.',    'tag' => 'Materi',    'tag_warna' => 'hijau'],
+                    ['waktu' => '10.30 – 11.30', 'judul' => 'Sesi 2 — Hibah & Program Pemerintah',  'keterangan' => 'Informasi program hibah UMKM dari Kemenkop, Kemendag, dan pemerintah daerah.',           'tag' => 'Materi',    'tag_warna' => 'hijau'],
+                    ['waktu' => '11.30 – 11.45', 'judul' => 'Istirahat',                            'keterangan' => 'Coffee break & networking antar peserta.',                                                'tag' => 'Break',     'tag_warna' => 'kuning'],
+                    ['waktu' => '11.45 – 12.45', 'judul' => 'Sesi 3 — Fintech & Modal Alternatif',  'keterangan' => 'Pengenalan platform fintech yang menyediakan modal usaha untuk UMKM.',                   'tag' => 'Materi',    'tag_warna' => 'hijau'],
+                    ['waktu' => '12.45 – 13.00', 'judul' => 'Tanya Jawab & Penutupan',              'keterangan' => 'Sesi tanya jawab, foto bersama, dan pembagian sertifikat resmi KAJI INDONESIA.',         'tag' => 'Penutupan', 'tag_warna' => 'hijau'],
                 ],
-                'pembicara'   => [
-                    ['inisial' => 'AS', 'nama' => 'Agus Setiawan',   'peran' => 'Analis Kredit Bank BRI — Divisi KUR UMKM'],
-                    ['inisial' => 'NR', 'nama' => 'Nur Rahmawati',   'peran' => 'Pendamping Program Hibah Kemenkop RI'],
-                    ['inisial' => 'DP', 'nama' => 'Dimas Prasetyo',  'peran' => 'CEO Platform Fintech UMKM'],
+                'pembicara'         => [
+                    ['inisial' => 'AS', 'nama' => 'Agus Setiawan',  'peran' => 'Analis Kredit Bank BRI — Divisi KUR UMKM'],
+                    ['inisial' => 'NR', 'nama' => 'Nur Rahmawati',  'peran' => 'Pendamping Program Hibah Kemenkop RI'],
+                    ['inisial' => 'DP', 'nama' => 'Dimas Prasetyo', 'peran' => 'CEO Platform Fintech UMKM'],
                 ],
-                'benefit'     => [
+                'benefit'           => [
                     'Panduan lengkap pengajuan KUR',
                     'Daftar program hibah UMKM yang aktif',
                     'Rekomendasi platform fintech terpercaya',
@@ -381,34 +380,34 @@ class PelatihanController extends Controller
                 ],
             ],
             [
-                'id'          => 7,
-                'tipe'        => 'Seminar',
-                'tipe_ikon'   => '🎤',
-                'judul'       => 'Seminar Ekspor Produk Lokal',
-                'tanggal'     => 'Rabu, 28 Mei 2025',
-                'jam'         => '09.00 – 13.00 WIB',
-                'lokasi'      => 'Aula KAJI INDONESIA, Surabaya',
-                'kapasitas'   => '100 Peserta',
-                'durasi'      => '4 Jam',
-                'jumlah_mentor' => '3 Pembicara',
+                'id'                => 7,
+                'tipe'              => 'Seminar',
+                'tipe_ikon'         => '🎤',
+                'judul'             => 'Seminar Ekspor Produk Lokal',
+                'tanggal'           => 'Rabu, 28 Mei 2025',
+                'jam'               => '09.00 – 13.00 WIB',
+                'lokasi'            => 'Aula KAJI INDONESIA, Surabaya',
+                'kapasitas'         => '100 Peserta',
+                'durasi'            => '4 Jam',
+                'jumlah_mentor'     => '3 Pembicara',
                 'deskripsi_singkat' => 'Wawasan dan langkah awal bagi UMKM yang ingin menjangkau pasar internasional melalui platform ekspor digital.',
-                'deskripsi_panjang' => 'Seminar ini membuka wawasan pelaku UMKM tentang peluang besar pasar ekspor yang bisa dimanfaatkan produk lokal Indonesia. Peserta akan mendapatkan panduan awal tentang cara mendaftarkan produk di platform ekspor digital, memahami regulasi ekspor, proses packing dan pengiriman internasional, serta strategi pemasaran produk lokal di pasar global.',
-                'ikon'        => '🌏',
-                'warna'       => 'linear-gradient(135deg, #e0c8f5, #b07fdc)',
-                'rundown'     => [
-                    ['waktu' => '09.00 – 09.30', 'judul' => 'Registrasi & Pembukaan',            'keterangan' => 'Pendaftaran ulang peserta dan sambutan dari panitia KAJI INDONESIA.',                                          'tag' => 'Pembukaan', 'tag_warna' => 'hijau'],
-                    ['waktu' => '09.30 – 10.30', 'judul' => 'Sesi 1 — Peluang Ekspor UMKM',      'keterangan' => 'Gambaran pasar ekspor global untuk produk lokal Indonesia dan produk apa yang paling diminati.',               'tag' => 'Materi',    'tag_warna' => 'hijau'],
-                    ['waktu' => '10.30 – 11.30', 'judul' => 'Sesi 2 — Regulasi & Prosedur Ekspor','keterangan' => 'Penjelasan tentang dokumen ekspor, izin, sertifikasi, dan prosedur pengiriman produk ke luar negeri.',        'tag' => 'Materi',    'tag_warna' => 'hijau'],
-                    ['waktu' => '11.30 – 11.45', 'judul' => 'Istirahat',                         'keterangan' => 'Coffee break & networking antar peserta.',                                                                      'tag' => 'Break',     'tag_warna' => 'kuning'],
-                    ['waktu' => '11.45 – 12.45', 'judul' => 'Sesi 3 — Platform Ekspor Digital',  'keterangan' => 'Panduan menggunakan platform ekspor digital seperti Alibaba, Amazon Global, dan platform lokal lainnya.',      'tag' => 'Materi',    'tag_warna' => 'hijau'],
-                    ['waktu' => '12.45 – 13.00', 'judul' => 'Tanya Jawab & Penutupan',           'keterangan' => 'Sesi tanya jawab, foto bersama, dan pembagian sertifikat resmi KAJI INDONESIA.',                              'tag' => 'Penutupan', 'tag_warna' => 'hijau'],
+                'deskripsi_panjang' => 'Seminar ini membuka wawasan pelaku UMKM tentang peluang besar pasar ekspor yang bisa dimanfaatkan produk lokal Indonesia.',
+                'ikon'              => '🌏',
+                'warna'             => 'linear-gradient(135deg, #e0c8f5, #b07fdc)',
+                'rundown'           => [
+                    ['waktu' => '09.00 – 09.30', 'judul' => 'Registrasi & Pembukaan',             'keterangan' => 'Pendaftaran ulang peserta dan sambutan dari panitia KAJI INDONESIA.',                      'tag' => 'Pembukaan', 'tag_warna' => 'hijau'],
+                    ['waktu' => '09.30 – 10.30', 'judul' => 'Sesi 1 — Peluang Ekspor UMKM',       'keterangan' => 'Gambaran pasar ekspor global untuk produk lokal Indonesia.',                               'tag' => 'Materi',    'tag_warna' => 'hijau'],
+                    ['waktu' => '10.30 – 11.30', 'judul' => 'Sesi 2 — Regulasi & Prosedur Ekspor','keterangan' => 'Dokumen ekspor, izin, sertifikasi, dan prosedur pengiriman ke luar negeri.',               'tag' => 'Materi',    'tag_warna' => 'hijau'],
+                    ['waktu' => '11.30 – 11.45', 'judul' => 'Istirahat',                          'keterangan' => 'Coffee break & networking antar peserta.',                                                  'tag' => 'Break',     'tag_warna' => 'kuning'],
+                    ['waktu' => '11.45 – 12.45', 'judul' => 'Sesi 3 — Platform Ekspor Digital',   'keterangan' => 'Panduan menggunakan Alibaba, Amazon Global, dan platform ekspor lokal lainnya.',           'tag' => 'Materi',    'tag_warna' => 'hijau'],
+                    ['waktu' => '12.45 – 13.00', 'judul' => 'Tanya Jawab & Penutupan',            'keterangan' => 'Sesi tanya jawab, foto bersama, dan pembagian sertifikat resmi KAJI INDONESIA.',          'tag' => 'Penutupan', 'tag_warna' => 'hijau'],
                 ],
-                'pembicara'   => [
-                    ['inisial' => 'WS', 'nama' => 'Wahyu Susanto',  'peran' => 'Konsultan Ekspor & Importir Produk Lokal'],
-                    ['inisial' => 'FS', 'nama' => 'Fitri Susilowati','peran' => 'Pelaku UMKM Ekspor — Produk Kerajinan'],
+                'pembicara'         => [
+                    ['inisial' => 'WS', 'nama' => 'Wahyu Susanto',   'peran' => 'Konsultan Ekspor & Importir Produk Lokal'],
+                    ['inisial' => 'FS', 'nama' => 'Fitri Susilowati', 'peran' => 'Pelaku UMKM Ekspor — Produk Kerajinan'],
                     ['inisial' => 'IK', 'nama' => 'Irfan Kurniawan', 'peran' => 'Spesialis Platform Ekspor Digital'],
                 ],
-                'benefit'     => [
+                'benefit'           => [
                     'Wawasan peluang ekspor produk lokal',
                     'Panduan regulasi & dokumen ekspor',
                     'Rekomendasi platform ekspor digital',
@@ -418,34 +417,34 @@ class PelatihanController extends Controller
                 ],
             ],
             [
-                'id'          => 8,
-                'tipe'        => 'Seminar',
-                'tipe_ikon'   => '🎤',
-                'judul'       => 'Seminar Digitalisasi UMKM',
-                'tanggal'     => 'Rabu, 11 Juni 2025',
-                'jam'         => '09.00 – 13.00 WIB',
-                'lokasi'      => 'Aula KAJI INDONESIA, Surabaya',
-                'kapasitas'   => '100 Peserta',
-                'durasi'      => '4 Jam',
-                'jumlah_mentor' => '3 Pembicara',
+                'id'                => 8,
+                'tipe'              => 'Seminar',
+                'tipe_ikon'         => '🎤',
+                'judul'             => 'Seminar Digitalisasi UMKM',
+                'tanggal'           => 'Rabu, 11 Juni 2025',
+                'jam'               => '09.00 – 13.00 WIB',
+                'lokasi'            => 'Aula KAJI INDONESIA, Surabaya',
+                'kapasitas'         => '100 Peserta',
+                'durasi'            => '4 Jam',
+                'jumlah_mentor'     => '3 Pembicara',
                 'deskripsi_singkat' => 'Memahami pentingnya transformasi digital bagi usaha kecil dan cara memulai digitalisasi bisnis secara bertahap dan terjangkau.',
-                'deskripsi_panjang' => 'Di era digital saat ini, UMKM yang tidak beradaptasi dengan teknologi akan tertinggal. Seminar ini hadir untuk membantu pelaku UMKM memahami apa itu digitalisasi bisnis, mengapa itu penting, dan bagaimana cara memulainya secara bertahap tanpa harus langsung mengeluarkan biaya besar. Dari penggunaan aplikasi kasir digital, pencatatan keuangan berbasis aplikasi, hingga pemanfaatan AI untuk bisnis kecil.',
-                'ikon'        => '📲',
-                'warna'       => 'linear-gradient(135deg, #b0eee0, #4dcfb0)',
-                'rundown'     => [
-                    ['waktu' => '09.00 – 09.30', 'judul' => 'Registrasi & Pembukaan',             'keterangan' => 'Pendaftaran ulang peserta dan sambutan dari panitia KAJI INDONESIA.',                                         'tag' => 'Pembukaan', 'tag_warna' => 'hijau'],
-                    ['waktu' => '09.30 – 10.30', 'judul' => 'Sesi 1 — Apa Itu Digitalisasi UMKM', 'keterangan' => 'Penjelasan konsep digitalisasi, manfaat, dan contoh nyata UMKM yang berhasil bertransformasi digital.',       'tag' => 'Materi',    'tag_warna' => 'hijau'],
-                    ['waktu' => '10.30 – 11.30', 'judul' => 'Sesi 2 — Tools Digital untuk UMKM',  'keterangan' => 'Pengenalan aplikasi kasir, keuangan, stok, dan pemasaran digital yang mudah digunakan oleh UMKM.',           'tag' => 'Materi',    'tag_warna' => 'hijau'],
-                    ['waktu' => '11.30 – 11.45', 'judul' => 'Istirahat',                          'keterangan' => 'Coffee break & networking antar peserta.',                                                                     'tag' => 'Break',     'tag_warna' => 'kuning'],
-                    ['waktu' => '11.45 – 12.45', 'judul' => 'Sesi 3 — AI & Otomasi untuk UMKM',   'keterangan' => 'Cara memanfaatkan kecerdasan buatan dan otomasi sederhana untuk menghemat waktu dan biaya operasional.',      'tag' => 'Materi',    'tag_warna' => 'hijau'],
-                    ['waktu' => '12.45 – 13.00', 'judul' => 'Tanya Jawab & Penutupan',            'keterangan' => 'Sesi tanya jawab, foto bersama, dan pembagian sertifikat resmi KAJI INDONESIA.',                             'tag' => 'Penutupan', 'tag_warna' => 'hijau'],
+                'deskripsi_panjang' => 'Seminar ini hadir untuk membantu pelaku UMKM memahami apa itu digitalisasi bisnis dan bagaimana cara memulainya secara bertahap tanpa biaya besar.',
+                'ikon'              => '📲',
+                'warna'             => 'linear-gradient(135deg, #b0eee0, #4dcfb0)',
+                'rundown'           => [
+                    ['waktu' => '09.00 – 09.30', 'judul' => 'Registrasi & Pembukaan',              'keterangan' => 'Pendaftaran ulang peserta dan sambutan dari panitia KAJI INDONESIA.',                     'tag' => 'Pembukaan', 'tag_warna' => 'hijau'],
+                    ['waktu' => '09.30 – 10.30', 'judul' => 'Sesi 1 — Apa Itu Digitalisasi UMKM', 'keterangan' => 'Konsep digitalisasi, manfaat, dan contoh nyata UMKM yang berhasil bertransformasi.',      'tag' => 'Materi',    'tag_warna' => 'hijau'],
+                    ['waktu' => '10.30 – 11.30', 'judul' => 'Sesi 2 — Tools Digital untuk UMKM',  'keterangan' => 'Pengenalan aplikasi kasir, keuangan, stok, dan pemasaran digital untuk UMKM.',           'tag' => 'Materi',    'tag_warna' => 'hijau'],
+                    ['waktu' => '11.30 – 11.45', 'judul' => 'Istirahat',                          'keterangan' => 'Coffee break & networking antar peserta.',                                                 'tag' => 'Break',     'tag_warna' => 'kuning'],
+                    ['waktu' => '11.45 – 12.45', 'judul' => 'Sesi 3 — AI & Otomasi untuk UMKM',  'keterangan' => 'Memanfaatkan kecerdasan buatan untuk menghemat waktu dan biaya operasional.',             'tag' => 'Materi',    'tag_warna' => 'hijau'],
+                    ['waktu' => '12.45 – 13.00', 'judul' => 'Tanya Jawab & Penutupan',           'keterangan' => 'Sesi tanya jawab, foto bersama, dan pembagian sertifikat resmi KAJI INDONESIA.',          'tag' => 'Penutupan', 'tag_warna' => 'hijau'],
                 ],
-                'pembicara'   => [
-                    ['inisial' => 'TW', 'nama' => 'Taufik Wijaya',    'peran' => 'Konsultan Transformasi Digital UMKM'],
-                    ['inisial' => 'AN', 'nama' => 'Anisa Nurhayati',  'peran' => 'Praktisi Teknologi & Founder App UMKM'],
-                    ['inisial' => 'GS', 'nama' => 'Galuh Saputra',    'peran' => 'Pakar AI & Otomasi Bisnis Kecil'],
+                'pembicara'         => [
+                    ['inisial' => 'TW', 'nama' => 'Taufik Wijaya',   'peran' => 'Konsultan Transformasi Digital UMKM'],
+                    ['inisial' => 'AN', 'nama' => 'Anisa Nurhayati', 'peran' => 'Praktisi Teknologi & Founder App UMKM'],
+                    ['inisial' => 'GS', 'nama' => 'Galuh Saputra',   'peran' => 'Pakar AI & Otomasi Bisnis Kecil'],
                 ],
-                'benefit'     => [
+                'benefit'           => [
                     'Panduan memulai digitalisasi bisnis',
                     'Rekomendasi tools digital gratis untuk UMKM',
                     'Wawasan pemanfaatan AI untuk usaha kecil',
@@ -465,27 +464,88 @@ class PelatihanController extends Controller
         $kurikulumDefault = $this->kurikulumData();
         $materiDefault    = $this->materiData();
 
-        $programs = \App\Models\Program::where('status', 'approve')
-        ->latest()
-        ->get();
-       return view('pages.pelatihan-program', compact('programs', 'kurikulumDefault', 'materiDefault'));
-}
+        $programsDB = Program::with('trainer')
+            ->where('status', 'approved')
+            ->where('tipe', 'kurikulum')
+            ->latest()
+            ->get();
+
+        $materiDB = Program::with('trainer')
+            ->where('status', 'approved')
+            ->where('tipe', 'materi')
+            ->latest()
+            ->get();
+
+        return view('pages.pelatihan-program', compact(
+            'kurikulumDefault',
+            'materiDefault',
+            'programsDB',
+            'materiDB'
+        ));
+    }
 
     // =========================================================
-    // DETAIL KURIKULUM
+    // DETAIL PROGRAM — handle DB dan statis
     // =========================================================
     public function detailProgram($id)
     {
-        // $program = collect($this->kurikulumData())->firstWhere('id', (int) $id);
+        // 1. Coba cari di database dulu (program yang sudah disetujui)
+        $dbProgram = Program::with('trainer')
+            ->where('status', 'approved')
+            ->find($id);
 
-        $program = \App\Models\Program::where('status', 'approve')
-            ->findOrFail($id);
+        if ($dbProgram) {
+            // Konversi model ke format array yang dipakai blade
+            $program = [
+                'judul'       => $dbProgram->judul,
+                'deskripsi'   => $dbProgram->deskripsi,
+                'ikon'        => $dbProgram->ikon    ?? '🎓',
+                'warna'       => $dbProgram->warna   ?? 'linear-gradient(135deg, #c8e6b0, #7dcf8a)',
+                'metode'      => $dbProgram->metode  ?? 'Online & Offline',
+                'tingkat'     => $dbProgram->tingkat ?? 'Semua Level',
+                'durasi'      => $dbProgram->durasi  ?? '-',
+                'bahasa'      => $dbProgram->bahasa  ?? 'Bahasa Indonesia',
+                'kuota'       => $dbProgram->kuota   ?? '-',
+                'gambar'      => $dbProgram->gambar  ?? null,
+                'trainer'     => $dbProgram->trainer,
+                'modul'       => [],
+                'benefit'     => [],
+                'total_modul' => 0,
+            ];
 
-        // if (! $program) {
-        //     abort(404, 'Program pelatihan tidak ditemukan.');
-        // }
+            // Decode kolom modul (JSON)
+            if (!empty($dbProgram->modul)) {
+                $decoded = is_array($dbProgram->modul)
+                    ? $dbProgram->modul
+                    : json_decode($dbProgram->modul, true);
+                $program['modul']       = $decoded ?? [];
+                $program['total_modul'] = count($program['modul']);
+            }
 
-        return view('pages.pelatihan-program-detail', compact('program'));
+            // Decode kolom benefit (JSON)
+            if (!empty($dbProgram->benefit)) {
+                $decoded = is_array($dbProgram->benefit)
+                    ? $dbProgram->benefit
+                    : json_decode($dbProgram->benefit, true);
+                $program['benefit'] = $decoded ?? [];
+            }
+
+            return view('pages.pelatihan-program-detail', compact('program'));
+        }
+
+        // 2. Tidak ada di DB — cari di data statis berdasarkan key 'id'
+        $allStatic = array_merge(
+            $this->kurikulumData(),
+            $this->materiData()
+        );
+
+        $program = collect($allStatic)->firstWhere('id', (int) $id);
+
+        if ($program) {
+            return view('pages.pelatihan-program-detail', compact('program'));
+        }
+
+        abort(404, 'Program pelatihan tidak ditemukan.');
     }
 
     // =========================================================
@@ -514,49 +574,47 @@ class PelatihanController extends Controller
         return view('pages.pelatihan-event-detail', compact('event'));
     }
 
-// =========================================================
-// HALAMAN MENTOR
-// =========================================================
-public function pembimbing(Request $request)
-{
-    $query = \App\Models\User::where('trainer_status', 'approved');
+    // =========================================================
+    // HALAMAN MENTOR / PEMBIMBING
+    // =========================================================
+    public function pembimbing(Request $request)
+    {
+        $query = User::where('trainer_status', 'approved');
 
-    if ($request->filled('search')) {
-        $query->where(function($q) use ($request) {
-            $q->where('name', 'like', '%' . $request->search . '%')
-              ->orWhere('location', 'like', '%' . $request->search . '%');
-        });
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('location', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $trainers = $query->paginate(12);
+
+        return view('pages.umkm-pembimbing', compact('trainers'));
     }
 
-    $trainers = $query->paginate(12);
+    public function detailMentor($id)
+    {
+        $mentor = User::where('trainer_status', 'approved')->findOrFail($id);
 
-    return view('pages.umkm-pembimbing', compact('trainers'));
-}
+        return view('pages.detail-mentor', compact('mentor'));
+    }
 
-public function detailMentor($id)
-{
-    // Cari mentor berdasarkan ID
-    $mentor = User::where('trainer_status', 'approved')->findOrFail($id);
+    public function simpanUlasan(Request $request, $id)
+    {
+        $request->validate([
+            'rating'   => 'required|integer|min:1|max:5',
+            'komentar' => 'required|string|max:500',
+        ]);
 
-    return view('pages.detail-mentor', compact('mentor'));
-}
+        UlasanPembimbing::create([
+            'pembimbing_id' => $id,
+            'user_id'       => Auth::id(),
+            'rating'        => $request->rating,
+            'komentar'      => $request->komentar,
+        ]);
 
-public function simpanUlasan(Request $request, $id)
-{
-    $request->validate([
-        'rating'   => 'required|integer|min:1|max:5',
-        'komentar' => 'required|string|max:500',
-    ]);
-
-    \App\Models\UlasanPembimbing::create([
-        'pembimbing_id' => $id,
-        'user_id'       => \Illuminate\Support\Facades\Auth::id(),
-        'rating'        => $request->rating,
-        'komentar'      => $request->komentar,
-    ]);
-
-    // Redirect kembali ke halaman detail mentor yang benar
-    return redirect()->route('pelatihan.mentor.detail', $id)
-        ->with('success', 'Ulasan berhasil dikirim!');
-}
+        return redirect()->route('pelatihan.mentor.detail', $id)
+            ->with('success', 'Ulasan berhasil dikirim!');
+    }
 }

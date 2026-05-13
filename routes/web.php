@@ -10,6 +10,7 @@ use App\Http\Controllers\UmkmController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Trainer\TrainerPelatihanController;
 
 // =====================
 // HALAMAN UMUM (Bebas Akses)
@@ -115,6 +116,27 @@ Route::middleware(['auth'])->group(function () {
 
     });
 
+    // =========================
+// TRAINER KURIKULUM & MATERI
+// =========================
+Route::post('/trainer/kurikulum', [App\Http\Controllers\Trainer\TrainerPelatihanController::class, 'storeKurikulum'])
+->name('trainer.kurikulum.store');
+
+Route::put('/trainer/kurikulum/{id}', [App\Http\Controllers\Trainer\TrainerPelatihanController::class, 'updateKurikulum'])
+->name('trainer.kurikulum.update');
+
+Route::delete('/trainer/kurikulum/{id}', [App\Http\Controllers\Trainer\TrainerPelatihanController::class, 'destroy'])
+->name('trainer.kurikulum.destroy');
+
+Route::post('/trainer/materi', [App\Http\Controllers\Trainer\TrainerPelatihanController::class, 'storeMateri'])
+->name('trainer.materi.store');
+
+Route::put('/trainer/materi/{id}', [App\Http\Controllers\Trainer\TrainerPelatihanController::class, 'updateMateri'])
+->name('trainer.materi.update');
+
+Route::delete('/trainer/materi/{id}', [App\Http\Controllers\Trainer\TrainerPelatihanController::class, 'destroy'])
+->name('trainer.materi.destroy');
+
 // =========================================================
 // 2. GRUP ADMIN (KHUSUS ADMIN)
 // =========================================================
@@ -148,4 +170,5 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/pengguna/{user}/verifikasi', [AdminController::class, 'verifikasiPengguna'])->name('pengguna.verifikasi');
     Route::patch('/pengguna/{user}/suspend', [AdminController::class, 'suspendPengguna'])->name('pengguna.suspend');
     Route::patch('/pengguna/{user}/unsuspend', [AdminController::class, 'unsuspendPengguna'])->name('pengguna.unsuspend');
+
 });

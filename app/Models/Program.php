@@ -31,6 +31,8 @@ class Program extends Model
         'approved_by',
         'rejected_at',
         'rejected_by',
+        'jumlah_materi', 'total_jam', 'jumlah_sesi', 'sertifikat',
+    'link_video', 'file_materi', 'durasi', 'urutan', 'kurikulum_id',
     ];
 
     protected $casts = [
@@ -72,7 +74,7 @@ class Program extends Model
     }
 
     // ── Relasi ────────────────────────────────────────────────────────────
-    public function trainer()
+    public function pembimbing()
     {
         return $this->belongsTo(User::class, 'trainer_id');
     }
@@ -81,6 +83,11 @@ class Program extends Model
     {
         return $this->belongsTo(User::class, 'approved_by');
     }
+
+    public function trainer()
+{
+    return $this->belongsTo(User::class, 'trainer_id');
+}
 
     // ── Scopes (untuk query yang sering dipakai) ──────────────────────────
     // Contoh: Program::published()->get()

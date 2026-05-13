@@ -46,4 +46,9 @@ class Event extends Model
     {
         return $this->belongsTo(Trainer::class, 'trainer_id');
     }
+
+    public function trainer(): BelongsTo
+{
+    return $this->belongsTo(Trainer::class, 'trainer_id');
+}
 }
