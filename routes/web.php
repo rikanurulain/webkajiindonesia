@@ -11,6 +11,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Trainerpelatihancontroller;
+use App\Http\Controllers\AbsensiController;
 
 // =====================
 // HALAMAN UMUM (Bebas Akses)
@@ -82,6 +83,20 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/trainer/dashboard', [App\Http\Controllers\TrainerController::class, 'index'])
          ->name('trainer.dashboard')
          ->middleware('trainer');
+
+    // Peserta absen 1 klik
+    Route::post('/absensi/{pelatihan}/submit', [AbsensiController::class, 'submit'])
+        ->name('absensi.submit');
+ 
+    // Trainer: lihat daftar (JSON)
+    Route::get('/trainer/kurikulum/{pelatihan}/absensi',
+        [AbsensiController::class, 'daftarAbsensi'])
+        ->name('trainer.absensi.daftar');
+ 
+    // Trainer: export CSV
+    Route::get('/trainer/kurikulum/{pelatihan}/absensi/export',
+        [AbsensiController::class, 'exportCsv'])
+        ->name('trainer.absensi.export');
 
     // =========================
     // TRAINER PROGRAM

@@ -173,71 +173,15 @@
             {{-- ══════════════════════════════════════════ --}}
             {{-- ── Tombol Absensi Otomatis ──             --}}
             {{-- ══════════════════════════════════════════ --}}
-            @if($absAktif)
-
-                @if($absStatus === 'active')
-                {{-- AKTIF --}}
-                <div class="bg-green-50 border border-green-200 rounded-2xl p-5 flex flex-col sm:flex-row items-center gap-4"
-                     id="absensi-block"
-                     data-mulai="{{ $absMulai->toIso8601String() }}"
-                     data-selesai="{{ $absSelesai->toIso8601String() }}">
-                    <div class="flex items-center gap-3 flex-1">
-                        <span class="relative flex h-3 w-3 flex-shrink-0">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                        </span>
-                        <div>
-                            <div class="font-bold text-green-800 text-sm">Absensi Sedang Berlangsung</div>
-                            <div class="text-xs text-green-600 mt-0.5">
-                                Berakhir pukul {{ $absSelesai->format('H:i') }} WIB
-                                &nbsp;·&nbsp; Sisa waktu:
-                                <span id="abs-countdown" class="font-mono font-bold">--:--</span>
-                            </div>
-                        </div>
-                    </div>
-                    <a href="{{ $absUrl }}" target="_blank"
-                       class="w-full sm:w-auto text-center bg-green-600 hover:bg-green-700 text-white font-bold text-sm px-6 py-3 rounded-xl transition-all shadow-md hover:shadow-lg">
-                        ✅ Isi Absensi Sekarang
-                    </a>
-                </div>
-
-                @elseif($absStatus === 'upcoming')
-                {{-- AKAN DATANG --}}
-                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex flex-col sm:flex-row items-center gap-4"
-                     id="absensi-block"
-                     data-mulai="{{ $absMulai->toIso8601String() }}"
-                     data-selesai="{{ $absSelesai->toIso8601String() }}">
-                    <div class="flex items-center gap-3 flex-1">
-                        <span class="text-2xl flex-shrink-0">⏰</span>
-                        <div>
-                            <div class="font-bold text-amber-800 text-sm">Absensi Akan Dibuka</div>
-                            <div class="text-xs text-amber-600 mt-0.5">
-                                {{ $absMulai->translatedFormat('d M Y, H:i') }} – {{ $absSelesai->format('H:i') }} WIB
-                                &nbsp;·&nbsp; Dibuka dalam:
-                                <span id="abs-countdown" class="font-mono font-bold">--:--</span>
-                            </div>
-                        </div>
-                    </div>
-                    <button disabled
-                        class="w-full sm:w-auto bg-amber-200 text-amber-600 font-bold text-sm px-6 py-3 rounded-xl cursor-not-allowed opacity-70">
-                        🔒 Belum Dibuka
-                    </button>
-                </div>
-
-                @else
-                {{-- SUDAH BERAKHIR --}}
-                <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex items-center gap-4 opacity-60">
-                    <span class="text-2xl flex-shrink-0">🔒</span>
-                    <div>
-                        <div class="font-bold text-gray-600 text-sm">Absensi Telah Ditutup</div>
-                        <div class="text-xs text-gray-400 mt-0.5">
-                            Selesai {{ $absSelesai->translatedFormat('d M Y, H:i') }} WIB
-                        </div>
-                    </div>
-                </div>
-                @endif
-
-            @endif
+            {{-- ── Absensi ── --}}
+@include('partials.absensi-block', [
+    'absAktif'   => $absAktif   ?? false,
+    'absStatus'  => $absStatus  ?? null,
+    'absMulai'   => $absMulai   ?? null,
+    'absSelesai' => $absSelesai ?? null,
+    'program'    => $program,
+    'judul'      => $judul,
+])
             {{-- ══ End Absensi ══ --}}
 
             {{-- ── Deskripsi Panjang (DB only) ── --}}

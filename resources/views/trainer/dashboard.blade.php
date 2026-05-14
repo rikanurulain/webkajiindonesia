@@ -521,16 +521,18 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                 // Absensi state
                 $absensiAktif   = !empty($k->absensi_mulai) && !empty($k->absensi_selesai) && $k->absensi_aktif;
                 $absensiMulai   = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_mulai, config('app.timezone'))   : null;
-$absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, config('app.timezone')) : null;
-    $absensiUrl     = $k->absensi_url ?? '#'; 
-    $now            = \Carbon\Carbon::now();
-    $statusAbsensi  = null;
-    if ($absensiAktif) {
-        if ($now->lt($absensiMulai))                           $statusAbsensi = 'upcoming';
-        elseif ($now->between($absensiMulai, $absensiSelesai)) $statusAbsensi = 'active';
-        else                                                   $statusAbsensi = 'ended';
-    }
-               
+                $absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, config('app.timezone')) : null;
+                $absensiUrl     = $k->absensi_url ?? '#';
+                $now            = \Carbon\Carbon::now();
+                $statusAbsensi  = null;
+                if ($absensiAktif) {
+                    if ($now->lt($absensiMulai))                           $statusAbsensi = 'upcoming';
+                    elseif ($now->between($absensiMulai, $absensiSelesai)) $statusAbsensi = 'active';
+                    else                                                   $statusAbsensi = 'ended';
+                }
+
+                // PATCH 1: Hitung jumlah absensi
+                $jumlahAbsensi = \App\Models\AbsensiPeserta::where('pelatihan_id', $k->id)->count();
             @endphp
             <div class="kurikulum-block">
                 <div class="kurikulum-block-header">
@@ -560,6 +562,20 @@ $absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, con
                         @else
                             <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
                         @endif
+
+                        {{-- PATCH 1: Tombol 👥 Absensi --}}
+                        <button class="btn btn-sm"
+                            style="background:#e8f5e9;color:#2d6a4f;border:1.5px solid #a7d7c5;
+                                   font-weight:700;gap:6px;flex-shrink:0"
+                            onclick="bukaDaftarAbsensi({{ $k->id }}, '{{ addslashes($k->judul) }}')">
+                            👥 Absensi
+                            @if($jumlahAbsensi > 0)
+                                <span style="background:#2d6a4f;color:#fff;font-size:10px;font-weight:700;
+                                             padding:1px 7px;border-radius:20px;margin-left:2px">
+                                    {{ $jumlahAbsensi }}
+                                </span>
+                            @endif
+                        </button>
 
                         <button class="btn btn-sm btn-outline"
                             onclick="openModalModulDenganKurikulum({{ $k->id }}, '{{ addslashes($k->judul) }}')">
@@ -912,9 +928,7 @@ $absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, con
                 <input type="file" id="k-gambar" name="gambar" accept="image/*" style="display:none" onchange="showFileName(this, 'k-gambar-name')">
             </div>
 
-            {{-- ══════════════════════════════════════════ --}}
-            {{-- SECTION ABSENSI (BARU)                    --}}
-            {{-- ══════════════════════════════════════════ --}}
+            {{-- ══ SECTION ABSENSI ══ --}}
             <hr class="form-divider">
             <div class="absensi-toggle-section">
                 <div class="absensi-toggle-header" onclick="toggleAbsensiSection()">
@@ -935,7 +949,6 @@ $absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, con
                 </div>
 
                 <div class="absensi-toggle-body" id="absensi-body">
-                    {{-- Baris jadwal --}}
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
                         <div class="form-group" style="margin-bottom:0">
                             <label class="form-label">Waktu Mulai Absensi <span style="color:var(--accent2)">*</span></label>
@@ -956,7 +969,6 @@ $absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, con
                         <div class="form-hint">Link Google Form, Typeform, atau halaman absensi. Kosongkan untuk menggunakan halaman absensi bawaan sistem.</div>
                     </div>
 
-                    {{-- Preview jadwal --}}
                     <div id="absensi-preview" style="display:none;margin-top:14px;background:#f0f9f4;border:1px solid #a7d7c566;border-radius:10px;padding:12px 16px">
                         <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Preview tombol absensi</div>
                         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
@@ -1129,10 +1141,88 @@ $absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, con
     </div>
 </div>
 
+{{-- ============ PATCH 2: MODAL DAFTAR ABSENSI ============ --}}
+<div class="modal-overlay" id="modal-absensi-daftar">
+    <div class="modal" style="width:700px;max-width:95vw">
+        <div class="modal-header">
+            <div class="modal-title">
+                👥 Daftar Absensi
+                <small id="modal-abs-subtitle" style="display:block;margin-top:3px">–</small>
+            </div>
+            <button class="modal-close" onclick="closeModal('modal-absensi-daftar')">×</button>
+        </div>
+
+        {{-- Toolbar --}}
+        <div style="display:flex;align-items:center;justify-content:space-between;
+                    margin-bottom:16px;flex-wrap:wrap;gap:10px">
+            <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:13px;color:var(--text-muted)">Total hadir:</span>
+                <span id="abs-total-badge"
+                    style="background:var(--accent);color:#fff;font-size:12px;
+                           font-weight:700;padding:3px 12px;border-radius:20px">–</span>
+            </div>
+            <div style="display:flex;gap:8px">
+                <button class="btn btn-sm btn-ghost" onclick="exportAbsensiCsv()" style="gap:6px">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Export CSV
+                </button>
+                <button class="btn btn-sm btn-ghost" onclick="refreshAbsensi()" style="gap:6px">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor" stroke-width="2">
+                        <polyline points="23 4 23 10 17 10"/>
+                        <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+                    </svg>
+                    Refresh
+                </button>
+            </div>
+        </div>
+
+        {{-- Loading --}}
+        <div id="abs-loading"
+             style="text-align:center;padding:44px;color:var(--text-muted);font-size:13px">
+            ⏳ Memuat data...
+        </div>
+
+        {{-- Tabel --}}
+        <div id="abs-table-wrap" style="display:none">
+            <div class="table-wrap" style="margin-bottom:0;max-height:400px;overflow-y:auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:48px">#</th>
+                            <th>Nama</th>
+                            <th>Email</th>
+                            <th>Waktu Absen</th>
+                        </tr>
+                    </thead>
+                    <tbody id="abs-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        {{-- Empty state --}}
+        <div id="abs-empty"
+             style="display:none;text-align:center;padding:50px 20px;color:var(--text-muted)">
+            <div style="font-size:42px;margin-bottom:12px">📭</div>
+            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px">
+                Belum ada yang absen
+            </div>
+            <div style="font-size:13px">Peserta akan muncul di sini saat absensi aktif</div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('modal-absensi-daftar')">Tutup</button>
+        </div>
+    </div>
+</div>
+
 <form id="form-hapus" method="POST" style="display:none">@csrf @method('DELETE')</form>
 <form id="form-hapus-event" method="POST" style="display:none">@csrf @method('DELETE')</form>
-
-{{-- GANTI SELURUH BLOK <script>...</script> di dashboard.blade.php dengan ini --}}
 
 <script>
 /* ================================================================
@@ -1165,18 +1255,15 @@ function showFileName(input, labelId) {
 
 /* ================================================================
    ABSENSI TOGGLE (dalam form)
-   PERBAIKAN: hanya satu definisi fungsi, tidak nested
 ================================================================ */
 function toggleAbsensiSection(forceState) {
     const checkbox = document.getElementById('k-absensi-aktif');
     const body     = document.getElementById('absensi-body');
     const chevron  = document.getElementById('absensi-chevron');
 
-    // Dipanggil dengan nilai boolean (dari checkbox.onchange atau editKurikulum)
     if (typeof forceState === 'boolean') {
         checkbox.checked = forceState;
     } else {
-        // Dipanggil dari klik header → toggle state
         checkbox.checked = !checkbox.checked;
     }
 
@@ -1184,7 +1271,6 @@ function toggleAbsensiSection(forceState) {
     body.classList.toggle('open', isOpen);
     chevron.style.transform = isOpen ? 'rotate(180deg)' : '';
 
-    // Reset field jika dinonaktifkan
     if (!isOpen) {
         document.getElementById('k-absensi-mulai').value   = '';
         document.getElementById('k-absensi-selesai').value = '';
@@ -1228,8 +1314,6 @@ function updateAbsensiPreview() {
 
 /* ================================================================
    ABSENSI COUNTDOWN (real-time di kurikulum block)
-   PERBAIKAN: parseInt dengan radix 10, guard NaN, var intervalId
-   sebelum tick() agar bisa diakses di dalam closure
 ================================================================ */
 function pad(n) { return String(n).padStart(2, '0'); }
 
@@ -1246,16 +1330,13 @@ function formatCountdown(ms) {
 
 function initAbsensiTimers() {
     document.querySelectorAll('[id^="absensi-bar-"]').forEach(function(bar) {
-        // PERBAIKAN: parseInt dengan radix 10 agar tidak salah parse
         const tsMulai   = parseInt(bar.dataset.mulai, 10) * 1000;
         const tsSelesai = parseInt(bar.dataset.selesai, 10) * 1000;
         const timerId   = bar.id.replace('absensi-bar-', '');
         const timerEl   = document.getElementById('timer-' + timerId);
 
-        // PERBAIKAN: guard — jika element timer tidak ada atau timestamp invalid, skip
         if (!timerEl || isNaN(tsMulai) || isNaN(tsSelesai) || tsMulai === 0 || tsSelesai === 0) return;
 
-        // PENTING: deklarasi var sebelum tick() agar closure bisa mengakses intervalId
         var intervalId;
 
         function tick() {
@@ -1264,34 +1345,26 @@ function initAbsensiTimers() {
             var msToSelesai = tsSelesai - now;
 
             if (msToMulai > 0) {
-                // Belum mulai → countdown ke waktu mulai
                 timerEl.textContent = formatCountdown(msToMulai);
                 timerEl.className   = 'countdown-timer upcoming';
-
             } else if (msToSelesai > 0) {
-                // Sedang aktif → countdown sisa waktu
                 timerEl.textContent = formatCountdown(msToSelesai);
                 timerEl.className   = msToSelesai < 600000
-                    ? 'countdown-timer warning'  // < 10 menit → kuning
+                    ? 'countdown-timer warning'
                     : 'countdown-timer';
 
-                // Jika bar masih ditampilkan sebagai "upcoming" (render server)
-                // tapi sekarang sudah aktif → reload agar UI sinkron
                 if (bar.classList.contains('absensi-upcoming')) {
                     location.reload();
                 }
-
             } else {
-                // Sudah selesai → hentikan timer
                 clearInterval(intervalId);
-                // Jika bar belum ditampilkan sebagai "ended" → reload agar UI sinkron
                 if (!bar.classList.contains('absensi-ended')) {
                     location.reload();
                 }
             }
         }
 
-        tick(); // langsung jalankan sekali
+        tick();
         intervalId = setInterval(tick, 1000);
     });
 }
@@ -1326,7 +1399,6 @@ document.addEventListener('click', function(e) {
         document.getElementById('sertifikat-tidak').checked = true;
     }
 
-    // Isi field absensi
     const absensiAktif = d.absensiAktif === '1';
     document.getElementById('k-absensi-aktif').checked = absensiAktif;
     toggleAbsensiSection(absensiAktif);
@@ -1390,7 +1462,6 @@ function resetKurikulumModal() {
     document.getElementById('k-gambar-name').textContent = '';
     document.getElementById('sertifikat-tidak').checked  = true;
     document.getElementById('k-phone').value = '{{ auth()->user()->phone ?? "" }}';
-    // Reset absensi section
     document.getElementById('k-absensi-aktif').checked = false;
     toggleAbsensiSection(false);
 }
@@ -1466,23 +1537,94 @@ function openModalModulDenganKurikulum(kurikulumId, kurikulumJudul) {
 }
 
 /* ================================================================
+   PATCH 3: ABSENSI TRAINER — Daftar & Export
+================================================================ */
+var _absPelId = null;
+
+function bukaDaftarAbsensi(pelId, judul) {
+    _absPelId = pelId;
+
+    document.getElementById('modal-abs-subtitle').textContent = judul;
+    document.getElementById('abs-total-badge').textContent    = '–';
+    document.getElementById('abs-loading').style.display      = 'block';
+    document.getElementById('abs-table-wrap').style.display   = 'none';
+    document.getElementById('abs-empty').style.display        = 'none';
+
+    openModal('modal-absensi-daftar');
+    _muatAbsensi(pelId);
+}
+
+function refreshAbsensi() {
+    if (_absPelId) _muatAbsensi(_absPelId);
+}
+
+function _muatAbsensi(pelId) {
+    document.getElementById('abs-loading').style.display    = 'block';
+    document.getElementById('abs-table-wrap').style.display = 'none';
+    document.getElementById('abs-empty').style.display      = 'none';
+
+    fetch('/trainer/kurikulum/' + pelId + '/absensi', {
+        headers: {
+            'Accept'      : 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+        }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+        document.getElementById('abs-loading').style.display = 'none';
+        if (!res.success) { alert('Gagal: ' + res.message); return; }
+
+        document.getElementById('abs-total-badge').textContent = res.total;
+
+        if (res.total === 0) {
+            document.getElementById('abs-empty').style.display = 'block';
+            return;
+        }
+
+        var tbody = document.getElementById('abs-tbody');
+        tbody.innerHTML = '';
+        res.peserta.forEach(function(p) {
+            var tr = document.createElement('tr');
+            tr.innerHTML =
+                '<td style="font-weight:600;color:var(--text-muted)">' + p.no + '</td>'
+                + '<td style="font-weight:500">' + _esc(p.nama) + '</td>'
+                + '<td style="font-size:12px;color:var(--text-muted)">' + _esc(p.email) + '</td>'
+                + '<td style="font-size:12px;color:var(--text-muted)">' + _esc(p.waktu) + '</td>';
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('abs-table-wrap').style.display = 'block';
+    })
+    .catch(function() {
+        document.getElementById('abs-loading').style.display = 'none';
+        alert('Gagal terhubung ke server.');
+    });
+}
+
+function exportAbsensiCsv() {
+    if (_absPelId) window.location.href = '/trainer/kurikulum/' + _absPelId + '/absensi/export';
+}
+
+function _esc(s) {
+    if (s == null) return '–';
+    return String(s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ================================================================
    INIT
 ================================================================ */
 document.addEventListener('DOMContentLoaded', function() {
-    // Bind listener preview jadwal absensi
     document.getElementById('k-absensi-mulai').addEventListener('change', updateAbsensiPreview);
     document.getElementById('k-absensi-selesai').addEventListener('change', updateAbsensiPreview);
 
-    // Live preview modul
     ['m-judul', 'm-deskripsi', 'm-urutan'].forEach(function(id) {
         const el = document.getElementById(id);
         if (el) el.addEventListener('input', updatePreview);
     });
 
-    // Mulai semua countdown absensi
     initAbsensiTimers();
 
-    // Buka halaman dari URL hash atau session
     const hash = window.location.hash.replace('#', '');
     if (['beranda', 'program', 'event', 'profil'].includes(hash)) {
         showPage(hash);
