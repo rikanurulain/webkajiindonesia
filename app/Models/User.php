@@ -21,7 +21,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'username',
+
         'email',
         'password',
         'phone',
@@ -122,7 +122,7 @@ class User extends Authenticatable
      */
     public function isRegularUser(): bool
     {
-        return $this->role === 'user' && !$this->is_umkm && !$this->is_pembimbing;
+        return $this->role === 'umum' && !$this->is_umkm && !$this->is_pembimbing;
     }
 
     /**

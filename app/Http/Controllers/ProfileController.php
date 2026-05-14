@@ -21,52 +21,25 @@ public function update(Request $request)
 {
     $user = Auth::user();
 
-    // 1. Tambahkan 'username' di validasi
     $request->validate([
-        'name'     => 'required|string|max:255',
-        // alpha_dash memastikan username hanya huruf, angka, dash (-), dan underscore (_)
-        'username' => 'required|string|alpha_dash|max:255|unique:users,username,' . $user->id,
-        'phone'    => 'nullable|string|max:20',
-        'address'  => 'nullable|string|max:500',
-        'bio'      => 'nullable|string|max:500',
-        'photo'    => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'name'    => 'required|string|max:255',
+        'phone'   => 'nullable|string|max:20',
+        'address' => 'nullable|string|max:500',
+        'bio'     => 'nullable|string|max:500',
     ]);
 
-    // 2. Masukkan data username ke model
-    $user->name     = $request->name;
-    $user->username = strtolower($request->username); // Disimpan huruf kecil semua agar rapi
-    $user->phone    = $request->phone;
-    $user->address  = $request->address;
-    $user->bio      = $request->bio;
-
-    if ($request->hasFile('photo')) {
-        // ... (kode upload foto tetap sama seperti sebelumnya)
-        if ($user->profile_photo_path) {
-            Storage::disk('public')->delete($user->profile_photo_path);
-        }
-        $path = $request->file('photo')->store('profile-photos', 'public');
-        $user->profile_photo_path = $path;
-        
-        // Log Aktivitas Foto
-        ActivityLog::create([
-            'user_id'     => $user->id,
-            'type'        => 'photo',
-            'label'       => 'Ganti foto profil',
-            'description' => 'Foto profil diperbarui',
-            'ip_address'  => $request->ip(),
-            'user_agent'  => $request->userAgent(),
-            'is_success'  => true,
-        ]);
-    }
+    $user->name    = $request->name;
+    $user->phone   = $request->phone;
+    $user->address = $request->address;
+    $user->bio     = $request->bio;
 
     $user->save();
 
-    // Log Aktivitas Profil
     ActivityLog::create([
         'user_id'     => $user->id,
         'type'        => 'profile',
         'label'       => 'Update profil',
-        'description' => 'Nama, Username, atau informasi lainnya diperbarui', // Update deskripsi
+        'description' => 'Informasi profil diperbarui',
         'ip_address'  => $request->ip(),
         'user_agent'  => $request->userAgent(),
         'is_success'  => true,

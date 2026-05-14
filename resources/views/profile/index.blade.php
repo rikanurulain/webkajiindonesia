@@ -3,7 +3,7 @@
 @section('content')
 <div class="min-h-screen bg-gray-50 py-10">
     <div class="max-w-6xl mx-auto px-4">
-        
+    
         <!-- Header -->
         <div class="mb-8 flex items-center justify-between">
             <div>
@@ -120,6 +120,7 @@
                                     Bergabunglah sebagai bagian dari mitra UMKM KAJI INDONESIA
                                 </p>
                                 <a href="{{ route('profile.daftar-umkm') }}" 
+                                    data-role-btn="true"
                                    class="block w-full bg-white text-emerald-700 py-2 rounded-lg font-bold text-sm text-center hover:bg-gray-100 transition shadow-sm">
                                     Daftar Sekarang
                                 </a>
@@ -132,7 +133,8 @@
                                     Bergabunglah sebagai pembimbing dan fasilitator UMKM
                                 </p>
                                 <a href="{{ route('profile.daftar-mentor') }}" 
-                                   class="block w-full bg-white text-emerald-700 py-2 rounded-lg font-bold text-sm text-center hover:bg-gray-100 transition shadow-sm">
+                                   data-role-btn="true"
+                                    class="block w-full bg-white text-emerald-700 py-2 rounded-lg font-bold text-sm text-center hover:bg-gray-100 transition shadow-sm">
                                     Daftar Sekarang
                                 </a>
                             </div>
@@ -144,7 +146,8 @@
                                     Bergabunglah sebagai pengajar profesional di KAJI INDONESIA
                                 </p>
                                 <a href="{{ route('profile.daftar-trainer') }}" 
-                                   class="block w-full bg-white text-emerald-700 py-2 rounded-lg font-bold text-sm text-center hover:bg-gray-100 transition shadow-sm">
+                                    data-role-btn="true"   
+                                    class="block w-full bg-white text-emerald-700 py-2 rounded-lg font-bold text-sm text-center hover:bg-gray-100 transition shadow-sm">
                                     Daftar Sekarang
                                 </a>
                             </div>
@@ -176,6 +179,64 @@
 
             <!-- Kolom Kanan: Informasi Akun -->
             <div class="lg:col-span-2 space-y-6">
+                    {{-- NOTIFIKASI --}}
+                    @if(session('success'))
+                    <div id="toast-notif"
+                        class="flex items-center gap-4 px-6 py-5 
+                                bg-emerald-50 border border-emerald-300 rounded-xl shadow-sm
+                                text-emerald-700 text-sm font-medium w-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="flex-1 text-base">{{ session('success') }}</span>
+                        <button onclick="document.getElementById('toast-notif').remove()" class="text-emerald-400 hover:text-emerald-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    @elseif($errors->hasAny(['current_password', 'password']))
+                    <div id="toast-error"
+                        class="flex items-start gap-4 px-6 py-5 
+                                bg-red-50 border border-red-300 rounded-xl shadow-sm
+                                text-red-700 text-sm font-medium w-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-9a1 1 0 012 0v4a1 1 0 01-2 0V9zm1-5a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
+                        </svg>
+                        <div class="flex-1">
+                            <ul class="space-y-1">
+                                @foreach(['current_password', 'password'] as $field)
+                                    @foreach($errors->get($field) as $msg)
+                                        <li>{{ $msg }}</li>
+                                    @endforeach
+                                @endforeach
+                            </ul>
+                        </div>
+                        <button onclick="document.getElementById('toast-error').remove()" class="text-red-400 hover:text-red-600 flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    @endif
+
+                    {{-- Toast foto profil (JS-triggered) --}}
+                    <div id="toast-photo-required"
+                        class="hidden items-center gap-4 px-6 py-5 
+                                bg-amber-50 border border-amber-300 rounded-xl shadow-sm
+                                text-amber-700 text-sm font-medium w-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="flex-1 text-base">Isi foto profil terlebih dahulu!</span>
+                        <button onclick="hidePhotoToast()" class="text-amber-400 hover:text-amber-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
                     <h3 class="text-lg font-semibold mb-6 pb-2 border-b">Informasi Akun</h3>
                     
@@ -235,18 +296,6 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
                     <h3 class="text-lg font-semibold mb-6 pb-2 border-b">Ubah Password</h3>
 
-                    @if(session('success'))
-                        <div class="mb-4 px-4 py-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-lg">
-                            ✅ {{ session('success') }}
-                        </div>
-                    @endif
-
-                    @if($errors->has('current_password'))
-                        <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg">
-                            ❌ {{ $errors->first('current_password') }}
-                        </div>
-                    @endif
-
                     <form action="{{ route('profile.update-password') }}" method="POST" class="space-y-4">
                         @csrf
                         <div>
@@ -270,8 +319,11 @@
                                     placeholder="Ulangi password baru">
                             </div>
                         </div>
-                        <button type="submit" class="mt-2 text-sm font-bold text-emerald-700 hover:text-emerald-800 transition">
-                            Update Password →
+                        <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition flex items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            Update Password
                         </button>
                     </form>
                 </div>
@@ -296,6 +348,59 @@
             if (placeholder) placeholder.style.display = 'none';
         };
         reader.readAsDataURL(file);
+    });
+
+    // Auto hide toast setelah 6 detik
+    const toast = document.getElementById('toast-notif');
+    if (toast) {
+        setTimeout(() => {
+            toast.style.transition = 'opacity 0.5s';
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 500);
+        }, 6000);
+    }
+
+    const toastError = document.getElementById('toast-error');
+    if (toastError) {
+        setTimeout(() => {
+            toastError.style.transition = 'opacity 0.5s';
+            toastError.style.opacity = '0';
+            setTimeout(() => toastError.remove(), 500);
+        }, 4000);
+    }
+
+    // Guard tombol daftar peran: wajib foto profil
+    const hasPhoto = {{ $user->profile_photo_path ? 'true' : 'false' }};
+    const toastPhoto = document.getElementById('toast-photo-required');
+
+    function hidePhotoToast() {
+        toastPhoto.style.transition = 'opacity 0.5s';
+        toastPhoto.style.opacity = '0';
+        setTimeout(function() {
+            toastPhoto.classList.add('hidden');
+            toastPhoto.classList.remove('flex');
+            toastPhoto.style.opacity = '1';
+            toastPhoto.style.transition = '';
+        }, 500);
+    }
+
+    document.querySelectorAll('[data-role-btn="true"]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            if (!hasPhoto) {
+                e.preventDefault();
+
+                // Tampilkan di area notifikasi kolom kanan
+                toastPhoto.classList.remove('hidden');
+                toastPhoto.classList.add('flex');
+
+                // Scroll ke atas kolom kanan agar notif terlihat
+                toastPhoto.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                // Auto hide setelah 4 detik
+                clearTimeout(window._photoToastTimer);
+                window._photoToastTimer = setTimeout(hidePhotoToast, 4000);
+            }
+        });
     });
 </script>
 @endsection
