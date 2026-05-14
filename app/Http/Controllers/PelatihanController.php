@@ -459,29 +459,18 @@ class PelatihanController extends Controller
     // =========================================================
     // HALAMAN UTAMA PROGRAM
     // =========================================================
-    public function program()
+    public function program(Request $request)
     {
-        $kurikulumDefault = $this->kurikulumData();
-        $materiDefault    = $this->materiData();
-
+        $search = $request->input('search');
+    
         $programsDB = Program::with('trainer')
             ->where('status', 'approved')
             ->where('tipe', 'kurikulum')
+            ->when($search, fn($q) => $q->where('judul', 'like', '%' . $search . '%'))
             ->latest()
-            ->get();
-
-        $materiDB = Program::with('trainer')
-            ->where('status', 'approved')
-            ->where('tipe', 'materi')
-            ->latest()
-            ->get();
-
-        return view('pages.pelatihan-program', compact(
-            'kurikulumDefault',
-            'materiDefault',
-            'programsDB',
-            'materiDB'
-        ));
+            ->paginate(12);
+    
+        return view('pages.pelatihan-program', compact('programsDB'));
     }
 
     // =========================================================
@@ -489,63 +478,29 @@ class PelatihanController extends Controller
     // =========================================================
     public function detailProgram($id)
     {
-        // 1. Coba cari di database dulu (program yang sudah disetujui)
-        $dbProgram = Program::with('trainer')
-            ->where('status', 'approved')
-            ->find($id);
-
-        if ($dbProgram) {
-            // Konversi model ke format array yang dipakai blade
-            $program = [
-                'judul'       => $dbProgram->judul,
-                'deskripsi'   => $dbProgram->deskripsi,
-                'ikon'        => $dbProgram->ikon    ?? '🎓',
-                'warna'       => $dbProgram->warna   ?? 'linear-gradient(135deg, #c8e6b0, #7dcf8a)',
-                'metode'      => $dbProgram->metode  ?? 'Online & Offline',
-                'tingkat'     => $dbProgram->tingkat ?? 'Semua Level',
-                'durasi'      => $dbProgram->durasi  ?? '-',
-                'bahasa'      => $dbProgram->bahasa  ?? 'Bahasa Indonesia',
-                'kuota'       => $dbProgram->kuota   ?? '-',
-                'gambar'      => $dbProgram->gambar  ?? null,
-                'trainer'     => $dbProgram->trainer,
-                'modul'       => [],
-                'benefit'     => [],
-                'total_modul' => 0,
-            ];
-
-            // Decode kolom modul (JSON)
-            if (!empty($dbProgram->modul)) {
-                $decoded = is_array($dbProgram->modul)
-                    ? $dbProgram->modul
-                    : json_decode($dbProgram->modul, true);
-                $program['modul']       = $decoded ?? [];
-                $program['total_modul'] = count($program['modul']);
-            }
-
-            // Decode kolom benefit (JSON)
-            if (!empty($dbProgram->benefit)) {
-                $decoded = is_array($dbProgram->benefit)
-                    ? $dbProgram->benefit
-                    : json_decode($dbProgram->benefit, true);
-                $program['benefit'] = $decoded ?? [];
-            }
-
-            return view('pages.pelatihan-program-detail', compact('program'));
-        }
-
-        // 2. Tidak ada di DB — cari di data statis berdasarkan key 'id'
-        $allStatic = array_merge(
-            $this->kurikulumData(),
-            $this->materiData()
-        );
-
-        $program = collect($allStatic)->firstWhere('id', (int) $id);
-
+        // Cek dari database dulu
+        $program = \App\Models\Program::with([
+                        'trainer',
+                        'moduls' => function($q) {
+                            $q->where('status', 'approved')
+                              ->orderBy('urutan', 'asc');
+                        }
+                    ])
+                    ->where('status', 'approved')
+                    ->find($id);
+    
         if ($program) {
             return view('pages.pelatihan-program-detail', compact('program'));
         }
-
-        abort(404, 'Program pelatihan tidak ditemukan.');
+    
+        // Fallback ke data statis kurikulum
+        $programStatis = collect($this->kurikulumData())->firstWhere('id', (int) $id);
+        if ($programStatis) {
+            $program = $programStatis;
+            return view('pages.pelatihan-program-detail', compact('program'));
+        }
+    
+        abort(404);
     }
 
     // =========================================================

@@ -50,6 +50,10 @@ class User extends Authenticatable
         'bnsp_certificate',
         'white_bg_photo',
         'drive_link_documentation',
+        'bidang_keahlian',
+        'foto',
+        'no_hp',
+        
     ];
 
     /**

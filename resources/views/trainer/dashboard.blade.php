@@ -1,3 +1,4 @@
+{{-- resources/views/trainer/dashboard.blade.php --}}
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -57,7 +58,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:hover { background: #1f4e37; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(45,106,79,.3); }
 .btn-secondary { background: var(--accent3); color: #fff; }
-.btn-secondary:hover { background: #2e5a7a; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(69,123,157,.3); }
+.btn-secondary:hover { background: #2e5a7a; transform: translateY(-1px); }
 .btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
 .btn-ghost:hover { background: var(--border); }
 .btn-danger { background: #fff0ed; color: var(--accent2); border: 1px solid #e76f5166; }
@@ -85,12 +86,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .stat-value { font-size: 30px; font-weight: 800; color: var(--text); }
 .stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
 
-/* ============ SECTION ============ */
-.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
-.section-title { font-size: 16px; font-weight: 700; }
-.section-title span { color: var(--text-muted); font-weight: 400; font-size: 14px; margin-left: 8px; }
-.section-actions { display: flex; gap: 10px; align-items: center; }
-
 /* ============ TABLE ============ */
 .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 28px; box-shadow: var(--shadow); }
 table { width: 100%; border-collapse: collapse; }
@@ -110,38 +105,178 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 .chip-kurikulum { background: #e3f0fa; color: var(--accent3); border-color: #bdd5ea; }
 .chip-materi    { background: var(--accent-light); color: var(--accent); border-color: #a7d7c5; }
 
-/* ============ CARD GRID ============ */
-.card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 28px; }
-.item-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all .2s; box-shadow: var(--shadow); }
-.item-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(45,106,79,.12); }
-.item-card-img { width: 100%; height: 140px; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 40px; overflow: hidden; }
-.item-card-img img { width: 100%; height: 100%; object-fit: cover; }
-.item-card-body { padding: 16px; }
-.item-card-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-.item-card-meta  { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.item-card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; }
-.item-card-footer { display: flex; align-items: center; justify-content: space-between; }
-.btn-icon { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .2s; font-size: 13px; }
-.btn-icon:hover { background: var(--accent-light); border-color: var(--accent); }
-.btn-icon-danger:hover { background: #fff0ed; border-color: var(--accent2); }
+/* ============ KURIKULUM BLOCK ============ */
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.section-title { font-size: 16px; font-weight: 700; }
+.section-title span { color: var(--text-muted); font-weight: 400; font-size: 14px; margin-left: 8px; }
+.section-actions { display: flex; gap: 10px; align-items: center; }
 
-/* ── Kartu materi di bawah kurikulum ── */
 .kurikulum-block { margin-bottom: 28px; }
-.kurikulum-block-header {
-    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius) var(--radius) 0 0;
-    padding: 16px 20px; display: flex; align-items: center; gap: 12px;
-}
+.kurikulum-block-header { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius) var(--radius) 0 0; padding: 16px 20px; display: flex; align-items: center; gap: 12px; }
 .kurikulum-block-header .k-title { font-size: 15px; font-weight: 700; flex: 1; }
-.kurikulum-block-header .k-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 12px; }
-.materi-list { border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); overflow: hidden; }
-.materi-row { display: flex; align-items: center; gap: 14px; padding: 12px 20px; border-bottom: 1px solid var(--border); background: var(--surface); transition: background .15s; }
-.materi-row:last-child { border-bottom: none; }
-.materi-row:hover { background: #f9f7f4; }
-.materi-num { width: 26px; height: 26px; border-radius: 8px; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--text-muted); flex-shrink: 0; }
-.materi-info { flex: 1; }
-.materi-title { font-size: 13px; font-weight: 600; }
-.materi-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; display: flex; gap: 8px; }
-.tipe-icon { font-size: 14px; }
+.kurikulum-block-header .k-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 12px; flex-wrap: wrap; }
+.modul-list { border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); overflow: hidden; }
+.modul-row { display: flex; align-items: center; gap: 14px; padding: 12px 20px; border-bottom: 1px solid var(--border); background: var(--surface); transition: background .15s; }
+.modul-row:last-child { border-bottom: none; }
+.modul-row:hover { background: #f9f7f4; }
+.modul-info { flex: 1; }
+.modul-title { font-size: 13px; font-weight: 600; color: var(--accent); }
+.modul-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.btn-icon { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .2s; font-size: 13px; }
+.btn-icon:hover { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+.btn-icon-danger:hover { background: #fff0ed; border-color: var(--accent2); color: var(--accent2) !important; }
+
+/* ============ ABSENSI STYLES ============ */
+.absensi-bar {
+    border: 1px solid var(--border);
+    border-top: none;
+    background: linear-gradient(135deg, #f0f9f4 0%, #fafffe 100%);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+.absensi-bar.absensi-active {
+    background: linear-gradient(135deg, #e8f5e9 0%, #f0fff4 100%);
+    border-color: #a7d7c5;
+}
+.absensi-bar.absensi-upcoming {
+    background: linear-gradient(135deg, #fffbea 0%, #fffdf5 100%);
+    border-color: #fcd34d66;
+}
+.absensi-bar.absensi-ended {
+    background: var(--surface2);
+    border-color: var(--border);
+    opacity: 0.8;
+}
+
+/* Tombol Absensi untuk Peserta (tampil publik) */
+.btn-absensi-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+    animation: pulse-green 2s infinite;
+    transition: all .2s;
+}
+.btn-absensi-live:hover { background: #1f4e37; transform: translateY(-1px); }
+@keyframes pulse-green {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(45,106,79,.4); }
+    50%       { box-shadow: 0 0 0 6px rgba(45,106,79,0); }
+}
+
+.absensi-countdown {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.countdown-timer {
+    font-size: 13px;
+    font-weight: 800;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #a7d7c566;
+}
+.countdown-timer.warning { color: #b45309; background: #fffbea; border-color: #fcd34d66; }
+.countdown-timer.upcoming { color: #b45309; background: #fffbea; border-color: #fcd34d66; }
+
+.absensi-label {
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.absensi-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: blink 1s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.absensi-schedule-info {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Tag dalam form */
+.form-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #e3f0fa;
+    color: var(--accent3);
+    border: 1px solid #bdd5ea;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+/* Toggle absensi dalam form */
+.absensi-toggle-section {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+.absensi-toggle-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background .15s;
+}
+.absensi-toggle-header:hover { background: var(--border); }
+.absensi-toggle-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+}
+.absensi-toggle-body {
+    display: none;
+    padding: 16px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+}
+.absensi-toggle-body.open { display: block; }
+
+/* Switch toggle */
+.switch { position: relative; display: inline-block; width: 40px; height: 22px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch-slider { position: absolute; cursor: pointer; inset: 0; background: #ccc; border-radius: 22px; transition: .3s; }
+.switch-slider:before { content: ''; position: absolute; height: 16px; width: 16px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .3s; }
+.switch input:checked + .switch-slider { background: var(--accent); }
+.switch input:checked + .switch-slider:before { transform: translateX(18px); }
 
 /* ============ PROFILE ============ */
 .profile-hero { background: linear-gradient(135deg, var(--accent) 0%, #1b4332 100%); border-radius: var(--radius); padding: 32px; margin-bottom: 24px; display: flex; align-items: center; gap: 24px; box-shadow: var(--shadow); }
@@ -153,44 +288,26 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .form-group { margin-bottom: 18px; }
 .form-label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-.form-input, .form-textarea, .form-select {
-    width: 100%; padding: 11px 14px; background: var(--surface2); border: 1.5px solid var(--border);
-    border-radius: 10px; color: var(--text); font-family: inherit; font-size: 14px; transition: border .2s;
-}
+.form-input, .form-textarea, .form-select { width: 100%; padding: 11px 14px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); font-family: inherit; font-size: 14px; transition: border .2s; }
 .form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: var(--accent); background: #fff; }
 .form-textarea { min-height: 100px; resize: vertical; }
 .form-static { padding: 11px 14px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; color: var(--text); }
 .form-hint { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
+.form-divider { border: none; border-top: 1px solid var(--border); margin: 8px 0 18px; }
+.form-section-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
 
-/* ── Radio group (sertifikat) ── */
 .radio-group { display: flex; gap: 12px; }
 .radio-option { flex: 1; }
 .radio-option input[type="radio"] { display: none; }
-.radio-option label {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 10px; border: 1.5px solid var(--border); border-radius: 10px;
-    font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s;
-    background: var(--surface2); color: var(--text-muted);
-}
+.radio-option label { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; background: var(--surface2); color: var(--text-muted); }
 .radio-option input[type="radio"]:checked + label { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
 
-/* ── Tipe konten toggle ── */
-.tipe-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-.tipe-tab { flex: 1; padding: 9px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 12px; font-weight: 700; text-align: center; cursor: pointer; transition: all .2s; background: var(--surface2); color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
-.tipe-tab.active { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
-.tipe-block { display: none; }
-.tipe-block.visible { display: block; }
-
-/* ============ ALERT ============ */
-.alert { padding: 14px 18px; border-radius: 10px; font-size: 13px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-.alert-success { background: var(--accent-light); color: var(--accent); border: 1px solid #a7d7c566; }
-.alert-error   { background: #fff0ed; color: var(--accent2); border: 1px solid #e76f5166; }
-
-/* ── No-kurikulum notice ── */
-.notice-box { background: #fffbea; border: 1px solid #fcd34d66; border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
-.notice-box .notice-icon { font-size: 22px; flex-shrink: 0; }
-.notice-box .notice-text { font-size: 13px; color: #92400e; line-height: 1.6; }
-.notice-box .notice-text strong { color: #78350f; }
+.upload-area { width: 100%; min-height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 24px; border: 2px dashed #2d6a4f66; border-radius: 14px; background: #faf8f5; text-align: center; cursor: pointer; transition: all .2s; }
+.upload-area:hover { background: #eef8f1; border-color: var(--accent); }
+.upload-area .upload-icon { font-size: 36px; line-height: 1; }
+.upload-area .upload-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.upload-area .upload-text span { color: var(--accent); font-weight: 700; }
+.upload-fname { margin-top: 4px; font-size: 12px; font-weight: 600; color: var(--accent); word-break: break-word; }
 
 /* ============ MODAL ============ */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; }
@@ -203,21 +320,17 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 .modal-close { width: 34px; height: 34px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--text-muted); }
 .modal-close:hover { background: #fee; border-color: var(--accent2); color: var(--accent2); }
 .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
-.form-divider { border: none; border-top: 1px solid var(--border); margin: 8px 0 18px; }
-.form-section-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
 
-.upload-area { width: 100%; min-height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 24px; border: 2px dashed #2d6a4f66; border-radius: 14px; background: #faf8f5; text-align: center; cursor: pointer; transition: all .2s; }
-.upload-area:hover { background: #eef8f1; border-color: var(--accent); }
-.upload-area .upload-icon { font-size: 36px; line-height: 1; }
-.upload-area .upload-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
-.upload-area .upload-text span { color: var(--accent); font-weight: 700; }
-.upload-fname { margin-top: 4px; font-size: 12px; font-weight: 600; color: var(--accent); word-break: break-word; }
+.alert { padding: 14px 18px; border-radius: 10px; font-size: 13px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+.alert-success { background: var(--accent-light); color: var(--accent); border: 1px solid #a7d7c566; }
+.alert-error   { background: #fff0ed; color: var(--accent2); border: 1px solid #e76f5166; }
 
-/* ============ PAGE SECTIONS ============ */
+.notice-box { background: #fffbea; border: 1px solid #fcd34d66; border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+.notice-box .notice-text { font-size: 13px; color: #92400e; line-height: 1.6; }
+
 .page-section { display: none; }
 .page-section.active { display: block; }
 
-/* ============ EMPTY STATE ============ */
 .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
 .empty-state .empty-icon { font-size: 48px; margin-bottom: 16px; }
 .empty-state h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
@@ -248,27 +361,18 @@ tbody td { padding: 14px 18px; font-size: 13px; }
     <div class="nav-section">
         <div class="nav-label">Menu Utama</div>
         <div class="nav-item active" onclick="showPage('beranda')">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-            </svg>
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
             Beranda
         </div>
         <div class="nav-item" onclick="showPage('program')">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-            </svg>
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
             Program / Pelatihan
             @if(isset($pendingPelatihanCount) && $pendingPelatihanCount > 0)
                 <span class="nav-badge">{{ $pendingPelatihanCount }}</span>
             @endif
         </div>
         <div class="nav-item" onclick="showPage('event')">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="4" width="18" height="18" rx="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-                <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             Event
             @if(isset($pendingEventCount) && $pendingEventCount > 0)
                 <span class="nav-badge">{{ $pendingEventCount }}</span>
@@ -278,15 +382,11 @@ tbody td { padding: 14px 18px; font-size: 13px; }
     <div class="nav-section">
         <div class="nav-label">Akun</div>
         <div class="nav-item" onclick="showPage('profil')">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
-            </svg>
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             Profil Saya
         </div>
         <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="nav-item">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-            </svg>
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
             Keluar
         </a>
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display:none">@csrf</form>
@@ -310,402 +410,440 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 
 {{-- ============ MAIN ============ --}}
 <main class="main">
-    <header class="topbar">
-        <div class="topbar-title" id="page-title">Dashboard Trainer</div>
-        <div style="display:flex;gap:10px;align-items:center">
-            <span style="font-size:13px;color:var(--text-muted)">Halo, {{ auth()->user()->name }} 👋</span>
+<header class="topbar">
+    <div class="topbar-title" id="page-title">Dashboard Trainer</div>
+    <div style="display:flex;gap:10px;align-items:center">
+        <span style="font-size:13px;color:var(--text-muted)">Halo, {{ auth()->user()->name }} 👋</span>
+        <a href="{{ url('/') }}" target="_blank" class="btn btn-ghost" style="font-size:13px;padding:8px 16px">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/>
+                <path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/>
+            </svg>
+            Lihat Website
+        </a>
+    </div>
+</header>
+
+<div class="content">
+
+    {{-- ============ BERANDA ============ --}}
+    <div class="page-section active" id="page-beranda">
+        @if(session('success'))<div class="alert alert-success">✅ {{ session('success') }}</div>@endif
+        @if(session('error'))<div class="alert alert-error">⚠️ {{ session('error') }}</div>@endif
+
+        <div class="stats-grid">
+            <div class="stat-card green">
+                <div class="stat-icon">📚</div>
+                <div class="stat-label">Total Kurikulum</div>
+                <div class="stat-value">{{ $totalKurikulum ?? 0 }}</div>
+                <div class="stat-sub">Kurikulum yang diajukan</div>
+            </div>
+            <div class="stat-card teal">
+                <div class="stat-icon">📝</div>
+                <div class="stat-label">Total Modul</div>
+                <div class="stat-value">{{ $totalModul ?? 0 }}</div>
+                <div class="stat-sub">Modul dalam kurikulum</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="stat-icon">📅</div>
+                <div class="stat-label">Total Event</div>
+                <div class="stat-value">{{ $totalEvent ?? 0 }}</div>
+                <div class="stat-sub">Event yang diajukan</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-label">Menunggu Persetujuan</div>
+                <div class="stat-value">{{ $pendingTotal ?? 0 }}</div>
+                <div class="stat-sub">Perlu tindakan admin</div>
+            </div>
         </div>
-    </header>
 
-    <div class="content">
+        <div class="section-header">
+            <div class="section-title">Status Terbaru <span>program & modul</span></div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Nama</th><th>Tipe</th><th>Tanggal</th><th>Status</th></tr></thead>
+                <tbody>
+                    @forelse($recentSubmissions ?? [] as $item)
+                    <tr>
+                        <td style="font-weight:500">{{ $item->judul ?? $item->nama }}</td>
+                        <td><span class="chip chip-{{ $item->tipe ?? 'kurikulum' }}">{{ ucfirst($item->tipe ?? '-') }}</span></td>
+                        <td>{{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('d M Y') }}</td>
+                        <td>
+                            @if(($item->status ?? '') === 'approved')
+                                <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
+                            @elseif(($item->status ?? '') === 'rejected')
+                                <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
+                            @else
+                                <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text-muted)">Belum ada program atau event yang diajukan.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-        {{-- ============ BERANDA ============ --}}
-        <div class="page-section active" id="page-beranda">
-            @if(session('success'))
-                <div class="alert alert-success">✅ {{ session('success') }}</div>
-            @endif
-            @if(session('error'))
-                <div class="alert alert-error">⚠️ {{ session('error') }}</div>
-            @endif
+    {{-- ============ PROGRAM ============ --}}
+    <div class="page-section" id="page-program">
+        @if(session('success'))<div class="alert alert-success">✅ {{ session('success') }}</div>@endif
+        @if(session('error'))<div class="alert alert-error">⚠️ {{ session('error') }}</div>@endif
 
-            <div class="stats-grid">
-                <div class="stat-card green">
-                    <div class="stat-icon">📚</div>
-                    <div class="stat-label">Total Kurikulum</div>
-                    <div class="stat-value">{{ $totalKurikulum ?? 0 }}</div>
-                    <div class="stat-sub">Kurikulum yang diajukan</div>
+        <div class="section-header">
+            <div class="section-title">Program / Pelatihan <span>{{ ($totalKurikulum ?? 0) + ($totalModul ?? 0) }} total</span></div>
+            <div class="section-actions">
+                <button class="btn btn-secondary" onclick="openModalModul()">
+                    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    + Tambah Modul
+                </button>
+                <button class="btn btn-primary" onclick="openModal('modal-kurikulum')">
+                    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+                    + Tambah Kurikulum
+                </button>
+            </div>
+        </div>
+
+        @php
+            $kurikulumList   = isset($pelatihanList) ? $pelatihanList->where('tipe', 'kurikulum') : collect();
+            $modulList       = isset($pelatihanList) ? $pelatihanList->where('tipe', 'modul')     : collect();
+            $adaKurikulumVar = $kurikulumList->count() > 0;
+        @endphp
+
+        @if($adaKurikulumVar)
+            @foreach($kurikulumList as $k)
+            @php
+                $modulDalamK = $modulList->where('kurikulum_id', $k->id)->sortBy('urutan');
+
+                // Absensi state
+                $absensiAktif   = !empty($k->absensi_mulai) && !empty($k->absensi_selesai) && $k->absensi_aktif;
+                $absensiMulai   = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_mulai, config('app.timezone'))   : null;
+$absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, config('app.timezone')) : null;
+    $absensiUrl     = $k->absensi_url ?? '#'; 
+    $now            = \Carbon\Carbon::now();
+    $statusAbsensi  = null;
+    if ($absensiAktif) {
+        if ($now->lt($absensiMulai))                           $statusAbsensi = 'upcoming';
+        elseif ($now->between($absensiMulai, $absensiSelesai)) $statusAbsensi = 'active';
+        else                                                   $statusAbsensi = 'ended';
+    }
+               
+            @endphp
+            <div class="kurikulum-block">
+                <div class="kurikulum-block-header">
+                    <div style="width:42px;height:42px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden;">
+                        @if($k->gambar)
+                            <img src="{{ asset('storage/'.$k->gambar) }}" style="width:100%;height:100%;object-fit:cover;">
+                        @else
+                            📚
+                        @endif
+                    </div>
+                    <div style="flex:1">
+                        <div class="k-title">{{ $k->judul }}</div>
+                        <div class="k-meta">
+                            <span>{{ $modulDalamK->count() }} materi</span>
+                            @if($k->total_jam) <span>⏱ {{ (int) $k->total_jam }} jam</span> @endif
+                            @if($k->jumlah_sesi) <span>📅 {{ $k->jumlah_sesi }} sesi</span> @endif
+                            @if($k->sertifikat) <span>🏆 Sertifikat</span> @endif
+                            @if($k->tingkat) <span>{{ ucfirst($k->tingkat) }}</span> @endif
+                            @if($k->metode) <span>{{ ucfirst($k->metode) }}</span> @endif
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+                        @if(($k->status ?? '') === 'approved')
+                            <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
+                        @elseif(($k->status ?? '') === 'rejected')
+                            <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
+                        @else
+                            <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
+                        @endif
+
+                        <button class="btn btn-sm btn-outline"
+                            onclick="openModalModulDenganKurikulum({{ $k->id }}, '{{ addslashes($k->judul) }}')">
+                            + Modul
+                        </button>
+
+                        <button class="btn-icon btn-edit-kurikulum"
+                            data-id="{{ $k->id }}"
+                            data-judul="{{ $k->judul }}"
+                            data-deskripsi="{{ $k->deskripsi ?? '' }}"
+                            data-metode="{{ $k->metode ?? '' }}"
+                            data-tingkat="{{ $k->tingkat ?? '' }}"
+                            data-bahasa="{{ $k->bahasa ?? 'Bahasa Indonesia' }}"
+                            data-total-jam="{{ $k->total_jam ?? '' }}"
+                            data-jumlah-sesi="{{ $k->jumlah_sesi ?? '' }}"
+                            data-sertifikat="{{ $k->sertifikat ? 1 : 0 }}"
+                            data-phone="{{ $k->phone ?? auth()->user()->phone ?? '' }}"
+                            data-absensi-aktif="{{ !empty($k->absensi_mulai) ? 1 : 0 }}"
+                            data-absensi-mulai="{{ $k->absensi_mulai ?? '' }}"
+                            data-absensi-selesai="{{ $k->absensi_selesai ?? '' }}"
+                            data-absensi-url="{{ $k->absensi_url ?? '' }}"
+                            title="Edit Kurikulum">
+                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </button>
+
+                        <button class="btn-icon btn-icon-danger" onclick="hapusItem({{ $k->id }}, 'kurikulum')" title="Hapus">
+                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+                        </button>
+                    </div>
                 </div>
-                <div class="stat-card teal">
-                    <div class="stat-icon">📝</div>
-                    <div class="stat-label">Total Materi</div>
-                    <div class="stat-value">{{ $totalMateri ?? 0 }}</div>
-                    <div class="stat-sub">Materi dalam kurikulum</div>
+
+                {{-- ══ ABSENSI BAR ══ --}}
+                @if($absensiAktif)
+                <div class="absensi-bar absensi-{{ $statusAbsensi }}"
+                     id="absensi-bar-{{ $k->id }}"
+                     data-mulai="{{ $absensiMulai ? $absensiMulai->timestamp : 0 }}"
+                     data-selesai="{{ $absensiSelesai ? $absensiSelesai->timestamp : 0 }}"
+                     data-url="{{ $absensiUrl }}">
+
+                    @if($statusAbsensi === 'active')
+                        {{-- Aktif: tombol berkedip + countdown sisa waktu --}}
+                        <div class="absensi-label">
+                            <span class="absensi-dot"></span>
+                            Absensi Sedang Berlangsung
+                        </div>
+                        <a href="{{ $absensiUrl }}" target="_blank" class="btn-absensi-live">
+                            ✅ Buka Link Absensi
+                        </a>
+                        <div class="absensi-countdown">
+                            <span style="color:var(--text-muted);font-size:11px">Berakhir dalam</span>
+                            <span class="countdown-timer" id="timer-{{ $k->id }}">--:--:--</span>
+                        </div>
+
+                    @elseif($statusAbsensi === 'upcoming')
+                        {{-- Akan datang: countdown menuju mulai --}}
+                        <div style="font-size:20px">⏰</div>
+                        <div>
+                            <div class="absensi-label" style="color:#92400e">Absensi Akan Dibuka</div>
+                            <div class="absensi-schedule-info">
+                                {{ $absensiMulai->translatedFormat('d M Y, H:i') }} – {{ $absensiSelesai->format('H:i') }} WIB
+                            </div>
+                        </div>
+                        <div class="absensi-countdown" style="margin-left:auto">
+                            <span style="color:var(--text-muted);font-size:11px">Dibuka dalam</span>
+                            <span class="countdown-timer upcoming" id="timer-{{ $k->id }}">--:--:--</span>
+                        </div>
+
+                    @else
+                        {{-- Sudah selesai --}}
+                        <div style="font-size:18px">🔒</div>
+                        <div>
+                            <div class="absensi-label" style="color:var(--text-muted)">Absensi Telah Ditutup</div>
+                            <div class="absensi-schedule-info">
+                                Selesai {{ $absensiSelesai->translatedFormat('d M Y, H:i') }} WIB
+                            </div>
+                        </div>
+                    @endif
                 </div>
-                <div class="stat-card blue">
-                    <div class="stat-icon">📅</div>
-                    <div class="stat-label">Total Event</div>
-                    <div class="stat-value">{{ $totalEvent ?? 0 }}</div>
-                    <div class="stat-sub">Event yang diajukan</div>
+                @endif
+                {{-- ══ END ABSENSI BAR ══ --}}
+
+                {{-- Modul --}}
+                @if($modulDalamK->count() > 0)
+                <div class="modul-list">
+                    @foreach($modulDalamK as $m)
+                    <div class="modul-row">
+                        <div style="width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            {{ $m->urutan ?? $loop->iteration }}
+                        </div>
+                        <div class="modul-info">
+                            <div class="modul-title">{{ $m->judul }}</div>
+                            @if($m->deskripsi)
+                            <div class="modul-meta">{{ $m->deskripsi }}</div>
+                            @endif
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+                            @if(($m->status ?? '') === 'approved')
+                                <span class="badge badge-approved" style="font-size:10px;padding:3px 8px"><span class="badge-dot"></span>Disetujui</span>
+                            @elseif(($m->status ?? '') === 'rejected')
+                                <span class="badge badge-rejected" style="font-size:10px;padding:3px 8px"><span class="badge-dot"></span>Ditolak</span>
+                            @else
+                                <span class="badge badge-pending" style="font-size:10px;padding:3px 8px"><span class="badge-dot"></span>Menunggu</span>
+                            @endif
+                            <button class="btn-icon"
+                                onclick="editModul({{ $m->id }}, {{ $m->kurikulum_id ?? 'null' }}, '{{ addslashes($m->judul) }}', '{{ addslashes($m->deskripsi ?? '') }}', '{{ $m->urutan ?? $loop->iteration }}')"
+                                title="Edit Modul">
+                                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            </button>
+                            <button class="btn-icon btn-icon-danger" onclick="hapusItem({{ $m->id }}, 'modul')" title="Hapus">
+                                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    @endforeach
                 </div>
-                <div class="stat-card orange">
-                    <div class="stat-icon">⏳</div>
-                    <div class="stat-label">Menunggu Persetujuan</div>
-                    <div class="stat-value">{{ $pendingTotal ?? 0 }}</div>
-                    <div class="stat-sub">Perlu tindakan admin</div>
+                @else
+                <div class="modul-list">
+                    <div style="padding:20px 24px;font-size:13px;color:var(--text-muted);display:flex;align-items:center;gap:10px">
+                        <span>📭</span> Belum ada modul.
+                        <button class="btn btn-sm btn-outline" style="margin-left:4px"
+                            onclick="openModalModulDenganKurikulum({{ $k->id }}, '{{ addslashes($k->judul) }}')">
+                            Tambah sekarang
+                        </button>
+                    </div>
+                </div>
+                @endif
+
+                @if(($k->status ?? '') === 'rejected' && $k->catatan_admin)
+                <div style="padding:10px 16px;background:#fff0ed;border:1px solid #e76f5166;border-top:none;border-radius:0 0 var(--radius) var(--radius);font-size:12px;color:var(--accent2)">
+                    <strong>Catatan Admin:</strong> {{ $k->catatan_admin }}
+                </div>
+                @endif
+            </div>
+            @endforeach
+        @else
+            <div class="table-wrap">
+                <div class="empty-state">
+                    <div class="empty-icon">📚</div>
+                    <h3>Belum ada kurikulum</h3>
+                    <p>Mulai dengan membuat kurikulum, lalu tambahkan modul ke dalamnya.</p>
                 </div>
             </div>
+        @endif
+    </div>
 
-            <div class="section-header">
-                <div class="section-title">Status Terbaru <span>program & materi</span></div>
-            </div>
+    {{-- ============ EVENT ============ --}}
+    <div class="page-section" id="page-event">
+        @if(session('success'))<div class="alert alert-success">✅ {{ session('success') }}</div>@endif
+        <div class="section-header">
+            <div class="section-title">Event <span>{{ $totalEvent ?? 0 }} total</span></div>
+            <button class="btn btn-primary" onclick="openModal('modal-event')">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Tambah Event
+            </button>
+        </div>
+        @if(isset($eventList) && $eventList->count() > 0)
             <div class="table-wrap">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Nama</th><th>Tipe</th><th>Tanggal</th><th>Status</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Nama Event</th><th>Lokasi</th><th>Tanggal</th><th>Kapasitas</th><th>Status</th><th>Aksi</th></tr></thead>
                     <tbody>
-                        @forelse($recentSubmissions ?? [] as $item)
+                        @foreach($eventList as $event)
                         <tr>
-                            <td style="font-weight:500">{{ $item->judul ?? $item->nama }}</td>
+                            <td style="font-weight:500">{{ $event->judul ?? $event->nama }}</td>
+                            <td>{{ $event->lokasi ?? '-' }}</td>
+                            <td>{{ \Carbon\Carbon::parse($event->tanggal)->translatedFormat('d M Y') }}</td>
+                            <td>{{ $event->kapasitas ?? '-' }}</td>
                             <td>
-                                @if(isset($item->jenis) && $item->jenis === 'Event')
-                                    <span class="chip">Event</span>
-                                @else
-                                    <span class="chip chip-{{ $item->tipe ?? 'kurikulum' }}">{{ ucfirst($item->tipe ?? '-') }}</span>
-                                @endif
-                            </td>
-                            <td>{{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('d M Y') }}</td>
-                            <td>
-                                @if(($item->status ?? '') === 'approved')
+                                @if(($event->status ?? '') === 'approved')
                                     <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
-                                @elseif(($item->status ?? '') === 'rejected')
+                                @elseif(($event->status ?? '') === 'rejected')
                                     <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
                                 @else
                                     <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
                                 @endif
                             </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="4" style="text-align:center;padding:40px;color:var(--text-muted)">
-                                Belum ada program atau event yang diajukan.
+                            <td>
+                                <div style="display:flex;gap:6px">
+                                    <button class="btn-icon" onclick="editEvent({{ $event->id }},'{{ addslashes($event->judul ?? $event->nama) }}','{{ $event->tipe ?? '' }}','{{ $event->tanggal }}','{{ addslashes($event->lokasi ?? '') }}','{{ $event->kapasitas ?? '' }}','{{ addslashes($event->biaya ?? '') }}','{{ addslashes($event->deskripsi ?? '') }}')" title="Edit">
+                                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    </button>
+                                    <button class="btn-icon btn-icon-danger" onclick="hapusEvent({{ $event->id }})" title="Hapus">
+                                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
-        </div>{{-- /page-beranda --}}
-
-        {{-- ============ PROGRAM / PELATIHAN ============ --}}
-        <div class="page-section" id="page-program">
-            @if(session('success'))
-                <div class="alert alert-success">✅ {{ session('success') }}</div>
-            @endif
-            @if(session('error'))
-                <div class="alert alert-error">⚠️ {{ session('error') }}</div>
-            @endif
-
-            <div class="section-header">
-                <div class="section-title">
-                    Program / Pelatihan
-                    <span>{{ ($totalKurikulum ?? 0) + ($totalMateri ?? 0) }} total</span>
-                </div>
-                {{-- ── DUA BUTTON ── --}}
-                <div class="section-actions">
-                    <button class="btn btn-secondary" onclick="openModalMateri()">
-                        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                        </svg>
-                        + Tambah Materi
-                    </button>
-                    <button class="btn btn-primary" onclick="openModal('modal-kurikulum')">
-                        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
-                        </svg>
-                        + Tambah Kurikulum
-                    </button>
+        @else
+            <div class="table-wrap">
+                <div class="empty-state">
+                    <div class="empty-icon">📅</div>
+                    <h3>Belum ada event</h3>
+                    <p>Klik "Tambah Event" untuk mengajukan event baru.</p>
                 </div>
             </div>
+        @endif
+    </div>
 
-            {{-- ── List kurikulum + materi nested ── --}}
-            @php
-                $kurikulumList = isset($pelatihanList) ? $pelatihanList->where('tipe', 'kurikulum') : collect();
-                $materiList    = isset($pelatihanList) ? $pelatihanList->where('tipe', 'materi')    : collect();
-                $materiStandalone = $materiList->whereNull('kurikulum_id');
-            @endphp
-
-            @if($kurikulumList->count() > 0)
-                @foreach($kurikulumList as $k)
-                @php $materiDalamK = $materiList->where('kurikulum_id', $k->id)->sortBy('urutan'); @endphp
-                <div class="kurikulum-block">
-                    {{-- Header kurikulum --}}
-                    <div class="kurikulum-block-header">
-                        <div style="width:42px;height:42px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">
-                            @if($k->gambar)
-                                <img src="{{ asset('storage/'.$k->gambar) }}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">
-                            @else
-                                📚
-                            @endif
-                        </div>
-                        <div style="flex:1">
-                            <div class="k-title">{{ $k->judul }}</div>
-                            <div class="k-meta">
-                                <span>{{ $materiDalamK->count() }} materi</span>
-                                @if($k->total_jam) <span>⏱ {{ $k->total_jam }} jam</span> @endif
-                                @if($k->jumlah_sesi) <span>📅 {{ $k->jumlah_sesi }} sesi</span> @endif
-                                @if($k->sertifikat) <span>🏆 Sertifikat</span> @endif
-                                @if($k->tingkat) <span>{{ ucfirst($k->tingkat) }}</span> @endif
-                                @if($k->metode) <span>{{ ucfirst($k->metode) }}</span> @endif
-                            </div>
-                        </div>
-                        <div style="display:flex;align-items:center;gap:10px">
-                            @if(($k->status ?? '') === 'approved')
-                                <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
-                            @elseif(($k->status ?? '') === 'rejected')
-                                <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
-                            @else
-                                <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
-                            @endif
-                            {{-- Tombol tambah materi langsung ke kurikulum ini --}}
-                            <button class="btn btn-sm btn-outline"
-                                onclick="openModalMateriDenganKurikulum({{ $k->id }}, '{{ addslashes($k->judul) }}')">
-                                + Materi
-                            </button>
-                            @if(($k->status ?? '') !== 'approved')
-                            <button class="btn-icon" onclick="editKurikulum({{ $k->id }}, '{{ addslashes($k->judul) }}', '{{ addslashes($k->deskripsi ?? '') }}', '{{ $k->metode ?? '' }}', '{{ $k->tingkat ?? '' }}', '{{ $k->bahasa ?? '' }}', '{{ $k->jumlah_materi ?? '' }}', '{{ $k->total_jam ?? '' }}', '{{ $k->jumlah_sesi ?? '' }}', {{ $k->sertifikat ? 1 : 0 }})" title="Edit">
-                                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                </svg>
-                            </button>
-                            @endif
-                            <button class="btn-icon btn-icon-danger" onclick="hapusItem({{ $k->id }}, 'kurikulum')" title="Hapus">
-                                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <polyline points="3 6 5 6 21 6"/>
-                                    <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
-                                    <path d="M10 11v6M14 11v6M9 6V4h6v2"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    {{-- Materi di dalam kurikulum ini --}}
-                    @if($materiDalamK->count() > 0)
-                    <div class="materi-list">
-                        @foreach($materiDalamK as $m)
-                        <div class="materi-row">
-                            <div class="materi-num">{{ $m->urutan ?? $loop->iteration }}</div>
-                            <div class="tipe-icon">
-                                @if($m->metode === 'video') 🎬
-                                @elseif($m->metode === 'file') 📄
-                                @else 📝
-                                @endif
-                            </div>
-                            <div class="materi-info">
-                                <div class="materi-title">{{ $m->judul }}</div>
-                                <div class="materi-meta">
-                                    @if($m->metode) <span>{{ ucfirst($m->metode) }}</span> @endif
-                                    @if($m->durasi) <span>⏱ {{ $m->durasi }} menit</span> @endif
-                                    @if($m->deskripsi) <span>{{ Str::limit($m->deskripsi, 60) }}</span> @endif
-                                </div>
-                            </div>
-                            <div style="display:flex;align-items:center;gap:8px">
-                                @if(($m->status ?? '') === 'approved')
-                                    <span class="badge badge-approved" style="font-size:10px;padding:3px 8px"><span class="badge-dot"></span>Disetujui</span>
-                                @elseif(($m->status ?? '') === 'rejected')
-                                    <span class="badge badge-rejected" style="font-size:10px;padding:3px 8px"><span class="badge-dot"></span>Ditolak</span>
-                                @else
-                                    <span class="badge badge-pending" style="font-size:10px;padding:3px 8px"><span class="badge-dot"></span>Menunggu</span>
-                                @endif
-                                @if(($m->status ?? '') !== 'approved')
-                                <button class="btn-icon" onclick="editMateri({{ $m->id }}, '{{ addslashes($m->judul) }}', {{ $m->kurikulum_id ?? 'null' }}, '{{ addslashes($m->deskripsi ?? '') }}', '{{ $m->metode ?? 'teks' }}', '{{ addslashes($m->konten_materi ?? '') }}', '{{ addslashes($m->link_video ?? '') }}', '{{ $m->durasi ?? '' }}', '{{ $m->urutan ?? '' }}')" title="Edit">
-                                    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                    </svg>
-                                </button>
-                                @endif
-                                <button class="btn-icon btn-icon-danger" onclick="hapusItem({{ $m->id }}, 'materi')" title="Hapus">
-                                    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <polyline points="3 6 5 6 21 6"/>
-                                        <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
-                                        <path d="M10 11v6M14 11v6M9 6V4h6v2"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                    @else
-                    <div class="materi-list">
-                        <div style="padding:20px 24px;font-size:13px;color:var(--text-muted);display:flex;align-items:center;gap:10px">
-                            <span>📭</span> Belum ada materi.
-                            <button class="btn btn-sm btn-outline" style="margin-left:4px"
-                                onclick="openModalMateriDenganKurikulum({{ $k->id }}, '{{ addslashes($k->judul) }}')">
-                                Tambah sekarang
-                            </button>
-                        </div>
-                    </div>
-                    @endif
-
-                    {{-- Catatan admin jika ditolak --}}
-                    @if(($k->status ?? '') === 'rejected' && $k->catatan_admin)
-                    <div style="padding:10px 16px;background:#fff0ed;border:1px solid #e76f5166;border-top:none;border-radius:0 0 var(--radius) var(--radius);font-size:12px;color:var(--accent2)">
-                        <strong>Catatan Admin:</strong> {{ $k->catatan_admin }}
-                    </div>
-                    @endif
-                </div>
-                @endforeach
-            @else
-                <div class="table-wrap">
-                    <div class="empty-state">
-                        <div class="empty-icon">📚</div>
-                        <h3>Belum ada kurikulum</h3>
-                        <p>Mulai dengan membuat kurikulum, lalu tambahkan materi ke dalamnya.</p>
-                    </div>
-                </div>
-            @endif
-        </div>{{-- /page-program --}}
-
-        {{-- ============ EVENT ============ --}}
-        <div class="page-section" id="page-event">
-            @if(session('success'))
-                <div class="alert alert-success">✅ {{ session('success') }}</div>
-            @endif
-            <div class="section-header">
-                <div class="section-title">Event <span>{{ $totalEvent ?? 0 }} total</span></div>
-                <button class="btn btn-primary" onclick="openModal('modal-event')">
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                    </svg>
-                    Tambah Event
-                </button>
+    {{-- ============ PROFIL ============ --}}
+    <div class="page-section" id="page-profil">
+        @if(session('success'))<div class="alert alert-success">✅ {{ session('success') }}</div>@endif
+        <div class="profile-hero">
+            <div class="profile-avatar-xl">
+                @if(auth()->user()->foto)
+                    <img src="{{ asset('storage/' . auth()->user()->foto) }}" alt="{{ auth()->user()->name }}">
+                @else
+                    {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
+                @endif
             </div>
-            @if(isset($eventList) && $eventList->count() > 0)
-                <div class="table-wrap">
-                    <table>
-                        <thead><tr><th>Nama Event</th><th>Lokasi</th><th>Tanggal</th><th>Kapasitas</th><th>Status</th><th>Aksi</th></tr></thead>
-                        <tbody>
-                            @foreach($eventList as $event)
-                            <tr>
-                                <td style="font-weight:500">{{ $event->judul ?? $event->nama }}</td>
-                                <td>{{ $event->lokasi ?? '-' }}</td>
-                                <td>{{ \Carbon\Carbon::parse($event->tanggal)->translatedFormat('d M Y') }}</td>
-                                <td>{{ $event->kapasitas ?? '-' }}</td>
-                                <td>
-                                    @if(($event->status ?? '') === 'approved')
-                                        <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
-                                    @elseif(($event->status ?? '') === 'rejected')
-                                        <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
-                                    @else
-                                        <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div style="display:flex;gap:6px">
-                                        @if(($event->status ?? '') !== 'approved')
-                                        <button class="btn-icon" onclick="editEvent({{ $event->id }},'{{ addslashes($event->judul ?? $event->nama) }}','{{ $event->tipe ?? '' }}','{{ $event->tanggal }}','{{ addslashes($event->lokasi ?? '') }}','{{ $event->kapasitas ?? '' }}','{{ addslashes($event->biaya ?? '') }}','{{ addslashes($event->deskripsi ?? '') }}')" title="Edit">
-                                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                                        </button>
-                                        @endif
-                                        <button class="btn-icon btn-icon-danger" onclick="hapusEvent({{ $event->id }})" title="Hapus">
-                                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+            <div class="profile-hero-info">
+                <h2>{{ auth()->user()->name }}</h2>
+                <p>Trainer · Bergabung sejak {{ \Carbon\Carbon::parse(auth()->user()->created_at)->translatedFormat('F Y') }}</p>
+            </div>
+            <button class="btn" style="background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.3);margin-left:auto" onclick="openModal('modal-profil')">Edit Profil</button>
+        </div>
+        <div class="profile-form-card">
+            <div class="form-row">
+                <div class="form-group">
+                    <div class="form-label">Nama Lengkap</div>
+                    <div class="form-static">{{ auth()->user()->name }}</div>
                 </div>
-            @else
-                <div class="table-wrap">
-                    <div class="empty-state">
-                        <div class="empty-icon">📅</div>
-                        <h3>Belum ada event</h3>
-                        <p>Klik "Tambah Event" untuk mengajukan event baru.</p>
+                <div class="form-group">
+                    <div class="form-label">Email</div>
+                    <div class="form-static">{{ auth()->user()->email }}</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">No. Telepon / WhatsApp</div>
+                    <div class="form-static" style="display:flex;align-items:center;gap:8px">
+                        @if(auth()->user()->phone)
+                            <span style="color:#25d366">✓</span> {{ auth()->user()->phone }}
+                        @else
+                            <span style="color:var(--text-muted);font-style:italic">Belum diisi</span>
+                        @endif
                     </div>
                 </div>
-            @endif
-        </div>{{-- /page-event --}}
-
-        {{-- ============ PROFIL ============ --}}
-        <div class="page-section" id="page-profil">
-            @if(session('success'))<div class="alert alert-success">✅ {{ session('success') }}</div>@endif
-            <div class="profile-hero">
-                <div class="profile-avatar-xl">
-                    @if(auth()->user()->foto)
-                        <img src="{{ asset('storage/' . auth()->user()->foto) }}" alt="{{ auth()->user()->name }}">
-                    @else
-                        {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-                    @endif
+                <div class="form-group">
+                    <div class="form-label">Bidang Keahlian</div>
+                    <div class="form-static">{{ auth()->user()->bidang_keahlian ?? '-' }}</div>
                 </div>
-                <div class="profile-hero-info">
-                    <h2>{{ auth()->user()->name }}</h2>
-                    <p>Trainer · Bergabung sejak {{ \Carbon\Carbon::parse(auth()->user()->created_at)->translatedFormat('F Y') }}</p>
-                </div>
-                <button class="btn" style="background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.3);margin-left:auto" onclick="openModal('modal-profil')">Edit Profil</button>
             </div>
-            <div class="profile-form-card">
-                <div class="form-row">
-                    <div class="form-group"><div class="form-label">Nama Lengkap</div><div class="form-static">{{ auth()->user()->name }}</div></div>
-                    <div class="form-group"><div class="form-label">Email</div><div class="form-static">{{ auth()->user()->email }}</div></div>
-                    <div class="form-group"><div class="form-label">No. Telepon</div><div class="form-static">{{ auth()->user()->no_hp ?? '-' }}</div></div>
-                    <div class="form-group"><div class="form-label">Bidang Keahlian</div><div class="form-static">{{ auth()->user()->bidang_keahlian ?? '-' }}</div></div>
-                </div>
-                <div class="form-group"><div class="form-label">Bio / Tentang Saya</div><div class="form-static" style="min-height:80px;line-height:1.7">{{ auth()->user()->bio ?? 'Belum ada bio.' }}</div></div>
+            <div class="form-group">
+                <div class="form-label">Bio / Tentang Saya</div>
+                <div class="form-static" style="min-height:80px;line-height:1.7">{{ auth()->user()->bio ?? 'Belum ada bio.' }}</div>
             </div>
         </div>
+    </div>
 
-    </div>{{-- /content --}}
+</div>
 </main>
 
-{{-- ================================================================ --}}
-{{-- MODAL: TAMBAH / EDIT KURIKULUM                                    --}}
-{{-- ================================================================ --}}
+{{-- ============ MODAL KURIKULUM ============ --}}
 <div class="modal-overlay" id="modal-kurikulum">
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">
                 <span id="modal-kurikulum-title-text">Tambah Kurikulum</span>
-                <small>Isi detail kurikulum, materi dapat ditambah setelah kurikulum tersimpan</small>
+                <small id="modal-kurikulum-subtitle">Isi detail kurikulum, modul dapat ditambah setelah kurikulum tersimpan</small>
             </div>
             <button class="modal-close" onclick="resetKurikulumModal(); closeModal('modal-kurikulum')">×</button>
         </div>
-
         <form id="form-kurikulum" method="POST" enctype="multipart/form-data" action="{{ route('trainer.kurikulum.store') }}">
             @csrf
             <input type="hidden" name="_method" id="kurikulum-method" value="POST">
             <input type="hidden" name="kurikulum_edit_id" id="kurikulum-edit-id">
 
-            {{-- Nama --}}
             <div class="form-group">
                 <label class="form-label">Nama Kurikulum <span style="color:var(--accent2)">*</span></label>
                 <input class="form-input" type="text" name="judul" id="k-judul" placeholder="Contoh: Kursus Digital Marketing Terapan..." required>
             </div>
-
-            {{-- Deskripsi --}}
             <div class="form-group">
                 <label class="form-label">Deskripsi</label>
                 <textarea class="form-textarea" name="deskripsi" id="k-deskripsi" rows="3" placeholder="Jelaskan tujuan dan isi kurikulum ini..." maxlength="500"></textarea>
-                <div class="form-hint">Maks. 500 karakter.</div>
             </div>
 
             <hr class="form-divider">
             <div class="form-section-title">Informasi Kurikulum</div>
 
-            {{-- Jumlah materi + total jam + jumlah sesi --}}
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
-                <div class="form-group">
-                    <label class="form-label">Jumlah Materi</label>
-                    <input class="form-input" type="number" name="jumlah_materi" id="k-jumlah-materi" placeholder="0" min="0">
-                </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
                 <div class="form-group">
                     <label class="form-label">Total Jam</label>
-                    <input class="form-input" type="number" name="total_jam" id="k-total-jam" placeholder="0" min="0" step="0.5">
+                    <input class="form-input" type="number" name="total_jam" id="k-total-jam" placeholder="0" min="0" step="1">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Jumlah Sesi</label>
@@ -713,7 +851,6 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                 </div>
             </div>
 
-            {{-- Sertifikat --}}
             <div class="form-group">
                 <label class="form-label">Ada Sertifikat?</label>
                 <div class="radio-group">
@@ -731,7 +868,6 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             <hr class="form-divider">
             <div class="form-section-title">Informasi Tambahan</div>
 
-            {{-- Metode + Tingkat --}}
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Metode</label>
@@ -753,13 +889,19 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                 </div>
             </div>
 
-            {{-- Bahasa --}}
             <div class="form-group">
-                <label class="form-label">Bahasa</label>
-                <input class="form-input" type="text" name="bahasa" id="k-bahasa" placeholder="Bahasa Indonesia" value="Bahasa Indonesia">
+                <label class="form-label">No. WhatsApp untuk Pendaftaran</label>
+                <input class="form-input" type="text" name="phone" id="k-phone"
+                       value="{{ auth()->user()->phone ?? '' }}"
+                       placeholder="Contoh: 6281234567890">
+                <div class="form-hint">Otomatis diisi dari profil. Ubah jika ingin nomor berbeda untuk kurikulum ini.</div>
             </div>
 
-            {{-- Gambar --}}
+            <div class="form-group">
+                <label class="form-label">Bahasa</label>
+                <input class="form-input" type="text" name="bahasa" id="k-bahasa" value="Bahasa Indonesia">
+            </div>
+
             <div class="form-group">
                 <label class="form-label">Gambar Kurikulum</label>
                 <label class="upload-area" for="k-gambar">
@@ -770,48 +912,104 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                 <input type="file" id="k-gambar" name="gambar" accept="image/*" style="display:none" onchange="showFileName(this, 'k-gambar-name')">
             </div>
 
+            {{-- ══════════════════════════════════════════ --}}
+            {{-- SECTION ABSENSI (BARU)                    --}}
+            {{-- ══════════════════════════════════════════ --}}
+            <hr class="form-divider">
+            <div class="absensi-toggle-section">
+                <div class="absensi-toggle-header" onclick="toggleAbsensiSection()">
+                    <div class="absensi-toggle-header-left">
+                        <span style="font-size:18px">✅</span>
+                        <div>
+                            <div style="font-size:13px;font-weight:700">Tombol Absensi Otomatis</div>
+                            <div style="font-size:11px;font-weight:400;color:var(--text-muted);margin-top:2px">Atur jadwal buka & tutup absensi — tombol muncul & hilang otomatis</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <label class="switch" onclick="event.stopPropagation()">
+                            <input type="checkbox" id="k-absensi-aktif" name="absensi_aktif" value="1" onchange="toggleAbsensiSection(this.checked)">
+                            <span class="switch-slider"></span>
+                        </label>
+                        <svg id="absensi-chevron" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                </div>
+
+                <div class="absensi-toggle-body" id="absensi-body">
+                    {{-- Baris jadwal --}}
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                        <div class="form-group" style="margin-bottom:0">
+                            <label class="form-label">Waktu Mulai Absensi <span style="color:var(--accent2)">*</span></label>
+                            <input class="form-input" type="datetime-local" name="absensi_mulai" id="k-absensi-mulai">
+                            <div class="form-hint">Tombol absensi muncul mulai jam ini</div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0">
+                            <label class="form-label">Waktu Selesai Absensi <span style="color:var(--accent2)">*</span></label>
+                            <input class="form-input" type="datetime-local" name="absensi_selesai" id="k-absensi-selesai">
+                            <div class="form-hint">Tombol absensi hilang otomatis jam ini</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top:14px;margin-bottom:0">
+                        <label class="form-label">Link / URL Absensi</label>
+                        <input class="form-input" type="url" name="absensi_url" id="k-absensi-url"
+                               placeholder="https://forms.gle/... atau link absensi lainnya">
+                        <div class="form-hint">Link Google Form, Typeform, atau halaman absensi. Kosongkan untuk menggunakan halaman absensi bawaan sistem.</div>
+                    </div>
+
+                    {{-- Preview jadwal --}}
+                    <div id="absensi-preview" style="display:none;margin-top:14px;background:#f0f9f4;border:1px solid #a7d7c566;border-radius:10px;padding:12px 16px">
+                        <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Preview tombol absensi</div>
+                        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--accent)">
+                                <span style="width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block"></span>
+                                Absensi Berlangsung
+                            </div>
+                            <div style="background:var(--accent);color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700">
+                                ✅ Buka Link Absensi
+                            </div>
+                            <div style="font-size:12px;color:var(--text-muted)">Berakhir dalam <strong id="absensi-preview-dur" style="color:var(--accent)">–</strong></div>
+                        </div>
+                        <div id="absensi-preview-schedule" style="font-size:11px;color:var(--text-muted);margin-top:8px"></div>
+                    </div>
+                </div>
+            </div>
+            {{-- ══ END ABSENSI SECTION ══ --}}
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-ghost" onclick="resetKurikulumModal(); closeModal('modal-kurikulum')">Batal</button>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" id="kurikulum-submit-btn">
                     <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                    Kirim untuk Disetujui
+                    <span id="kurikulum-submit-text">Kirim untuk Disetujui</span>
                 </button>
             </div>
         </form>
     </div>
 </div>
 
-{{-- ================================================================ --}}
-{{-- MODAL: TAMBAH / EDIT MATERI                                       --}}
-{{-- ================================================================ --}}
-<div class="modal-overlay" id="modal-materi">
-    <div class="modal">
+{{-- ============ MODAL MODUL ============ --}}
+<div class="modal-overlay" id="modal-modul">
+    <div class="modal" style="width:520px">
         <div class="modal-header">
             <div class="modal-title">
-                <span id="modal-materi-title-text">Tambah Materi</span>
-                <small id="modal-materi-subtitle">Pilih kurikulum dan isi detail materi</small>
+                <span id="modal-modul-title-text">Tambah Modul Pembelajaran</span>
+                <small id="modal-modul-subtitle">Modul akan tampil sebagai daftar bernomor di halaman kurikulum</small>
             </div>
-            <button class="modal-close" onclick="resetMateriModal(); closeModal('modal-materi')">×</button>
+            <button class="modal-close" onclick="resetModulModal(); closeModal('modal-modul')">×</button>
         </div>
-
-        {{-- Notice jika tidak ada kurikulum --}}
         @php $adaKurikulum = isset($pelatihanList) && $pelatihanList->where('tipe','kurikulum')->count() > 0; @endphp
         @if(!$adaKurikulum)
         <div class="notice-box">
-            <div class="notice-icon">⚠️</div>
+            <div style="font-size:22px;flex-shrink:0">⚠️</div>
             <div class="notice-text">
-                <strong>Belum ada kurikulum.</strong> Kamu perlu membuat kurikulum terlebih dahulu sebelum menambahkan materi.
-                <br><a href="#" onclick="closeModal('modal-materi'); openModal('modal-kurikulum')" style="color:var(--accent);font-weight:700">Buat kurikulum sekarang →</a>
+                <strong>Belum ada kurikulum.</strong> Buat kurikulum terlebih dahulu sebelum menambahkan modul.
+                <br><a href="#" onclick="closeModal('modal-modul'); openModal('modal-kurikulum')" style="color:var(--accent);font-weight:700">Buat kurikulum sekarang →</a>
             </div>
         </div>
         @endif
-
-        <form id="form-materi" method="POST" enctype="multipart/form-data" action="{{ route('trainer.materi.store') }}">
+        <form id="form-modul" method="POST" action="{{ route('trainer.modul.store') }}">
             @csrf
-            <input type="hidden" name="_method" id="materi-method" value="POST">
-            <input type="hidden" name="materi_edit_id" id="materi-edit-id">
-
-            {{-- Pilih kurikulum --}}
+            <input type="hidden" name="_method" id="modul-method" value="POST">
+            <input type="hidden" name="modul_edit_id" id="modul-edit-id">
             <div class="form-group">
                 <label class="form-label">Masukkan ke Kurikulum <span style="color:var(--accent2)">*</span></label>
                 <select class="form-select" name="kurikulum_id" id="m-kurikulum-id" required {{ !$adaKurikulum ? 'disabled' : '' }}>
@@ -823,91 +1021,41 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                     @endif
                 </select>
             </div>
-
-            {{-- Judul materi --}}
             <div class="form-group">
-                <label class="form-label">Judul Materi <span style="color:var(--accent2)">*</span></label>
-                <input class="form-input" type="text" name="judul" id="m-judul" placeholder="Contoh: Pengantar SEO On-Page..." required {{ !$adaKurikulum ? 'disabled' : '' }}>
+                <label class="form-label">Nomor Urutan <span style="color:var(--accent2)">*</span></label>
+                <input class="form-input" type="number" name="urutan" id="m-urutan" placeholder="1, 2, 3..." min="1" required {{ !$adaKurikulum ? 'disabled' : '' }}>
             </div>
-
-            {{-- Deskripsi --}}
             <div class="form-group">
-                <label class="form-label">Deskripsi</label>
-                <textarea class="form-textarea" name="deskripsi" id="m-deskripsi" rows="2" placeholder="Ringkasan singkat materi ini..." {{ !$adaKurikulum ? 'disabled' : '' }}></textarea>
+                <label class="form-label">Judul Modul <span style="color:var(--accent2)">*</span></label>
+                <input class="form-input" type="text" name="judul" id="m-judul" placeholder="Contoh: Pengenalan Dunia UMKM" required {{ !$adaKurikulum ? 'disabled' : '' }}>
             </div>
-
-            {{-- Urutan + Durasi --}}
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Nomor Urutan / Sesi</label>
-                    <input class="form-input" type="number" name="urutan" id="m-urutan" placeholder="1" min="1" {{ !$adaKurikulum ? 'disabled' : '' }}>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Durasi (menit)</label>
-                    <input class="form-input" type="number" name="durasi" id="m-durasi" placeholder="60" min="1" {{ !$adaKurikulum ? 'disabled' : '' }}>
-                </div>
+            <div class="form-group">
+                <label class="form-label">Deskripsi Singkat</label>
+                <textarea class="form-textarea" name="deskripsi" id="m-deskripsi" rows="3" placeholder="Deskripsi singkat isi modul..." maxlength="300" {{ !$adaKurikulum ? 'disabled' : '' }}></textarea>
             </div>
-
-            <hr class="form-divider">
-            <div class="form-section-title">Tipe Konten</div>
-
-            {{-- Tabs tipe konten --}}
-            <div class="tipe-tabs" id="tipe-tabs">
-                <div class="tipe-tab active" onclick="switchTipe('teks')">📝 Teks</div>
-                <div class="tipe-tab" onclick="switchTipe('video')">🎬 Video</div>
-                <div class="tipe-tab" onclick="switchTipe('file')">📄 File</div>
-            </div>
-            <input type="hidden" name="tipe_konten" id="m-tipe-konten" value="teks">
-
-            {{-- Konten teks --}}
-            <div class="tipe-block visible" id="tipe-block-teks">
-                <div class="form-group">
-                    <label class="form-label">Isi Materi</label>
-                    <textarea class="form-textarea" name="konten_materi" id="m-konten" rows="5" placeholder="Tuliskan isi materi (HTML diperbolehkan)..." {{ !$adaKurikulum ? 'disabled' : '' }}></textarea>
+            @if($adaKurikulum)
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:18px">
+                <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Preview tampilan publik</div>
+                <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px">
+                    <div style="width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px" id="preview-num">1</div>
+                    <div>
+                        <div style="font-size:13px;font-weight:700;color:var(--accent)" id="preview-judul">Judul modul...</div>
+                        <div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.5" id="preview-desc">Deskripsi modul...</div>
+                    </div>
                 </div>
             </div>
-
-            {{-- Konten video --}}
-            <div class="tipe-block" id="tipe-block-video">
-                <div class="form-group">
-                    <label class="form-label">Link Video</label>
-                    <input class="form-input" type="url" name="link_video" id="m-link-video" placeholder="https://youtube.com/watch?v=..." {{ !$adaKurikulum ? 'disabled' : '' }}>
-                    <div class="form-hint">YouTube, Vimeo, atau link video lainnya.</div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Deskripsi Video (opsional)</label>
-                    <textarea class="form-textarea" rows="3" name="konten_materi" placeholder="Deskripsi atau catatan video..." {{ !$adaKurikulum ? 'disabled' : '' }}></textarea>
-                </div>
-            </div>
-
-            {{-- Konten file --}}
-            <div class="tipe-block" id="tipe-block-file">
-                <div class="form-group">
-                    <label class="form-label">Upload File Materi</label>
-                    <label class="upload-area" for="m-file">
-                        <div class="upload-icon">📎</div>
-                        <div class="upload-text">Klik untuk upload atau <span>drag & drop</span><br>PDF, DOC, PPT, ZIP hingga 20MB</div>
-                        <div class="upload-fname" id="m-file-name"></div>
-                    </label>
-                    <input type="file" id="m-file" name="file_materi" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip" style="display:none"
-                        onchange="showFileName(this, 'm-file-name')" {{ !$adaKurikulum ? 'disabled' : '' }}>
-                </div>
-            </div>
-
+            @endif
             <div class="modal-footer">
-                <button type="button" class="btn btn-ghost" onclick="resetMateriModal(); closeModal('modal-materi')">Batal</button>
-                <button type="submit" class="btn btn-primary" {{ !$adaKurikulum ? 'disabled style=opacity:.5;cursor:not-allowed' : '' }}>
-                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                    Kirim untuk Disetujui
+                <button type="button" class="btn btn-ghost" onclick="resetModulModal(); closeModal('modal-modul')">Batal</button>
+                <button type="submit" class="btn btn-primary" id="modul-submit-btn" {{ !$adaKurikulum ? 'disabled' : '' }} style="{{ !$adaKurikulum ? 'opacity:.5;cursor:not-allowed' : '' }}">
+                    <span id="modul-submit-text">Simpan Modul</span>
                 </button>
             </div>
         </form>
     </div>
 </div>
 
-{{-- ================================================================ --}}
-{{-- MODAL: TAMBAH / EDIT EVENT                                         --}}
-{{-- ================================================================ --}}
+{{-- ============ MODAL EVENT ============ --}}
 <div class="modal-overlay" id="modal-event">
     <div class="modal">
         <div class="modal-header">
@@ -918,42 +1066,17 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             @csrf
             <input type="hidden" name="_method" id="event-method" value="POST">
             <input type="hidden" name="event_id" id="event-id">
-            <div class="form-group">
-                <label class="form-label">Nama Event <span style="color:var(--accent2)">*</span></label>
-                <input class="form-input" type="text" name="judul" id="event-judul" placeholder="Nama event..." required>
-            </div>
+            <div class="form-group"><label class="form-label">Nama Event <span style="color:var(--accent2)">*</span></label><input class="form-input" type="text" name="judul" id="event-judul" required></div>
             <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Tipe Event</label>
-                    <select class="form-select" name="tipe" id="event-tipe">
-                        <option value="Seminar">Seminar</option><option value="Workshop">Workshop</option>
-                        <option value="Bootcamp">Bootcamp</option><option value="Webinar">Webinar</option>
-                        <option value="Talkshow">Talkshow</option><option value="Pelatihan">Pelatihan</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Tanggal <span style="color:var(--accent2)">*</span></label>
-                    <input class="form-input" type="date" name="tanggal" id="event-tanggal" required>
-                </div>
+                <div class="form-group"><label class="form-label">Tipe Event</label><select class="form-select" name="tipe" id="event-tipe"><option value="Seminar">Seminar</option><option value="Workshop">Workshop</option><option value="Bootcamp">Bootcamp</option><option value="Webinar">Webinar</option><option value="Talkshow">Talkshow</option><option value="Pelatihan">Pelatihan</option></select></div>
+                <div class="form-group"><label class="form-label">Tanggal <span style="color:var(--accent2)">*</span></label><input class="form-input" type="date" name="tanggal" id="event-tanggal" required></div>
             </div>
-            <div class="form-group">
-                <label class="form-label">Lokasi</label>
-                <input class="form-input" type="text" name="lokasi" id="event-lokasi" placeholder="Kota / Nama Venue">
-            </div>
+            <div class="form-group"><label class="form-label">Lokasi</label><input class="form-input" type="text" name="lokasi" id="event-lokasi"></div>
             <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Kapasitas Peserta</label>
-                    <input class="form-input" type="number" name="kapasitas" id="event-kapasitas" placeholder="200" min="1">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Biaya <span class="form-hint" style="display:inline">(kosong = gratis)</span></label>
-                    <input class="form-input" type="text" name="biaya" id="event-biaya" placeholder="Rp 0">
-                </div>
+                <div class="form-group"><label class="form-label">Kapasitas Peserta</label><input class="form-input" type="number" name="kapasitas" id="event-kapasitas" min="1"></div>
+                <div class="form-group"><label class="form-label">Biaya</label><input class="form-input" type="text" name="biaya" id="event-biaya" placeholder="Rp 0"></div>
             </div>
-            <div class="form-group">
-                <label class="form-label">Deskripsi Event <span style="color:var(--accent2)">*</span></label>
-                <textarea class="form-textarea" name="deskripsi" id="event-deskripsi" placeholder="Jelaskan detail event ini..." required></textarea>
-            </div>
+            <div class="form-group"><label class="form-label">Deskripsi Event <span style="color:var(--accent2)">*</span></label><textarea class="form-textarea" name="deskripsi" id="event-deskripsi" required></textarea></div>
             <div class="form-group">
                 <label class="form-label">Banner Event</label>
                 <label class="upload-area" for="event-gambar">
@@ -965,18 +1088,13 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-ghost" onclick="resetEventModal(); closeModal('modal-event')">Batal</button>
-                <button type="submit" class="btn btn-primary">
-                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                    Kirim untuk Disetujui
-                </button>
+                <button type="submit" class="btn btn-primary">Kirim untuk Disetujui</button>
             </div>
         </form>
     </div>
 </div>
 
-{{-- ================================================================ --}}
-{{-- MODAL: EDIT PROFIL                                                 --}}
-{{-- ================================================================ --}}
+{{-- ============ MODAL PROFIL ============ --}}
 <div class="modal-overlay" id="modal-profil">
     <div class="modal">
         <div class="modal-header">
@@ -986,13 +1104,12 @@ tbody td { padding: 14px 18px; font-size: 13px; }
         <form method="POST" action="{{ route('trainer.profil.update') }}" enctype="multipart/form-data">
             @csrf @method('PUT')
             <div class="form-row">
-                <div class="form-group"><label class="form-label">Nama Lengkap <span style="color:var(--accent2)">*</span></label><input class="form-input" type="text" name="name" value="{{ auth()->user()->name }}" required></div>
-                <div class="form-group"><label class="form-label">Email <span style="color:var(--accent2)">*</span></label><input class="form-input" type="email" name="email" value="{{ auth()->user()->email }}" required></div>
-                <div class="form-group"><label class="form-label">No. Telepon</label><input class="form-input" type="text" name="no_hp" value="{{ auth()->user()->no_hp ?? '' }}" placeholder="+62 812-xxxx-xxxx"></div>
-                <div class="form-group"><label class="form-label">Bidang Keahlian</label><input class="form-input" type="text" name="bidang_keahlian" value="{{ auth()->user()->bidang_keahlian ?? '' }}" placeholder="Contoh: Digital Marketing"></div>
+                <div class="form-group"><label class="form-label">Nama Lengkap *</label><input class="form-input" type="text" name="name" value="{{ auth()->user()->name }}" required></div>
+                <div class="form-group"><label class="form-label">Email *</label><input class="form-input" type="email" name="email" value="{{ auth()->user()->email }}" required></div>
+                <div class="form-group"><label class="form-label">No. Telepon</label><input class="form-input" type="text" name="phone" value="{{ auth()->user()->phone ?? '' }}"></div>
+                <div class="form-group"><label class="form-label">Bidang Keahlian</label><input class="form-input" type="text" name="bidang_keahlian" value="{{ auth()->user()->bidang_keahlian ?? '' }}"></div>
             </div>
-            <div class="form-group"><label class="form-label">Bio / Tentang Saya</label><textarea class="form-textarea" name="bio" placeholder="Ceritakan tentang dirimu...">{{ auth()->user()->bio ?? '' }}</textarea></div>
-            <div class="form-group"><label class="form-label">URL LinkedIn</label><input class="form-input" type="url" name="linkedin" value="{{ auth()->user()->linkedin ?? '' }}" placeholder="https://linkedin.com/in/username"></div>
+            <div class="form-group"><label class="form-label">Bio</label><textarea class="form-textarea" name="bio">{{ auth()->user()->bio ?? '' }}</textarea></div>
             <div class="form-group">
                 <label class="form-label">Foto Profil</label>
                 <label class="upload-area" for="profil-foto">
@@ -1003,7 +1120,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                 <input type="file" id="profil-foto" name="foto" accept="image/*" style="display:none" onchange="showFileName(this, 'profil-foto-name')">
             </div>
             <hr class="form-divider">
-            <div class="form-group"><label class="form-label">Password Baru <span style="font-weight:400;text-transform:none;font-size:11px">(kosongkan jika tidak diubah)</span></label><input class="form-input" type="password" name="password" placeholder="Min. 8 karakter"></div>
+            <div class="form-group"><label class="form-label">Password Baru (kosongkan jika tidak diubah)</label><input class="form-input" type="password" name="password" placeholder="Min. 8 karakter"></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-ghost" onclick="closeModal('modal-profil')">Batal</button>
                 <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
@@ -1012,12 +1129,15 @@ tbody td { padding: 14px 18px; font-size: 13px; }
     </div>
 </div>
 
-{{-- Form hapus tersembunyi --}}
 <form id="form-hapus" method="POST" style="display:none">@csrf @method('DELETE')</form>
 <form id="form-hapus-event" method="POST" style="display:none">@csrf @method('DELETE')</form>
 
+{{-- GANTI SELURUH BLOK <script>...</script> di dashboard.blade.php dengan ini --}}
+
 <script>
-// ── PAGE NAVIGATION ──
+/* ================================================================
+   NAVIGASI
+================================================================ */
 function showPage(id) {
     document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -1029,121 +1149,267 @@ function showPage(id) {
     });
 }
 
-// ── MODAL ──
+/* ================================================================
+   MODAL HELPERS
+================================================================ */
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(m => {
     m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
 });
 
-// ── FILE UPLOAD ──
 function showFileName(input, labelId) {
     const label = document.getElementById(labelId);
     if (input.files && input.files[0]) label.textContent = '✓ ' + input.files[0].name;
 }
 
-// ── TIPE KONTEN TABS (MATERI) ──
-function switchTipe(tipe) {
-    document.querySelectorAll('.tipe-tab').forEach((t, i) => {
-        const tipes = ['teks','video','file'];
-        t.classList.toggle('active', tipes[i] === tipe);
+/* ================================================================
+   ABSENSI TOGGLE (dalam form)
+   PERBAIKAN: hanya satu definisi fungsi, tidak nested
+================================================================ */
+function toggleAbsensiSection(forceState) {
+    const checkbox = document.getElementById('k-absensi-aktif');
+    const body     = document.getElementById('absensi-body');
+    const chevron  = document.getElementById('absensi-chevron');
+
+    // Dipanggil dengan nilai boolean (dari checkbox.onchange atau editKurikulum)
+    if (typeof forceState === 'boolean') {
+        checkbox.checked = forceState;
+    } else {
+        // Dipanggil dari klik header → toggle state
+        checkbox.checked = !checkbox.checked;
+    }
+
+    const isOpen = checkbox.checked;
+    body.classList.toggle('open', isOpen);
+    chevron.style.transform = isOpen ? 'rotate(180deg)' : '';
+
+    // Reset field jika dinonaktifkan
+    if (!isOpen) {
+        document.getElementById('k-absensi-mulai').value   = '';
+        document.getElementById('k-absensi-selesai').value = '';
+        document.getElementById('k-absensi-url').value     = '';
+        document.getElementById('absensi-preview').style.display = 'none';
+    }
+}
+
+/* ================================================================
+   LIVE PREVIEW JADWAL ABSENSI (di dalam form modal)
+================================================================ */
+function updateAbsensiPreview() {
+    const mulai   = document.getElementById('k-absensi-mulai').value;
+    const selesai = document.getElementById('k-absensi-selesai').value;
+    const preview = document.getElementById('absensi-preview');
+    const durEl   = document.getElementById('absensi-preview-dur');
+    const schEl   = document.getElementById('absensi-preview-schedule');
+
+    if (!mulai || !selesai) { preview.style.display = 'none'; return; }
+
+    const mDate = new Date(mulai);
+    const sDate = new Date(selesai);
+    if (sDate <= mDate) { preview.style.display = 'none'; return; }
+
+    preview.style.display = 'block';
+
+    const diffMs  = sDate - mDate;
+    const diffMin = Math.round(diffMs / 60000);
+    if (diffMin < 60) {
+        durEl.textContent = diffMin + ' menit';
+    } else {
+        const h = Math.floor(diffMin / 60);
+        const m = diffMin % 60;
+        durEl.textContent = h + ' jam' + (m ? ' ' + m + ' menit' : '');
+    }
+
+    const fmt = d => d.toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' })
+                   + ', ' + d.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+    schEl.textContent = 'Jadwal: ' + fmt(mDate) + ' – ' + fmt(sDate) + ' WIB';
+}
+
+/* ================================================================
+   ABSENSI COUNTDOWN (real-time di kurikulum block)
+   PERBAIKAN: parseInt dengan radix 10, guard NaN, var intervalId
+   sebelum tick() agar bisa diakses di dalam closure
+================================================================ */
+function pad(n) { return String(n).padStart(2, '0'); }
+
+function formatCountdown(ms) {
+    if (ms <= 0) return '00:00:00';
+    const totalSec = Math.floor(ms / 1000);
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    return h > 0
+        ? pad(h) + ':' + pad(m) + ':' + pad(s)
+        : pad(m) + ':' + pad(s);
+}
+
+function initAbsensiTimers() {
+    document.querySelectorAll('[id^="absensi-bar-"]').forEach(function(bar) {
+        // PERBAIKAN: parseInt dengan radix 10 agar tidak salah parse
+        const tsMulai   = parseInt(bar.dataset.mulai, 10) * 1000;
+        const tsSelesai = parseInt(bar.dataset.selesai, 10) * 1000;
+        const timerId   = bar.id.replace('absensi-bar-', '');
+        const timerEl   = document.getElementById('timer-' + timerId);
+
+        // PERBAIKAN: guard — jika element timer tidak ada atau timestamp invalid, skip
+        if (!timerEl || isNaN(tsMulai) || isNaN(tsSelesai) || tsMulai === 0 || tsSelesai === 0) return;
+
+        // PENTING: deklarasi var sebelum tick() agar closure bisa mengakses intervalId
+        var intervalId;
+
+        function tick() {
+            var now         = Date.now();
+            var msToMulai   = tsMulai - now;
+            var msToSelesai = tsSelesai - now;
+
+            if (msToMulai > 0) {
+                // Belum mulai → countdown ke waktu mulai
+                timerEl.textContent = formatCountdown(msToMulai);
+                timerEl.className   = 'countdown-timer upcoming';
+
+            } else if (msToSelesai > 0) {
+                // Sedang aktif → countdown sisa waktu
+                timerEl.textContent = formatCountdown(msToSelesai);
+                timerEl.className   = msToSelesai < 600000
+                    ? 'countdown-timer warning'  // < 10 menit → kuning
+                    : 'countdown-timer';
+
+                // Jika bar masih ditampilkan sebagai "upcoming" (render server)
+                // tapi sekarang sudah aktif → reload agar UI sinkron
+                if (bar.classList.contains('absensi-upcoming')) {
+                    location.reload();
+                }
+
+            } else {
+                // Sudah selesai → hentikan timer
+                clearInterval(intervalId);
+                // Jika bar belum ditampilkan sebagai "ended" → reload agar UI sinkron
+                if (!bar.classList.contains('absensi-ended')) {
+                    location.reload();
+                }
+            }
+        }
+
+        tick(); // langsung jalankan sekali
+        intervalId = setInterval(tick, 1000);
     });
-    document.querySelectorAll('.tipe-block').forEach(b => b.classList.remove('visible'));
-    document.getElementById('tipe-block-' + tipe).classList.add('visible');
-    document.getElementById('m-tipe-konten').value = tipe;
 }
 
-// ── OPEN MODAL MATERI (cek kurikulum) ──
-function openModalMateri() {
-    @if(!$adaKurikulum)
-        if (!confirm('Kamu belum punya kurikulum. Buat kurikulum terlebih dahulu?')) return;
-        openModal('modal-kurikulum');
-        return;
-    @endif
-    resetMateriModal();
-    openModal('modal-materi');
-}
+/* ================================================================
+   EDIT KURIKULUM
+================================================================ */
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.btn-edit-kurikulum');
+    if (!btn) return;
 
-function openModalMateriDenganKurikulum(kurikulumId, kurikulumJudul) {
-    resetMateriModal();
-    document.getElementById('m-kurikulum-id').value = kurikulumId;
-    document.getElementById('modal-materi-subtitle').textContent = 'Menambah materi ke: ' + kurikulumJudul;
-    openModal('modal-materi');
-}
+    const d = btn.dataset;
 
-// ── EDIT KURIKULUM ──
-function editKurikulum(id, judul, deskripsi, metode, tingkat, bahasa, jumlahMateri, totalJam, jumlahSesi, sertifikat) {
     document.getElementById('modal-kurikulum-title-text').textContent = 'Edit Kurikulum';
-    document.getElementById('kurikulum-edit-id').value = id;
-    document.getElementById('k-judul').value           = judul;
-    document.getElementById('k-deskripsi').value       = deskripsi;
-    document.getElementById('k-metode').value          = metode;
-    document.getElementById('k-tingkat').value         = tingkat;
-    document.getElementById('k-bahasa').value          = bahasa;
-    document.getElementById('k-jumlah-materi').value   = jumlahMateri;
-    document.getElementById('k-total-jam').value       = totalJam;
-    document.getElementById('k-jumlah-sesi').value     = jumlahSesi;
+    document.getElementById('modal-kurikulum-subtitle').textContent   = 'Perubahan langsung tersimpan tanpa perlu persetujuan ulang';
+    document.getElementById('kurikulum-submit-text').textContent      = 'Simpan Perubahan';
+    document.getElementById('kurikulum-edit-id').value = d.id;
+    document.getElementById('k-judul').value           = d.judul;
+    document.getElementById('k-deskripsi').value       = d.deskripsi;
+    document.getElementById('k-metode').value          = d.metode;
+    document.getElementById('k-tingkat').value         = d.tingkat;
+    document.getElementById('k-bahasa').value          = d.bahasa;
+    document.getElementById('k-total-jam').value       = d.totalJam;
+    document.getElementById('k-jumlah-sesi').value     = d.jumlahSesi;
+    document.getElementById('k-phone').value           = d.phone || '';
     document.getElementById('kurikulum-method').value  = 'PUT';
-    document.getElementById('form-kurikulum').action   = '/trainer/kurikulum/' + id;
-    if (sertifikat == 1) {
+    document.getElementById('form-kurikulum').action   = '/kurikulum/' + d.id;
+
+    if (d.sertifikat == '1') {
         document.getElementById('sertifikat-ya').checked = true;
     } else {
         document.getElementById('sertifikat-tidak').checked = true;
     }
+
+    // Isi field absensi
+    const absensiAktif = d.absensiAktif === '1';
+    document.getElementById('k-absensi-aktif').checked = absensiAktif;
+    toggleAbsensiSection(absensiAktif);
+
+    if (absensiAktif) {
+        if (d.absensiMulai)   document.getElementById('k-absensi-mulai').value   = d.absensiMulai.substring(0, 16);
+        if (d.absensiSelesai) document.getElementById('k-absensi-selesai').value = d.absensiSelesai.substring(0, 16);
+        document.getElementById('k-absensi-url').value = d.absensiUrl || '';
+        updateAbsensiPreview();
+    }
+
     openModal('modal-kurikulum');
+});
+
+/* ================================================================
+   EDIT MODUL
+================================================================ */
+function editModul(id, kurikulumId, judul, deskripsi, urutan) {
+    document.getElementById('modal-modul-title-text').textContent = 'Edit Modul';
+    document.getElementById('modal-modul-subtitle').textContent   = 'Perubahan langsung tersimpan tanpa perlu persetujuan ulang';
+    document.getElementById('modul-submit-text').textContent      = 'Simpan Perubahan';
+    document.getElementById('modul-edit-id').value  = id;
+    document.getElementById('m-kurikulum-id').value = kurikulumId;
+    document.getElementById('m-judul').value        = judul;
+    document.getElementById('m-deskripsi').value    = deskripsi;
+    document.getElementById('m-urutan').value       = urutan;
+    document.getElementById('modul-method').value   = 'PUT';
+    document.getElementById('form-modul').action    = '/modul/' + id;
+    updatePreview();
+    openModal('modal-modul');
 }
 
-// ── EDIT MATERI ──
-function editMateri(id, judul, kurikulumId, deskripsi, tipeKonten, konten, linkVideo, durasi, urutan) {
-    document.getElementById('modal-materi-title-text').textContent = 'Edit Materi';
-    document.getElementById('materi-edit-id').value  = id;
-    document.getElementById('m-judul').value         = judul;
-    document.getElementById('m-kurikulum-id').value  = kurikulumId;
-    document.getElementById('m-deskripsi').value     = deskripsi;
-    document.getElementById('m-konten').value        = konten;
-    document.getElementById('m-link-video').value    = linkVideo;
-    document.getElementById('m-durasi').value        = durasi;
-    document.getElementById('m-urutan').value        = urutan;
-    document.getElementById('materi-method').value   = 'PUT';
-    document.getElementById('form-materi').action    = '/trainer/materi/' + id;
-    switchTipe(tipeKonten || 'teks');
-    openModal('modal-materi');
-}
-
-// ── EDIT EVENT ──
+/* ================================================================
+   EDIT EVENT
+================================================================ */
 function editEvent(id, judul, tipe, tanggal, lokasi, kapasitas, biaya, deskripsi) {
     document.getElementById('modal-event-title').textContent = 'Edit Event';
-    document.getElementById('event-id').value       = id;
-    document.getElementById('event-judul').value    = judul;
-    document.getElementById('event-tipe').value     = tipe;
-    document.getElementById('event-tanggal').value  = tanggal;
-    document.getElementById('event-lokasi').value   = lokasi;
+    document.getElementById('event-id').value        = id;
+    document.getElementById('event-judul').value     = judul;
+    document.getElementById('event-tipe').value      = tipe;
+    document.getElementById('event-tanggal').value   = tanggal;
+    document.getElementById('event-lokasi').value    = lokasi;
     document.getElementById('event-kapasitas').value = kapasitas;
-    document.getElementById('event-biaya').value    = biaya;
+    document.getElementById('event-biaya').value     = biaya;
     document.getElementById('event-deskripsi').value = deskripsi;
-    document.getElementById('event-method').value   = 'PUT';
-    document.getElementById('form-event').action    = '/trainer/event/' + id;
+    document.getElementById('event-method').value    = 'PUT';
+    document.getElementById('form-event').action     = '/trainer/event/' + id;
     openModal('modal-event');
 }
 
-// ── RESET MODALS ──
+/* ================================================================
+   RESET MODAL
+================================================================ */
 function resetKurikulumModal() {
     document.getElementById('modal-kurikulum-title-text').textContent = 'Tambah Kurikulum';
+    document.getElementById('modal-kurikulum-subtitle').textContent   = 'Isi detail kurikulum, modul dapat ditambah setelah kurikulum tersimpan';
+    document.getElementById('kurikulum-submit-text').textContent      = 'Kirim untuk Disetujui';
     document.getElementById('kurikulum-method').value = 'POST';
     document.getElementById('form-kurikulum').action  = '{{ route("trainer.kurikulum.store") }}';
     document.getElementById('form-kurikulum').reset();
     document.getElementById('k-gambar-name').textContent = '';
     document.getElementById('sertifikat-tidak').checked  = true;
+    document.getElementById('k-phone').value = '{{ auth()->user()->phone ?? "" }}';
+    // Reset absensi section
+    document.getElementById('k-absensi-aktif').checked = false;
+    toggleAbsensiSection(false);
 }
-function resetMateriModal() {
-    document.getElementById('modal-materi-title-text').textContent = 'Tambah Materi';
-    document.getElementById('modal-materi-subtitle').textContent   = 'Pilih kurikulum dan isi detail materi';
-    document.getElementById('materi-method').value = 'POST';
-    document.getElementById('form-materi').action  = '{{ route("trainer.materi.store") }}';
-    document.getElementById('form-materi').reset();
-    document.getElementById('m-file-name').textContent = '';
-    switchTipe('teks');
+
+function resetModulModal() {
+    document.getElementById('modal-modul-title-text').textContent = 'Tambah Modul Pembelajaran';
+    document.getElementById('modal-modul-subtitle').textContent   = 'Modul akan tampil sebagai daftar bernomor di halaman kurikulum';
+    document.getElementById('modul-submit-text').textContent      = 'Simpan Modul';
+    document.getElementById('modul-method').value = 'POST';
+    document.getElementById('form-modul').action  = '{{ route("trainer.modul.store") }}';
+    document.getElementById('form-modul').reset();
+    const pNum   = document.getElementById('preview-num');
+    const pJudul = document.getElementById('preview-judul');
+    const pDesc  = document.getElementById('preview-desc');
+    if (pNum)   pNum.textContent   = '1';
+    if (pJudul) pJudul.textContent = 'Judul modul...';
+    if (pDesc)  pDesc.textContent  = 'Deskripsi modul...';
 }
+
 function resetEventModal() {
     document.getElementById('modal-event-title').textContent = 'Tambah Event';
     document.getElementById('event-method').value = 'POST';
@@ -1152,11 +1418,13 @@ function resetEventModal() {
     document.getElementById('event-gambar-name').textContent = '';
 }
 
-// ── HAPUS ──
+/* ================================================================
+   HAPUS
+================================================================ */
 function hapusItem(id, tipe) {
-    if (!confirm('Yakin ingin menghapus ' + tipe + ' ini? Tindakan tidak dapat dibatalkan.')) return;
+    if (!confirm('Yakin ingin menghapus ' + tipe + ' ini?')) return;
     const form = document.getElementById('form-hapus');
-    form.action = '/trainer/' + tipe + '/' + id;
+    form.action = '/' + tipe + '/' + id;
     form.submit();
 }
 function hapusEvent(id) {
@@ -1166,15 +1434,64 @@ function hapusEvent(id) {
     form.submit();
 }
 
-// ── AUTO-OPEN ──
-const hash = window.location.hash.replace('#', '');
-if (['beranda','program','event','profil'].includes(hash)) {
-    showPage(hash);
-} else {
-    @if(session('active_page'))
-        showPage('{{ session("active_page") }}');
-    @endif
+/* ================================================================
+   PREVIEW MODUL
+================================================================ */
+function updatePreview() {
+    const judul  = document.getElementById('m-judul');
+    const desc   = document.getElementById('m-deskripsi');
+    const urutan = document.getElementById('m-urutan');
+    const pJudul = document.getElementById('preview-judul');
+    const pDesc  = document.getElementById('preview-desc');
+    const pNum   = document.getElementById('preview-num');
+    if (pJudul) pJudul.textContent = judul?.value  || 'Judul modul...';
+    if (pDesc)  pDesc.textContent  = desc?.value   || 'Deskripsi modul...';
+    if (pNum)   pNum.textContent   = urutan?.value || '1';
 }
+
+function openModalModul() {
+    @if(!$adaKurikulum)
+        if (!confirm('Kamu belum punya kurikulum. Buat kurikulum terlebih dahulu?')) return;
+        openModal('modal-kurikulum'); return;
+    @endif
+    resetModulModal();
+    openModal('modal-modul');
+}
+
+function openModalModulDenganKurikulum(kurikulumId, kurikulumJudul) {
+    resetModulModal();
+    document.getElementById('m-kurikulum-id').value = kurikulumId;
+    document.getElementById('modal-modul-subtitle').textContent = 'Menambah modul ke: ' + kurikulumJudul;
+    openModal('modal-modul');
+}
+
+/* ================================================================
+   INIT
+================================================================ */
+document.addEventListener('DOMContentLoaded', function() {
+    // Bind listener preview jadwal absensi
+    document.getElementById('k-absensi-mulai').addEventListener('change', updateAbsensiPreview);
+    document.getElementById('k-absensi-selesai').addEventListener('change', updateAbsensiPreview);
+
+    // Live preview modul
+    ['m-judul', 'm-deskripsi', 'm-urutan'].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', updatePreview);
+    });
+
+    // Mulai semua countdown absensi
+    initAbsensiTimers();
+
+    // Buka halaman dari URL hash atau session
+    const hash = window.location.hash.replace('#', '');
+    if (['beranda', 'program', 'event', 'profil'].includes(hash)) {
+        showPage(hash);
+    } else {
+        @if(session('active_page'))
+            showPage('{{ session("active_page") }}');
+        @endif
+    }
+});
 </script>
 </body>
 </html>

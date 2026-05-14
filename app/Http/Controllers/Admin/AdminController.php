@@ -19,7 +19,6 @@ class AdminController extends Controller
 
     public function index()
     {
-        // ── Stats lengkap (dari file lama) ──────────────────────────────
         $stats = [
             'total_pending'    => Program::where('status', 'pending')->count()
                                 + Produk::where('status', 'pending')->count()
@@ -42,20 +41,18 @@ class AdminController extends Controller
             'total_pembimbing' => User::where('role', 'pembimbing')->count(),
         ];
 
-        // ── Variabel ringkas (dari file baru) ───────────────────────────
         $pendingProgram = $stats['pending_program'];
         $pendingEvent   = $stats['pending_event'];
         $totalProgram   = Program::where('status', 'approved')->count();
         $totalPengguna  = User::count();
 
-        // ── Antrian terbaru (dari file lama) ────────────────────────────
         $antrian_terbaru = collect()
             ->merge(
                 Program::with('trainer')->where('status', 'pending')->latest()->take(3)->get()
                     ->map(fn($p) => [
                         'id'             => $p->id,
                         'type'           => 'program',
-                        'nama'           => $p->nama ?? $p->judul ?? 'Program',
+                        'nama'           => $p->judul ?? 'Program',
                         'submitter'      => optional($p->trainer)->name ?? 'trainer',
                         'submitter_role' => 'trainer',
                         'tanggal'        => $p->created_at,
@@ -79,7 +76,6 @@ class AdminController extends Controller
             ->take(5)
             ->values();
 
-        // ── Program & event terbaru pending (dari file baru) ────────────
         $programPending = Program::with('trainer')
             ->where('status', 'pending')
             ->latest()
@@ -110,37 +106,45 @@ class AdminController extends Controller
     }
 
     // ═════════════════════════════════════════════════════════════════════
-    // APPROVAL PROGRAM
+    // APPROVAL PROGRAM (kurikulum + modul)
     // ═════════════════════════════════════════════════════════════════════
 
     public function approvalProgram(Request $request)
     {
         $status = $request->get('status', 'pending');
+        $tipe   = $request->get('tipe', 'all'); // all | kurikulum | modul
 
         $programs = Program::with('trainer')
             ->when($status !== 'all', fn($q) => $q->where('status', $status))
+            ->when($tipe   !== 'all', fn($q) => $q->where('tipe', $tipe))
             ->latest()
             ->paginate(15)
             ->withQueryString();
 
+        // Hitung badge per status
         $counts = [
             'pending'  => Program::where('status', 'pending')->count(),
             'approved' => Program::where('status', 'approved')->count(),
             'rejected' => Program::where('status', 'rejected')->count(),
         ];
 
-        // Hitung per tipe (dari file baru)
-        $totalKurikulum = Program::where('status', $status !== 'all' ? $status : 'pending')
-            ->where('tipe', 'kurikulum')->count();
-        $totalMateri = Program::where('status', $status !== 'all' ? $status : 'pending')
-            ->where('tipe', 'materi')->count();
+        // Hitung per tipe untuk filter chips
+        $tipeBase = $status !== 'all'
+            ? Program::where('status', $status)
+            : Program::query();
+
+        $countTipe = [
+            'all'       => (clone $tipeBase)->count(),
+            'kurikulum' => (clone $tipeBase)->where('tipe', 'kurikulum')->count(),
+            'modul'     => (clone $tipeBase)->where('tipe', 'modul')->count(),
+        ];
 
         return view('admin.approval-program', compact(
             'programs',
             'counts',
+            'countTipe',
             'status',
-            'totalKurikulum',
-            'totalMateri'
+            'tipe'
         ));
     }
 
@@ -158,7 +162,6 @@ class AdminController extends Controller
             'catatan_admin' => $request->catatan,
             'approved_at'   => now(),
             'approved_by'   => Auth::id(),
-            // Bersihkan data penolakan sebelumnya (dari file baru)
             'rejected_at'   => null,
             'rejected_by'   => null,
         ]);
@@ -179,7 +182,6 @@ class AdminController extends Controller
             'catatan_admin' => $request->alasan,
             'rejected_at'   => now(),
             'rejected_by'   => Auth::id(),
-            // Bersihkan data persetujuan sebelumnya (dari file baru)
             'approved_at'   => null,
             'approved_by'   => null,
         ]);
@@ -188,7 +190,7 @@ class AdminController extends Controller
             return response()->json(['message' => 'Program berhasil ditolak.']);
         }
 
-        return back()->with('success', "Program \"{$program->judul}\" telah ditolak. Trainer akan melihat catatan Anda.");
+        return back()->with('success', "Program \"{$program->judul}\" telah ditolak.");
     }
 
     // ═════════════════════════════════════════════════════════════════════

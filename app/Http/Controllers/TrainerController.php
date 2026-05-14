@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Program;
 use App\Models\Event;
 
+
+
 class TrainerController extends Controller
 {
     private const ALLOWED_TAGS = '<p><br><strong><em><u><s><ol><ul><li><h1><h2><h3><h4><a><span><blockquote>';
@@ -20,18 +22,19 @@ class TrainerController extends Controller
     public function index()
     {
         $user = Auth::user();
-
+    
         $pelatihanList = Program::where('trainer_id', $user->id)->latest()->get();
         $eventList     = Event::where('trainer_id', $user->id)->latest()->get();
-
-        $totalPelatihan        = $pelatihanList->count();
-        $pelatihanDisetujui    = $pelatihanList->where('status', 'approved')->count();
-        $pendingPelatihanCount = $pelatihanList->where('status', 'pending')->count();
+    
+        // ✅ Pisah hitungan kurikulum dan modul
+        $totalKurikulum = $pelatihanList->where('tipe', 'kurikulum')->count();
+        $totalModul     = $pelatihanList->where('tipe', 'modul')->count();
+    
         $totalEvent            = $eventList->count();
+        $pendingPelatihanCount = $pelatihanList->where('status', 'pending')->count();
         $pendingEventCount     = $eventList->where('status', 'pending')->count();
         $pendingTotal          = $pendingPelatihanCount + $pendingEventCount;
-
-        // 5 submission terbaru (gabungan program & event)
+    
         $recentSubmissions = $pelatihanList
             ->map(fn($item) => tap(clone $item, fn($i) => $i->jenis = 'Program'))
             ->concat(
@@ -39,11 +42,11 @@ class TrainerController extends Controller
             )
             ->sortByDesc('created_at')
             ->take(5);
-
+    
         return view('trainer.dashboard', compact(
             'user',
-            'totalPelatihan',
-            'pelatihanDisetujui',
+            'totalKurikulum',  
+            'totalModul',      
             'totalEvent',
             'pendingTotal',
             'pendingPelatihanCount',
@@ -74,6 +77,10 @@ class TrainerController extends Controller
             'bahasa'            => 'nullable|string|max:100',
             'tanggal'           => 'nullable|date',
             'gambar'            => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'absensi_aktif'    => 'nullable|boolean',
+            'absensi_mulai'    => 'nullable|date',
+            'absensi_selesai'  => 'nullable|date|after:absensi_mulai',
+            'absensi_url'      => 'nullable|url|max:255',
         ]);
 
         $gambar = null;
@@ -98,7 +105,12 @@ class TrainerController extends Controller
             'tanggal'           => $request->tanggal,
             'gambar'            => $gambar,
             'status'            => 'pending',
-        ]);
+            'absensi_aktif'   => $request->boolean('absensi_aktif'),
+            'absensi_mulai'   => $request->absensi_aktif ? $request->absensi_mulai   : null,
+            'absensi_selesai' => $request->absensi_aktif ? $request->absensi_selesai : null,
+            'absensi_url'     => $request->absensi_aktif ? $request->absensi_url     : null,
+    ]);
+        
 
         return redirect()->route('trainer.dashboard')
             ->with('success', 'Program berhasil dikirim dan menunggu persetujuan admin.')
@@ -132,6 +144,10 @@ class TrainerController extends Controller
             'bahasa'            => 'nullable|string|max:100',
             'tanggal'           => 'nullable|date',
             'gambar'            => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'absensi_aktif'   => 'nullable|boolean',
+            'absensi_mulai'   => 'nullable|date',
+            'absensi_selesai' => 'nullable|date|after:absensi_mulai',
+            'absensi_url'     => 'nullable|url|max:255',
         ]);
 
         if ($request->hasFile('gambar')) {
@@ -156,6 +172,10 @@ class TrainerController extends Controller
             'gambar'            => $program->gambar,
             'status'            => 'pending', // reset ke pending untuk review ulang
             'catatan_admin'     => null,
+            'absensi_aktif'   => $request->boolean('absensi_aktif'),
+            'absensi_mulai'   => $request->absensi_aktif ? $request->absensi_mulai   : null,
+            'absensi_selesai' => $request->absensi_aktif ? $request->absensi_selesai : null,
+            'absensi_url'     => $request->absensi_aktif ? $request->absensi_url     : null,
         ]);
 
         return redirect()->route('trainer.dashboard')
@@ -301,6 +321,7 @@ class TrainerController extends Controller
 
     public function updateProfil(Request $request)
     {
+
         $user = Auth::user();
 
         $request->validate([
@@ -310,11 +331,12 @@ class TrainerController extends Controller
             'bidang_keahlian' => 'nullable|string|max:255',
             'bio'             => 'nullable|string|max:1000',
             'linkedin'        => 'nullable|url|max:255',
+            'phone'           => 'nullable|string|max:20',
             'foto'            => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'password'        => 'nullable|string|min:8',
         ]);
 
-        $data = $request->only(['name', 'email', 'no_hp', 'bidang_keahlian', 'bio', 'linkedin']);
+        $data = $request->only(['name', 'email', 'phone', 'bidang_keahlian', 'bio', 'linkedin']);
 
         // Ganti foto jika ada upload baru
         if ($request->hasFile('foto')) {

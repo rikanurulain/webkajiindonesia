@@ -10,7 +10,7 @@ use App\Http\Controllers\UmkmController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Trainer\TrainerPelatihanController;
+use App\Http\Controllers\Trainerpelatihancontroller;
 
 // =====================
 // HALAMAN UMUM (Bebas Akses)
@@ -120,24 +120,14 @@ Route::middleware(['auth'])->group(function () {
     // =========================
 // TRAINER KURIKULUM & MATERI
 // =========================
-Route::post('/trainer/kurikulum', [App\Http\Controllers\Trainer\TrainerPelatihanController::class, 'storeKurikulum'])
-->name('trainer.kurikulum.store');
+ // Kurikulum
+ Route::post('/kurikulum',      [Trainerpelatihancontroller::class, 'storeKurikulum'])  ->name('trainer.kurikulum.store');
+Route::put('/kurikulum/{id}',  [Trainerpelatihancontroller::class, 'updateKurikulum']) ->name('trainer.kurikulum.update');
+Route::delete('/kurikulum/{id}',[Trainerpelatihancontroller::class, 'destroy'])        ->name('trainer.kurikulum.destroy');
 
-Route::put('/trainer/kurikulum/{id}', [App\Http\Controllers\Trainer\TrainerPelatihanController::class, 'updateKurikulum'])
-->name('trainer.kurikulum.update');
-
-Route::delete('/trainer/kurikulum/{id}', [App\Http\Controllers\Trainer\TrainerPelatihanController::class, 'destroy'])
-->name('trainer.kurikulum.destroy');
-
-Route::post('/trainer/materi', [App\Http\Controllers\Trainer\TrainerPelatihanController::class, 'storeMateri'])
-->name('trainer.materi.store');
-
-Route::put('/trainer/materi/{id}', [App\Http\Controllers\Trainer\TrainerPelatihanController::class, 'updateMateri'])
-->name('trainer.materi.update');
-
-Route::delete('/trainer/materi/{id}', [App\Http\Controllers\Trainer\TrainerPelatihanController::class, 'destroy'])
-->name('trainer.materi.destroy');
-
+Route::post('/modul',          [Trainerpelatihancontroller::class, 'storeModul'])      ->name('trainer.modul.store');
+Route::put('/modul/{id}',      [Trainerpelatihancontroller::class, 'updateModul'])     ->name('trainer.modul.update');
+Route::delete('/modul/{id}',   [Trainerpelatihancontroller::class, 'destroy'])         ->name('trainer.modul.destroy');
 // =========================================================
 // 2. GRUP ADMIN (KHUSUS ADMIN)
 // =========================================================

@@ -80,6 +80,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Ijazah Akademik Terakhir *</label>
                     <select name="ijazah_type" required
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none transition">
+                        <option value="SMA" {{ old('ijazah_type') == 'SMA' ? 'selected' : '' }}>SMA SEDERAJAT</option>
                         <option value="D3" {{ old('ijazah_type') == 'D3' ? 'selected' : '' }}>D3</option>
                         <option value="S1" {{ old('ijazah_type') == 'S1' ? 'selected' : '' }}>S1</option>
                         <option value="S2" {{ old('ijazah_type') == 'S2' ? 'selected' : '' }}>S2</option>

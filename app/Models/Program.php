@@ -31,14 +31,20 @@ class Program extends Model
         'approved_by',
         'rejected_at',
         'rejected_by',
-        'jumlah_materi', 'total_jam', 'jumlah_sesi', 'sertifikat',
-    'link_video', 'file_materi', 'durasi', 'urutan', 'kurikulum_id',
+        'jumlah_materi', 'total_jam', 'jumlah_sesi', 'sertifikat', 'urutan', 'kurikulum_id', 'phone',
+        'absensi_aktif',
+        'absensi_mulai',
+        'absensi_selesai',
+        'absensi_url',
     ];
 
     protected $casts = [
         'tanggal'     => 'date',
         'approved_at' => 'datetime',
         'rejected_at' => 'datetime',
+        'absensi_aktif'   => 'boolean',
+        'absensi_mulai'   => 'datetime',
+        'absensi_selesai' => 'datetime',
     ];
 
     // ── Auto-generate slug dari judul ─────────────────────────────────────
@@ -85,9 +91,10 @@ class Program extends Model
     }
 
     public function trainer()
-{
-    return $this->belongsTo(User::class, 'trainer_id');
-}
+    {
+        return $this->belongsTo(User::class, 'trainer_id');
+    }
+    
 
     // ── Scopes (untuk query yang sering dipakai) ──────────────────────────
     // Contoh: Program::published()->get()
@@ -133,4 +140,11 @@ class Program extends Model
             ? asset('storage/' . $this->gambar)
             : asset('images/default-program.jpg');
     }
+
+    // Relasi ke modul-modul milik kurikulum ini
+public function moduls()
+{
+    return $this->hasMany(Program::class, 'kurikulum_id')->where('tipe', 'modul')->orderBy('urutan');
+}
+
 }
