@@ -15,17 +15,23 @@ use Illuminate\Support\Facades\Log;
 class UmkmController extends Controller
 {
     public function index(): View
-    {
-        $members = Member::all();
-        $teams = Team::all();
-        
-        return view('pages.umkm', [
-            'title' => 'UMKM',
-            'metaDescription' => 'Pendampingan dan penguatan kapasitas UMKM oleh Kaji Indonesia.',
-            'members' => $members,
-            'teams' => $teams,
-        ]);
-    }
+{
+    // 1. Ambil data Member & Team (jika memang diperlukan)
+    $members = Member::all();
+    $teams = Team::all();
+
+    // 2. AMBIL DATA PRODUK UMKM (Hanya yang sudah disetujui admin)
+    // Gunakan where status = approved agar Risol Rika (pending) tidak muncul
+    $produks = \App\Models\Produk::where('status', 'approved')->get();
+    
+    return view('pages.umkm', [
+        'title' => 'UMKM',
+        'metaDescription' => 'Pendampingan dan penguatan kapasitas UMKM oleh Kaji Indonesia.',
+        'members' => $members,
+        'teams' => $teams,
+        'produks' => $produks, 
+    ]);
+}
     
     public function produk(): View
     {
