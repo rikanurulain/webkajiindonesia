@@ -10,7 +10,7 @@
                     Membangun Indonesia Melalui Kajian & Pelatihan
                 </h1>
                 <p class="mt-4 text-lg text-white/90">
-                    Kaji Indonesia hadir sebagai mitra terpercaya dalam pengembangan SDM, pendampingan UMKM, sertifikasi halal, dan konsultasi bisnis—dengan nilai-nilai profesional dan islami.
+                    Kaji Indonesia hadir sebagai mitra terpercaya dalam pengembangan SDM, pendampingan UMKM, sertifikasi halal, dan konsultasi bisnis dengan nilai-nilai profesional dan islami.
                 </p>
                 <div class="mt-8 flex flex-wrap gap-4">
                     <a href="#layanan" class="inline-flex items-center justify-center rounded-xl bg-secondary px-6 py-3.5 text-base font-semibold text-gray-900 shadow-lg transition-all hover:bg-secondary-dark hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2">
@@ -183,7 +183,7 @@
             {{-- Kanan: Deskripsi --}}
             <div class="flex flex-col justify-center" style="min-height: 280px;">
                 <p class="text-gray-600 leading-relaxed text-sm sm:text-base text-justify">
-                    <span class="font-semibold text-gray-800">KAJI INDONESIA</span> adalah lembaga yang berfokus pada penguatan kolaborasi antar komunitas, organisasi, dan instansi. Berdiri sejak <span class="font-semibold text-primary">2008</span> sebagai penghubung komunitas di Jawa Timur, kini berkembang menjadi jaringan kolaboratif berskala nasional.
+                    <span class="font-semibold text-gray-800">KAJI Indonesia</span> adalah lembaga yang berfokus pada penguatan kolaborasi antar komunitas, organisasi, dan instansi. Berdiri sejak <span class="font-semibold text-primary">2008</span> sebagai penghubung komunitas di Jawa Timur, kini berkembang menjadi jaringan kolaboratif berskala nasional.
                 </p>
                 <p class="mt-4 text-gray-600 leading-relaxed text-sm sm:text-base text-justify">
                     Resmi menjadi lembaga nasional pada <span class="font-semibold text-primary">2012</span>, KAJI menghadirkan sinergi aktif dan berkelanjutan melalui inkubator bisnis dan layanan konsultasi untuk mendukung pertumbuhan ekonomi dan kualitas SDM.

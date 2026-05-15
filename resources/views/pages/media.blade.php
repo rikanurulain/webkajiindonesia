@@ -10,7 +10,7 @@
     <section class="bg-white py-16">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="prose prose-lg max-w-none text-gray-600">
-                <p>Media Kaji Indonesia menyajikan artikel, video, dan informasi terkini seputar pelatihan, UMKM, sertifikasi halal, dan topik bisnis yang relevan—untuk mendukung wawasan dan keputusan Anda.</p>
+                <p>Media Kaji Indonesia menyajikan artikel, video, dan informasi terkini seputar pelatihan, UMKM, sertifikasi halal, dan topik bisnis yang relevan untuk mendukung wawasan dan keputusan Anda.</p>
             </div>
         </div>
     </section>

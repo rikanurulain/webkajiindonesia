@@ -936,7 +936,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                         <span style="font-size:18px">✅</span>
                         <div>
                             <div style="font-size:13px;font-weight:700">Tombol Absensi Otomatis</div>
-                            <div style="font-size:11px;font-weight:400;color:var(--text-muted);margin-top:2px">Atur jadwal buka & tutup absensi — tombol muncul & hilang otomatis</div>
+                            <div style="font-size:11px;font-weight:400;color:var(--text-muted);margin-top:2px">Atur jadwal buka & tutup absensi tombol muncul & hilang otomatis</div>
                         </div>
                     </div>
                     <div style="display:flex;align-items:center;gap:10px">

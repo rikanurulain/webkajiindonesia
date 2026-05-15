@@ -23,7 +23,7 @@
                     Kami adalah mitra konsultasi bisnis profesional yang telah dipercaya oleh ratusan perusahaan di Indonesia. Dengan pendekatan berbasis data dan pengalaman bertahun-tahun, kami hadir untuk membantu bisnis Anda tumbuh secara berkelanjutan.
                 </p>
                 <p class="text-gray-500 leading-relaxed mb-6">
-                    Layanan kami mencakup seluruh aspek bisnis — dari legalitas usaha, strategi keuangan, hingga transformasi digital — semua dalam satu atap.
+                    Layanan kami mencakup seluruh aspek bisnis dari legalitas usaha, strategi keuangan, hingga transformasi digital semua dalam satu atap.
                 </p>
                 <ul class="space-y-4">
                     @foreach ([

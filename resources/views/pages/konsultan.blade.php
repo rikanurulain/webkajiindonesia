@@ -10,7 +10,7 @@
     <section class="bg-white py-16">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="prose prose-lg max-w-none text-gray-600">
-                <p>Tim konsultan Kaji Indonesia siap mendampingi organisasi dan bisnis Anda dalam perencanaan strategis, tata kelola, dan peningkatan kinerja—dengan pendekatan profesional dan berorientasi hasil.</p>
+                <p>Tim konsultan Kaji Indonesia siap mendampingi organisasi dan bisnis Anda dalam perencanaan strategis, tata kelola, dan peningkatan kinerja dengan pendekatan profesional dan berorientasi hasil.</p>
             </div>
         </div>
     </section>

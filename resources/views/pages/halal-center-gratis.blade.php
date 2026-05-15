@@ -7,7 +7,7 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 class="font-serif text-4xl font-bold sm:text-5xl">HALAL CENTER</h1>
         <p class="mt-4 max-w-2xl text-lg text-white/90">
-            Pendampingan sertifikasi halal untuk UMKM, Koperasi, dan Komunitas - Bisnis oleh tim konsultan bersertifikat dan kompeten.
+            Pendampingan sertifikasi halal untuk UMKM, Koperasi, dan Komunitas Bisnis oleh tim konsultan bersertifikat dan kompeten.
         </p>
         </div>
     </div>
@@ -152,7 +152,7 @@
             @foreach ([
                 [
                     'title' => 'Pendampingan Sertifikasi Halal Reguler',
-                    'desc'  => 'Kami memandu seluruh proses pengajuan ke BPJPH untuk UMK, Non-UMK, Koperasi, dan Komunitas Bisnis — dari persiapan hingga terbit sertifikat.',
+                    'desc'  => 'Kami memandu seluruh proses pengajuan ke BPJPH untuk UMK, Non-UMK, Koperasi, dan Komunitas Bisnis dari persiapan hingga terbit sertifikat.',
                     'icon'  => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
                 ],
                 [
@@ -296,7 +296,7 @@
                     @foreach ([
                         'Pemilik Usaha (nama, NIK, no. HP)',
                         'Penanggungjawab Halal (boleh berbeda dengan pemilik)',
-                        'Penyelia Halal bersertifikat BNSP — <strong class="text-primary">disiapkan oleh Konsultan SYNTARA</strong>',
+                        'Penyelia Halal bersertifikat BNSP <strong class="text-primary">disiapkan oleh Konsultan SYNTARA</strong>',
                         'Karyawan pendukung lain (nama, no. HP, jabatan)',
                     ] as $item)
                     <li class="flex items-start gap-2 text-sm text-gray-600">
@@ -500,11 +500,11 @@
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            Pendampingan Aktif — Hubungi Kami Sekarang
+            Pendampingan Aktif Hubungi Kami Sekarang
         </div>
         <h2 class="font-serif text-3xl font-bold sm:text-4xl">Siap Mendapatkan Sertifikat Halal?</h2>
         <p class="mt-4 text-lg text-white/85 max-w-xl mx-auto">
-            Daftarkan produk Anda sekarang dan dapatkan pendampingan penuh dari tim konsultan halal SYNTARA — 100% gratis untuk pelaku UMK.
+            Daftarkan produk Anda sekarang dan dapatkan pendampingan penuh dari tim konsultan halal SYNTARA 100% gratis untuk pelaku UMK.
         </p>
 
         {{-- Contact Info --}}

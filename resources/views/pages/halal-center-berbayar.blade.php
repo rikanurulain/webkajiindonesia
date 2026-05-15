@@ -142,7 +142,7 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 class="font-serif text-4xl font-bold sm:text-5xl">HALAL CENTER</h1>
         <p class="mt-4 max-w-2xl text-lg text-white/90">
-            Pendampingan sertifikasi halal reguler untuk UMKM, Koperasi, dan Komunitas Bisnis — oleh tim konsultan bersertifikat SYNTARA, tanpa biaya konsultasi, tanpa syarat tersembunyi.
+            Pendampingan sertifikasi halal reguler untuk UMKM, Koperasi, dan Komunitas Bisnis oleh tim konsultan bersertifikat SYNTARA, tanpa biaya konsultasi, tanpa syarat tersembunyi.
         </p>
         </div>
     </div>
@@ -161,7 +161,7 @@
         {{-- Konten --}}
         <div class="max-w-3xl mx-auto">
             <p class="text-gray-500 leading-relaxed mb-6">
-                Didukung oleh tim <strong class="text-gray-700">Penyelia Halal bersertifikat </strong>, auditor berpengalaman, dan bekerja sama langsung dengan BPJPH & LPH terakreditasi, kami mendampingi seluruh proses — dari persiapan dokumen NIB hingga penerbitan sertifikat halal resmi.
+                Didukung oleh tim <strong class="text-gray-700">Penyelia Halal bersertifikat </strong>, auditor berpengalaman, dan bekerja sama langsung dengan BPJPH & LPH terakreditasi, kami mendampingi seluruh proses mulai dari persiapan dokumen NIB hingga penerbitan sertifikat halal resmi.
             </p>
             <ul class="space-y-4">
                 @foreach ([
@@ -434,13 +434,13 @@
                 [
                     'badge' => 'Premium',
                     'title' => 'Pelatihan Intensif Penyelia Halal',
-                    'desc'  => 'Pelatihan mendalam bagi tim internal Anda mencakup Penyelia Halal, Juru Sembelih Halal, dan Audit Halal — dilengkapi sertifikat resmi BNSP.',
+                    'desc'  => 'Pelatihan mendalam bagi tim internal Anda mencakup Penyelia Halal, Juru Sembelih Halal, dan Audit Halal dilengkapi sertifikat resmi BNSP.',
                     'icon'  => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
                 ],
                 [
                     'badge' => 'Enterprise',
                     'title' => 'Optimasi Kawasan Halal',
-                    'desc'  => 'Penyediaan tenaga Penyelia Halal tersertifikasi untuk kawasan industri, sentra produksi, dan Halal Hub — mendukung ekosistem halal reguler.',
+                    'desc'  => 'Penyediaan tenaga Penyelia Halal tersertifikasi untuk kawasan industri, sentra produksi, dan Halal Hub mendukung ekosistem halal reguler.',
                     'icon'  => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
                 ],
                 [
@@ -464,7 +464,7 @@
                 [
                     'badge' => 'Enterprise',
                     'title' => 'Digitalisasi Ekosistem Halal',
-                    'desc'  => 'Solusi digital untuk pengelolaan ekosistem halal internal bisnis Anda — dari pencatatan bahan baku hingga monitoring kepatuhan secara real-time.',
+                    'desc'  => 'Solusi digital untuk pengelolaan ekosistem halal internal bisnis Anda mulai dari pencatatan bahan baku hingga monitoring kepatuhan secara real-time.',
                     'icon'  => 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
                 ],
             ] as $layanan)
@@ -498,7 +498,7 @@
         <div class="text-center mb-12">
             <p class="text-sm font-semibold text-primary uppercase tracking-widest mb-2">Cara Kerja</p>
             <h2 class="font-serif text-3xl font-bold text-gray-900 sm:text-4xl">Alur Pendampingan Berbayar</h2>
-            <p class="mt-3 text-gray-500 max-w-xl mx-auto">Delapan tahap resmi BPJPH dengan pendampingan eksklusif dari tim SYNTARA — lebih cepat, lebih terprioritaskan.</p><br>
+            <p class="mt-3 text-gray-500 max-w-xl mx-auto">Delapan tahap resmi BPJPH dengan pendampingan eksklusif dari tim SYNTARA lebih cepat, lebih terprioritaskan.</p><br>
         </div>
 
         <div class="mx-auto max-w-3xl space-y-3">
@@ -537,7 +537,7 @@
                 <svg class="h-5 w-5 text-yellow-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
-                <p class="text-sm text-yellow-800 font-medium">Klien berbayar mendapatkan <strong>prioritas antrian</strong> dan <strong>garansi revisi tidak terbatas</strong> — proses lebih cepat dari jalur reguler.</p>
+                <p class="text-sm text-yellow-800 font-medium">Klien berbayar mendapatkan <strong>prioritas antrian</strong> dan <strong>garansi revisi tidak terbatas</strong>  proses lebih cepat dari jalur reguler.</p>
             </div>
         </div>
     </div>
@@ -550,7 +550,7 @@
         <div class="text-center mb-12">
             <p class="text-sm font-semibold text-primary uppercase tracking-widest mb-2">Persyaratan</p>
             <h2 class="font-serif text-3xl font-bold text-gray-900 sm:text-4xl">Dokumen yang Disiapkan</h2>
-            <p class="mt-3 text-gray-500 max-w-xl mx-auto">Dokumen yang sama dengan jalur gratis — namun untuk paket berbayar, tim SYNTARA membantu menyiapkan dan mengisi sebagian besar dokumen ini.</p><br>
+            <p class="mt-3 text-gray-500 max-w-xl mx-auto">Dokumen yang sama dengan jalur gratis namun untuk paket berbayar, tim SYNTARA membantu menyiapkan dan mengisi sebagian besar dokumen ini.</p><br>
         </div>
 
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -579,7 +579,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             <p class="text-sm text-primary">
-                <strong>Keuntungan paket berbayar:</strong> Template berkas (SJPH, SOP, IK, diagram alir produksi, dll.) <strong>disiapkan dan diisi oleh tim konsultan</strong> — Anda hanya perlu menyediakan data dasar dan memberikan persetujuan.
+                <strong>Keuntungan paket berbayar:</strong> Template berkas (SJPH, SOP, IK, diagram alir produksi, dll.) <strong>disiapkan dan diisi oleh tim konsultan</strong> Anda hanya perlu menyediakan data dasar dan memberikan persetujuan.
             </p>
         </div>
     </div>
@@ -641,11 +641,11 @@
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            Pendampingan Aktif — Hubungi Kami Sekarang
+            Pendampingan Aktif Hubungi Kami Sekarang
         </div>
         <h2 class="font-serif text-3xl font-bold sm:text-4xl">Siap Mendapatkan Sertifikat Halal?</h2>
         <p class="mt-4 text-lg text-white/85 max-w-xl mx-auto">
-            Daftarkan produk Anda sekarang dan dapatkan pendampingan penuh dari tim konsultan halal SYNTARA — 100% gratis untuk pelaku UMK.
+            Daftarkan produk Anda sekarang dan dapatkan pendampingan penuh dari tim konsultan halal SYNTARA 100% gratis untuk pelaku UMK.
         </p>
 
         {{-- Contact Info --}}
