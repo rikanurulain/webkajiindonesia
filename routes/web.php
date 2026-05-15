@@ -166,10 +166,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/approval/trainer/{user}/approve', [AdminController::class, 'approveTrainer'])->name('trainer.approve');
     Route::post('/approval/trainer/{user}/reject', [AdminController::class, 'rejectTrainer'])->name('trainer.reject');
 
-    Route::get('/approval/mentor',                     [AdminController::class, 'approvalMentor'])->name('approval.mentor');
-    Route::post('/approval/mentor/{user}/approve',     [AdminController::class, 'approveMentor'])->name('approval.mentor.approve');
-    Route::post('/approval/mentor/{user}/reject',      [AdminController::class, 'rejectMentor'])->name('approval.mentor.reject');
-    Route::delete('/approval/mentor/{user}',           [AdminController::class, 'destroyMentor'])->name('approval.mentor.destroy');
+    Route::get('/approval/mentor',                       [AdminController::class, 'approvalMentor'])->name('approval.mentor');
+    Route::post('/approval/mentor/{mentor}/approve',     [AdminController::class, 'approveMentor'])->name('approval.mentor.approve');
+    Route::post('/approval/mentor/{mentor}/reject',      [AdminController::class, 'rejectMentor'])->name('approval.mentor.reject');
+    Route::delete('/approval/mentor/{mentor}',           [AdminController::class, 'destroyMentor'])->name('approval.mentor.destroy');
 
     // Pengguna
     Route::get('/pengguna', [AdminController::class, 'pengguna'])->name('pengguna');

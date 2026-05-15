@@ -41,17 +41,17 @@
         {{-- Grid Kartu Mentor --}}
         <div class="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="pembimbingGrid">
 
-            @forelse($trainers as $m)
+            @forelse($mentors as $m)
                 <a href="{{ route('pelatihan.mentor.detail', $m->id) }}"
                     class="pembimbing-card block bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition duration-300"
-                    data-nama="{{ strtolower($m->name) }}"
-                    data-lokasi="{{ strtolower($m->location) }}"
-                    data-role="{{ strtolower($m->role) }}">
+                    data-nama="{{ strtolower($m->full_name ?? "ME") }}"
+                    data-lokasi="{{ strtolower($m->lokasi ?? $m->gmaps_location ?? "") }}"
+                    data-role="{{ strtolower($m->role ?? "") }}">
                     
                     {{-- Foto --}}
                     <div class="w-full h-44 bg-gray-100 flex items-center justify-center overflow-hidden">
                         @if ($m->white_bg_photo)
-                            <img src="{{ asset('storage/' . $m->white_bg_photo) }}" alt="{{ $m->name }}" class="w-full h-full object-cover">
+                            <img src="{{ asset('storage/' . $m->white_bg_photo) }}" alt="{{ $m->full_name }}" class="w-full h-full object-cover">
                         @else
                             <div class="text-3xl font-bold text-emerald-700">
                                 {{ strtoupper(substr($m->name, 0, 2)) }}
@@ -61,12 +61,12 @@
 
                     {{-- Info --}}
                     <div class="bg-green-50 px-4 py-2 border-b">
-                        <h3 class="font-bold text-gray-900 text-sm line-clamp-1">{{ $m->academic_degree ?? $m->name }}</h3>
+                        <h3 class="font-bold text-gray-900 text-sm line-clamp-1">{{ $m->full_name ?? "Mentor" }}</h3>
                         <p class="text-xs text-emerald-600 font-bold uppercase">{{ $m->role ?? 'Mentor' }}</p>
                     </div>
 
                     <div class="px-4 py-3 text-gray-600">
-                        <p class="text-xs mb-2">{{ $m->location ?? 'Lokasi tidak tersedia' }}</p>
+                        <p class="text-xs mb-2">{{ $m->lokasi ?? $m->gmaps_location ?? "Lokasi tidak tersedia" }}</p>
                         <div class="flex items-center gap-1 text-amber-400">
                             @for ($i = 1; $i <= 5; $i++)
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
@@ -86,7 +86,7 @@
 
         {{-- Pagination --}}
         <div class="mt-10 max-w-5xl mx-auto text-center">
-            {{ $trainers->links() }}
+            {{ $mentors->links() }}
         </div>
     </section>
 

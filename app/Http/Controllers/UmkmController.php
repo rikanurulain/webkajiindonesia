@@ -6,6 +6,7 @@ use Illuminate\View\View;
 use App\Models\Member;
 use App\Models\Team;
 use App\Models\Produk;
+use App\Models\Mentor;
 use App\Models\User; // Menggunakan model User untuk Mentor
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
@@ -51,23 +52,22 @@ class UmkmController extends Controller
 
     public function pembimbing(): View
 {
-    // Kita gunakan nama variabel $trainers agar cocok dengan file Blade Anda
-    $trainers = \App\Models\User::where('trainer_status', 'approved')->paginate(12);
+    // Ambil mentor yang sudah disetujui admin dari tabel mentor
+    $mentors = Mentor::where('status', 'approved')->paginate(12);
 
     return view('pages.umkm-pembimbing', [
         'title' => 'Pembimbing UMKM',
         'metaDescription' => 'Tim pembimbing UMKM yang berpengalaman di Kaji Indonesia.',
-        'trainers' => $trainers, // Menggunakan 'trainers' sebagai kunci
+        'mentors' => $mentors,
     ]);
 }
 
     public function showMentor($id)
     {
-        // PERBAIKAN: Mengambil detail mentor dari model User
-        $mentor = User::where('trainer_status', 'approved')->findOrFail($id);
+        // Mengambil detail mentor dari model Mentor
+        $mentor = Mentor::where('status', 'approved')->findOrFail($id);
         
-        // Menggunakan file detail yang sudah Anda miliki
-        return view('pages.umkm-pembimbing_detail', compact('mentor'));
+        return view('pages.detail-pembimbing', compact('mentor'));
     }
 
     public function lokasi(): View
@@ -131,6 +131,43 @@ class UmkmController extends Controller
             ];
         }
     
+        return response()->json(['data' => $data]);
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // API endpoint — kembalikan data Mentor sebagai JSON untuk peta
+    // Koordinat di-cache per mentor (tidak butuh kolom lat/lng di DB)
+    // ─────────────────────────────────────────────────────────
+    public function petaDataMentor()
+    {
+        $mentors = Mentor::where('status', 'approved')
+            ->whereNotNull('lokasi')
+            ->select(['id', 'nama', 'full_name', 'white_bg_photo', 'lokasi', 'gmaps_location'])
+            ->get();
+
+        $data = [];
+        foreach ($mentors as $m) {
+            // Gunakan gmaps_location jika ada, fallback ke lokasi
+            $alamat = $m->gmaps_location ?: $m->lokasi;
+            if (!$alamat) continue;
+
+            $koordinat = $this->geocodeAlamat($alamat);
+            if (!$koordinat) continue;
+
+            $fotoPath = $m->white_bg_photo
+                ? asset('storage/' . $m->white_bg_photo)
+                : null;
+
+            $data[] = [
+                'id'     => $m->id,
+                'nama'   => $m->full_name ?: $m->nama,
+                'lokasi' => $alamat,
+                'foto'   => $fotoPath,
+                'lat'    => $koordinat['lat'],
+                'lng'    => $koordinat['lng'],
+            ];
+        }
+
         return response()->json(['data' => $data]);
     }
 

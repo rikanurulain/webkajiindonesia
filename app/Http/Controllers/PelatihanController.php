@@ -7,6 +7,7 @@ use App\Models\Trainer;
 use App\Models\UlasanPembimbing;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Mentor;
 use App\Models\Program;
 
 class PelatihanController extends Controller
@@ -534,25 +535,33 @@ class PelatihanController extends Controller
     // =========================================================
     public function pembimbing(Request $request)
     {
-        $query = User::where('trainer_status', 'approved');
+        $query = Mentor::where('status', 'approved');
     
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('location', 'like', '%' . $request->search . '%');
+                $q->where('full_name', 'like', '%' . $request->search . '%')
+                  ->orWhere('lokasi', 'like', '%' . $request->search . '%')
+                  ->orWhere('gmaps_location', 'like', '%' . $request->search . '%');
             });
         }
     
         $trainers = $query->paginate(12);
     
-        $bidangList = User::where('trainer_status', 'approved')
-                          ->whereNotNull('bidang_keahlian')
-                          ->pluck('bidang_keahlian')
+        $bidangList = Mentor::where('status', 'approved')
+                          ->whereNotNull('role')
+                          ->pluck('role')
                           ->unique()
                           ->sort()
                           ->values();
     
         return view('pages.pelatihan-pembimbing', compact('trainers', 'bidangList'));
+    }
+
+    public function detailMentor($id)
+    {
+        $mentor = Mentor::where('status', 'approved')->findOrFail($id);
+
+        return view('pages.detail-pembimbing', compact('mentor'));
     }
 
     public function simpanUlasan(Request $request, $id)
