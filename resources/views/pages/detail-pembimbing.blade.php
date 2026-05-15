@@ -1,39 +1,88 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-16 mx-auto px-6">
-    <div class="max-w-4xl mx-auto bg-white rounded-3xl shadow-sm border p-8 flex flex-col md:flex-row gap-8">
-        <div class="w-full md:w-1/3">
-            @if($mentor->white_bg_photo)
-                <img src="{{ asset('storage/' . $mentor->white_bg_photo) }}" class="rounded-2xl w-full object-cover">
-            @else
-                <div class="w-full h-64 bg-gray-100 flex items-center justify-center rounded-2xl text-4xl font-bold text-emerald-700">
-                    {{ strtoupper(substr($mentor->full_name ?? 'ME', 0, 2)) }}
-                </div>
-            @endif
-        </div>
-        <div class="flex-1">
-            <h1 class="text-3xl font-bold text-gray-900">{{ $mentor->full_name ?? 'Mentor' }}</h1>
-            <p class="text-emerald-600 font-bold uppercase mb-4">{{ $mentor->role ?? 'Mentor' }}</p>
-            
-            <div class="space-y-4 text-gray-700">
-                <p><strong>Lokasi:</strong> {{ $mentor->lokasi ?? $mentor->gmaps_location ?? '-' }}</p>
-                @if($mentor->bio)
-                <p><strong>Bio:</strong> {{ $mentor->bio }}</p>
-                @endif
-                @if($mentor->email)
-                <p><strong>Email:</strong> {{ $mentor->email }}</p>
-                @endif
-            </div>
-
-            @if($mentor->phone)
-            <div class="mt-8">
-                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $mentor->phone) }}" target="_blank" class="bg-emerald-600 text-white px-8 py-3 rounded-full font-bold">
-                    Hubungi Mentor
-                </a>
-            </div>
-            @endif
+{{-- Header --}}
+<section class="bg-gradient-to-br from-primary-dark via-primary to-primary- py-10 text-white">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3">
+            <a href="{{ url()->previous() }}" class="text-white/80 hover:text-white transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </a>
+            <h1 class="font-serif text-2xl font-bold">Profil Mentor</h1>
         </div>
     </div>
-</div>
+</section>
+
+<section class="bg-gray-50 py-12 px-4 min-h-screen">
+    <h2 class="font-serif text-center text-2xl font-bold text-gray-900 mb-10">Profil Mentor</h2>
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <!-- KIRI (FOTO) -->
+        <div class="bg-white p-6 rounded-xl ">
+            <h3 class="text-center font-semibold mb-4">Pebimbing</h3>
+
+            @if($mentor->foto)
+                <img src="{{ asset('storage/pendamping/' . $mentor->foto) }}" class="rounded-lg w-full object-cover">
+            @else
+                <div class="h-64 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.121 17.804A9 9 0 1112 21a9 9 0 01-6.879-3.196z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+            @endif
+
+            {{-- Ulasan --}}
+            <div class="flex items-center gap-1 mt-4 text-grey-100">
+                @for ($i = 1; $i <= 5; $i++)
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                    </svg>
+                @endfor
+                <span class="text-gray-400 text-xs ml-1">({{ $mentor->ulasan }} Ulasan)</span>
+            </div>
+
+            {{-- Lokasi --}}
+            <div class="flex items-center gap-1 mt-2 text-sm text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>
+                </svg>
+                {{ $mentor->lokasi ?? 'Lokasi belum diisi' }}
+            </div>
+        </div>
+
+        <!-- TENGAH (PROFIL) -->
+        <div class="bg-white p-6 rounded-xl ">
+            <p class="text-sm font-semibold">Hai, Saya</p>
+            <h3 class="text-xl font-bold mb-4">{{ $mentor->nama }}</h3>
+
+            <p class="text-sm text-gray-600">
+                {{ $mentor->deskripsi ?? 'Belum ada deskripsi.' }}
+            </p>
+        </div>
+
+        <!-- KANAN (TRAINING) -->
+        <div class="bg-white p-6 rounded-xl ">
+            <h3 class="text-center font-semibold mb-4">Training</h3>
+
+            <div class="space-y-4">
+
+                <div class="bg-gray-300 h-20"></div>
+                <p class="text-sm text-center">Panduan Praktis Membuat Akun UMKM</p>
+
+                <div class="bg-gray-300 h-20"></div>
+                <p class="text-sm text-center">Panduan Praktis Membuat IUMK Online</p>
+
+                <div class="bg-gray-300 h-20"></div>
+                <p class="text-sm text-center">Panduan Praktis Membuat Akun UMKM</p>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
 @endsection
