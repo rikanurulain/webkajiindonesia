@@ -535,24 +535,24 @@ class PelatihanController extends Controller
     public function pembimbing(Request $request)
     {
         $query = User::where('trainer_status', 'approved');
-
+    
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
                   ->orWhere('location', 'like', '%' . $request->search . '%');
             });
         }
-
+    
         $trainers = $query->paginate(12);
-
-        return view('pages.umkm-pembimbing', compact('trainers'));
-    }
-
-    public function detailMentor($id)
-    {
-        $mentor = User::where('trainer_status', 'approved')->findOrFail($id);
-
-        return view('pages.detail-pembimbing', compact('mentor'));
+    
+        $bidangList = User::where('trainer_status', 'approved')
+                          ->whereNotNull('bidang_keahlian')
+                          ->pluck('bidang_keahlian')
+                          ->unique()
+                          ->sort()
+                          ->values();
+    
+        return view('pages.pelatihan-pembimbing', compact('trainers', 'bidangList'));
     }
 
     public function simpanUlasan(Request $request, $id)
