@@ -6,6 +6,7 @@ use Illuminate\View\View;
 use App\Models\Member;
 use App\Models\Team;
 use App\Models\Produk;
+use App\Models\Mentor;
 use App\Models\User; // Menggunakan model User untuk Mentor
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
@@ -14,17 +15,23 @@ use Illuminate\Support\Facades\Log;
 class UmkmController extends Controller
 {
     public function index(): View
-    {
-        $members = Member::all();
-        $teams = Team::all();
-        
-        return view('pages.umkm', [
-            'title' => 'UMKM',
-            'metaDescription' => 'Pendampingan dan penguatan kapasitas UMKM oleh Kaji Indonesia.',
-            'members' => $members,
-            'teams' => $teams,
-        ]);
-    }
+{
+    // 1. Ambil data Member & Team (jika memang diperlukan)
+    $members = Member::all();
+    $teams = Team::all();
+
+    // 2. AMBIL DATA PRODUK UMKM (Hanya yang sudah disetujui admin)
+    // Gunakan where status = approved agar Risol Rika (pending) tidak muncul
+    $produks = \App\Models\Produk::where('status', 'approved')->get();
+    
+    return view('pages.umkm', [
+        'title' => 'UMKM',
+        'metaDescription' => 'Pendampingan dan penguatan kapasitas UMKM oleh Kaji Indonesia.',
+        'members' => $members,
+        'teams' => $teams,
+        'produks' => $produks, 
+    ]);
+}
     
     public function produk(): View
     {
@@ -131,6 +138,43 @@ class UmkmController extends Controller
             ];
         }
     
+        return response()->json(['data' => $data]);
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // API endpoint — kembalikan data Mentor sebagai JSON untuk peta
+    // Koordinat di-cache per mentor (tidak butuh kolom lat/lng di DB)
+    // ─────────────────────────────────────────────────────────
+    public function petaDataMentor()
+    {
+        $mentors = Mentor::where('status', 'approved')
+            ->whereNotNull('lokasi')
+            ->select(['id', 'nama', 'full_name', 'white_bg_photo', 'lokasi', 'gmaps_location'])
+            ->get();
+
+        $data = [];
+        foreach ($mentors as $m) {
+            // Gunakan gmaps_location jika ada, fallback ke lokasi
+            $alamat = $m->gmaps_location ?: $m->lokasi;
+            if (!$alamat) continue;
+
+            $koordinat = $this->geocodeAlamat($alamat);
+            if (!$koordinat) continue;
+
+            $fotoPath = $m->white_bg_photo
+                ? asset('storage/' . $m->white_bg_photo)
+                : null;
+
+            $data[] = [
+                'id'     => $m->id,
+                'nama'   => $m->full_name ?: $m->nama,
+                'lokasi' => $alamat,
+                'foto'   => $fotoPath,
+                'lat'    => $koordinat['lat'],
+                'lng'    => $koordinat['lng'],
+            ];
+        }
+
         return response()->json(['data' => $data]);
     }
 

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use App\Models\ActivityLog;
 use App\Models\Mentor;
+use App\Models\Produk;
 
 class ProfileController extends Controller
 {
@@ -269,10 +270,67 @@ public function showDaftarUmkm()
     return view('profile.daftar-umkm');
 }
 
+
 // Simpan pendaftaran UMKM
 public function simpanUmkm(Request $request)
 {
-    // logika simpan data UMKM
+    // 1. Validasi Input
+    $request->validate([
+        'nama'           => 'required|string|max:255',
+        'kategori'       => 'required',
+        'owner'          => 'required|string|max:255',
+        'kontak'         => 'required|string|max:20',
+        'provinsi'       => 'required',
+        'kabupaten_kota' => 'required',
+        'kecamatan'      => 'required',
+        'kelurahan'      => 'required',
+        'alamat'         => 'required|string',
+        'deskripsi'      => 'required|string',
+        'logo'           => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
+        'foto_produk'    => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
+        'terms'          => 'required', // Memastikan checkbox dicentang
+    ], [
+        'terms.required' => 'Anda harus menyetujui Syarat dan Ketentuan.',
+        'logo.required'  => 'Logo usaha wajib diunggah.',
+    ]);
+
+    // 2. Proses Upload File
+    // Simpan ke folder storage/app/public/produk-pict
+    $logoPath = $request->file('logo')->store('produk-pict', 'public');
+    $fotoProdukPath = $request->file('foto_produk')->store('produk-pict', 'public');
+
+    // 3. Simpan ke Database
+    \App\Models\Produk::create([
+        'user_id'        => auth()->id(),
+        'nama'           => $request->nama,
+        'kategori'       => $request->kategori,
+        'owner'          => $request->owner,
+        'kontak'         => $request->kontak,
+        'nib'            => $request->nib,
+        'id_tkm'         => $request->id_tkm,
+        'provinsi'       => $request->provinsi,
+        'kabupaten_kota' => $request->kabupaten_kota,
+        'kecamatan'      => $request->kecamatan,
+        'kelurahan'      => $request->kelurahan,
+        'alamat'         => $request->alamat,
+        'deskripsi'      => $request->deskripsi,
+        'logo'           => $logoPath,        // Kolom logo baru
+        'foto_produk'    => $fotoProdukPath,
+        'status'         => 'pending',       // Default pending menunggu acc admin
+    ]);
+
+    // 4. Catat Aktivitas
+    ActivityLog::create([
+        'user_id'     => auth()->id(),
+        'type'        => 'profile',
+        'label'       => 'Pendaftaran UMKM',
+        'description' => 'User mendaftarkan unit usaha UMKM: ' . $request->nama,
+        'ip_address'  => $request->ip(),
+        'user_agent'  => $request->userAgent(),
+        'is_success'  => true,
+    ]);
+
+    return redirect()->route('profile')->with('success', 'Pendaftaran UMKM berhasil dikirim! Mohon tunggu verifikasi admin.');
 }
 
 // Show form daftar Mentor

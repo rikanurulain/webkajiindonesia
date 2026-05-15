@@ -8,24 +8,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Produk extends Model
 {
     protected $fillable = [
-        'nama',
-        'kategori',
-        'deskripsi',
-        'keterangan',
-        'harga',
-        'foto',
-        'foto_detail',
-        'whatsapp',
-        'alamat',
-        'koordinat',
-        'status',
-        'catatan_admin',
-        'approved_at',
-        'approved_by',
-        'rejected_at',
-        'rejected_by',
-        'user_id',      // FK ke user (UMKM pemilik produk)
-    ];
+    'user_id',
+    'nama',
+    'kategori',
+    'owner',
+    'kontak',
+    'nib',
+    'id_tkm',
+    'provinsi',        
+    'kabupaten_kota',  
+    'kecamatan',       
+    'kelurahan',       
+    'alamat',
+    'deskripsi',
+    'logo',            
+    'foto_produk',
+    'status',
+];
 
     protected $casts = [
         'approved_at' => 'datetime',

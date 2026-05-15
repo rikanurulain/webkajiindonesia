@@ -26,7 +26,19 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
-
+// Route untuk menjembatani API Wilayah (Proxy)
+Route::get('/proxy-wilayah/provinsi', function() {
+    return Http::get('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json')->json();
+});
+Route::get('/proxy-wilayah/kota/{id}', function($id) {
+    return Http::get("https://www.emsifa.com/api-wilayah-indonesia/api/regencies/{$id}.json")->json();
+});
+Route::get('/proxy-wilayah/kecamatan/{id}', function($id) {
+    return Http::get("https://www.emsifa.com/api-wilayah-indonesia/api/districts/{$id}.json")->json();
+});
+Route::get('/proxy-wilayah/kelurahan/{id}', function($id) {
+    return Http::get("https://www.emsifa.com/api-wilayah-indonesia/api/villages/{$id}.json")->json();
+});
 // Pelatihan, UMKM, Halal, Konsultan (Prefix Groups)
 Route::prefix('pelatihan')->name('pelatihan.')->group(function () {
     Route::get('/', [PelatihanController::class, 'program'])->name('index');
