@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
-
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Produk;
@@ -10,13 +8,11 @@ use App\Models\User;
 use App\Models\Mentor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
 class AdminController extends Controller
 {
     // ═════════════════════════════════════════════════════════════════════
     // BERANDA / DASHBOARD
     // ═════════════════════════════════════════════════════════════════════
-
     public function index()
     {
         $stats = [
@@ -40,12 +36,10 @@ class AdminController extends Controller
             'total_umkm'       => User::where('role', 'umkm')->count(),
             'total_pembimbing' => User::where('role', 'pembimbing')->count(),
         ];
-
         $pendingProgram = $stats['pending_program'];
         $pendingEvent   = $stats['pending_event'];
         $totalProgram   = Program::where('status', 'approved')->count();
         $totalPengguna  = User::count();
-
         $antrian_terbaru = collect()
             ->merge(
                 Program::with('trainer')->where('status', 'pending')->latest()->take(3)->get()
@@ -75,22 +69,18 @@ class AdminController extends Controller
             ->sortByDesc('tanggal')
             ->take(5)
             ->values();
-
         $programPending = Program::with('trainer')
             ->where('status', 'pending')
             ->latest()
             ->take(5)
             ->get();
-
         $eventPending = Event::with('trainer')
             ->where('status', 'pending')
             ->latest()
             ->take(5)
             ->get();
-
         $pengguna_terbaru = User::latest()->take(5)->get();
         $produk_terbaru   = Produk::latest()->take(5)->get();
-
         return view('admin.dashboard-admin', compact(
             'stats',
             'antrian_terbaru',
@@ -105,42 +95,32 @@ class AdminController extends Controller
         ));
     }
 
-    
-
     // ═════════════════════════════════════════════════════════════════════
     // APPROVAL PROGRAM (kurikulum + modul)
     // ═════════════════════════════════════════════════════════════════════
-
     public function approvalProgram(Request $request)
     {
         $status = $request->get('status', 'pending');
-        $tipe   = $request->get('tipe', 'all'); // all | kurikulum | modul
-
+        $tipe   = $request->get('tipe', 'all');
         $programs = Program::with('trainer')
             ->when($status !== 'all', fn($q) => $q->where('status', $status))
             ->when($tipe   !== 'all', fn($q) => $q->where('tipe', $tipe))
             ->latest()
             ->paginate(15)
             ->withQueryString();
-
-        // Hitung badge per status
         $counts = [
             'pending'  => Program::where('status', 'pending')->count(),
             'approved' => Program::where('status', 'approved')->count(),
             'rejected' => Program::where('status', 'rejected')->count(),
         ];
-
-        // Hitung per tipe untuk filter chips
         $tipeBase = $status !== 'all'
             ? Program::where('status', $status)
             : Program::query();
-
         $countTipe = [
             'all'       => (clone $tipeBase)->count(),
             'kurikulum' => (clone $tipeBase)->where('tipe', 'kurikulum')->count(),
             'modul'     => (clone $tipeBase)->where('tipe', 'modul')->count(),
         ];
-
         return view('admin.approval-program', compact(
             'programs',
             'counts',
@@ -149,16 +129,13 @@ class AdminController extends Controller
             'tipe'
         ));
     }
-
     public function detailProgram(Program $program)
     {
         return response()->json($program->load('trainer'));
     }
-
     public function approveProgram(Request $request, Program $program)
     {
         $request->validate(['catatan' => 'nullable|string|max:1000']);
-
         $program->update([
             'status'        => 'approved',
             'catatan_admin' => $request->catatan,
@@ -167,18 +144,14 @@ class AdminController extends Controller
             'rejected_at'   => null,
             'rejected_by'   => null,
         ]);
-
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Program berhasil disetujui.', 'program' => $program]);
         }
-
         return back()->with('success', "Program \"{$program->judul}\" berhasil disetujui.");
     }
-
     public function rejectProgram(Request $request, Program $program)
     {
         $request->validate(['alasan' => 'required|string|max:1000']);
-
         $program->update([
             'status'        => 'rejected',
             'catatan_admin' => $request->alasan,
@@ -187,146 +160,112 @@ class AdminController extends Controller
             'approved_at'   => null,
             'approved_by'   => null,
         ]);
-
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Program berhasil ditolak.']);
         }
-
         return back()->with('success', "Program \"{$program->judul}\" telah ditolak.");
     }
 
     // ═════════════════════════════════════════════════════════════════════
     // APPROVAL PRODUK
     // ═════════════════════════════════════════════════════════════════════
-
     public function approvalProduk(Request $request)
     {
         $status = $request->get('status', 'pending');
-
         $produks = Produk::with('umkm')
             ->when($status !== 'all', fn($q) => $q->where('status', $status))
             ->latest()
             ->paginate(15)
             ->withQueryString();
-
         $counts = [
             'pending'  => Produk::where('status', 'pending')->count(),
             'approved' => Produk::where('status', 'approved')->count(),
             'rejected' => Produk::where('status', 'rejected')->count(),
         ];
-
         return view('admin.approval-produk', compact('produks', 'counts', 'status'));
     }
-
     public function detailProduk(Produk $produk)
     {
         return response()->json($produk->load('umkm'));
     }
-
     public function approveProduk(Request $request, Produk $produk)
     {
         $request->validate(['catatan' => 'nullable|string|max:1000']);
-
         $produk->update([
             'status'        => 'approved',
             'catatan_admin' => $request->catatan,
             'approved_at'   => now(),
             'approved_by'   => Auth::id(),
         ]);
-
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Produk berhasil disetujui.', 'produk' => $produk]);
         }
-
         return back()->with('success', 'Produk berhasil disetujui.');
     }
-
     public function rejectProduk(Request $request, Produk $produk)
     {
         $request->validate(['alasan' => 'required|string|max:1000']);
-
         $produk->update([
             'status'        => 'rejected',
             'catatan_admin' => $request->alasan,
             'rejected_at'   => now(),
             'rejected_by'   => Auth::id(),
         ]);
-
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Produk berhasil ditolak.']);
         }
-
         return back()->with('success', 'Produk telah ditolak.');
     }
 
     // ═════════════════════════════════════════════════════════════════════
-    // APPROVAL EVENT
+    // APPROVAL EVENT — (diperbarui dari AdminEventController)
     // ═════════════════════════════════════════════════════════════════════
-
     public function approvalEvent(Request $request)
     {
         $status = $request->get('status', 'pending');
-
         $events = Event::with('trainer')
-            ->when($status !== 'all', fn($q) => $q->where('status', $status))
+            ->where('status', $status)
             ->latest()
-            ->paginate(15)
-            ->withQueryString();
-
-        $counts = [
-            'pending'  => Event::where('status', 'pending')->count(),
-            'approved' => Event::where('status', 'approved')->count(),
-            'rejected' => Event::where('status', 'rejected')->count(),
-        ];
-
-        return view('admin.approval-event', compact('events', 'counts', 'status'));
+            ->get();
+        return view('admin.approval-event', compact('events', 'status'));
     }
-
     public function detailEvent(Event $event)
     {
         return response()->json($event->load('trainer'));
     }
-
-    public function approveEvent(Request $request, Event $event)
+    public function approveEvent($id)
     {
-        $request->validate(['catatan' => 'nullable|string|max:1000']);
-
+        $event = Event::findOrFail($id);
         $event->update([
             'status'        => 'approved',
-            'catatan_admin' => $request->catatan,
             'approved_at'   => now(),
             'approved_by'   => Auth::id(),
+            'rejected_at'   => null,
+            'rejected_by'   => null,
+            'catatan_admin' => null,
         ]);
-
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Event berhasil disetujui.', 'event' => $event]);
-        }
-
-        return back()->with('success', "Event \"{$event->judul}\" berhasil disetujui.");
+        return back()->with('success', 'Event "' . $event->judul . '" berhasil disetujui.');
     }
-
-    public function rejectEvent(Request $request, Event $event)
+    public function rejectEvent(Request $request, $id)
     {
-        $request->validate(['alasan' => 'required|string|max:1000']);
-
+        $request->validate([
+            'catatan_admin' => 'required|string|max:500',
+        ]);
+        $event = Event::findOrFail($id);
         $event->update([
             'status'        => 'rejected',
-            'catatan_admin' => $request->alasan,
             'rejected_at'   => now(),
             'rejected_by'   => Auth::id(),
+            'catatan_admin' => $request->catatan_admin,
+            'approved_at'   => null,
+            'approved_by'   => null,
         ]);
-
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Event berhasil ditolak.']);
-        }
-
-        return back()->with('success', "Event \"{$event->judul}\" telah ditolak.");
+        return back()->with('success', 'Event "' . $event->judul . '" ditolak dengan catatan.');
     }
 
     // ═════════════════════════════════════════════════════════════════════
     // MANAJEMEN PENGGUNA
     // ═════════════════════════════════════════════════════════════════════
-
     public function pengguna(Request $request)
     {
         $users = User::when($request->role, fn($q) => $q->where('role', $request->role))
@@ -337,60 +276,47 @@ class AdminController extends Controller
             ->latest()
             ->paginate(20)
             ->withQueryString();
-
         return view('admin.pengguna', compact('users'));
     }
-
     public function verifikasiPengguna(Request $request, User $user)
     {
         $user->update(['status' => 'active', 'email_verified_at' => now()]);
-
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Pengguna berhasil diverifikasi.']);
         }
-
         return back()->with('success', 'Pengguna berhasil diverifikasi.');
     }
-
     public function suspendPengguna(Request $request, User $user)
     {
         $user->update(['status' => 'suspended']);
-
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Pengguna berhasil di-suspend.']);
         }
-
         return back()->with('success', 'Pengguna berhasil di-suspend.');
     }
 
     // ═════════════════════════════════════════════════════════════════════
     // APPROVAL TRAINER
     // ═════════════════════════════════════════════════════════════════════
-
     public function approvalTrainer()
     {
         $pending = User::where('trainer_status', 'pending')
             ->whereNotNull('nik')
             ->latest('trainer_applied_at')
             ->get();
-
         $approved = User::where('trainer_status', 'approved')
             ->latest('updated_at')
             ->get();
-
         $rejected = User::where('trainer_status', 'rejected')
             ->latest('updated_at')
             ->get();
-
         $counts = [
             'pending'  => $pending->count(),
             'approved' => $approved->count(),
             'rejected' => $rejected->count(),
         ];
-
         return view('admin.approval-trainer', compact('pending', 'approved', 'rejected', 'counts'));
     }
-
     public function approveTrainer(User $user)
     {
         $user->update([
@@ -399,66 +325,54 @@ class AdminController extends Controller
             'is_pembimbing'         => true,
             'pembimbing_expired_at' => now()->addYear(),
         ]);
-
         return back()->with('success', "{$user->name} berhasil disetujui sebagai Trainer.");
     }
-
     public function rejectTrainer(Request $request, User $user)
-{
-    $request->validate([
-        'rejection_reason' => 'required|string|max:1000',
-    ]);
+    {
+        $request->validate([
+            'rejection_reason' => 'required|string|max:1000',
+        ]);
+        $user->update([
+            'trainer_status'   => 'rejected',
+            'rejection_reason' => $request->rejection_reason,
+        ]);
+        return redirect()->route('admin.approval.trainer')
+            ->with('success', "Pendaftaran {$user->name} telah ditolak.");
+    }
 
-    $user->update([
-        'trainer_status'   => 'rejected',
-        'rejection_reason' => $request->rejection_reason,
-    ]);
-
-    return redirect()->route('admin.approval.trainer')
-        ->with('success', "Pendaftaran {$user->name} telah ditolak.");
-}
     // ═════════════════════════════════════════════════════════════════════
     // APPROVAL MENTOR
     // ═════════════════════════════════════════════════════════════════════
-
     public function approvalMentor()
     {
         $pending  = Mentor::where('status', 'pending')->get();
         $approved = Mentor::where('status', 'approved')->get();
         $rejected = Mentor::where('status', 'rejected')->get();
-
         $stats = [
             'pending'  => $pending->count(),
             'approved' => $approved->count(),
             'rejected' => $rejected->count(),
         ];
-
         return view('admin.approval-mentor', compact('pending', 'approved', 'rejected', 'stats'));
     }
-
     public function approveMentor(Mentor $mentor)
     {
         $mentor->update([
             'status'      => 'approved',
             'reviewed_at' => now(),
         ]);
-
         return back()->with('success', "{$mentor->full_name} berhasil disetujui sebagai Mentor.");
     }
-
     public function rejectMentor(Request $request, Mentor $mentor)
     {
         $request->validate(['rejection_reason' => 'required|string|max:1000']);
-
         $mentor->update([
             'status'           => 'rejected',
             'rejection_reason' => $request->rejection_reason,
             'reviewed_at'      => now(),
         ]);
-
         return back()->with('success', "Pendaftaran {$mentor->full_name} telah ditolak.");
     }
-
     public function destroyMentor(Mentor $mentor)
     {
         $mentor->delete();

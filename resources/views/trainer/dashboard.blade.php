@@ -753,8 +753,32 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                             </td>
                             <td>
                                 <div style="display:flex;gap:6px">
-                                    <button class="btn-icon" onclick="editEvent({{ $event->id }},'{{ addslashes($event->judul ?? $event->nama) }}','{{ $event->tipe ?? '' }}','{{ $event->tanggal }}','{{ addslashes($event->lokasi ?? '') }}','{{ $event->kapasitas ?? '' }}','{{ addslashes($event->biaya ?? '') }}','{{ addslashes($event->deskripsi ?? '') }}')" title="Edit">
-                                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    <button 
+                                        class="btn-icon"
+                                        onclick="editEvent(
+                                            {{ $event->id }},
+                                            '{{ addslashes($event->judul ?? $event->nama) }}',
+                                            '{{ $event->tanggal }}',
+                                            '{{ $event->waktu_mulai ?? '' }}',
+                                            '{{ $event->waktu_selesai ?? '' }}',
+                                            '{{ addslashes($event->lokasi ?? '') }}',
+                                            '{{ $event->kapasitas ?? '' }}',
+                                            '{{ addslashes($event->biaya ?? '') }}',
+                                            '{{ addslashes($event->deskripsi ?? '') }}'
+                                        )"
+                                        title="Edit"
+                                    >
+                                        <svg 
+                                            width="13"
+                                            height="13"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                        >
+                                            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                        </svg>
                                     </button>
                                     <button class="btn-icon btn-icon-danger" onclick="hapusEvent({{ $event->id }})" title="Hapus">
                                         <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
@@ -1068,6 +1092,13 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 </div>
 
 {{-- ============ MODAL EVENT ============ --}}
+{{-- 
+    GANTI bagian modal-event di dashboard.blade.php trainer
+    Cari: <div class="modal-overlay" id="modal-event">
+    Ganti seluruh div hingga penutup </div> dengan kode di bawah
+--}}
+
+{{-- ============ MODAL EVENT ============ --}}
 <div class="modal-overlay" id="modal-event">
     <div class="modal">
         <div class="modal-header">
@@ -1078,28 +1109,78 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             @csrf
             <input type="hidden" name="_method" id="event-method" value="POST">
             <input type="hidden" name="event_id" id="event-id">
-            <div class="form-group"><label class="form-label">Nama Event <span style="color:var(--accent2)">*</span></label><input class="form-input" type="text" name="judul" id="event-judul" required></div>
-            <div class="form-row">
-                <div class="form-group"><label class="form-label">Tipe Event</label><select class="form-select" name="tipe" id="event-tipe"><option value="Seminar">Seminar</option><option value="Workshop">Workshop</option><option value="Bootcamp">Bootcamp</option><option value="Webinar">Webinar</option><option value="Talkshow">Talkshow</option><option value="Pelatihan">Pelatihan</option></select></div>
-                <div class="form-group"><label class="form-label">Tanggal <span style="color:var(--accent2)">*</span></label><input class="form-input" type="date" name="tanggal" id="event-tanggal" required></div>
-            </div>
-            <div class="form-group"><label class="form-label">Lokasi</label><input class="form-input" type="text" name="lokasi" id="event-lokasi"></div>
-            <div class="form-row">
-                <div class="form-group"><label class="form-label">Kapasitas Peserta</label><input class="form-input" type="number" name="kapasitas" id="event-kapasitas" min="1"></div>
-                <div class="form-group"><label class="form-label">Biaya</label><input class="form-input" type="text" name="biaya" id="event-biaya" placeholder="Rp 0"></div>
-            </div>
-            <div class="form-group"><label class="form-label">Deskripsi Event <span style="color:var(--accent2)">*</span></label><textarea class="form-textarea" name="deskripsi" id="event-deskripsi" required></textarea></div>
+
+            {{-- Nama Event --}}
             <div class="form-group">
-                <label class="form-label">Banner Event</label>
+                <label class="form-label">Nama Event <span style="color:var(--accent2)">*</span></label>
+                <input class="form-input" type="text" name="judul" id="event-judul"
+                       placeholder="Contoh: Festival Kuliner UMKM 2025" required>
+            </div>
+
+            {{-- Tanggal --}}
+            <div class="form-group">
+                <label class="form-label">Tanggal <span style="color:var(--accent2)">*</span></label>
+                <input class="form-input" type="date" name="tanggal" id="event-tanggal" required>
+            </div>
+
+            {{-- Waktu Mulai & Selesai --}}
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Waktu Mulai</label>
+                    <input class="form-input" type="time" name="waktu_mulai" id="event-waktu-mulai">
+                    <div class="form-hint">Contoh: 08:00</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Waktu Selesai</label>
+                    <input class="form-input" type="time" name="waktu_selesai" id="event-waktu-selesai">
+                    <div class="form-hint">Contoh: 15:00</div>
+                </div>
+            </div>
+
+            {{-- Lokasi --}}
+            <div class="form-group">
+                <label class="form-label">Lokasi</label>
+                <input class="form-input" type="text" name="lokasi" id="event-lokasi"
+                       placeholder="Contoh: Gedung KAJI INDONESIA, Surabaya">
+            </div>
+
+            {{-- Kapasitas & Biaya --}}
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Kapasitas Peserta</label>
+                    <input class="form-input" type="number" name="kapasitas" id="event-kapasitas"
+                           min="1" placeholder="Contoh: 100">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Biaya</label>
+                    <input class="form-input" type="text" name="biaya" id="event-biaya"
+                           placeholder="Gratis / Rp 50.000">
+                    <div class="form-hint">Kosongkan atau isi "Gratis" jika tidak berbayar</div>
+                </div>
+            </div>
+
+            {{-- Deskripsi --}}
+            <div class="form-group">
+                <label class="form-label">Deskripsi Event <span style="color:var(--accent2)">*</span></label>
+                <textarea class="form-textarea" name="deskripsi" id="event-deskripsi"
+                          rows="4" placeholder="Jelaskan detail event ini..." required></textarea>
+            </div>
+
+            {{-- Gambar / Banner --}}
+            <div class="form-group">
+                <label class="form-label">Gambar / Banner Event</label>
                 <label class="upload-area" for="event-gambar">
                     <div class="upload-icon">🖼️</div>
                     <div class="upload-text">Klik untuk upload atau <span>drag & drop</span><br>PNG, JPG hingga 5MB</div>
                     <div class="upload-fname" id="event-gambar-name"></div>
                 </label>
-                <input type="file" id="event-gambar" name="gambar" accept="image/*" style="display:none" onchange="showFileName(this, 'event-gambar-name')">
+                <input type="file" id="event-gambar" name="gambar" accept="image/*"
+                       style="display:none" onchange="showFileName(this, 'event-gambar-name')">
             </div>
+
             <div class="modal-footer">
-                <button type="button" class="btn btn-ghost" onclick="resetEventModal(); closeModal('modal-event')">Batal</button>
+                <button type="button" class="btn btn-ghost"
+                        onclick="resetEventModal(); closeModal('modal-event')">Batal</button>
                 <button type="submit" class="btn btn-primary">Kirim untuk Disetujui</button>
             </div>
         </form>
@@ -1434,20 +1515,22 @@ function editModul(id, kurikulumId, judul, deskripsi, urutan) {
 /* ================================================================
    EDIT EVENT
 ================================================================ */
-function editEvent(id, judul, tipe, tanggal, lokasi, kapasitas, biaya, deskripsi) {
-    document.getElementById('modal-event-title').textContent = 'Edit Event';
-    document.getElementById('event-id').value        = id;
-    document.getElementById('event-judul').value     = judul;
-    document.getElementById('event-tipe').value      = tipe;
-    document.getElementById('event-tanggal').value   = tanggal;
-    document.getElementById('event-lokasi').value    = lokasi;
-    document.getElementById('event-kapasitas').value = kapasitas;
-    document.getElementById('event-biaya').value     = biaya;
-    document.getElementById('event-deskripsi').value = deskripsi;
-    document.getElementById('event-method').value    = 'PUT';
-    document.getElementById('form-event').action     = '/trainer/event/' + id;
+function editEvent(id, judul, tanggal, waktuMulai, waktuSelesai, lokasi, kapasitas, biaya, deskripsi) {
+    document.getElementById('modal-event-title').textContent   = 'Edit Event';
+    document.getElementById('event-id').value                  = id;
+    document.getElementById('event-judul').value               = judul;
+    document.getElementById('event-tanggal').value             = tanggal;
+    document.getElementById('event-waktu-mulai').value         = waktuMulai  || '';
+    document.getElementById('event-waktu-selesai').value       = waktuSelesai || '';
+    document.getElementById('event-lokasi').value              = lokasi      || '';
+    document.getElementById('event-kapasitas').value           = kapasitas   || '';
+    document.getElementById('event-biaya').value               = biaya       || '';
+    document.getElementById('event-deskripsi').value           = deskripsi   || '';
+    document.getElementById('event-method').value              = 'PUT';
+    document.getElementById('form-event').action               = '/trainer/event/' + id;
     openModal('modal-event');
 }
+
 
 /* ================================================================
    RESET MODAL
@@ -1488,6 +1571,7 @@ function resetEventModal() {
     document.getElementById('form-event').reset();
     document.getElementById('event-gambar-name').textContent = '';
 }
+
 
 /* ================================================================
    HAPUS

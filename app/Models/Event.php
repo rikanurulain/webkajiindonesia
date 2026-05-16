@@ -2,53 +2,62 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Event extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
+        'trainer_id',
         'judul',
-        'deskripsi',
-        'lokasi',
+        'tipe',
         'tanggal',
+        'waktu_mulai',
+        'waktu_selesai',
+        'lokasi',
         'kapasitas',
-        'status',
+        'biaya',
+        'deskripsi',
+        'gambar',
+        'status',         // pending | approved | rejected
         'catatan_admin',
         'approved_at',
         'approved_by',
         'rejected_at',
         'rejected_by',
-        'trainer_id',
     ];
 
     protected $casts = [
-        'tanggal'     => 'date',
-        'approved_at' => 'datetime',
-        'rejected_at' => 'datetime',
+        'tanggal'      => 'date',
+        'approved_at'  => 'datetime',
+        'rejected_at'  => 'datetime',
     ];
 
-    // ── Scopes ──────────────────────────────────
-    public function scopePending($query)
+    // ── Relasi ────────────────────────────────────────────────────
+    public function trainer()
     {
-        return $query->where('status', 'pending');
+        return $this->belongsTo(User::class, 'trainer_id');
     }
 
-    public function scopeApprovedThisMonth($query)
+    // ── Accessor: biaya tampil "Gratis" jika kosong / 0 ──────────
+    public function getBiayaLabelAttribute(): string
     {
-        return $query->where('status', 'approved')
-                     ->whereMonth('updated_at', now()->month)
-                     ->whereYear('updated_at', now()->year);
+        if (empty($this->biaya) || $this->biaya == '0' || strtolower($this->biaya) === 'gratis') {
+            return 'Gratis';
+        }
+        return $this->biaya;
     }
 
-    // ── Relasi ──────────────────────────────────
-    public function pembimbing(): BelongsTo
+    // ── Accessor: format waktu "08.00 – 17.00 WIB" ───────────────
+    public function getJamAttribute(): string
     {
-        return $this->belongsTo(Trainer::class, 'trainer_id');
+        if ($this->waktu_mulai && $this->waktu_selesai) {
+            $mulai   = \Carbon\Carbon::createFromFormat('H:i:s', $this->waktu_mulai)->format('H.i');
+            $selesai = \Carbon\Carbon::createFromFormat('H:i:s', $this->waktu_selesai)->format('H.i');
+            return $mulai . ' – ' . $selesai . ' WIB';
+        }
+        return '-';
     }
-
-    public function trainer(): BelongsTo
-{
-    return $this->belongsTo(Trainer::class, 'trainer_id');
-}
 }

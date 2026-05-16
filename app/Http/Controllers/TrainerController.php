@@ -213,39 +213,41 @@ class TrainerController extends Controller
     public function storeEvent(Request $request)
     {
         $request->validate([
-            'judul'     => 'required|string|max:255',
-            'tipe'      => 'nullable|string|max:100',
-            'tanggal'   => 'required|date',
-            'lokasi'    => 'nullable|string|max:255',
-            'kapasitas' => 'nullable|integer|min:1',
-            'biaya'     => 'nullable|string|max:100',
-            'deskripsi' => 'required|string',
-            // FIX: field gambar, bukan banner
-            'gambar'    => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'judul'         => 'required|string|max:255',
+            'tanggal'       => 'required|date',
+            'waktu_mulai'   => 'nullable|date_format:H:i',
+            'waktu_selesai' => 'nullable|date_format:H:i|after:waktu_mulai',
+            'lokasi'        => 'nullable|string|max:255',
+            'kapasitas'     => 'nullable|integer|min:1',
+            'biaya'         => 'nullable|string|max:100',
+            'deskripsi'     => 'required|string',
+            'gambar'        => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
         ]);
-
+    
         $gambar = null;
         if ($request->hasFile('gambar')) {
             $gambar = $request->file('gambar')->store('event', 'public');
         }
-
-        Event::create([
-            'trainer_id' => Auth::id(),
-            'judul'      => $request->judul,   // pastikan kolom Event: judul
-            'tipe'       => $request->tipe,
-            'tanggal'    => $request->tanggal,
-            'lokasi'     => $request->lokasi,
-            'kapasitas'  => $request->kapasitas,
-            'biaya'      => $request->biaya,
-            'deskripsi'  => $request->deskripsi,
-            'gambar'     => $gambar,
-            'status'     => 'pending',
+    
+        \App\Models\Event::create([
+            'trainer_id'    => Auth::id(),
+            'judul'         => $request->judul,
+            'tanggal'       => $request->tanggal,
+            'waktu_mulai'   => $request->waktu_mulai,
+            'waktu_selesai' => $request->waktu_selesai,
+            'lokasi'        => $request->lokasi,
+            'kapasitas'     => $request->kapasitas,
+            'biaya'         => $request->biaya,
+            'deskripsi'     => $request->deskripsi,
+            'gambar'        => $gambar,
+            'status'        => 'pending',
         ]);
-
+    
         return redirect()->route('trainer.dashboard')
             ->with('success', 'Event berhasil dikirim, menunggu persetujuan admin.')
             ->with('active_page', 'event');
     }
+
 
     // ═══════════════════════════════════════════════════════════════
     // EVENT — UPDATE
@@ -253,47 +255,49 @@ class TrainerController extends Controller
 
     public function updateEvent(Request $request, $id)
     {
-        $event = Event::where('id', $id)
+        $event = \App\Models\Event::where('id', $id)
             ->where('trainer_id', Auth::id())
             ->firstOrFail();
-
+    
         if ($event->status === 'approved') {
             return back()->with('error', 'Event yang sudah disetujui tidak dapat diedit.');
         }
-
+    
         $request->validate([
-            'judul'     => 'required|string|max:255',
-            'tipe'      => 'nullable|string|max:100',
-            'tanggal'   => 'required|date',
-            'lokasi'    => 'nullable|string|max:255',
-            'kapasitas' => 'nullable|integer|min:1',
-            'biaya'     => 'nullable|string|max:100',
-            'deskripsi' => 'required|string',
-            'gambar'    => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'judul'         => 'required|string|max:255',
+            'tanggal'       => 'required|date',
+            'waktu_mulai'   => 'nullable|date_format:H:i',
+            'waktu_selesai' => 'nullable|date_format:H:i|after:waktu_mulai',
+            'lokasi'        => 'nullable|string|max:255',
+            'kapasitas'     => 'nullable|integer|min:1',
+            'biaya'         => 'nullable|string|max:100',
+            'deskripsi'     => 'required|string',
+            'gambar'        => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
         ]);
-
+    
         if ($request->hasFile('gambar')) {
-            if ($event->gambar) Storage::disk('public')->delete($event->gambar);
+            if ($event->gambar) \Illuminate\Support\Facades\Storage::disk('public')->delete($event->gambar);
             $event->gambar = $request->file('gambar')->store('event', 'public');
         }
-
+    
         $event->update([
-            'judul'     => $request->judul,
-            'tipe'      => $request->tipe,
-            'tanggal'   => $request->tanggal,
-            'lokasi'    => $request->lokasi,
-            'kapasitas' => $request->kapasitas,
-            'biaya'     => $request->biaya,
-            'deskripsi' => $request->deskripsi,
-            'gambar'    => $event->gambar,
-            'status'    => 'pending',
+            'judul'         => $request->judul,
+            'tanggal'       => $request->tanggal,
+            'waktu_mulai'   => $request->waktu_mulai,
+            'waktu_selesai' => $request->waktu_selesai,
+            'lokasi'        => $request->lokasi,
+            'kapasitas'     => $request->kapasitas,
+            'biaya'         => $request->biaya,
+            'deskripsi'     => $request->deskripsi,
+            'gambar'        => $event->gambar,
+            'status'        => 'pending',
+            'catatan_admin' => null,
         ]);
-
+    
         return redirect()->route('trainer.dashboard')
             ->with('success', 'Event diperbarui dan dikirim ulang untuk disetujui.')
             ->with('active_page', 'event');
     }
-
     // ═══════════════════════════════════════════════════════════════
     // EVENT — DESTROY
     // ═══════════════════════════════════════════════════════════════

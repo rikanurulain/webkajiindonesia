@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Event;
 use App\Models\Trainer;
 use App\Models\UlasanPembimbing;
 use Illuminate\Support\Facades\Auth;
@@ -509,26 +510,26 @@ class PelatihanController extends Controller
     // =========================================================
     public function event()
     {
-        $semua           = $this->eventData();
-        $workshopDefault = collect($semua)->where('tipe', 'Workshop')->values()->toArray();
-        $seminarDefault  = collect($semua)->where('tipe', 'Seminar')->values()->toArray();
-
-        return view('pages.pelatihan-event', compact('workshopDefault', 'seminarDefault'));
+        $events = \App\Models\Event::with('trainer')
+            ->where('status', 'approved')
+            ->orderBy('tanggal', 'asc')
+            ->get();
+    
+        return view('pages.pelatihan-event', compact('events'));
     }
-
+    
     // =========================================================
-    // DETAIL EVENT
+    // DETAIL EVENT — ambil dari database
     // =========================================================
     public function detailEvent($id)
     {
-        $event = collect($this->eventData())->firstWhere('id', (int) $id);
-
-        if (! $event) {
-            abort(404, 'Event tidak ditemukan.');
-        }
-
+        $event = \App\Models\Event::with('trainer')
+            ->where('status', 'approved')
+            ->findOrFail($id);
+    
         return view('pages.pelatihan-event-detail', compact('event'));
     }
+
 
     // =========================================================
     // HALAMAN MENTOR / PEMBIMBING
