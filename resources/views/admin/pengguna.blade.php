@@ -15,11 +15,12 @@
         <form method="GET" style="display:flex;gap:8px;">
             <select name="role" class="form-select" style="width:auto;padding:7px 12px;"
                 onchange="this.form.submit()">
-                <option value="">Semua Role</option>
                 <option value="admin"      {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
-                <option value="pembimbing" {{ request('role') === 'pembimbing' ? 'selected' : '' }}>Pembimbing</option>
-                <option value="umkm"       {{ request('role') === 'umkm' ? 'selected' : '' }}>UMKM</option>
-                <option value="user"       {{ request('role') === 'user' ? 'selected' : '' }}>User Biasa</option>
+<option value="trainer"    {{ request('role') === 'trainer' ? 'selected' : '' }}>Trainer</option>
+<option value="pembimbing" {{ request('role') === 'pembimbing' ? 'selected' : '' }}>Pembimbing</option>
+<option value="mentor"     {{ request('role') === 'mentor' ? 'selected' : '' }}>Mentor</option>
+<option value="umkm"       {{ request('role') === 'umkm' ? 'selected' : '' }}>UMKM</option>
+<option value="umum"       {{ request('role') === 'umum' ? 'selected' : '' }}>Umum</option>
             </select>
         </form>
     </div>
@@ -59,15 +60,17 @@
                     </div>
                 </td>
                 <td>
-                    @if($user->role === 'admin')
-                        <span class="role-tag role-admin">Admin</span>
-                    @elseif($user->is_pembimbing || $user->role === 'pembimbing')
-                        <span class="role-tag role-pembimbing">Pembimbing</span>
-                    @elseif($user->is_umkm || $user->role === 'umkm')
-                        <span class="role-tag role-umkm">UMKM</span>
-                    @else
-                        <span class="role-tag role-user">User</span>
-                    @endif
+                @if($user->role === 'admin')
+    <span class="role-tag role-admin">Admin</span>
+@elseif($user->role === 'trainer' || $user->role === 'pembimbing' || $user->is_pembimbing)
+    <span class="role-tag role-pembimbing">Trainer / Pembimbing</span>
+@elseif($user->role === 'mentor')
+    <span class="role-tag" style="background:#f3e8ff;color:#7e22ce;border:1px solid #e9d5ff;">Mentor</span>
+@elseif($user->role === 'umkm' || $user->is_umkm)
+    <span class="role-tag role-umkm">UMKM</span>
+@else
+    <span class="role-tag role-user">Umum</span>
+@endif
                 </td>
                 <td style="font-size:12px;color:var(--text-muted);">{{ $user->email }}</td>
                 <td style="font-size:12px;">{{ Str::limit($user->address ?? '-', 18) }}</td>
@@ -114,11 +117,77 @@
         </tbody>
     </table>
 
+    {{-- ── Custom Pagination ── --}}
     @if($users->hasPages())
-    <div style="padding:14px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
-        {{ $users->withQueryString()->links() }}
+    <div style="padding:14px 18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;">
+
+        {{-- Info --}}
+        <div style="font-size:12px;color:var(--text-muted);white-space:nowrap;">
+            Menampilkan
+            <span style="font-weight:700;color:var(--text);">{{ $users->firstItem() }}–{{ $users->lastItem() }}</span>
+            dari
+            <span style="font-weight:700;color:var(--text);">{{ $users->total() }}</span>
+            data
+        </div>
+
+        {{-- Navigasi --}}
+        <div style="display:flex;align-items:center;gap:6px;">
+
+            {{-- Prev --}}
+            @if($users->onFirstPage())
+                <span style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;background:var(--surface2);color:var(--text-muted);border:1px solid var(--border);cursor:not-allowed;opacity:0.45;user-select:none;">
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                    Prev
+                </span>
+            @else
+                <a href="{{ $users->previousPageUrl() }}&{{ http_build_query(request()->except('page')) }}"
+                   style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;background:var(--surface);color:var(--text);border:1px solid var(--border);text-decoration:none;transition:all 0.15s;"
+                   onmouseover="this.style.background='var(--accent)';this.style.color='#fff';this.style.borderColor='var(--accent)';"
+                   onmouseout="this.style.background='var(--surface)';this.style.color='var(--text)';this.style.borderColor='var(--border)';">
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                    Prev
+                </a>
+            @endif
+
+            {{-- Nomor Halaman --}}
+            @foreach($users->getUrlRange(1, $users->lastPage()) as $page => $url)
+                @if($page == $users->currentPage())
+                    <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;font-size:12px;font-weight:700;background:var(--accent);color:#fff;border:1px solid var(--accent);box-shadow:0 2px 8px rgba(0,0,0,0.15);user-select:none;">
+                        {{ $page }}
+                    </span>
+                @elseif($page == 1 || $page == $users->lastPage() || abs($page - $users->currentPage()) <= 1)
+                    <a href="{{ $url }}&{{ http_build_query(request()->except('page')) }}"
+                       style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;font-size:12px;font-weight:600;background:var(--surface);color:var(--text);border:1px solid var(--border);text-decoration:none;transition:all 0.15s;"
+                       onmouseover="this.style.background='var(--surface2)';this.style.borderColor='var(--accent)';"
+                       onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--border)';">
+                        {{ $page }}
+                    </a>
+                @elseif(abs($page - $users->currentPage()) == 2)
+                    <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;font-size:12px;color:var(--text-muted);user-select:none;">···</span>
+                @endif
+            @endforeach
+
+            {{-- Next --}}
+            @if($users->hasMorePages())
+                <a href="{{ $users->nextPageUrl() }}&{{ http_build_query(request()->except('page')) }}"
+                   style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;background:var(--surface);color:var(--text);border:1px solid var(--border);text-decoration:none;transition:all 0.15s;"
+                   onmouseover="this.style.background='var(--accent)';this.style.color='#fff';this.style.borderColor='var(--accent)';"
+                   onmouseout="this.style.background='var(--surface)';this.style.color='var(--text)';this.style.borderColor='var(--border)';">
+                    Next
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </a>
+            @else
+                <span style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;background:var(--surface2);color:var(--text-muted);border:1px solid var(--border);cursor:not-allowed;opacity:0.45;user-select:none;">
+                    Next
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </span>
+            @endif
+
+        </div>
     </div>
     @endif
+    {{-- ── End Pagination ── --}}
+
 </div>
 
 {{-- MODAL DETAIL USER --}}
@@ -147,7 +216,11 @@
         const u = usersData.find(x => x.id === id);
         if (!u) return;
 
-        const roleName = u.role === 'admin' ? 'Admin' : (u.is_pembimbing ? 'Pembimbing' : (u.is_umkm ? 'UMKM' : 'User Biasa'));
+        const roleName = u.role === 'admin' ? 'Admin'
+    : (u.role === 'trainer' || u.role === 'pembimbing' || u.is_pembimbing) ? 'Trainer / Pembimbing'
+    : u.role === 'mentor' ? 'Mentor'
+    : (u.role === 'umkm' || u.is_umkm) ? 'UMKM'
+    : 'Umum';
         const initials = u.name.substring(0, 2).toUpperCase();
         const avatarColors = ['var(--accent)','var(--accent3)','var(--warning)','#8b5cf6','#ec4899'];
         const color = avatarColors[id % 5];
