@@ -20,6 +20,7 @@
 {{-- ══ AKTIF ══ --}}
 <div class="bg-green-50 border border-green-200 rounded-2xl p-5 flex flex-col sm:flex-row items-center gap-4"
      id="absensi-block"
+     data-status="active"
      data-mulai="{{ $absMulai->toIso8601String() }}"
      data-selesai="{{ $absSelesai->toIso8601String() }}"
      data-pelatihan-id="{{ $program->id }}"
@@ -83,6 +84,7 @@
 {{-- ══ AKAN DATANG ══ --}}
 <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex flex-col sm:flex-row items-center gap-4"
      id="absensi-block"
+     data-status="upcoming"
      data-mulai="{{ $absMulai->toIso8601String() }}"
      data-selesai="{{ $absSelesai->toIso8601String() }}">
     <div class="flex items-center gap-3 flex-1">
@@ -121,7 +123,6 @@
 @endphp
 
 @if($sudahAbsenEnded)
-{{-- Sudah absen sebelum ditutup → tampilkan status absen --}}
 <div class="bg-green-50 border border-green-200 rounded-2xl p-5 flex items-center gap-4">
     <span class="text-2xl flex-shrink-0">✅</span>
     <div class="flex-1">
@@ -137,7 +138,6 @@
     </div>
 </div>
 @else
-{{-- Belum absen & sudah ditutup --}}
 <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex items-center gap-4 opacity-60">
     <span class="text-2xl flex-shrink-0">🔒</span>
     <div>
@@ -147,7 +147,7 @@
         </div>
     </div>
 </div>
-@endif {{-- end $sudahAbsenEnded --}}
+@endif
 
 @endif {{-- end absStatus --}}
 
@@ -159,9 +159,14 @@
     var block = document.getElementById('absensi-block');
     if (!block) return;
 
+    var status  = block.dataset.status;
     var mulai   = new Date(block.dataset.mulai);
     var selesai = new Date(block.dataset.selesai);
     var cntEl   = document.getElementById('abs-countdown');
+
+    // Hanya upcoming yang butuh reload (saat absensi dibuka)
+    // Active TIDAK reload saat selesai — cukup disable tombol via JS
+    var reloaded = false;
 
     function pad(n) { return String(n).padStart(2, '0'); }
     function fmt(ms) {
@@ -170,40 +175,50 @@
         var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60;
         return h > 0 ? pad(h)+':'+pad(m)+':'+pad(ss) : pad(m)+':'+pad(ss);
     }
-    var reloaded = false;
 
-    function tick() {
-        var now = new Date();
-
-        if (now < mulai) {
-            var msToOpen = mulai - now;
-            if (cntEl) cntEl.textContent = fmt(msToOpen);
-            if (msToOpen <= 1000 && !reloaded) {
-                reloaded = true;
-                setTimeout(function() { location.reload(); }, 1000);
-            }
-            return;
+    var upcomingTimer = setInterval(tickUpcoming, 1000);
+function tickUpcoming() {
+    var msToOpen = mulai - new Date();
+    if (msToOpen <= 0) {
+        if (cntEl) cntEl.textContent = '00:00';
+        if (!reloaded) {
+            reloaded = true;
+            clearInterval(upcomingTimer); // ✅ hentikan interval dulu
+            setTimeout(function () { location.reload(); }, 1000);
         }
-
-        var msLeft = selesai - now;
-
-        if (msLeft <= 0) {
-            if (cntEl) cntEl.textContent = '00:00';
-            if (!reloaded) {
-                reloaded = true;
-                var wrap = document.getElementById('abs-btn-wrap');
-                var sudahAbsen = wrap && wrap.querySelector('[style*="dcfce7"]');
-                setTimeout(function() { location.reload(); }, sudahAbsen ? 3000 : 1000);
-            }
-            return;
-        }
-
-        if (cntEl) cntEl.textContent = fmt(msLeft);
+        return;
     }
+    if (cntEl) cntEl.textContent = fmt(msToOpen);
+}
+    // ── ACTIVE: hitung mundur sampai selesai, lalu disable tombol (TANPA reload) ──
+    var activeTimer = setInterval(tickActive, 1000);
+function tickActive() {
+    var msLeft = selesai - new Date();
+    if (msLeft <= 0) {
+        if (cntEl) cntEl.textContent = '00:00';
+        clearInterval(activeTimer); // ✅ hentikan interval
+        var btn = document.getElementById('btn-absensi');
+        if (btn && !btn.disabled) {
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            btn.style.cursor  = 'not-allowed';
+            document.getElementById('abs-icon').textContent = '🔒';
+            document.getElementById('abs-text').textContent = 'Absensi Ditutup';
+        }
+        return;
+    }
+    if (cntEl) cntEl.textContent = fmt(msLeft);
+}
 
-    tick();
-    setInterval(tick, 1000);
-
+    
+if (status === 'upcoming') {
+    tickUpcoming();
+    var upcomingTimer = setInterval(tickUpcoming, 1000);
+} else if (status === 'active') {
+    tickActive();
+    var activeTimer = setInterval(tickActive, 1000);
+}
+    // ── Handler tombol absen ──
     function setDone(waktu) {
         var wrap = document.getElementById('abs-btn-wrap');
         if (!wrap) return;
@@ -236,8 +251,8 @@
             },
             body: JSON.stringify({}),
         })
-        .then(function(r) { return r.json(); })
-        .then(function(res) {
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
             if (res.require_login) {
                 window.location.href = block.dataset.loginUrl
                     + '?redirect=' + encodeURIComponent(window.location.href);
@@ -260,7 +275,7 @@
                 errEl.textContent = res.message || 'Gagal mencatat absensi.';
             }
         })
-        .catch(function() {
+        .catch(function () {
             btn.disabled = false;
             if (iconEl) iconEl.textContent = '✅';
             if (textEl) textEl.textContent  = 'Absen Sekarang';
