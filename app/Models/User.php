@@ -53,6 +53,15 @@ class User extends Authenticatable
         'bidang_keahlian',
         'foto',
         'no_hp',
+        'gmaps_location',
+        'provinsi',
+        'kabupaten',
+        'kecamatan',
+        'kelurahan',
+        'ijazah_type',
+        'bukti_transfer',
+        'rejection_reason',  
+
         
     ];
 

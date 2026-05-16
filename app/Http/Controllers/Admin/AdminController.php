@@ -105,6 +105,8 @@ class AdminController extends Controller
         ));
     }
 
+    
+
     // ═════════════════════════════════════════════════════════════════════
     // APPROVAL PROGRAM (kurikulum + modul)
     // ═════════════════════════════════════════════════════════════════════
@@ -402,19 +404,19 @@ class AdminController extends Controller
     }
 
     public function rejectTrainer(Request $request, User $user)
-    {
-        $request->validate([
-            'rejection_reason' => 'required|string|max:1000',
-        ]);
+{
+    $request->validate([
+        'rejection_reason' => 'required|string|max:1000',
+    ]);
 
-        $user->update([
-            'trainer_status'   => 'rejected',
-            'rejection_reason' => $request->rejection_reason,
-        ]);
+    $user->update([
+        'trainer_status'   => 'rejected',
+        'rejection_reason' => $request->rejection_reason,
+    ]);
 
-        return back()->with('success', "Pendaftaran {$user->name} telah ditolak.");
-    }
-
+    return redirect()->route('admin.approval.trainer')
+        ->with('success', "Pendaftaran {$user->name} telah ditolak.");
+}
     // ═════════════════════════════════════════════════════════════════════
     // APPROVAL MENTOR
     // ═════════════════════════════════════════════════════════════════════

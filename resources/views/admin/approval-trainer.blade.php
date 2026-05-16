@@ -26,15 +26,18 @@
         white-space: nowrap;
         line-height: 1;
     }
-    .doc-btn-ktp  { background:#E6F1FB; color:#0C447C; border-color:#B5D4F4; }
-    .doc-btn-ktp:hover  { background:#C9E1F7; }
-    .doc-btn-bnsp { background:#EEEDFE; color:#3C3489; border-color:#CECBF6; }
-    .doc-btn-bnsp:hover { background:#DDDCFC; }
-    .doc-btn-drive { background:#E6F7F2; color:#0F6E56; border-color:#A7DED0; }
-    .doc-btn-drive:hover { background:#C6EDE3; }
+    .doc-btn-ktp    { background:#E6F1FB; color:#0C447C; border-color:#B5D4F4; }
+    .doc-btn-ktp:hover    { background:#C9E1F7; }
+    .doc-btn-bnsp   { background:#EEEDFE; color:#3C3489; border-color:#CECBF6; }
+    .doc-btn-bnsp:hover   { background:#DDDCFC; }
+    .doc-btn-drive  { background:#E6F7F2; color:#0F6E56; border-color:#A7DED0; }
+    .doc-btn-drive:hover  { background:#C6EDE3; }
+    .doc-btn-transfer { background:#FEF3C7; color:#92400E; border-color:#FCD34D; }
+    .doc-btn-transfer:hover { background:#FDE68A; }
+    .doc-btn-foto   { background:#FCE7F3; color:#9D174D; border-color:#F9A8D4; }
+    .doc-btn-foto:hover   { background:#FBCFE8; }
     .doc-btn-disabled { background:#f3f4f6; color:#c0c4cc; border-color:#e5e7eb; cursor:not-allowed; opacity:0.6; }
 
-    /* SweetAlert2 custom buttons */
     .swal-btn-confirm-approve {
         display: inline-flex; align-items: center; gap: 6px;
         padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600;
@@ -81,6 +84,16 @@
         0%, 100% { opacity: 1; transform: scale(1); }
         50%       { opacity: 0.4; transform: scale(0.7); }
     }
+
+    /* Modal foto preview */
+    .doc-preview-img {
+        width: 100%;
+        max-height: 320px;
+        object-fit: contain;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        background: #f9fafb;
+    }
 </style>
 @endpush
 
@@ -96,6 +109,57 @@
         'approved' => $approved->count(),
         'rejected' => $rejected->count(),
     ];
+@endphp
+
+{{-- Macro tombol dokumen agar tidak duplikat kode --}}
+@php
+function docButtons($user) {
+    $buttons = '';
+
+    // KTP
+    if ($user->ktp_scan) {
+        $p = str_replace('public/', '', $user->ktp_scan);
+        $buttons .= '<a href="'.asset('storage/'.$p).'" target="_blank" class="doc-btn doc-btn-ktp">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>KTP</a>';
+    } else {
+        $buttons .= '<span class="doc-btn doc-btn-disabled">KTP</span>';
+    }
+
+    // BNSP
+    if ($user->bnsp_certificate) {
+        $p = str_replace('public/', '', $user->bnsp_certificate);
+        $buttons .= '<a href="'.asset('storage/'.$p).'" target="_blank" class="doc-btn doc-btn-bnsp">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>BNSP</a>';
+    } else {
+        $buttons .= '<span class="doc-btn doc-btn-disabled">BNSP</span>';
+    }
+
+    // Bukti Transfer
+    if ($user->bukti_transfer) {
+        $p = str_replace('public/', '', $user->bukti_transfer);
+        $buttons .= '<a href="'.asset('storage/'.$p).'" target="_blank" class="doc-btn doc-btn-transfer">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>Transfer</a>';
+    } else {
+        $buttons .= '<span class="doc-btn doc-btn-disabled">Transfer</span>';
+    }
+
+    // Pas Foto
+    if ($user->white_bg_photo) {
+        $p = str_replace('public/', '', $user->white_bg_photo);
+        $buttons .= '<a href="'.asset('storage/'.$p).'" target="_blank" class="doc-btn doc-btn-foto">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Pas Foto</a>';
+    } else {
+        $buttons .= '<span class="doc-btn doc-btn-disabled">Pas Foto</span>';
+    }
+
+    // Drive
+    if ($user->drive_link_documentation) {
+        $buttons .= '<a href="'.$user->drive_link_documentation.'" target="_blank" class="doc-btn doc-btn-drive">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>Drive</a>';
+    }
+
+    return $buttons;
+}
 @endphp
 
 @section('content')
@@ -169,24 +233,51 @@
                         <td style="font-size:12px;color:var(--text-muted);">{{ $user->nik ?? '-' }}</td>
                         <td>
                             <div class="doc-btn-group">
+                                {{-- KTP --}}
                                 @if($user->ktp_scan)
-                                    @php $ktpPath = str_replace('public/', '', $user->ktp_scan); @endphp
-                                    <a href="{{ asset('storage/' . $ktpPath) }}" target="_blank" class="doc-btn doc-btn-ktp">
+                                    @php $p = str_replace('public/', '', $user->ktp_scan); @endphp
+                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-ktp">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                         KTP
                                     </a>
                                 @else
                                     <span class="doc-btn doc-btn-disabled">KTP</span>
                                 @endif
+
+                                {{-- BNSP --}}
                                 @if($user->bnsp_certificate)
-                                    @php $bnspPath = str_replace('public/', '', $user->bnsp_certificate); @endphp
-                                    <a href="{{ asset('storage/' . $bnspPath) }}" target="_blank" class="doc-btn doc-btn-bnsp">
+                                    @php $p = str_replace('public/', '', $user->bnsp_certificate); @endphp
+                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-bnsp">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                                         BNSP
                                     </a>
                                 @else
                                     <span class="doc-btn doc-btn-disabled">BNSP</span>
                                 @endif
+
+                                {{-- Bukti Transfer --}}
+                                @if($user->bukti_transfer)
+                                    @php $p = str_replace('public/', '', $user->bukti_transfer); @endphp
+                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-transfer">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+                                        Transfer
+                                    </a>
+                                @else
+                                    <span class="doc-btn doc-btn-disabled">Transfer</span>
+                                @endif
+
+                                {{-- Pas Foto --}}
+                                @if($user->white_bg_photo)
+                                    @php $p = str_replace('public/', '', $user->white_bg_photo); @endphp
+                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-foto">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        Pas Foto
+                                    </a>
+                                @else
+                                    <span class="doc-btn doc-btn-disabled">Pas Foto</span>
+                                @endif
+
+                                {{-- Drive --}}
                                 @if($user->drive_link_documentation)
                                     <a href="{{ $user->drive_link_documentation }}" target="_blank" class="doc-btn doc-btn-drive">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
@@ -290,24 +381,51 @@
                         <td style="font-size:12px;color:var(--text-muted);">{{ $user->nik ?? '-' }}</td>
                         <td>
                             <div class="doc-btn-group">
+                                {{-- KTP --}}
                                 @if($user->ktp_scan)
-                                    @php $ktpPath = str_replace('public/', '', $user->ktp_scan); @endphp
-                                    <a href="{{ asset('storage/' . $ktpPath) }}" target="_blank" class="doc-btn doc-btn-ktp">
+                                    @php $p = str_replace('public/', '', $user->ktp_scan); @endphp
+                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-ktp">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                         KTP
                                     </a>
                                 @else
                                     <span class="doc-btn doc-btn-disabled">KTP</span>
                                 @endif
+
+                                {{-- BNSP --}}
                                 @if($user->bnsp_certificate)
-                                    @php $bnspPath = str_replace('public/', '', $user->bnsp_certificate); @endphp
-                                    <a href="{{ asset('storage/' . $bnspPath) }}" target="_blank" class="doc-btn doc-btn-bnsp">
+                                    @php $p = str_replace('public/', '', $user->bnsp_certificate); @endphp
+                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-bnsp">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                                         BNSP
                                     </a>
                                 @else
                                     <span class="doc-btn doc-btn-disabled">BNSP</span>
                                 @endif
+
+                                {{-- Bukti Transfer --}}
+                                @if($user->bukti_transfer)
+                                    @php $p = str_replace('public/', '', $user->bukti_transfer); @endphp
+                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-transfer">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+                                        Transfer
+                                    </a>
+                                @else
+                                    <span class="doc-btn doc-btn-disabled">Transfer</span>
+                                @endif
+
+                                {{-- Pas Foto --}}
+                                @if($user->white_bg_photo)
+                                    @php $p = str_replace('public/', '', $user->white_bg_photo); @endphp
+                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-foto">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        Pas Foto
+                                    </a>
+                                @else
+                                    <span class="doc-btn doc-btn-disabled">Pas Foto</span>
+                                @endif
+
+                                {{-- Drive --}}
                                 @if($user->drive_link_documentation)
                                     <a href="{{ $user->drive_link_documentation }}" target="_blank" class="doc-btn doc-btn-drive">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
@@ -394,23 +512,48 @@
                         <td style="font-size:12px;color:var(--text-muted);">{{ $user->nik ?? '-' }}</td>
                         <td>
                             <div class="doc-btn-group">
+                                {{-- KTP --}}
                                 @if($user->ktp_scan)
-                                    @php $ktpPath = str_replace('public/', '', $user->ktp_scan); @endphp
-                                    <a href="{{ asset('storage/' . $ktpPath) }}" target="_blank" class="doc-btn doc-btn-ktp">
+                                    @php $p = str_replace('public/', '', $user->ktp_scan); @endphp
+                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-ktp">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                         KTP
                                     </a>
                                 @else
                                     <span class="doc-btn doc-btn-disabled">KTP</span>
                                 @endif
+
+                                {{-- BNSP --}}
                                 @if($user->bnsp_certificate)
-                                    @php $bnspPath = str_replace('public/', '', $user->bnsp_certificate); @endphp
-                                    <a href="{{ asset('storage/' . $bnspPath) }}" target="_blank" class="doc-btn doc-btn-bnsp">
+                                    @php $p = str_replace('public/', '', $user->bnsp_certificate); @endphp
+                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-bnsp">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                                         BNSP
                                     </a>
                                 @else
                                     <span class="doc-btn doc-btn-disabled">BNSP</span>
+                                @endif
+
+                                {{-- Bukti Transfer --}}
+                                @if($user->bukti_transfer)
+                                    @php $p = str_replace('public/', '', $user->bukti_transfer); @endphp
+                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-transfer">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+                                        Transfer
+                                    </a>
+                                @else
+                                    <span class="doc-btn doc-btn-disabled">Transfer</span>
+                                @endif
+
+                                {{-- Pas Foto --}}
+                                @if($user->white_bg_photo)
+                                    @php $p = str_replace('public/', '', $user->white_bg_photo); @endphp
+                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-foto">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        Pas Foto
+                                    </a>
+                                @else
+                                    <span class="doc-btn doc-btn-disabled">Pas Foto</span>
                                 @endif
                             </div>
                         </td>
@@ -484,6 +627,7 @@
             </div>
         </div>
 
+        {{-- Baris 1: KTP & BNSP --}}
         <div style="display:flex;gap:10px;margin-top:4px;">
             <a id="d-ktp-link" href="#" target="_blank" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center;">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14">
@@ -499,6 +643,23 @@
             </a>
         </div>
 
+        {{-- Baris 2: Bukti Transfer & Pas Foto --}}
+        <div style="display:flex;gap:10px;margin-top:8px;">
+            <a id="d-transfer-link" href="#" target="_blank" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center;">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+                </svg>
+                Lihat Bukti Transfer
+            </a>
+            <a id="d-foto-link" href="#" target="_blank" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center;">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                Lihat Pas Foto
+            </a>
+        </div>
+
+        {{-- Drive --}}
         <div id="d-drive-wrap" style="margin-top:8px;display:none;">
             <a id="d-drive-link" href="#" target="_blank" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;">
                 &#x2197; Buka Drive Dokumentasi
@@ -544,20 +705,17 @@ const trainerData = @json(
     $pending->concat($approved)->concat($rejected)->keyBy('id')
 );
 
-// ─── Realtime Relative Time ───────────────────────────────────────────────────
-
 function formatRelativeTime(isoString) {
     const now  = new Date();
     const past = new Date(isoString);
-    const diff = Math.floor((now - past) / 1000); // selisih dalam detik
+    const diff = Math.floor((now - past) / 1000);
 
-    if (diff < 60)      return 'Baru saja';
-    if (diff < 3600)  { const m  = Math.floor(diff / 60);       return m  + ' menit yang lalu'; }
-    if (diff < 86400) { const h  = Math.floor(diff / 3600);     return h  + ' jam yang lalu'; }
-    if (diff < 2592000){ const d = Math.floor(diff / 86400);    return d  + ' hari yang lalu'; }
-    if (diff < 31536000){ const mo= Math.floor(diff / 2592000); return mo + ' bulan yang lalu'; }
-    const y = Math.floor(diff / 31536000);
-    return y + ' tahun yang lalu';
+    if (diff < 60)       return 'Baru saja';
+    if (diff < 3600)   { const m  = Math.floor(diff / 60);       return m  + ' menit yang lalu'; }
+    if (diff < 86400)  { const h  = Math.floor(diff / 3600);     return h  + ' jam yang lalu'; }
+    if (diff < 2592000){ const d  = Math.floor(diff / 86400);    return d  + ' hari yang lalu'; }
+    if (diff < 31536000){ const mo= Math.floor(diff / 2592000);  return mo + ' bulan yang lalu'; }
+    return Math.floor(diff / 31536000) + ' tahun yang lalu';
 }
 
 function updateAllRelativeTimes() {
@@ -565,27 +723,15 @@ function updateAllRelativeTimes() {
         el.textContent = formatRelativeTime(el.dataset.time);
     });
 }
-
-// Jalankan langsung saat load, lalu perbarui tiap 30 detik
 updateAllRelativeTimes();
 setInterval(updateAllRelativeTimes, 30000);
 
-// ─── SweetAlert2 Confirmations ────────────────────────────────────────────────
-
-// Warna custom agar selaras dengan tema admin
 const swalApprove = Swal.mixin({
-    customClass: {
-        confirmButton: 'swal-btn-confirm-approve',
-        cancelButton:  'swal-btn-cancel',
-    },
+    customClass: { confirmButton: 'swal-btn-confirm-approve', cancelButton: 'swal-btn-cancel' },
     buttonsStyling: false,
 });
-
 const swalReject = Swal.mixin({
-    customClass: {
-        confirmButton: 'swal-btn-confirm-reject',
-        cancelButton:  'swal-btn-cancel',
-    },
+    customClass: { confirmButton: 'swal-btn-confirm-reject', cancelButton: 'swal-btn-cancel' },
     buttonsStyling: false,
 });
 
@@ -593,17 +739,13 @@ function confirmApprove(id, name) {
     swalApprove.fire({
         title: 'Setujui Trainer?',
         html:  '<span style="font-size:14px;color:#6b7280;">Anda akan menyetujui <strong>' + name + '</strong> sebagai Trainer resmi.</span>',
-        icon:  'question',
-        iconColor: '#10b981',
+        icon:  'question', iconColor: '#10b981',
         showCancelButton: true,
         confirmButtonText: '✓ Ya, Setujui',
         cancelButtonText:  'Batal',
-        reverseButtons: true,
-        focusCancel: true,
+        reverseButtons: true, focusCancel: true,
     }).then(function(result) {
-        if (result.isConfirmed) {
-            document.getElementById('form-approve-' + id).submit();
-        }
+        if (result.isConfirmed) document.getElementById('form-approve-' + id).submit();
     });
 }
 
@@ -611,21 +753,15 @@ function confirmReject(id, name) {
     swalReject.fire({
         title: 'Tolak Pendaftaran?',
         html:  '<span style="font-size:14px;color:#6b7280;">Anda akan menolak pendaftaran <strong>' + name + '</strong>. Lanjutkan untuk mengisi alasan penolakan.</span>',
-        icon:  'warning',
-        iconColor: '#ef4444',
+        icon:  'warning', iconColor: '#ef4444',
         showCancelButton: true,
         confirmButtonText: '→ Lanjut Isi Alasan',
         cancelButtonText:  'Batal',
-        reverseButtons: true,
-        focusCancel: true,
+        reverseButtons: true, focusCancel: true,
     }).then(function(result) {
-        if (result.isConfirmed) {
-            openRejectModal(id, name);
-        }
+        if (result.isConfirmed) openRejectModal(id, name);
     });
 }
-
-
 
 function switchTab(tab, btn) {
     ['pending', 'approved', 'rejected'].forEach(function(t) {
@@ -643,7 +779,6 @@ function openDetailModal(id) {
 
     document.getElementById('detail-avatar-initials').textContent = (d.name || '').substring(0, 2).toUpperCase();
     document.getElementById('detail-avatar-wrap').style.background = '#E1F5EE';
-
     document.getElementById('d-nama').textContent       = d.academic_degree ?? d.name;
     document.getElementById('d-nik').textContent        = d.nik ?? '-';
     document.getElementById('d-email').textContent      = d.email ?? '-';
@@ -664,16 +799,40 @@ function openDetailModal(id) {
         rejectWrap.style.display = 'none';
     }
 
-    const ktpPath  = d.ktp_scan         ? d.ktp_scan.replace('public/', '')         : null;
-    const bnspPath = d.bnsp_certificate  ? d.bnsp_certificate.replace('public/', '') : null;
+    // Helper path
+    function storagePath(raw) {
+        return raw ? '/storage/' + raw.replace('public/', '') : null;
+    }
 
-    const ktpLink  = document.getElementById('d-ktp-link');
+    // KTP
+    const ktpLink = document.getElementById('d-ktp-link');
+    const ktpPath = storagePath(d.ktp_scan);
+    ktpLink.href = ktpPath ?? '#';
+    ktpLink.style.opacity = ktpPath ? '1' : '0.4';
+    ktpLink.style.pointerEvents = ktpPath ? 'auto' : 'none';
+
+    // BNSP
     const bnspLink = document.getElementById('d-bnsp-link');
-    ktpLink.href   = ktpPath  ? '/storage/' + ktpPath  : '#';
-    bnspLink.href  = bnspPath ? '/storage/' + bnspPath : '#';
-    ktpLink.style.opacity  = ktpPath  ? '1' : '0.4';
+    const bnspPath = storagePath(d.bnsp_certificate);
+    bnspLink.href = bnspPath ?? '#';
     bnspLink.style.opacity = bnspPath ? '1' : '0.4';
+    bnspLink.style.pointerEvents = bnspPath ? 'auto' : 'none';
 
+    // Bukti Transfer
+    const transferLink = document.getElementById('d-transfer-link');
+    const transferPath = storagePath(d.bukti_transfer);
+    transferLink.href = transferPath ?? '#';
+    transferLink.style.opacity = transferPath ? '1' : '0.4';
+    transferLink.style.pointerEvents = transferPath ? 'auto' : 'none';
+
+    // Pas Foto
+    const fotoLink = document.getElementById('d-foto-link');
+    const fotoPath = storagePath(d.white_bg_photo);
+    fotoLink.href = fotoPath ?? '#';
+    fotoLink.style.opacity = fotoPath ? '1' : '0.4';
+    fotoLink.style.pointerEvents = fotoPath ? 'auto' : 'none';
+
+    // Drive
     const driveWrap = document.getElementById('d-drive-wrap');
     const driveLink = document.getElementById('d-drive-link');
     if (d.drive_link_documentation) {

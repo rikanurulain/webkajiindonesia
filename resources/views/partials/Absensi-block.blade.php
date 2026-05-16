@@ -4,7 +4,7 @@
     $sudahAbsen = false;
     $waktuAbsen = null;
     if (auth()->check() && isset($program->id)) {
-        $rec = \App\Models\AbsensiPeserta::where('pelatihan_id', $program->id)  // ← fix
+        $rec = \App\Models\AbsensiPeserta::where('pelatihan_id', $program->id)
                 ->where('user_id', auth()->id())
                 ->first();
         if ($rec) {
@@ -104,6 +104,40 @@
 
 @else
 {{-- ══ SUDAH BERAKHIR ══ --}}
+@php
+    $sudahAbsenEnded = false;
+    $waktuAbsenEnded = null;
+    if (auth()->check() && isset($program->id)) {
+        $recEnded = \App\Models\AbsensiPeserta::where('pelatihan_id', $program->id)
+                ->where('user_id', auth()->id())
+                ->first();
+        if ($recEnded) {
+            $sudahAbsenEnded = true;
+            $waktuAbsenEnded = $recEnded->created_at
+                ->setTimezone(config('app.timezone'))
+                ->format('H:i');
+        }
+    }
+@endphp
+
+@if($sudahAbsenEnded)
+{{-- Sudah absen sebelum ditutup → tampilkan status absen --}}
+<div class="bg-green-50 border border-green-200 rounded-2xl p-5 flex items-center gap-4">
+    <span class="text-2xl flex-shrink-0">✅</span>
+    <div class="flex-1">
+        <div class="font-bold text-green-700 text-sm">Anda Telah Absen</div>
+        <div class="text-xs text-green-500 mt-0.5">
+            Tercatat pukul {{ $waktuAbsenEnded }} WIB
+            · Absensi ditutup {{ $absSelesai->translatedFormat('d M Y, H:i') }} WIB
+        </div>
+    </div>
+    <div class="flex-shrink-0 px-4 py-2 bg-green-100 border border-green-300
+                text-green-700 font-bold text-sm rounded-xl">
+        ✅ Sudah Absen
+    </div>
+</div>
+@else
+{{-- Belum absen & sudah ditutup --}}
 <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex items-center gap-4 opacity-60">
     <span class="text-2xl flex-shrink-0">🔒</span>
     <div>
@@ -113,9 +147,11 @@
         </div>
     </div>
 </div>
-@endif
+@endif {{-- end $sudahAbsenEnded --}}
 
-@endif
+@endif {{-- end absStatus --}}
+
+@endif {{-- end $absAktif --}}
 
 @push('scripts')
 <script>
@@ -150,21 +186,24 @@
         }
 
         var msLeft = selesai - now;
+
         if (msLeft <= 0) {
             if (cntEl) cntEl.textContent = '00:00';
             if (!reloaded) {
                 reloaded = true;
-                setTimeout(function() { location.reload(); }, 1000);
+                var wrap = document.getElementById('abs-btn-wrap');
+                var sudahAbsen = wrap && wrap.querySelector('[style*="dcfce7"]');
+                setTimeout(function() { location.reload(); }, sudahAbsen ? 3000 : 1000);
             }
             return;
         }
 
         if (cntEl) cntEl.textContent = fmt(msLeft);
     }
+
     tick();
     setInterval(tick, 1000);
 
-    // Ubah tampilan tombol jadi "Sudah Absen" tanpa reload
     function setDone(waktu) {
         var wrap = document.getElementById('abs-btn-wrap');
         if (!wrap) return;
@@ -173,11 +212,10 @@
             + 'background:#dcfce7;border:1.5px solid #86efac;border-radius:10px;'
             + 'font-size:13px;font-weight:700;color:#15803d;white-space:nowrap">'
             + '✅ Sudah Absen'
-           + (waktu ? '<span style="font-size:11px;font-weight:400;color:#16a34a">· ' + waktu + ' WIB</span>' : '')
+            + (waktu ? '<span style="font-size:11px;font-weight:400;color:#16a34a">· ' + waktu + ' WIB</span>' : '')
             + '</div>';
     }
 
-    // Handler klik tombol absen — kirim POST ke controller
     window.doAbsensi = function (btn) {
         if (btn.disabled) return;
         btn.disabled = true;
@@ -212,7 +250,6 @@
                 if (iconEl) iconEl.textContent = '✅';
                 if (textEl) textEl.textContent  = 'Absen Sekarang';
 
-                // Tampilkan pesan error di bawah tombol
                 var errEl = document.getElementById('abs-err');
                 if (!errEl) {
                     errEl = document.createElement('p');

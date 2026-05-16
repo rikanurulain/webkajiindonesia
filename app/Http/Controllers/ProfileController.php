@@ -176,15 +176,15 @@ public function updateNotifications(Request $request)
     // HALAMAN PROFIL UTAMA 
     public function index()
     {
-        $user = Auth::user();
-        // Mengambil log aktivitas terbaru untuk ditampilkan di profil
-        $activities = ActivityLog::where('user_id', $user->id)
-            ->latest()
-            ->take(5)
-            ->get();
-
-        return view('profile.index', compact('user', 'activities'));
+        $user       = Auth::user()->fresh(); // ← pastikan ada fresh()
+        $activities = ActivityLog::where('user_id', $user->id)->latest()->take(5)->get();
+        $umkm       = \App\Models\Produk::where('user_id', $user->id)->latest()->first();
+        $mentor     = \App\Models\Mentor::where('user_id', $user->id)->latest()->first();
+    
+        return view('profile.index', compact('user', 'activities', 'umkm', 'mentor')); // ← umkm & mentor ikut dipass
     }
+
+    
 
     public function daftarMentor(Request $request)
 {
@@ -207,10 +207,10 @@ public function updateNotifications(Request $request)
  */
 public function showDaftarTrainer()
 {
-    // Mengambil data user yang sedang login
     $user = Auth::user();
-
-    // Mengirim variabel $user ke halaman view
+    if (!$user->profile_photo_path) {
+        return redirect()->route('profile')->with('error', 'Upload foto profil dulu sebelum mendaftar sebagai Trainer.');
+    }
     return view('profile.daftar-trainer', compact('user'));
 }
 
@@ -221,21 +221,78 @@ public function simpanTrainer(Request $request)
 {
     $user = Auth::user();
 
-    // Validasi (Contoh sederhana, bisa diperketat)
+    // Cek foto profil wajib ada
+    if (!$user->profile_photo_path) {
+        return back()->with('error', 'Anda harus mengupload foto profil terlebih dahulu sebelum mendaftar sebagai Trainer.');
+    }
+    $user = Auth::user();
+
     $request->validate([
-        'academic_degree' => 'required|string',
-        'ktp_scan' => 'required|image|max:2048',
-        'bnsp_certificate' => 'required|mimes:pdf,jpg,png|max:2048',
-        'white_bg_photo' => 'required|image|max:2048',
+        'academic_degree' => 'required|string|max:255',
+        'phone'           => 'required|string|max:20',
+        'email'           => 'required|email|max:255',
+        'nik'             => 'required|string|max:20',
+        'npwp'            => 'nullable|string|max:30',
+        'gmaps_location'  => 'required|string|max:500',
+        'provinsi'        => 'required|string|max:255',
+        'kabupaten'       => 'required|string|max:255',
+        'kecamatan'       => 'required|string|max:255',
+        'kelurahan'       => 'required|string|max:255',
+        'ijazah_type'     => 'required|in:SMA,D3,S1,S2,S3',
+        'drive_link'      => 'required|url',
+        'experience'      => 'required|string',
+        'bio'             => 'required|string',
+        'ktp_scan'        => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        'bnsp_certificate'=> 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        'white_bg_photo'  => 'required|image|mimes:jpg,jpeg,png|max:2048',
+        'bukti_transfer'  => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        'agree_terms'     => 'required|accepted',
+    ], [
+        'academic_degree.required' => 'Nama lengkap & gelar wajib diisi.',
+        'phone.required'           => 'Nomor WhatsApp wajib diisi.',
+        'email.required'           => 'Email aktif wajib diisi.',
+        'nik.required'             => 'Nomor NIK/KTP wajib diisi.',
+        'gmaps_location.required'  => 'Alamat domisili wajib diisi.',
+        'provinsi.required'        => 'Provinsi wajib dipilih.',
+        'kabupaten.required'       => 'Kabupaten/Kota wajib dipilih.',
+        'kecamatan.required'       => 'Kecamatan wajib dipilih.',
+        'kelurahan.required'       => 'Desa/Kelurahan wajib dipilih.',
+        'ijazah_type.required'     => 'Ijazah terakhir wajib dipilih.',
+        'drive_link.required'      => 'Link Drive dokumentasi wajib diisi.',
+        'drive_link.url'           => 'Link Drive harus berupa URL yang valid.',
+        'experience.required'      => 'Pengalaman wajib diisi.',
+        'bio.required'             => 'Tentang diri Anda wajib diisi.',
+        'ktp_scan.required'        => 'Scan KTP wajib diunggah.',
+        'bnsp_certificate.required'=> 'Sertifikat BNSP wajib diunggah.',
+        'white_bg_photo.required'  => 'Pas foto background putih wajib diunggah.',
+        'bukti_transfer.required'  => 'Bukti transfer wajib diunggah.',
+        'agree_terms.accepted'     => 'Anda wajib menyetujui Syarat dan Ketentuan.',
     ]);
 
-    // Proses Upload File
-    // Kita ambil data dari input form
-    $data = $request->only(['academic_degree', 'nik', 'npwp', 'location', 'experience', 'bio']);
-    $data['drive_link_documentation'] = $request->drive_link;
+    // Gabungkan wilayah jadi string lokasi ringkas
+    $lokasi = implode(', ', array_filter([
+        $request->kelurahan,
+        $request->kecamatan,
+        $request->kabupaten,
+        $request->provinsi,
+    ]));
 
-    // TAMBAHKAN BARIS INI: Set status pendaftaran menjadi pending
-    $data['trainer_status'] = 'pending'; 
+    $data = [
+        'academic_degree'        => $request->academic_degree,
+        'nik'                    => $request->nik,
+        'npwp'                   => $request->npwp,
+        'location'               => $lokasi,           // kolom lama tetap terisi
+        'gmaps_location'         => $request->gmaps_location,
+        'provinsi'               => $request->provinsi,
+        'kabupaten'              => $request->kabupaten,
+        'kecamatan'              => $request->kecamatan,
+        'kelurahan'              => $request->kelurahan,
+        'ijazah_type'            => $request->ijazah_type,
+        'drive_link_documentation' => $request->drive_link,
+        'experience'             => $request->experience,
+        'bio'                    => $request->bio,
+        'trainer_status'         => 'pending',
+    ];
 
     if ($request->hasFile('ktp_scan')) {
         $data['ktp_scan'] = $request->file('ktp_scan')->store('trainer_docs', 'public');
@@ -246,16 +303,17 @@ public function simpanTrainer(Request $request)
     if ($request->hasFile('white_bg_photo')) {
         $data['white_bg_photo'] = $request->file('white_bg_photo')->store('trainer_docs', 'public');
     }
+    if ($request->hasFile('bukti_transfer')) {
+        $data['bukti_transfer'] = $request->file('bukti_transfer')->store('trainer_docs', 'public');
+    }
 
-    // Update data user yang sedang login
     $user->update($data);
 
-    // Catat ke Log Aktivitas
-    \App\Models\ActivityLog::create([
+    ActivityLog::create([
         'user_id'     => $user->id,
         'type'        => 'profile',
         'label'       => 'Menunggu Persetujuan Trainer',
-        'description' => 'User melengkapi 13 persyaratan dan menunggu verifikasi admin',
+        'description' => 'User melengkapi persyaratan dan menunggu verifikasi admin',
         'ip_address'  => $request->ip(),
         'user_agent'  => $request->userAgent(),
         'is_success'  => true,
@@ -267,6 +325,10 @@ public function simpanTrainer(Request $request)
 // Show form daftar UMKM
 public function showDaftarUmkm()
 {
+    $user = Auth::user();
+    if (!$user->profile_photo_path) {
+        return redirect()->route('profile')->with('error', 'Upload foto profil dulu sebelum mendaftar sebagai UMKM.');
+    }
     return view('profile.daftar-umkm');
 }
 
@@ -274,6 +336,12 @@ public function showDaftarUmkm()
 // Simpan pendaftaran UMKM
 public function simpanUmkm(Request $request)
 {
+    $user = Auth::user();
+
+    // Cek foto profil wajib ada
+    if (!$user->profile_photo_path) {
+        return back()->with('error', 'Anda harus mengupload foto profil terlebih dahulu sebelum mendaftar sebagai UMKM.');
+    }
     // 1. Validasi Input
     $request->validate([
         'nama'           => 'required|string|max:255',
@@ -336,14 +404,26 @@ public function simpanUmkm(Request $request)
 // Show form daftar Mentor
 public function showDaftarMentor()
 {
-    $user = auth()->user();
+    $user = Auth::user();
+    if (!$user->profile_photo_path) {
+        return redirect()->route('profile')->with('error', 'Upload foto profil dulu sebelum mendaftar sebagai Mentor.');
+    }
     return view('profile.daftar-mentor', compact('user'));
 }
+
 
 // Simpan pendaftaran Mentor
 // Simpan pendaftaran Mentor
 public function simpanMentor(Request $request)
 {
+
+    $user = Auth::user();
+
+    // Cek foto profil wajib ada
+    if (!$user->profile_photo_path) {
+        return back()->with('error', 'Anda harus mengupload foto profil terlebih dahulu sebelum mendaftar sebagai Mentor.');
+    }
+
     $request->validate([
         'full_name'      => 'required|string|max:255',
         'phone'          => 'required|string|max:20',

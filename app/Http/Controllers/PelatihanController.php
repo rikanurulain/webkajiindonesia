@@ -534,29 +534,27 @@ class PelatihanController extends Controller
     // HALAMAN MENTOR / PEMBIMBING
     // =========================================================
     public function pembimbing(Request $request)
-    {
-        $query = Mentor::where('status', 'approved');
-    
-        if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('full_name', 'like', '%' . $request->search . '%')
-                  ->orWhere('lokasi', 'like', '%' . $request->search . '%')
-                  ->orWhere('gmaps_location', 'like', '%' . $request->search . '%');
-            });
-        }
-    
-        $trainers = $query->paginate(12);
-    
-        $bidangList = Mentor::where('status', 'approved')
-                          ->whereNotNull('role')
-                          ->pluck('role')
-                          ->unique()
-                          ->sort()
-                          ->values();
-    
-        return view('pages.pelatihan-pembimbing', compact('trainers', 'bidangList'));
+{
+    $query = User::where('role', 'trainer');
+
+    if ($request->filled('search')) {
+        $query->where(function ($q) use ($request) {
+            $q->where('name', 'like', '%' . $request->search . '%')
+              ->orWhere('location', 'like', '%' . $request->search . '%');
+        });
     }
 
+    $trainers = $query->paginate(12);
+
+    $bidangList = User::where('role', 'trainer')
+                      ->whereNotNull('bidang_keahlian')
+                      ->pluck('bidang_keahlian')
+                      ->unique()
+                      ->sort()
+                      ->values();
+
+    return view('pages.pelatihan-pembimbing', compact('trainers', 'bidangList'));
+}
     public function detailMentor($id)
     {
         $mentor = Mentor::where('status', 'approved')->findOrFail($id);
