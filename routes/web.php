@@ -167,9 +167,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/approval/produk/{produk}/reject', [AdminController::class, 'rejectProduk'])->name('approval.produk.reject');
 
     // Approval Event — MERGED (pakai AdminEventController, nama route tetap konsisten)
-    Route::get('/approval/event', [AdminEventController::class, 'index'])->name('approval.event');
-    Route::post('/approval/event/{id}/approve', [AdminEventController::class, 'approve'])->name('approval.event.approve');
-    Route::post('/approval/event/{id}/reject', [AdminEventController::class, 'reject'])->name('approval.event.reject');
+    Route::get('/approval/event', [AdminController::class, 'approvalEvent'])->name('approval.event');
+    Route::post('/approval/event/{id}/approve', [AdminController::class, 'approveEvent'])->name('approval.event.approve');
+    Route::post('/approval/event/{id}/reject', [AdminController::class, 'rejectEvent'])->name('approval.event.reject');
 
     // Approval Trainer
     Route::get('/approval/trainer', [AdminController::class, 'approvalTrainer'])->name('approval.trainer');

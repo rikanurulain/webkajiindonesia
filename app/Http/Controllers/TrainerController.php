@@ -259,10 +259,7 @@ class TrainerController extends Controller
             ->where('trainer_id', Auth::id())
             ->firstOrFail();
     
-        if ($event->status === 'approved') {
-            return back()->with('error', 'Event yang sudah disetujui tidak dapat diedit.');
-        }
-    
+            
         $request->validate([
             'judul'         => 'required|string|max:255',
             'tanggal'       => 'required|date',

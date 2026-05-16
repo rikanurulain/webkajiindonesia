@@ -302,8 +302,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 .radio-option label { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; background: var(--surface2); color: var(--text-muted); }
 .radio-option input[type="radio"]:checked + label { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
 
-.upload-area { width: 100%; min-height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 24px; border: 2px dashed #2d6a4f66; border-radius: 14px; background: #faf8f5; text-align: center; cursor: pointer; transition: all .2s; }
-.upload-area:hover { background: #eef8f1; border-color: var(--accent); }
+.upload-area { position: relative; width: 100%; min-height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 24px; border: 2px dashed #2d6a4f66; border-radius: 14px; background: #faf8f5; text-align: center; cursor: pointer; transition: all .2s; }.upload-area:hover { background: #eef8f1; border-color: var(--accent); }
 .upload-area .upload-icon { font-size: 36px; line-height: 1; }
 .upload-area .upload-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 .upload-area .upload-text span { color: var(--accent); font-weight: 700; }
@@ -339,6 +338,16 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.btn-resubmit {
+    animation: pulse-orange 2s infinite;
+}
+@keyframes pulse-orange {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(231,111,81,.3); }
+    50%       { box-shadow: 0 0 0 4px rgba(231,111,81,0); }
+}
+
+
 </style>
 </head>
 <body>
@@ -735,54 +744,104 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             <div class="table-wrap">
                 <table>
                     <thead><tr><th>Nama Event</th><th>Lokasi</th><th>Tanggal</th><th>Kapasitas</th><th>Status</th><th>Aksi</th></tr></thead>
-                    <tbody>
-                        @foreach($eventList as $event)
+                    @foreach($eventList as $event)
+                        @php
+                            $eTanggal     = \Carbon\Carbon::parse($event->tanggal)->format('Y-m-d');
+                            $eWaktuMulai  = $event->waktu_mulai   ? \Carbon\Carbon::parse($event->waktu_mulai)->format('H:i')   : '';
+                            $eWaktuSelesai= $event->waktu_selesai ? \Carbon\Carbon::parse($event->waktu_selesai)->format('H:i') : '';
+                            $eGambar      = $event->gambar        ? asset('storage/' . $event->gambar) : '';
+                        @endphp
                         <tr>
-                            <td style="font-weight:500">{{ $event->judul ?? $event->nama }}</td>
-                            <td>{{ $event->lokasi ?? '-' }}</td>
-                            <td>{{ \Carbon\Carbon::parse($event->tanggal)->translatedFormat('d M Y') }}</td>
-                            <td>{{ $event->kapasitas ?? '-' }}</td>
+                            {{-- Kolom Nama Event + thumbnail --}}
                             <td>
-                                @if(($event->status ?? '') === 'approved')
+                                <div style="display:flex;align-items:flex-start;gap:10px;">
+                                    <div style="width:42px;height:42px;border-radius:8px;overflow:hidden;
+                                                background:#f0f0f0;flex-shrink:0;border:1px solid var(--border);
+                                                display:flex;align-items:center;justify-content:center;font-size:18px;">
+                                        @if($event->gambar)
+                                            <img src="{{ asset('storage/' . $event->gambar) }}"
+                                                alt="{{ $event->judul }}"
+                                                style="width:100%;height:100%;object-fit:cover;">
+                                        @else
+                                            🎪
+                                        @endif
+                                    </div>
+                                    <div style="flex:1;min-width:0;">
+                                        <div style="font-weight:600;font-size:13px;">
+                                            {{ $event->judul ?? $event->nama }}
+                                        </div>
+                                        @if($event->status === 'rejected' && $event->catatan_admin)
+                                            <div style="margin-top:5px;background:#fff0ed;border:1px solid #e76f5166;
+                                                        border-radius:8px;padding:6px 10px;">
+                                                <div style="font-size:10px;font-weight:700;color:var(--accent2);
+                                                            text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">
+                                                    📋 Catatan Admin
+                                                </div>
+                                                <div style="font-size:12px;color:#b45309;line-height:1.5;">
+                                                    {{ $event->catatan_admin }}
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
+
+                            {{-- Lokasi --}}
+                            <td style="font-size:13px;">{{ $event->lokasi ?? '-' }}</td>
+
+                            {{-- Tanggal --}}
+                            <td style="font-size:13px;">
+                                {{ \Carbon\Carbon::parse($event->tanggal)->translatedFormat('d M Y') }}
+                            </td>
+
+                            {{-- Kapasitas --}}
+                            <td style="font-size:13px;">{{ $event->kapasitas ?? '-' }}</td>
+
+                            {{-- Status --}}
+                            <td>
+                                @if($event->status === 'approved')
                                     <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
-                                @elseif(($event->status ?? '') === 'rejected')
+                                @elseif($event->status === 'rejected')
                                     <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
                                 @else
                                     <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
                                 @endif
                             </td>
+
+                            {{-- Aksi --}}
                             <td>
-                                <div style="display:flex;gap:6px">
-                                    <button 
-                                        class="btn-icon"
-                                        onclick="editEvent(
-                                            {{ $event->id }},
-                                            '{{ addslashes($event->judul ?? $event->nama) }}',
-                                            '{{ $event->tanggal }}',
-                                            '{{ $event->waktu_mulai ?? '' }}',
-                                            '{{ $event->waktu_selesai ?? '' }}',
-                                            '{{ addslashes($event->lokasi ?? '') }}',
-                                            '{{ $event->kapasitas ?? '' }}',
-                                            '{{ addslashes($event->biaya ?? '') }}',
-                                            '{{ addslashes($event->deskripsi ?? '') }}'
-                                        )"
-                                        title="Edit"
-                                    >
-                                        <svg 
-                                            width="13"
-                                            height="13"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                        >
-                                            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                                            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                <div style="display:flex;gap:6px;align-items:center;">
+
+                                    {{-- Tombol Edit --}}
+                                    <button
+                                        class="btn-icon {{ $event->status === 'rejected' ? 'btn-resubmit' : '' }}"
+                                        style="{{ $event->status === 'rejected' ? 'background:#fff0ed;border-color:#e76f51;color:#e76f51;' : '' }}"
+                                        onclick="editEvent({{ $event->id }},'{{ addslashes($event->judul ?? $event->nama) }}','{{ $eTanggal }}','{{ $eWaktuMulai }}','{{ $eWaktuSelesai }}','{{ addslashes($event->lokasi ?? '') }}','{{ $event->kapasitas ?? '' }}','{{ addslashes($event->biaya ?? '') }}','{{ addslashes($event->deskripsi ?? '') }}','{{ $eGambar }}')"
+                                        title="{{ $event->status === 'rejected' ? 'Edit & Kirim Ulang' : 'Edit' }}">
+                                        @if($event->status === 'rejected')
+                                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <polyline points="23 4 23 10 17 10"/>
+                                                <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+                                            </svg>
+                                        @else
+                                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                            </svg>
+                                        @endif
+                                    </button>
+
+                                    {{-- Tombol Hapus --}}
+                                    <button class="btn-icon btn-icon-danger"
+                                            onclick="hapusEvent({{ $event->id }})"
+                                            title="Hapus">
+                                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <polyline points="3 6 5 6 21 6"/>
+                                            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                                            <path d="M10 11v6M14 11v6M9 6V4h6v2"/>
                                         </svg>
                                     </button>
-                                    <button class="btn-icon btn-icon-danger" onclick="hapusEvent({{ $event->id }})" title="Hapus">
-                                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
-                                    </button>
+
                                 </div>
                             </td>
                         </tr>
@@ -1169,14 +1228,25 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             {{-- Gambar / Banner --}}
             <div class="form-group">
                 <label class="form-label">Gambar / Banner Event</label>
-                <label class="upload-area" for="event-gambar">
-                    <div class="upload-icon">🖼️</div>
-                    <div class="upload-text">Klik untuk upload atau <span>drag & drop</span><br>PNG, JPG hingga 5MB</div>
+                <label class="upload-area" for="event-gambar" id="event-upload-area">
+
+                    {{-- IMG PREVIEW — tersembunyi saat belum ada gambar --}}
+                    <img id="event-gambar-preview"
+                        src=""
+                        alt="preview"
+                        style="display:none;width:100%;height:100%;object-fit:cover;
+                                border-radius:12px;position:absolute;top:0;left:0;">
+
+                    <div class="upload-icon" id="event-upload-icon">🖼️</div>
+                    <div class="upload-text" id="event-upload-text">
+                        Klik untuk upload atau <span>drag & drop</span><br>PNG, JPG hingga 5MB
+                    </div>
                     <div class="upload-fname" id="event-gambar-name"></div>
                 </label>
                 <input type="file" id="event-gambar" name="gambar" accept="image/*"
-                       style="display:none" onchange="showFileName(this, 'event-gambar-name')">
+                    style="display:none" onchange="onEventGambarChange(this)">
             </div>
+
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-ghost"
@@ -1515,22 +1585,78 @@ function editModul(id, kurikulumId, judul, deskripsi, urutan) {
 /* ================================================================
    EDIT EVENT
 ================================================================ */
-function editEvent(id, judul, tanggal, waktuMulai, waktuSelesai, lokasi, kapasitas, biaya, deskripsi) {
-    document.getElementById('modal-event-title').textContent   = 'Edit Event';
-    document.getElementById('event-id').value                  = id;
-    document.getElementById('event-judul').value               = judul;
-    document.getElementById('event-tanggal').value             = tanggal;
-    document.getElementById('event-waktu-mulai').value         = waktuMulai  || '';
-    document.getElementById('event-waktu-selesai').value       = waktuSelesai || '';
-    document.getElementById('event-lokasi').value              = lokasi      || '';
-    document.getElementById('event-kapasitas').value           = kapasitas   || '';
-    document.getElementById('event-biaya').value               = biaya       || '';
-    document.getElementById('event-deskripsi').value           = deskripsi   || '';
-    document.getElementById('event-method').value              = 'PUT';
-    document.getElementById('form-event').action               = '/trainer/event/' + id;
+function editEvent(id, judul, tanggal, waktuMulai, waktuSelesai, lokasi, kapasitas, biaya, deskripsi, gambar) {
+    document.getElementById('modal-event-title').textContent = 'Edit Event';
+    document.getElementById('event-id').value            = id;
+    document.getElementById('event-judul').value         = judul;
+    document.getElementById('event-tanggal').value       = tanggal;
+    document.getElementById('event-waktu-mulai').value   = waktuMulai   || '';
+    document.getElementById('event-waktu-selesai').value = waktuSelesai || '';
+    document.getElementById('event-lokasi').value        = lokasi       || '';
+    document.getElementById('event-kapasitas').value     = kapasitas    || '';
+    document.getElementById('event-biaya').value         = biaya        || '';
+    document.getElementById('event-deskripsi').value     = deskripsi    || '';
+    document.getElementById('event-method').value        = 'PUT';
+    document.getElementById('form-event').action         = '/trainer/event/' + id;
+
+    // Tampilkan preview gambar lama jika ada
+    if (gambar) {
+        tampilkanPreviewEvent(gambar);
+        document.getElementById('event-gambar-name').textContent = '✓ Gambar tersimpan — klik untuk mengganti';
+    } else {
+        resetPreviewEvent();
+    }
+
     openModal('modal-event');
 }
 
+
+/* SESUDAH — ganti seluruh function resetEventModal */
+function resetEventModal() {
+    document.getElementById('modal-event-title').textContent = 'Tambah Event';
+    document.getElementById('event-method').value = 'POST';
+    document.getElementById('form-event').action  = '{{ route("trainer.event.store") }}';
+    document.getElementById('form-event').reset();
+    resetPreviewEvent();
+}
+
+// Dipanggil saat user pilih file baru dari komputer
+function onEventGambarChange(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            tampilkanPreviewEvent(e.target.result);
+        };
+        reader.readAsDataURL(input.files[0]);
+        document.getElementById('event-gambar-name').textContent = '✓ ' + input.files[0].name;
+    }
+}
+
+// Tampilkan gambar di area upload (pakai <img> bukan background)
+function tampilkanPreviewEvent(src) {
+    var preview = document.getElementById('event-gambar-preview');
+    var icon    = document.getElementById('event-upload-icon');
+    var text    = document.getElementById('event-upload-text');
+
+    preview.src           = src;
+    preview.style.display = 'block';
+    icon.style.display    = 'none';
+    text.style.display    = 'none';
+}
+
+// Reset area upload ke kondisi kosong
+function resetPreviewEvent() {
+    var preview = document.getElementById('event-gambar-preview');
+    var icon    = document.getElementById('event-upload-icon');
+    var text    = document.getElementById('event-upload-text');
+    var namaEl  = document.getElementById('event-gambar-name');
+
+    preview.src           = '';
+    preview.style.display = 'none';
+    icon.style.display    = '';
+    text.style.display    = '';
+    namaEl.textContent    = '';
+}
 
 /* ================================================================
    RESET MODAL
@@ -1564,13 +1690,8 @@ function resetModulModal() {
     if (pDesc)  pDesc.textContent  = 'Deskripsi modul...';
 }
 
-function resetEventModal() {
-    document.getElementById('modal-event-title').textContent = 'Tambah Event';
-    document.getElementById('event-method').value = 'POST';
-    document.getElementById('form-event').action  = '{{ route("trainer.event.store") }}';
-    document.getElementById('form-event').reset();
-    document.getElementById('event-gambar-name').textContent = '';
-}
+
+
 
 
 /* ================================================================
