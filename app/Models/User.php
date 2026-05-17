@@ -14,14 +14,11 @@ class User extends Authenticatable
     /**
      * The attributes that are mass assignable.
      *
-    /**
-     * The attributes that are mass assignable.
-     *
      * @var list<string>
      */
     protected $fillable = [
         'name',
-
+        'username',
         'email',
         'password',
         'phone',
@@ -50,19 +47,6 @@ class User extends Authenticatable
         'bnsp_certificate',
         'white_bg_photo',
         'drive_link_documentation',
-        'bidang_keahlian',
-        'foto',
-        'no_hp',
-        'gmaps_location',
-        'provinsi',
-        'kabupaten',
-        'kecamatan',
-        'kelurahan',
-        'ijazah_type',
-        'bukti_transfer',
-        'rejection_reason',  
-
-        
     ];
 
     /**
@@ -111,14 +95,6 @@ class User extends Authenticatable
     }
 
     /**
-     * Cek apakah user adalah Trainer yang sudah diverifikasi
-     */
-    public function isTrainer(): bool
-    {
-        return $this->trainer_status === 'approved';
-    }
-    
-    /**
      * Cek apakah user adalah Admin
      */
     public function isAdmin(): bool
@@ -131,7 +107,7 @@ class User extends Authenticatable
      */
     public function isRegularUser(): bool
     {
-        return $this->role === 'umum' && !$this->is_umkm && !$this->is_pembimbing;
+        return $this->role === 'user' && !$this->is_umkm && !$this->is_pembimbing;
     }
 
     /**
@@ -159,5 +135,19 @@ class User extends Authenticatable
     public function getUsernameAttribute()
     {
         return explode(' ', trim($this->name))[0];
+    }
+
+    // ====================== RELATIONSHIPS ======================
+
+    /**
+     * Relasi Banyak-ke-Banyak (BelongsToMany) ke program pelatihan yang diikuti oleh UMKM
+     */
+    public function programs()
+    {
+        // Berdasarkan file rute web.php kemarin, model yang digunakan untuk pelatihan trainer kemungkinan besar bernama Program.
+        // Jika ternyata nama modelnya adalah Pelatihan, silakan ganti \App\Models\Program::class menjadi \App\Models\Pelatihan::class
+        return $this->belongsToMany(\App\Models\Program::class, 'program_user')
+                    ->withPivot('status')
+                    ->withTimestamps();
     }
 }

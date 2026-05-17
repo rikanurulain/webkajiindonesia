@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Trainerpelatihancontroller;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\TrainerController;
+use App\Http\Controllers\UmkmDashboardController;
+use Illuminate\Support\Facades\Http; // Menghindari error proxy wilayah
 
 // =====================
 // HALAMAN UMUM (Bebas Akses)
@@ -56,7 +58,7 @@ Route::prefix('pelatihan')->name('pelatihan.')->group(function () {
 });
 
 // =====================
-// UMKM
+// UMKM KONTEN PUBLIK
 // =====================
 Route::prefix('umkm')->group(function () {
     Route::get('/', [UmkmController::class, 'index'])->name('umkm');
@@ -112,6 +114,18 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/absensi/{pelatihan}/submit', [AbsensiController::class, 'submit'])->name('absensi.submit');
 });
 
+
+// =====================
+// UMKM DASHBOARD ROUTES
+// =====================
+Route::middleware(['auth'])->group(function () {
+    // Jalur masuk ke Dashboard UMKM milikmu
+    Route::get('/dashboard/umkm', [UmkmDashboardController::class, 'index'])->name('dashboard.umkm');
+
+    // Tambahkan baris ini untuk menangani tombol daftar pelatihan:
+    Route::post('/dashboard/umkm/program/{id}/join', [UmkmDashboardController::class, 'joinProgram'])->name('dashboard.umkm.join-program');
+});
+
 // =====================
 // TRAINER ROUTES
 // =====================
@@ -125,7 +139,7 @@ Route::middleware(['auth', 'trainer'])->prefix('trainer')->name('trainer.')->gro
     Route::put('/pelatihan/{id}', [TrainerController::class, 'updateProgram'])->name('pelatihan.update');
     Route::delete('/pelatihan/{id}', [TrainerController::class, 'destroyProgram'])->name('pelatihan.destroy');
 
-    // Event — MERGED (URL bersih, pakai AdminEventController tetap di TrainerController)
+    // Event
     Route::post('/event', [TrainerController::class, 'storeEvent'])->name('event.store');
     Route::put('/event/{id}', [TrainerController::class, 'updateEvent'])->name('event.update');
     Route::delete('/event/{id}', [TrainerController::class, 'destroyEvent'])->name('event.destroy');
@@ -146,6 +160,7 @@ Route::middleware(['auth', 'trainer'])->group(function () {
     Route::put('/kurikulum/{id}', [Trainerpelatihancontroller::class, 'updateKurikulum'])->name('trainer.kurikulum.update');
     Route::delete('/kurikulum/{id}', [Trainerpelatihancontroller::class, 'destroy'])->name('trainer.kurikulum.destroy');
 
+    // Modul
     Route::post('/modul', [Trainerpelatihancontroller::class, 'storeModul'])->name('trainer.modul.store');
     Route::put('/modul/{id}', [Trainerpelatihancontroller::class, 'updateModul'])->name('trainer.modul.update');
     Route::delete('/modul/{id}', [Trainerpelatihancontroller::class, 'destroyModul'])->name('trainer.modul.destroy');
@@ -168,7 +183,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/approval/produk/{produk}/approve', [AdminController::class, 'approveProduk'])->name('approval.produk.approve');
     Route::patch('/approval/produk/{produk}/reject', [AdminController::class, 'rejectProduk'])->name('approval.produk.reject');
 
-    // Approval Event — MERGED (pakai AdminEventController, nama route tetap konsisten)
+    // Approval Event
     Route::get('/approval/event', [AdminController::class, 'approvalEvent'])->name('approval.event');
     Route::post('/approval/event/{id}/approve', [AdminController::class, 'approveEvent'])->name('approval.event.approve');
     Route::post('/approval/event/{id}/reject', [AdminController::class, 'rejectEvent'])->name('approval.event.reject');
@@ -189,5 +204,4 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/pengguna/{user}/verifikasi', [AdminController::class, 'verifikasiPengguna'])->name('pengguna.verifikasi');
     Route::patch('/pengguna/{user}/suspend', [AdminController::class, 'suspendPengguna'])->name('pengguna.suspend');
     Route::patch('/pengguna/{user}/unsuspend', [AdminController::class, 'unsuspendPengguna'])->name('pengguna.unsuspend');
-
-    });
+});
