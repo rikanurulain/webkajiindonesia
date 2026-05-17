@@ -36,12 +36,12 @@ class TrainerController extends Controller
         $pendingTotal          = $pendingPelatihanCount + $pendingEventCount;
     
         $recentSubmissions = $pelatihanList
-            ->map(fn($item) => tap(clone $item, fn($i) => $i->jenis = 'Program'))
-            ->concat(
-                $eventList->map(fn($item) => tap(clone $item, fn($i) => $i->jenis = 'Event'))
-            )
-            ->sortByDesc('created_at')
-            ->take(5);
+        ->map(fn($item) => tap(clone $item, fn($i) => $i->tipe = $i->tipe)) // sudah ada tipe-nya
+        ->concat(
+            $eventList->map(fn($item) => tap(clone $item, fn($i) => $i->tipe = 'event')) // ← fix: set tipe
+        )
+        ->sortByDesc('created_at')
+        ->take(5);
     
         return view('trainer.dashboard', compact(
             'user',
@@ -222,6 +222,7 @@ class TrainerController extends Controller
             'biaya'         => 'nullable|string|max:100',
             'deskripsi'     => 'required|string',
             'gambar'        => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'phone' => 'nullable|string|max:20',
         ]);
     
         $gambar = null;
@@ -270,6 +271,7 @@ class TrainerController extends Controller
             'biaya'         => 'nullable|string|max:100',
             'deskripsi'     => 'required|string',
             'gambar'        => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'phone' => 'nullable|string|max:20', 
         ]);
     
         if ($request->hasFile('gambar')) {
@@ -289,6 +291,7 @@ class TrainerController extends Controller
             'gambar'        => $event->gambar,
             'status'        => 'pending',
             'catatan_admin' => null,
+            'phone' => $request->phone ?? Auth::user()->phone,
         ]);
     
         return redirect()->route('trainer.dashboard')

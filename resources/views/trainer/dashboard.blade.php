@@ -104,6 +104,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 .chip { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); text-transform: capitalize; }
 .chip-kurikulum { background: #e3f0fa; color: var(--accent3); border-color: #bdd5ea; }
 .chip-materi    { background: var(--accent-light); color: var(--accent); border-color: #a7d7c5; }
+.chip-event     { background: #fff0ed; color: var(--accent2); border-color: #e76f5166; }
 
 /* ============ KURIKULUM BLOCK ============ */
 .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
@@ -816,7 +817,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                                     <button
                                         class="btn-icon {{ $event->status === 'rejected' ? 'btn-resubmit' : '' }}"
                                         style="{{ $event->status === 'rejected' ? 'background:#fff0ed;border-color:#e76f51;color:#e76f51;' : '' }}"
-                                        onclick="editEvent({{ $event->id }},'{{ addslashes($event->judul ?? $event->nama) }}','{{ $eTanggal }}','{{ $eWaktuMulai }}','{{ $eWaktuSelesai }}','{{ addslashes($event->lokasi ?? '') }}','{{ $event->kapasitas ?? '' }}','{{ addslashes($event->biaya ?? '') }}','{{ addslashes($event->deskripsi ?? '') }}','{{ $eGambar }}')"
+                                        onclick="editEvent({{ $event->id }},'{{ addslashes($event->judul ?? $event->nama) }}','{{ $eTanggal }}','{{ $eWaktuMulai }}','{{ $eWaktuSelesai }}','{{ addslashes($event->lokasi ?? '') }}','{{ $event->kapasitas ?? '' }}','{{ addslashes($event->biaya ?? '') }}','{{ addslashes($event->deskripsi ?? '') }}','{{ $eGambar }}','{{ $event->phone ?? auth()->user()->phone ?? '' }}')"
                                         title="{{ $event->status === 'rejected' ? 'Edit & Kirim Ulang' : 'Edit' }}">
                                         @if($event->status === 'rejected')
                                             <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -1218,6 +1219,15 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                 </div>
             </div>
 
+            {{-- Penyelenggara & WhatsApp --}}
+<div class="form-group">
+    <label class="form-label">No. WhatsApp </label>
+    <input class="form-input" type="text" name="phone" id="event-phone"
+           value="{{ auth()->user()->phone ?? '' }}"
+           placeholder="Contoh: 6281234567890">
+    <div class="form-hint">Otomatis diisi dari profil. Ubah jika ingin nomor berbeda untuk event ini.</div>
+</div>
+
             {{-- Deskripsi --}}
             <div class="form-group">
                 <label class="form-label">Deskripsi Event <span style="color:var(--accent2)">*</span></label>
@@ -1585,7 +1595,7 @@ function editModul(id, kurikulumId, judul, deskripsi, urutan) {
 /* ================================================================
    EDIT EVENT
 ================================================================ */
-function editEvent(id, judul, tanggal, waktuMulai, waktuSelesai, lokasi, kapasitas, biaya, deskripsi, gambar) {
+function editEvent(id, judul, tanggal, waktuMulai, waktuSelesai, lokasi, kapasitas, biaya, deskripsi, gambar, phone) {
     document.getElementById('modal-event-title').textContent = 'Edit Event';
     document.getElementById('event-id').value            = id;
     document.getElementById('event-judul').value         = judul;
@@ -1598,6 +1608,8 @@ function editEvent(id, judul, tanggal, waktuMulai, waktuSelesai, lokasi, kapasit
     document.getElementById('event-deskripsi').value     = deskripsi    || '';
     document.getElementById('event-method').value        = 'PUT';
     document.getElementById('form-event').action         = '/trainer/event/' + id;
+    document.getElementById('event-phone').value = phone || '';
+    
 
     // Tampilkan preview gambar lama jika ada
     if (gambar) {

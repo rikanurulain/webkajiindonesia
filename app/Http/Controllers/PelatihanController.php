@@ -518,6 +518,7 @@ class PelatihanController extends Controller
         return view('pages.pelatihan-event', compact('events'));
     }
     
+    
     // =========================================================
     // DETAIL EVENT — ambil dari database
     // =========================================================
@@ -556,28 +557,55 @@ class PelatihanController extends Controller
 
     return view('pages.pelatihan-pembimbing', compact('trainers', 'bidangList'));
 }
-    public function detailMentor($id)
-    {
-        $mentor = Mentor::where('status', 'approved')->findOrFail($id);
+public function detailMentor($id)
+{
+    $trainer = \App\Models\User::where('role', 'trainer')->findOrFail($id);
 
-        return view('pages.detail-pembimbing', compact('mentor'));
+    $ulasan = \App\Models\TrainerUlasan::with('user')
+        ->where('trainer_id', $id)
+        ->latest()
+        ->get();
+
+    $avgRating   = $ulasan->avg('rating') ?? 0;
+    $totalUlasan = $ulasan->count();
+
+    $sudahUlasan = false;
+    if (auth()->check()) {
+        $sudahUlasan = \App\Models\TrainerUlasan::where('trainer_id', $id)
+            ->where('user_id', auth()->id())
+            ->exists();
     }
 
-    public function simpanUlasan(Request $request, $id)
-    {
-        $request->validate([
-            'rating'   => 'required|integer|min:1|max:5',
-            'komentar' => 'required|string|max:500',
-        ]);
+    return view('pages.pelatihan-pembimbing-detail', compact(
+        'trainer', 'ulasan', 'avgRating', 'totalUlasan', 'sudahUlasan'
+    ));
+}
 
-        UlasanPembimbing::create([
-            'pembimbing_id' => $id,
-            'user_id'       => Auth::id(),
-            'rating'        => $request->rating,
-            'komentar'      => $request->komentar,
-        ]);
+public function simpanUlasanTrainer(Request $request, $id)
+{
+    $request->validate([
+        'rating'   => 'required|integer|min:1|max:5',
+        'komentar' => 'nullable|string|max:1000',
+    ]);
 
-        return redirect()->route('pelatihan.mentor.detail', $id)
-            ->with('success', 'Ulasan berhasil dikirim!');
+    $trainer = \App\Models\User::where('role', 'trainer')->findOrFail($id);
+
+    // Cegah duplikat
+    $sudah = \App\Models\TrainerUlasan::where('trainer_id', $id)
+        ->where('user_id', auth()->id())
+        ->exists();
+
+    if ($sudah) {
+        return back()->with('error', 'Anda sudah memberikan ulasan untuk trainer ini.');
     }
+
+    \App\Models\TrainerUlasan::create([
+        'trainer_id' => $id,
+        'user_id'    => auth()->id(),
+        'rating'     => $request->rating,
+        'komentar'   => $request->komentar,
+    ]);
+
+    return back()->with('success', 'Ulasan berhasil dikirim. Terima kasih!');
+}
 }

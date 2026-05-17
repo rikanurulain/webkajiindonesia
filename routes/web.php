@@ -51,6 +51,8 @@ Route::prefix('pelatihan')->name('pelatihan.')->group(function () {
     Route::get('/mentor/{id}', [PelatihanController::class, 'detailMentor'])->name('mentor.detail');
     Route::post('/mentor/{id}/ulasan', [PelatihanController::class, 'simpanUlasan'])
         ->name('mentor.ulasan')->middleware('auth');
+    Route::post('/mentor/{id}/ulasan/trainer', [PelatihanController::class, 'simpanUlasanTrainer'])
+        ->name('mentor.ulasan.trainer')->middleware('auth');
 });
 
 // =====================

@@ -125,7 +125,7 @@
 
                     {{-- Tombol Daftar --}}
                     @php
-                        $waPhone = $event->trainer?->phone ?? '6281234567890';
+                    $waPhone = $event->phone ?? $event->trainer?->phone ?? '6281234567890';
                         $waText  = urlencode('Halo, saya ingin mendaftar event: ' . $event->judul . ' pada ' . \Carbon\Carbon::parse($event->tanggal)->translatedFormat('d F Y'));
                     @endphp
                     <div class="flex flex-wrap gap-3">
@@ -197,7 +197,9 @@
                     </div>
                     <div>
                         <div class="text-xs uppercase tracking-wide font-semibold text-gray-400 mb-1">Penyelenggara</div>
-                        <div class="text-sm font-semibold text-green-900">KAJI INDONESIA</div>
+                        <div class="text-sm font-semibold text-green-900">
+    {{ $event->trainer?->name ?? 'KAJI INDONESIA' }}
+</div>
                     </div>
                 </div>
             </div>
