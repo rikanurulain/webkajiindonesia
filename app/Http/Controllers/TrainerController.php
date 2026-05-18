@@ -66,7 +66,7 @@ class TrainerController extends Controller
         $request->validate([
             'judul'             => 'required|string|max:255',
             // FIX: nilai enum DB adalah kurikulum / materi
-            'tipe'              => 'required|in:kurikulum,materi,modul',
+            'tipe'              => 'required|in:kurikulum,materi',
             'deskripsi'         => 'required|string|max:500',
             'deskripsi_panjang' => 'nullable|string',
             'konten_kurikulum'  => 'nullable|string',
@@ -81,7 +81,6 @@ class TrainerController extends Controller
             'absensi_mulai'    => 'nullable|date',
             'absensi_selesai'  => 'nullable|date|after:absensi_mulai',
             'absensi_url'      => 'nullable|url|max:255',
-            'alamat'  => 'nullable|string|max:500', 
         ]);
 
         $gambar = null;
@@ -110,7 +109,6 @@ class TrainerController extends Controller
             'absensi_mulai'   => $request->absensi_aktif ? $request->absensi_mulai   : null,
             'absensi_selesai' => $request->absensi_aktif ? $request->absensi_selesai : null,
             'absensi_url'     => $request->absensi_aktif ? $request->absensi_url     : null,
-            'alamat'  => $request->alamat,
     ]);
         
 
@@ -124,26 +122,18 @@ class TrainerController extends Controller
     // ═══════════════════════════════════════════════════════════════
 
     public function updateProgram(Request $request, $id)
-{
-    $program = Program::where('id', $id)
-        ->where('trainer_id', Auth::id())
-        ->firstOrFail();
+    {
+        $program = Program::where('id', $id)
+            ->where('trainer_id', Auth::id())
+            ->firstOrFail();
 
-    // HAPUS blok dd() yang lama, ganti dengan ini:
-    if ($program->status === 'approved') {
-        $program->update([
-            'alamat' => $request->alamat,
-            'phone'  => $request->phone,
-        ]);
-        return redirect()->route('trainer.dashboard')
-            ->with('success', 'Informasi lokasi berhasil diperbarui.')
-            ->with('active_page', 'program');
-    }
+        if ($program->status === 'approved') {
+            return back()->with('error', 'Program yang sudah disetujui tidak dapat diedit. Hubungi admin.');
+        }
 
-    // Validasi — tipe sekarang bisa diterima karena dikirim dari form
-    $request->validate([
-        'judul'   => 'required|string|max:255',
-        'tipe'    => 'required|in:kurikulum,materi,modul',
+        $request->validate([
+            'judul'             => 'required|string|max:255',
+            'tipe'              => 'required|in:kurikulum,materi',
             'deskripsi'         => 'required|string|max:500',
             'deskripsi_panjang' => 'nullable|string',
             'konten_kurikulum'  => 'nullable|string',
@@ -158,7 +148,6 @@ class TrainerController extends Controller
             'absensi_mulai'   => 'nullable|date',
             'absensi_selesai' => 'nullable|date|after:absensi_mulai',
             'absensi_url'     => 'nullable|url|max:255',
-            'alamat'  => 'nullable|string|max:500',
         ]);
 
         if ($request->hasFile('gambar')) {
@@ -187,7 +176,6 @@ class TrainerController extends Controller
             'absensi_mulai'   => $request->absensi_aktif ? $request->absensi_mulai   : null,
             'absensi_selesai' => $request->absensi_aktif ? $request->absensi_selesai : null,
             'absensi_url'     => $request->absensi_aktif ? $request->absensi_url     : null,
-            'alamat'  => $request->alamat,
         ]);
 
         return redirect()->route('trainer.dashboard')

@@ -321,12 +321,15 @@ class AdminController extends Controller
     public function approveTrainer(User $user)
     {
         $user->update([
-            'role'                  => 'pembimbing',
+            'role'                  => 'trainer',
             'trainer_status'        => 'approved',
             'is_pembimbing'         => true,
             'pembimbing_expired_at' => now()->addYear(),
         ]);
-        return back()->with('success', "{$user->name} berhasil disetujui sebagai Trainer.");
+
+        // Ganti return back() dengan ini:
+        return redirect()->to('/admin/approval/trainer')
+            ->with('success', "{$user->name} berhasil disetujui sebagai Trainer.");
     }
     public function rejectTrainer(Request $request, User $user)
     {
