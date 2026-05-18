@@ -171,18 +171,17 @@ class AdminController extends Controller
     // ═════════════════════════════════════════════════════════════════════
     public function approvalProduk(Request $request)
     {
-        $status = $request->get('status', 'pending');
-        $produks = Produk::with('umkm')
-            ->when($status !== 'all', fn($q) => $q->where('status', $status))
-            ->latest()
-            ->paginate(15)
-            ->withQueryString();
+        $pending  = Produk::with('umkm')->where('status', 'pending')->latest()->get();
+        $approved = Produk::with('umkm')->where('status', 'approved')->latest()->get();
+        $rejected = Produk::with('umkm')->where('status', 'rejected')->latest()->get();
+
         $counts = [
-            'pending'  => Produk::where('status', 'pending')->count(),
-            'approved' => Produk::where('status', 'approved')->count(),
-            'rejected' => Produk::where('status', 'rejected')->count(),
+            'pending'  => $pending->count(),
+            'approved' => $approved->count(),
+            'rejected' => $rejected->count(),
         ];
-        return view('admin.approval-produk', compact('produks', 'counts', 'status'));
+
+        return view('admin.approval-produk', compact('pending', 'approved', 'rejected', 'counts'));
     }
     public function detailProduk(Produk $produk)
     {
@@ -200,7 +199,8 @@ class AdminController extends Controller
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Produk berhasil disetujui.', 'produk' => $produk]);
         }
-        return back()->with('success', 'Produk berhasil disetujui.');
+        return redirect()->route('admin.approval.produk', ['status' => 'approved'])
+            ->with('success', 'Produk berhasil disetujui.');
     }
     public function rejectProduk(Request $request, Produk $produk)
     {
@@ -214,7 +214,8 @@ class AdminController extends Controller
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Produk berhasil ditolak.']);
         }
-        return back()->with('success', 'Produk telah ditolak.');
+        return redirect()->route('admin.approval.produk', ['status' => 'rejected'])
+            ->with('success', 'Produk telah ditolak.');
     }
 
     // ═════════════════════════════════════════════════════════════════════

@@ -182,20 +182,20 @@
         label.textContent = fileName ? "✓ " + fileName : "";
     }
 
+    const BASE_URL = 'https://www.emsifa.com/api-wilayah-indonesia/api';
+
     const selectProvinsi = document.getElementById('provinsi');
     const selectKota = document.getElementById('kota');
     const selectKecamatan = document.getElementById('kecamatan');
     const selectKelurahan = document.getElementById('kelurahan');
 
     // Ambil Data Provinsi
-    console.log("Sedang mengambil data provinsi...");
-    fetch('/proxy-wilayah/provinsi')
+    fetch(`${BASE_URL}/provinces.json`)
         .then(response => {
             if (!response.ok) throw new Error('Gagal koneksi ke API');
             return response.json();
         })
         .then(provinces => {
-            console.log("Data Provinsi Berhasil Diterima:", provinces);
             provinces.forEach(prov => {
                 let opt = document.createElement('option');
                 opt.value = prov.id;
@@ -215,7 +215,7 @@
         selectKota.innerHTML = '<option value="">Pilih Kabupaten/Kota</option>';
         
         if(id) {
-            fetch(`/proxy-wilayah/kota/${id}`)
+            fetch(`${BASE_URL}/regencies/${id}.json`)
                 .then(res => res.json())
                 .then(data => {
                     data.forEach(item => {
@@ -235,7 +235,7 @@
         selectKecamatan.innerHTML = '<option value="">Pilih Kecamatan</option>';
         
         if(id) {
-            fetch(`/proxy-wilayah/kecamatan/${id}`)
+            fetch(`${BASE_URL}/districts/${id}.json`)
                 .then(res => res.json())
                 .then(data => {
                     data.forEach(item => {
@@ -255,7 +255,7 @@
         selectKelurahan.innerHTML = '<option value="">Pilih Kelurahan</option>';
         
         if(id) {
-            fetch(`/proxy-wilayah/kelurahan/${id}`)
+            fetch(`${BASE_URL}/villages/${id}.json`)
                 .then(res => res.json())
                 .then(data => {
                     data.forEach(item => {

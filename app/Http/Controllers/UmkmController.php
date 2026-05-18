@@ -29,7 +29,7 @@ class UmkmController extends Controller
     
     public function produk(): View
     {
-        $produks = Produk::all();
+        $produks = Produk::where('status', 'approved')->latest()->get();
 
         return view('pages.umkm-produk', [
             'title' => 'Produk UMKM',
@@ -39,8 +39,8 @@ class UmkmController extends Controller
 
     public function produkDetail($id): View
     {
-        $produk  = Produk::findOrFail($id);
-        $lainnya = Produk::where('id', '!=', $id)->take(20)->get();
+        $produk  = Produk::where('status', 'approved')->findOrFail($id);
+        $lainnya = Produk::where('status', 'approved')->where('id', '!=', $id)->take(20)->get();
 
         return view('pages.detail-produk', [
             'title'       => $produk->nama,
@@ -85,7 +85,8 @@ class UmkmController extends Controller
     {
         $this->geocodeBelumAda();
 
-        $produks = Produk::whereNotNull('lat')
+        $produks = Produk::where('status', 'approved')
+            ->whereNotNull('lat')
             ->whereNotNull('lng')
             ->select(['id', 'nama', 'foto','alamat', 'lat', 'lng'])
             ->get();
@@ -113,14 +114,14 @@ class UmkmController extends Controller
     {
         // Geocode produk yang belum punya koordinat
         $this->geocodeBelumAda();
-    
-        // Tampilkan semua produk yang sudah punya koordinat (bukan hanya approved)
-        // agar marker muncul meski status masih pending
-        $produks = Produk::whereNotNull('lat')
+
+        // Hanya tampilkan produk yang sudah diapprove admin
+        $produks = Produk::where('status', 'approved')
+            ->whereNotNull('lat')
             ->whereNotNull('lng')
             ->select(['id', 'nama', 'foto', 'alamat', 'lat', 'lng'])
             ->get();
-    
+
         $data = [];
         foreach ($produks as $p) {
             $data[] = [

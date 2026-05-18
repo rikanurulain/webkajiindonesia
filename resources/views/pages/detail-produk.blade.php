@@ -27,9 +27,15 @@
         <h4 class="font-bold mb-4">{{ $produk->nama }}</h4>
         <div class="rounded-xl overflow-hidden shadow-md">
             {{-- Menampilkan POSTER di sini --}}
-            <img src="{{ asset('storage/produk-pict/' . $produk->foto) }}" 
+            @if($produk->foto_produk)
+            <img src="{{ asset('storage/produk-pict/' . $produk->foto_produk) }}" 
                  class="w-full h-auto" 
                  alt="Poster Usaha">
+            @else
+            <div class="w-full h-64 bg-gray-100 flex items-center justify-center rounded-xl">
+                <span class="text-gray-400 text-sm">Foto belum tersedia</span>
+            </div>
+            @endif
         </div>
     </div>
 </div>
@@ -106,9 +112,9 @@
     <div class="flex flex-col gap-4 max-h-[600px] overflow-y-auto pr-1">
         @foreach ($lainnya as $item)
         <a href="{{ route('produk.show', $item->id) }}" class="flex flex-col items-center gap-2 group">
-            @if ($item->foto)
+            @if ($item->foto_produk)
                 <img
-                    src="{{ asset('storage/produk-pict/' . $item->foto) }}"
+                    src="{{ asset('storage/produk-pict/' . $item->foto_produk) }}"
                     alt="{{ $item->nama }}"
                     class="w-full h-24 object-cover rounded-xl group-hover:opacity-80 transition"
                 >
