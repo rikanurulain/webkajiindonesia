@@ -65,62 +65,73 @@ class Trainerpelatihancontroller extends Controller
     }
 
     public function updateKurikulum(Request $request, $id)
-    {
-        $program = Program::where('id', $id)
-            ->where('trainer_id', Auth::id())
-            ->where('tipe', 'kurikulum')
-            ->firstOrFail();
+{
+    $program = Program::where('id', $id)
+        ->where('trainer_id', Auth::id())
+        ->firstOrFail();
 
-        $request->validate([
-            'judul'           => 'required|string|max:255',
-            'deskripsi'       => 'nullable|string|max:500',
-            'metode'          => 'nullable|in:online,offline,hybrid',
-            'tingkat'         => 'nullable|in:pemula,menengah,lanjut',
-            'bahasa'          => 'nullable|string|max:100',
-            'jumlah_materi'   => 'nullable|integer|min:0',
-            'total_jam'       => 'nullable|numeric|min:0',
-            'jumlah_sesi'     => 'nullable|integer|min:0',
-            'sertifikat'      => 'nullable|in:0,1',
-            'gambar'          => 'nullable|image|max:5120',
-            'phone'           => 'nullable|string|max:20',
-            // ✅ TAMBAHAN: validasi absensi di update
-            'absensi_aktif'   => 'nullable',
-            'absensi_mulai'   => 'nullable|date',
-            'absensi_selesai' => 'nullable|date|after:absensi_mulai',
-            'absensi_url'     => 'nullable|url|max:500',
+    // Jika sudah approved — hanya update alamat & phone saja
+    if ($program->status === 'approved') {
+        $program->update([
+            'alamat' => $request->alamat,
+            'phone'  => $request->phone,
         ]);
 
-        // ✅ TAMBAHAN: sama seperti store
-        $absensiAktif = $request->input('absensi_aktif') == '1';
-
-        $data = [
-            'judul'           => $request->judul,
-            'deskripsi'       => $request->deskripsi,
-            'metode'          => $request->metode,
-            'tingkat'         => $request->tingkat,
-            'bahasa'          => $request->bahasa ?? 'Bahasa Indonesia',
-            'jumlah_materi'   => $request->jumlah_materi,
-            'total_jam'       => $request->total_jam,
-            'jumlah_sesi'     => $request->jumlah_sesi,
-            'phone'           => $request->phone,
-            'sertifikat'      => $request->sertifikat ?? 0,
-            // ✅ TAMBAHAN: absensi masuk ke update
-            'absensi_aktif'   => $absensiAktif,
-            'absensi_mulai'   => $absensiAktif ? $request->absensi_mulai   : null,
-            'absensi_selesai' => $absensiAktif ? $request->absensi_selesai : null,
-            'absensi_url'     => $absensiAktif ? $request->absensi_url     : null,
-        ];
-
-        if ($request->hasFile('gambar')) {
-            $data['gambar'] = $request->file('gambar')->store('programs', 'public');
-        }
-
-        $program->update($data);
-
-        return redirect()->back()
-            ->with('success', 'Kurikulum berhasil diperbarui.')
+        return redirect()->route('trainer.dashboard')
+            ->with('success', 'Alamat lokasi berhasil diperbarui.')
             ->with('active_page', 'program');
     }
+
+    // Untuk pending/rejected — update semua field
+    $request->validate([
+        'judul'          => 'required|string|max:255',
+        'deskripsi'      => 'nullable|string|max:500',
+        'metode'         => 'nullable|in:online,offline,hybrid',
+        'tingkat'        => 'nullable|in:pemula,menengah,lanjut',
+        'bahasa'         => 'nullable|string|max:100',
+        'jumlah_materi'  => 'nullable|integer|min:0',
+        'total_jam'      => 'nullable|numeric|min:0',
+        'jumlah_sesi'    => 'nullable|integer|min:0',
+        'sertifikat'     => 'nullable|in:0,1',
+        'gambar'         => 'nullable|image|max:5120',
+        'phone'          => 'nullable|string|max:20',
+        'absensi_aktif'  => 'nullable',
+        'absensi_mulai'  => 'nullable|date',
+        'absensi_selesai'=> 'nullable|date|after:absensi_mulai',
+        'absensi_url'    => 'nullable|url|max:500',
+        'alamat'         => 'nullable|string|max:500',
+    ]);
+
+    $absensiAktif = $request->input('absensi_aktif') == '1';
+
+    $data = [
+        'judul'          => $request->judul,
+        'deskripsi'      => $request->deskripsi,
+        'metode'         => $request->metode,
+        'tingkat'        => $request->tingkat,
+        'bahasa'         => $request->bahasa ?? 'Bahasa Indonesia',
+        'jumlah_materi'  => $request->jumlah_materi,
+        'total_jam'      => $request->total_jam,
+        'jumlah_sesi'    => $request->jumlah_sesi,
+        'phone'          => $request->phone,
+        'sertifikat'     => $request->sertifikat ?? 0,
+        'alamat'         => $request->alamat,
+        'absensi_aktif'  => $absensiAktif,
+        'absensi_mulai'  => $absensiAktif ? $request->absensi_mulai   : null,
+        'absensi_selesai'=> $absensiAktif ? $request->absensi_selesai : null,
+        'absensi_url'    => $absensiAktif ? $request->absensi_url     : null,
+    ];
+
+    if ($request->hasFile('gambar')) {
+        $data['gambar'] = $request->file('gambar')->store('programs', 'public');
+    }
+
+    $program->update($data);
+
+    return redirect()->back()
+        ->with('success', 'Kurikulum berhasil diperbarui.')
+        ->with('active_page', 'program');
+}
 
     // updateModul, storeModul, destroy — tidak perlu diubah
     public function updateModul(Request $request, $id)
