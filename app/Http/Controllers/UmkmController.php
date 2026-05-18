@@ -15,23 +15,17 @@ use Illuminate\Support\Facades\Log;
 class UmkmController extends Controller
 {
     public function index(): View
-{
-    // 1. Ambil data Member & Team (jika memang diperlukan)
-    $members = Member::all();
-    $teams = Team::all();
-
-    // 2. AMBIL DATA PRODUK UMKM (Hanya yang sudah disetujui admin)
-    // Gunakan where status = approved agar Risol Rika (pending) tidak muncul
-    $produks = \App\Models\Produk::where('status', 'approved')->get();
-    
-    return view('pages.umkm', [
-        'title' => 'UMKM',
-        'metaDescription' => 'Pendampingan dan penguatan kapasitas UMKM oleh Kaji Indonesia.',
-        'members' => $members,
-        'teams' => $teams,
-        'produks' => $produks, 
-    ]);
-}
+    {
+        $members = Member::all();
+        $teams = Team::all();
+        
+        return view('pages.umkm', [
+            'title' => 'UMKM',
+            'metaDescription' => 'Pendampingan dan penguatan kapasitas UMKM oleh Kaji Indonesia.',
+            'members' => $members,
+            'teams' => $teams,
+        ]);
+    }
     
     public function produk(): View
     {
@@ -57,22 +51,22 @@ class UmkmController extends Controller
     }
 
     public function pembimbing(): View
-{
-    // Ambil mentor yang sudah disetujui admin dari tabel mentor
-    $mentors = Mentor::where('status', 'approved')->paginate(12);
+    {
+        // Ambil dari tabel mentor (bukan users) — mentor yang sudah disetujui admin
+        $trainers = Mentor::where('status', 'approved')
+            ->latest('reviewed_at')
+            ->paginate(12);
 
-    return view('pages.umkm-pembimbing', [
-        'title' => 'Pembimbing UMKM',
-        'metaDescription' => 'Tim pembimbing UMKM yang berpengalaman di Kaji Indonesia.',
-        'mentors' => $mentors,
-    ]);
-}
+        return view('pages.umkm-pembimbing', [
+            'title'           => 'Pembimbing UMKM',
+            'metaDescription' => 'Tim pembimbing UMKM yang berpengalaman di Kaji Indonesia.',
+            'trainers'        => $trainers,
+        ]);
+    }
 
     public function showMentor($id)
     {
-        // Mengambil detail mentor dari model Mentor
         $mentor = Mentor::where('status', 'approved')->findOrFail($id);
-        
         return view('pages.detail-pembimbing', compact('mentor'));
     }
 
@@ -117,11 +111,13 @@ class UmkmController extends Controller
 
     public function petaData()
     {
+        // Geocode produk yang belum punya koordinat
         $this->geocodeBelumAda();
     
+        // Tampilkan semua produk yang sudah punya koordinat (bukan hanya approved)
+        // agar marker muncul meski status masih pending
         $produks = Produk::whereNotNull('lat')
             ->whereNotNull('lng')
-            ->where('status', 'approved')
             ->select(['id', 'nama', 'foto', 'alamat', 'lat', 'lng'])
             ->get();
     
@@ -142,32 +138,76 @@ class UmkmController extends Controller
 
     // ─────────────────────────────────────────────────────────
     // API endpoint — kembalikan data Mentor sebagai JSON untuk peta
-    // Koordinat di-cache per mentor (tidak butuh kolom lat/lng di DB)
+    // Koordinat di-cache per mentor via Nominatim (tanpa perlu kolom lat/lng di DB)
     // ─────────────────────────────────────────────────────────
     public function petaDataMentor()
     {
-        $mentors = Mentor::where('status', 'approved')
-            ->whereNotNull('lokasi')
-            ->select(['id', 'nama', 'full_name', 'white_bg_photo', 'lokasi', 'gmaps_location'])
+        // Ambil semua mentor yang SUDAH DISETUJUI dan punya minimal satu info lokasi
+        $mentors = Mentor::select([
+                'id', 'nama', 'full_name', 'white_bg_photo', 'foto',
+                'lokasi', 'gmaps_location', 'provinsi', 'kabupaten', 'kecamatan',
+                'lat', 'lng',
+                'phone', 'role', 'status',
+            ])
+            ->where('status', 'approved')
+            ->where(function ($q) {
+                $q->whereNotNull('gmaps_location')
+                  ->orWhereNotNull('lokasi')
+                  ->orWhereNotNull('provinsi');
+            })
             ->get();
 
         $data = [];
         foreach ($mentors as $m) {
-            // Gunakan gmaps_location jika ada, fallback ke lokasi
-            $alamat = $m->gmaps_location ?: $m->lokasi;
-            if (!$alamat) continue;
+            // ── Alamat untuk DITAMPILKAN di popup ─────────────────────────
+            // Prioritas: gmaps_location (alamat lengkap dari user) > gabungan wilayah
+            $wilayah = trim(implode(', ', array_filter([$m->kecamatan, $m->kabupaten, $m->provinsi])));
+            $alamatTampil = $m->gmaps_location ?: ($wilayah ?: $m->lokasi);
 
-            $koordinat = $this->geocodeAlamat($alamat);
+            // Pastikan alamat tampil bukan koordinat (angka seperti "-7.123, 112.456")
+            if ($alamatTampil && preg_match('/^-?\d+\.\d+\s*,\s*-?\d+\.\d+$/', trim($alamatTampil))) {
+                $alamatTampil = $wilayah ?: null;
+            }
+
+            // ── Alamat untuk GEOCODING (mencari koordinat) ────────────────
+            // Prioritas: gmaps_location > lokasi > wilayah administratif
+            // Hindari geocoding string koordinat mentah
+            $alamatGeocode = null;
+            foreach ([$m->gmaps_location, $wilayah, $m->lokasi] as $kandidat) {
+                if (!$kandidat) continue;
+                // Lewati jika isinya koordinat angka
+                if (preg_match('/^-?\d+\.\d+\s*,\s*-?\d+\.\d+$/', trim($kandidat))) continue;
+                $alamatGeocode = $kandidat;
+                break;
+            }
+
+            if (!$alamatGeocode) continue;
+
+            // Gunakan lat/lng tersimpan di DB jika ada, geocode jika belum
+            if ($m->lat && $m->lng) {
+                $koordinat = ['lat' => (float) $m->lat, 'lng' => (float) $m->lng];
+            } else {
+                $koordinat = $this->geocodeAlamat($alamatGeocode);
+                if ($koordinat) {
+                    // Simpan ke DB agar tidak geocode ulang tiap request
+                    $m->update(['lat' => $koordinat['lat'], 'lng' => $koordinat['lng']]);
+                }
+            }
+
             if (!$koordinat) continue;
 
-            $fotoPath = $m->white_bg_photo
-                ? asset('storage/' . $m->white_bg_photo)
-                : null;
+            // Foto: utamakan white_bg_photo, fallback foto
+            $fotoPath = null;
+            if ($m->white_bg_photo) {
+                $fotoPath = asset('storage/' . $m->white_bg_photo);
+            } elseif ($m->foto) {
+                $fotoPath = asset('storage/pembimbing/' . $m->foto);
+            }
 
             $data[] = [
                 'id'     => $m->id,
                 'nama'   => $m->full_name ?: $m->nama,
-                'lokasi' => $alamat,
+                'lokasi' => $alamatTampil, // alamat yang ditampilkan di popup
                 'foto'   => $fotoPath,
                 'lat'    => $koordinat['lat'],
                 'lng'    => $koordinat['lng'],
@@ -179,12 +219,13 @@ class UmkmController extends Controller
 
     private function geocodeBelumAda(): void
     {
-       $belum = Produk::whereNull('lat')
-       ->whereNull('lng')
-       ->whereNotNull('alamat')
-       ->get();
+        $belum = Produk::whereNull('lat')
+            ->whereNull('lng')
+            ->whereNotNull('alamat')
+            ->where('alamat', '!=', '')
+            ->get();
 
-       foreach ($belum as $produk) {
+        foreach ($belum as $produk) {
             $koordinat = $this->geocodeAlamat($produk->alamat);
             if ($koordinat) {
                 $produk->update([
@@ -192,15 +233,38 @@ class UmkmController extends Controller
                     'lng' => $koordinat['lng'],
                 ]);
             }
-            sleep(1);
-       }
+            // Jeda singkat agar tidak rate-limit Nominatim
+            usleep(500000); // 0.5 detik
+        }
+    }
+
+    /**
+     * Validasi apakah koordinat berada di dalam wilayah Indonesia
+     * (batas kasar: lat -11 s/d 6, lng 95 s/d 141)
+     */
+    private function koordinatValid(float $lat, float $lng): bool
+    {
+        return $lat >= -11 && $lat <= 6 && $lng >= 95 && $lng <= 141;
     }
 
     private function geocodeAlamat(string $alamat): ?array
     {
-        $cacheKey = 'geocode_osm_' . md5($alamat);
- 
-        return Cache::remember($cacheKey, now()->addDays(30), function () use ($alamat) {
+        // Tolak jika input adalah koordinat mentah (bukan alamat teks)
+        if (preg_match('/^-?\d+\.\d+\s*,\s*-?\d+\.\d+$/', trim($alamat))) {
+            return null;
+        }
+
+        // Coba beberapa versi alamat dari spesifik ke umum
+        $kandidat = $this->sederhanakAlamat($alamat);
+
+        foreach ($kandidat as $query) {
+            $cacheKey = 'geocode_osm_' . md5($query);
+
+            $cached = Cache::get($cacheKey);
+            if ($cached !== null) {
+                return $cached;
+            }
+
             try {
                 $response = Http::timeout(8)
                     ->withHeaders([
@@ -208,25 +272,79 @@ class UmkmController extends Controller
                         'Accept-Language' => 'id,en',
                     ])
                     ->get('https://nominatim.openstreetmap.org/search', [
-                        'q'            => $alamat . ', Indonesia',
+                        'q'            => $query . ', Indonesia',
                         'format'       => 'json',
                         'limit'        => 1,
                         'countrycodes' => 'id',
                     ]);
- 
+
                 $hasil = $response->json();
- 
+
                 if (!empty($hasil)) {
-                    return [
-                        'lat' => (float) $hasil[0]['lat'],
-                        'lng' => (float) $hasil[0]['lon'],
-                    ];
+                    $lat = (float) $hasil[0]['lat'];
+                    $lng = (float) $hasil[0]['lon'];
+
+                    // Pastikan koordinat masuk akal untuk Indonesia
+                    if (!$this->koordinatValid($lat, $lng)) {
+                        usleep(300000);
+                        continue;
+                    }
+
+                    $koordinat = ['lat' => $lat, 'lng' => $lng];
+                    Cache::put($cacheKey, $koordinat, now()->addDays(30));
+                    return $koordinat;
                 }
-                return null;
+
+                usleep(300000); // 0.3 detik jeda antar percobaan
+
             } catch (\Exception $e) {
-                Log::error("Geocode error: " . $e->getMessage());
-                return null;
+                Log::error("Geocode error untuk '$query': " . $e->getMessage());
             }
-        });
+        }
+
+        return null;
+    }
+
+    /**
+     * Buat daftar query dari alamat lengkap → makin sederhana
+     * Contoh: "Jl. Rungkut Madya 60294 Gunung Anyar Jawa Timur"
+     * → ["Jl. Rungkut Madya Gunung Anyar Jawa Timur",
+     *    "Gunung Anyar Jawa Timur",
+     *    "Jawa Timur"]
+     */
+    private function sederhanakAlamat(string $alamat): array
+    {
+        $kandidat = [];
+
+        // 1. Hilangkan kode pos (5 digit angka) dari alamat asli
+        $tanpaKodePos = trim(preg_replace('/\b\d{5}\b/', '', $alamat));
+        $tanpaKodePos = preg_replace('/\s+/', ' ', $tanpaKodePos);
+        if ($tanpaKodePos && $tanpaKodePos !== $alamat) {
+            $kandidat[] = $tanpaKodePos;
+        }
+
+        // 2. Alamat asli
+        $kandidat[] = $alamat;
+
+        // 3. Ambil kata-kata terakhir (kecamatan + kota + provinsi)
+        $bagian = array_filter(array_map('trim', explode(',', $alamat)));
+        if (count($bagian) >= 2) {
+            // Ambil 2 bagian terakhir
+            $kandidat[] = implode(', ', array_slice($bagian, -2));
+        }
+
+        // 4. Ambil bagian terakhir saja (biasanya provinsi/kota)
+        $kata = array_filter(array_map('trim', preg_split('/[\s,]+/', $alamat)));
+        if (count($kata) >= 3) {
+            // Ambil 3 kata terakhir
+            $kandidat[] = implode(' ', array_slice($kata, -3));
+        }
+        if (count($kata) >= 2) {
+            // Ambil 2 kata terakhir
+            $kandidat[] = implode(' ', array_slice($kata, -2));
+        }
+
+        // Hapus duplikat dan kosong
+        return array_values(array_unique(array_filter($kandidat)));
     }
 }

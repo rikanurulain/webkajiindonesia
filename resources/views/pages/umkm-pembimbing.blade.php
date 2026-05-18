@@ -31,42 +31,36 @@
                 </span>
                 <input type="text" id="searchInput" placeholder="Cari nama atau lokasi..." class="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-green-300">
             </div>
-            <select id="filterRole" class="px-4 py-2.5 border border-gray-300 rounded-full text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
-                <option value="">Semua Bidang</option>
-                <option value="Pendamping">BNSP Pendamping UMKM</option>
-                <option value="Digital Marketing">BNSP Digital Marketing</option>
-            </select>
         </div>
     
         {{-- Grid Kartu Mentor --}}
         <div class="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="pembimbingGrid">
 
-            @forelse($mentors as $m)
-                <a href="{{ route('pelatihan.mentor.detail', $m->id) }}"
+            @forelse($trainers as $m)
+                <a href="{{ route('umkm.mentor.detail', $m->id) }}"
                     class="pembimbing-card block bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition duration-300"
-                    data-nama="{{ strtolower($m->full_name ?? "ME") }}"
-                    data-lokasi="{{ strtolower($m->lokasi ?? $m->gmaps_location ?? "") }}"
-                    data-role="{{ strtolower($m->role ?? "") }}">
+                    data-nama="{{ strtolower($m->full_name ?? $m->nama) }}"
+                    data-lokasi="{{ strtolower($m->alamat_tampil ?? '') }}">
                     
                     {{-- Foto --}}
                     <div class="w-full h-44 bg-gray-100 flex items-center justify-center overflow-hidden">
                         @if ($m->white_bg_photo)
-                            <img src="{{ asset('storage/' . $m->white_bg_photo) }}" alt="{{ $m->full_name }}" class="w-full h-full object-cover">
+                            <img src="{{ asset('storage/' . $m->white_bg_photo) }}" alt="{{ $m->full_name ?? $m->nama }}" class="w-full h-full object-cover">
                         @else
                             <div class="text-3xl font-bold text-emerald-700">
-                                {{ strtoupper(substr($m->name, 0, 2)) }}
+                                {{ strtoupper(substr($m->full_name ?? $m->nama ?? 'M', 0, 2)) }}
                             </div>
                         @endif
                     </div>
 
                     {{-- Info --}}
                     <div class="bg-green-50 px-4 py-2 border-b">
-                        <h3 class="font-bold text-gray-900 text-sm line-clamp-1">{{ $m->full_name ?? "Mentor" }}</h3>
+                        <h3 class="font-bold text-gray-900 text-sm line-clamp-1">{{ $m->full_name ?? $m->nama }}</h3>
                         <p class="text-xs text-emerald-600 font-bold uppercase">{{ $m->role ?? 'Mentor' }}</p>
                     </div>
 
                     <div class="px-4 py-3 text-gray-600">
-                        <p class="text-xs mb-2">{{ $m->lokasi ?? $m->gmaps_location ?? "Lokasi tidak tersedia" }}</p>
+                        <p class="text-xs mb-2">{{ $m->alamat_tampil ?? 'Lokasi tidak tersedia' }}</p>
                         <div class="flex items-center gap-1 text-amber-400">
                             @for ($i = 1; $i <= 5; $i++)
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
@@ -86,35 +80,27 @@
 
         {{-- Pagination --}}
         <div class="mt-10 max-w-5xl mx-auto text-center">
-            {{ $mentors->links() }}
+            {{ $trainers->links() }}
         </div>
     </section>
 
-    {{-- Script Search & Filter --}}
+    {{-- Script Search --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('searchInput');
-            const filterRole  = document.getElementById('filterRole');
             const cards       = document.querySelectorAll('.pembimbing-card');
 
             function filterCards() {
                 const keyword = searchInput.value.toLowerCase();
-                const role    = filterRole.value.toLowerCase();
-
                 cards.forEach(card => {
-                    const nama    = card.dataset.nama || '';
-                    const lokasi  = card.dataset.lokasi || '';
-                    const cardRole = card.dataset.role || '';
-
-                    const matchSearch = nama.includes(keyword) || lokasi.includes(keyword);
-                    const matchRole   = role === '' || cardRole.includes(role);
-
-                    card.style.display = (matchSearch && matchRole) ? 'block' : 'none';
+                    const nama   = card.dataset.nama   || '';
+                    const lokasi = card.dataset.lokasi || '';
+                    const match  = nama.includes(keyword) || lokasi.includes(keyword);
+                    card.style.display = match ? 'block' : 'none';
                 });
             }
 
             searchInput.addEventListener('input', filterCards);
-            filterRole.addEventListener('change', filterCards);
         });
     </script>
 @endsection

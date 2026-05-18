@@ -191,7 +191,7 @@
 const API_UMKM_URL   = '{{ route("umkm.peta-data") }}';
 const API_MENTOR_URL = '{{ route("umkm.peta-data-mentor") }}';
 const DETAIL_URL     = '{{ url("/produk") }}';
-const MENTOR_URL     = '{{ url("/umkm/pembimbing") }}';
+const MENTOR_DETAIL_URL = '{{ url("/umkm/pembimbing") }}';
 
 const map = L.map('map').setView([-2.5, 118], 5);
 
@@ -300,13 +300,15 @@ function buatPopupMentor(mentor) {
         ? `<div class="popup-alamat">📍 ${escHtml(mentor.lokasi)}</div>`
         : '';
 
+    const detailUrl = MENTOR_DETAIL_URL + '/' + mentor.id;
+
     return `
         ${foto}
         <div class="popup-body">
             <div class="popup-badge-mentor">MENTOR</div>
             <div class="popup-nama">${escHtml(mentor.nama)}</div>
             ${lokasi}
-            <a class="popup-btn-mentor" href="${MENTOR_URL}">Lihat Semua Mentor →</a>
+            <a class="popup-btn-mentor" href="${detailUrl}">Lihat Detail →</a>
         </div>`;
 }
 

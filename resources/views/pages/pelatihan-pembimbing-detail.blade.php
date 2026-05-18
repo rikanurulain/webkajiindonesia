@@ -260,7 +260,7 @@
                 <h3 class="font-serif text-lg font-bold text-gray-900 mb-4 pb-3 border-b border-gray-100">
                     Tulis Ulasan
                 </h3>
-                <form action="{{ route('pelatihan.mentor.ulasan.trainer', $trainer->id) }}" method="POST">
+                <form action="{{ route('pelatihan.mentor.ulasan', $trainer->id) }}" method="POST">
                     @csrf
 
                     {{-- Rating bintang interaktif --}}

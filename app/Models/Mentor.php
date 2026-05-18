@@ -43,6 +43,33 @@ class Mentor extends Model
         'agree_terms' => 'boolean',
     ];
 
+    /**
+     * Mengembalikan alamat yang layak ditampilkan ke publik.
+     * Prioritas: gmaps_location > wilayah (kecamatan/kabupaten/provinsi) > lokasi
+     * Lewati jika isinya koordinat angka mentah (e.g. "-7.2575, 112.7521")
+     */
+    public function getAlamatTampilAttribute(): ?string
+    {
+        $isKoordinat = fn($s) => $s && preg_match('/^-?\d+\.\d+\s*,\s*-?\d+\.\d+$/', trim($s));
+
+        if ($this->gmaps_location && !$isKoordinat($this->gmaps_location)) {
+            return $this->gmaps_location;
+        }
+
+        $wilayah = trim(implode(', ', array_filter([
+            $this->kecamatan,
+            $this->kabupaten,
+            $this->provinsi,
+        ])));
+        if ($wilayah) return $wilayah;
+
+        if ($this->lokasi && !$isKoordinat($this->lokasi)) {
+            return $this->lokasi;
+        }
+
+        return null;
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

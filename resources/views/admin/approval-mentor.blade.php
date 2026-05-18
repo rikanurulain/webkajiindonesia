@@ -7,19 +7,19 @@
 
 {{-- Tab Bar --}}
 <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('pending', this)">
+    <button class="tab-btn active" data-tab="pending" onclick="switchTab('pending', this)">
         Menunggu
         @if($stats['pending'] > 0)
             <span class="count-pill">{{ $stats['pending'] }}</span>
         @endif
     </button>
-    <button class="tab-btn" onclick="switchTab('approved', this)">
+    <button class="tab-btn" data-tab="approved" onclick="switchTab('approved', this)">
         Disetujui
         @if($stats['approved'] > 0)
             <span class="count-pill" style="background:var(--accent);">{{ $stats['approved'] }}</span>
         @endif
     </button>
-    <button class="tab-btn" onclick="switchTab('rejected', this)">
+    <button class="tab-btn" data-tab="rejected" onclick="switchTab('rejected', this)">
         Ditolak
         @if($stats['rejected'] > 0)
             <span class="count-pill" style="background:#9ca3af;">{{ $stats['rejected'] }}</span>
@@ -93,7 +93,7 @@
                                     </svg>
                                     Detail
                                 </button>
-                                <form method="POST" action="{{ route('admin.approval.mentor.approve', $item) }}" style="display:inline;">
+                                <form method="POST" action="{{ route('admin.approval.mentor.approve', $item) }}?tab=approved" style="display:inline;">
                                     @csrf
                                     <button type="submit" class="btn btn-approve btn-sm">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -388,13 +388,28 @@
 <script>
 const mentorData = @json($pending->merge($approved)->merge($rejected)->keyBy('id'));
 
+// Pertahankan tab aktif setelah page reload
 function switchTab(tab, btn) {
     ['pending','approved','rejected'].forEach(t => {
         document.getElementById('tab-' + t).style.display = t === tab ? 'block' : 'none';
     });
     btn.closest('.tab-bar').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    // Simpan ke URL agar persist setelah reload
+    const url = new URL(window.location);
+    url.searchParams.set('tab', tab);
+    window.history.replaceState({}, '', url);
 }
+
+// Auto-buka tab dari URL ?tab= (atau dari flash session)
+document.addEventListener('DOMContentLoaded', function () {
+    const params = new URLSearchParams(window.location.search);
+    const activeTab = params.get('tab') || 'pending';
+    const tabBtn = document.querySelector(`.tab-btn[data-tab="${activeTab}"]`);
+    if (tabBtn) {
+        switchTab(activeTab, tabBtn);
+    }
+});
 
 function openDetailModal(id) {
     const d = mentorData[id];
@@ -436,7 +451,7 @@ function openDetailModal(id) {
 
 function openRejectModal(id, name) {
     document.getElementById('reject-name').textContent = name;
-    document.getElementById('reject-form').action = `/admin/approval/mentor/${id}/reject`;
+    document.getElementById('reject-form').action = `/admin/approval/mentor/${id}/reject?tab=rejected`;
     openModal('modal-reject');
 }
 </script>

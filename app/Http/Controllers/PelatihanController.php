@@ -8,7 +8,7 @@ use App\Models\Trainer;
 use App\Models\UlasanPembimbing;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use App\Models\Mentor;
+// use App\Models\Mentor;
 use App\Models\Program;
 
 class PelatihanController extends Controller
