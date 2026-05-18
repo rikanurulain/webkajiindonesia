@@ -277,16 +277,19 @@
                 <h2 class="font-serif font-bold text-gray-900 text-xl mb-4 pb-3 border-b border-gray-100">Informasi Pelatihan</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     @php
-                    $infoRows = [
-                        ['Metode',         $metode],
-                        ['Tingkat',        $tingkat],
-                        ['Bahasa',         $bahasa],
-                        ['Target Peserta', $target],
-                        ['Penyelenggara',  $trainerGelar ?? 'KAJI INDONESIA'],
-                    ];
-                    if ($isDB && $tanggal)    $infoRows[] = ['Tanggal', $tanggal];
-                    if ($isDB && $jumlahSesi) $infoRows[] = ['Jumlah Sesi', $jumlahSesi];
-                    if (!$isDB)               $infoRows[] = ['Durasi', $totalJam];
+                    $alamat = $isDB ? ($program->alamat ?? null) : null;
+
+$infoRows = [
+    ['Metode',         $metode],
+    ['Tingkat',        $tingkat],
+    ['Bahasa',         $bahasa],
+    ['Target Peserta', $target],
+    ['Penyelenggara',  $trainerGelar ?? 'KAJI INDONESIA'],
+];
+if ($isDB && $tanggal)    $infoRows[] = ['Tanggal', $tanggal];
+if ($isDB && $jumlahSesi) $infoRows[] = ['Jumlah Sesi', $jumlahSesi];
+if ($isDB && $alamat)     $infoRows[] = ['Alamat Lokasi', $alamat];
+if (!$isDB)               $infoRows[] = ['Durasi', $totalJam];
                     @endphp
                     @foreach($infoRows as [$lbl, $val])
                     <div>

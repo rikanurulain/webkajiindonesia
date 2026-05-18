@@ -129,146 +129,28 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 .btn-icon-danger:hover { background: #fff0ed; border-color: var(--accent2); color: var(--accent2) !important; }
 
 /* ============ ABSENSI STYLES ============ */
-.absensi-bar {
-    border: 1px solid var(--border);
-    border-top: none;
-    background: linear-gradient(135deg, #f0f9f4 0%, #fafffe 100%);
-    padding: 14px 20px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-.absensi-bar.absensi-active {
-    background: linear-gradient(135deg, #e8f5e9 0%, #f0fff4 100%);
-    border-color: #a7d7c5;
-}
-.absensi-bar.absensi-upcoming {
-    background: linear-gradient(135deg, #fffbea 0%, #fffdf5 100%);
-    border-color: #fcd34d66;
-}
-.absensi-bar.absensi-ended {
-    background: var(--surface2);
-    border-color: var(--border);
-    opacity: 0.8;
-}
-
-/* Tombol Absensi untuk Peserta (tampil publik) */
-.btn-absensi-live {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    text-decoration: none;
-    animation: pulse-green 2s infinite;
-    transition: all .2s;
-}
+.absensi-bar { border: 1px solid var(--border); border-top: none; background: linear-gradient(135deg, #f0f9f4 0%, #fafffe 100%); padding: 14px 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.absensi-bar.absensi-active { background: linear-gradient(135deg, #e8f5e9 0%, #f0fff4 100%); border-color: #a7d7c5; }
+.absensi-bar.absensi-upcoming { background: linear-gradient(135deg, #fffbea 0%, #fffdf5 100%); border-color: #fcd34d66; }
+.absensi-bar.absensi-ended { background: var(--surface2); border-color: var(--border); opacity: 0.8; }
+.btn-absensi-live { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; text-decoration: none; animation: pulse-green 2s infinite; transition: all .2s; }
 .btn-absensi-live:hover { background: #1f4e37; transform: translateY(-1px); }
-@keyframes pulse-green {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(45,106,79,.4); }
-    50%       { box-shadow: 0 0 0 6px rgba(45,106,79,0); }
-}
-
-.absensi-countdown {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-weight: 600;
-}
-.countdown-timer {
-    font-size: 13px;
-    font-weight: 800;
-    font-family: 'Courier New', monospace;
-    letter-spacing: 1px;
-    color: var(--accent);
-    background: var(--accent-light);
-    padding: 4px 10px;
-    border-radius: 6px;
-    border: 1px solid #a7d7c566;
-}
+@keyframes pulse-green { 0%, 100% { box-shadow: 0 0 0 0 rgba(45,106,79,.4); } 50% { box-shadow: 0 0 0 6px rgba(45,106,79,0); } }
+.absensi-countdown { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; }
+.countdown-timer { font-size: 13px; font-weight: 800; font-family: 'Courier New', monospace; letter-spacing: 1px; color: var(--accent); background: var(--accent-light); padding: 4px 10px; border-radius: 6px; border: 1px solid #a7d7c566; }
 .countdown-timer.warning { color: #b45309; background: #fffbea; border-color: #fcd34d66; }
 .countdown-timer.upcoming { color: #b45309; background: #fffbea; border-color: #fcd34d66; }
-
-.absensi-label {
-    font-size: 12px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-.absensi-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: blink 1s infinite;
-}
+.absensi-label { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.absensi-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: blink 1s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-
-.absensi-schedule-info {
-    font-size: 11px;
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-/* Tag dalam form */
-.form-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: #e3f0fa;
-    color: var(--accent3);
-    border: 1px solid #bdd5ea;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
+.absensi-schedule-info { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
 
 /* Toggle absensi dalam form */
-.absensi-toggle-section {
-    background: var(--surface2);
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 0;
-}
-.absensi-toggle-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 16px;
-    cursor: pointer;
-    user-select: none;
-    transition: background .15s;
-}
+.absensi-toggle-section { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 0; }
+.absensi-toggle-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; cursor: pointer; user-select: none; transition: background .15s; }
 .absensi-toggle-header:hover { background: var(--border); }
-.absensi-toggle-header-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text);
-}
-.absensi-toggle-body {
-    display: none;
-    padding: 16px;
-    border-top: 1px solid var(--border);
-    background: var(--surface);
-}
+.absensi-toggle-header-left { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; color: var(--text); }
+.absensi-toggle-body { display: none; padding: 16px; border-top: 1px solid var(--border); background: var(--surface); }
 .absensi-toggle-body.open { display: block; }
 
 /* Switch toggle */
@@ -303,7 +185,8 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 .radio-option label { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; background: var(--surface2); color: var(--text-muted); }
 .radio-option input[type="radio"]:checked + label { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
 
-.upload-area { position: relative; width: 100%; min-height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 24px; border: 2px dashed #2d6a4f66; border-radius: 14px; background: #faf8f5; text-align: center; cursor: pointer; transition: all .2s; }.upload-area:hover { background: #eef8f1; border-color: var(--accent); }
+.upload-area { position: relative; width: 100%; min-height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 24px; border: 2px dashed #2d6a4f66; border-radius: 14px; background: #faf8f5; text-align: center; cursor: pointer; transition: all .2s; }
+.upload-area:hover { background: #eef8f1; border-color: var(--accent); }
 .upload-area .upload-icon { font-size: 36px; line-height: 1; }
 .upload-area .upload-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 .upload-area .upload-text span { color: var(--accent); font-weight: 700; }
@@ -340,15 +223,15 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-.btn-resubmit {
-    animation: pulse-orange 2s infinite;
-}
-@keyframes pulse-orange {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(231,111,81,.3); }
-    50%       { box-shadow: 0 0 0 4px rgba(231,111,81,0); }
-}
+.btn-resubmit { animation: pulse-orange 2s infinite; }
+@keyframes pulse-orange { 0%, 100% { box-shadow: 0 0 0 0 rgba(231,111,81,.3); } 50% { box-shadow: 0 0 0 4px rgba(231,111,81,0); } }
 
-
+/* ============ ALAMAT GROUP ============ */
+/* Selalu tampil, tidak disembunyikan agar selalu terkirim */
+#k-alamat-group { display: block; }
+#k-alamat-group.hidden-alamat {
+    display: none !important;
+}
 </style>
 </head>
 <body>
@@ -527,10 +410,8 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             @foreach($kurikulumList as $k)
             @php
                 $modulDalamK = $modulList->where('kurikulum_id', $k->id)->sortBy('urutan');
-
-                // Absensi state
                 $absensiAktif   = !empty($k->absensi_mulai) && !empty($k->absensi_selesai) && $k->absensi_aktif;
-                $absensiMulai   = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_mulai, config('app.timezone'))   : null;
+                $absensiMulai   = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_mulai, config('app.timezone')) : null;
                 $absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, config('app.timezone')) : null;
                 $absensiUrl     = $k->absensi_url ?? '#';
                 $now            = \Carbon\Carbon::now();
@@ -540,8 +421,6 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                     elseif ($now->between($absensiMulai, $absensiSelesai)) $statusAbsensi = 'active';
                     else                                                   $statusAbsensi = 'ended';
                 }
-
-                // PATCH 1: Hitung jumlah absensi
                 $jumlahAbsensi = \App\Models\AbsensiPeserta::where('pelatihan_id', $k->id)->count();
             @endphp
             <div class="kurikulum-block">
@@ -549,9 +428,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                     <div style="width:42px;height:42px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden;">
                         @if($k->gambar)
                             <img src="{{ asset('storage/'.$k->gambar) }}" style="width:100%;height:100%;object-fit:cover;">
-                        @else
-                            📚
-                        @endif
+                        @else 📚 @endif
                     </div>
                     <div style="flex:1">
                         <div class="k-title">{{ $k->judul }}</div>
@@ -562,6 +439,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                             @if($k->sertifikat) <span>🏆 Sertifikat</span> @endif
                             @if($k->tingkat) <span>{{ ucfirst($k->tingkat) }}</span> @endif
                             @if($k->metode) <span>{{ ucfirst($k->metode) }}</span> @endif
+                            @if($k->alamat) <span>📍 {{ Str::limit($k->alamat, 30) }}</span> @endif
                         </div>
                     </div>
                     <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
@@ -573,24 +451,15 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                             <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
                         @endif
 
-                        {{-- PATCH 1: Tombol 👥 Absensi --}}
-                        <button class="btn btn-sm"
-                            style="background:#e8f5e9;color:#2d6a4f;border:1.5px solid #a7d7c5;
-                                   font-weight:700;gap:6px;flex-shrink:0"
+                        <button class="btn btn-sm" style="background:#e8f5e9;color:#2d6a4f;border:1.5px solid #a7d7c5;font-weight:700;gap:6px;flex-shrink:0"
                             onclick="bukaDaftarAbsensi({{ $k->id }}, '{{ addslashes($k->judul) }}')">
                             👥 Absensi
                             @if($jumlahAbsensi > 0)
-                                <span style="background:#2d6a4f;color:#fff;font-size:10px;font-weight:700;
-                                             padding:1px 7px;border-radius:20px;margin-left:2px">
-                                    {{ $jumlahAbsensi }}
-                                </span>
+                                <span style="background:#2d6a4f;color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;margin-left:2px">{{ $jumlahAbsensi }}</span>
                             @endif
                         </button>
 
-                        <button class="btn btn-sm btn-outline"
-                            onclick="openModalModulDenganKurikulum({{ $k->id }}, '{{ addslashes($k->judul) }}')">
-                            + Modul
-                        </button>
+                        <button class="btn btn-sm btn-outline" onclick="openModalModulDenganKurikulum({{ $k->id }}, '{{ addslashes($k->judul) }}')">+ Modul</button>
 
                         <button class="btn-icon btn-edit-kurikulum"
                             data-id="{{ $k->id }}"
@@ -607,6 +476,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                             data-absensi-mulai="{{ $k->absensi_mulai ?? '' }}"
                             data-absensi-selesai="{{ $k->absensi_selesai ?? '' }}"
                             data-absensi-url="{{ $k->absensi_url ?? '' }}"
+                            data-alamat="{{ json_encode($k->alamat ?? '') }}"
                             title="Edit Kurikulum">
                             <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         </button>
@@ -617,69 +487,47 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                     </div>
                 </div>
 
-                {{-- ══ ABSENSI BAR ══ --}}
                 @if($absensiAktif)
                 <div class="absensi-bar absensi-{{ $statusAbsensi }}"
                      id="absensi-bar-{{ $k->id }}"
                      data-mulai="{{ $absensiMulai ? $absensiMulai->timestamp : 0 }}"
                      data-selesai="{{ $absensiSelesai ? $absensiSelesai->timestamp : 0 }}"
                      data-url="{{ $absensiUrl }}">
-
                     @if($statusAbsensi === 'active')
-                        {{-- Aktif: tombol berkedip + countdown sisa waktu --}}
-                        <div class="absensi-label">
-                            <span class="absensi-dot"></span>
-                            Absensi Sedang Berlangsung
-                        </div>
-                        <a href="{{ $absensiUrl }}" target="_blank" class="btn-absensi-live">
-                            ✅ Buka Link Absensi
-                        </a>
+                        <div class="absensi-label"><span class="absensi-dot"></span>Absensi Sedang Berlangsung</div>
+                        <a href="{{ $absensiUrl }}" target="_blank" class="btn-absensi-live">✅ Buka Link Absensi</a>
                         <div class="absensi-countdown">
                             <span style="color:var(--text-muted);font-size:11px">Berakhir dalam</span>
                             <span class="countdown-timer" id="timer-{{ $k->id }}">--:--:--</span>
                         </div>
-
                     @elseif($statusAbsensi === 'upcoming')
-                        {{-- Akan datang: countdown menuju mulai --}}
                         <div style="font-size:20px">⏰</div>
                         <div>
                             <div class="absensi-label" style="color:#92400e">Absensi Akan Dibuka</div>
-                            <div class="absensi-schedule-info">
-                                {{ $absensiMulai->translatedFormat('d M Y, H:i') }} – {{ $absensiSelesai->format('H:i') }} WIB
-                            </div>
+                            <div class="absensi-schedule-info">{{ $absensiMulai->translatedFormat('d M Y, H:i') }} – {{ $absensiSelesai->format('H:i') }} WIB</div>
                         </div>
                         <div class="absensi-countdown" style="margin-left:auto">
                             <span style="color:var(--text-muted);font-size:11px">Dibuka dalam</span>
                             <span class="countdown-timer upcoming" id="timer-{{ $k->id }}">--:--:--</span>
                         </div>
-
                     @else
-                        {{-- Sudah selesai --}}
                         <div style="font-size:18px">🔒</div>
                         <div>
                             <div class="absensi-label" style="color:var(--text-muted)">Absensi Telah Ditutup</div>
-                            <div class="absensi-schedule-info">
-                                Selesai {{ $absensiSelesai->translatedFormat('d M Y, H:i') }} WIB
-                            </div>
+                            <div class="absensi-schedule-info">Selesai {{ $absensiSelesai->translatedFormat('d M Y, H:i') }} WIB</div>
                         </div>
                     @endif
                 </div>
                 @endif
-                {{-- ══ END ABSENSI BAR ══ --}}
 
-                {{-- Modul --}}
                 @if($modulDalamK->count() > 0)
                 <div class="modul-list">
                     @foreach($modulDalamK as $m)
                     <div class="modul-row">
-                        <div style="width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            {{ $m->urutan ?? $loop->iteration }}
-                        </div>
+                        <div style="width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ $m->urutan ?? $loop->iteration }}</div>
                         <div class="modul-info">
                             <div class="modul-title">{{ $m->judul }}</div>
-                            @if($m->deskripsi)
-                            <div class="modul-meta">{{ $m->deskripsi }}</div>
-                            @endif
+                            @if($m->deskripsi)<div class="modul-meta">{{ $m->deskripsi }}</div>@endif
                         </div>
                         <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
                             @if(($m->status ?? '') === 'approved')
@@ -689,9 +537,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                             @else
                                 <span class="badge badge-pending" style="font-size:10px;padding:3px 8px"><span class="badge-dot"></span>Menunggu</span>
                             @endif
-                            <button class="btn-icon"
-                                onclick="editModul({{ $m->id }}, {{ $m->kurikulum_id ?? 'null' }}, '{{ addslashes($m->judul) }}', '{{ addslashes($m->deskripsi ?? '') }}', '{{ $m->urutan ?? $loop->iteration }}')"
-                                title="Edit Modul">
+                            <button class="btn-icon" onclick="editModul({{ $m->id }}, {{ $m->kurikulum_id ?? 'null' }}, '{{ addslashes($m->judul) }}', '{{ addslashes($m->deskripsi ?? '') }}', '{{ $m->urutan ?? $loop->iteration }}')" title="Edit Modul">
                                 <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                             </button>
                             <button class="btn-icon btn-icon-danger" onclick="hapusItem({{ $m->id }}, 'modul')" title="Hapus">
@@ -705,10 +551,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                 <div class="modul-list">
                     <div style="padding:20px 24px;font-size:13px;color:var(--text-muted);display:flex;align-items:center;gap:10px">
                         <span>📭</span> Belum ada modul.
-                        <button class="btn btn-sm btn-outline" style="margin-left:4px"
-                            onclick="openModalModulDenganKurikulum({{ $k->id }}, '{{ addslashes($k->judul) }}')">
-                            Tambah sekarang
-                        </button>
+                        <button class="btn btn-sm btn-outline" style="margin-left:4px" onclick="openModalModulDenganKurikulum({{ $k->id }}, '{{ addslashes($k->judul) }}')">Tambah sekarang</button>
                     </div>
                 </div>
                 @endif
@@ -745,108 +588,61 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             <div class="table-wrap">
                 <table>
                     <thead><tr><th>Nama Event</th><th>Lokasi</th><th>Tanggal</th><th>Kapasitas</th><th>Status</th><th>Aksi</th></tr></thead>
+                    <tbody>
                     @foreach($eventList as $event)
                         @php
-                            $eTanggal     = \Carbon\Carbon::parse($event->tanggal)->format('Y-m-d');
-                            $eWaktuMulai  = $event->waktu_mulai   ? \Carbon\Carbon::parse($event->waktu_mulai)->format('H:i')   : '';
-                            $eWaktuSelesai= $event->waktu_selesai ? \Carbon\Carbon::parse($event->waktu_selesai)->format('H:i') : '';
-                            $eGambar      = $event->gambar        ? asset('storage/' . $event->gambar) : '';
+                            $eTanggal      = \Carbon\Carbon::parse($event->tanggal)->format('Y-m-d');
+                            $eWaktuMulai   = $event->waktu_mulai   ? \Carbon\Carbon::parse($event->waktu_mulai)->format('H:i')   : '';
+                            $eWaktuSelesai = $event->waktu_selesai ? \Carbon\Carbon::parse($event->waktu_selesai)->format('H:i') : '';
+                            $eGambar       = $event->gambar        ? asset('storage/' . $event->gambar) : '';
                         @endphp
                         <tr>
-                            {{-- Kolom Nama Event + thumbnail --}}
                             <td>
                                 <div style="display:flex;align-items:flex-start;gap:10px;">
-                                    <div style="width:42px;height:42px;border-radius:8px;overflow:hidden;
-                                                background:#f0f0f0;flex-shrink:0;border:1px solid var(--border);
-                                                display:flex;align-items:center;justify-content:center;font-size:18px;">
+                                    <div style="width:42px;height:42px;border-radius:8px;overflow:hidden;background:#f0f0f0;flex-shrink:0;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;">
                                         @if($event->gambar)
-                                            <img src="{{ asset('storage/' . $event->gambar) }}"
-                                                alt="{{ $event->judul }}"
-                                                style="width:100%;height:100%;object-fit:cover;">
-                                        @else
-                                            🎪
-                                        @endif
+                                            <img src="{{ asset('storage/' . $event->gambar) }}" alt="{{ $event->judul }}" style="width:100%;height:100%;object-fit:cover;">
+                                        @else 🎪 @endif
                                     </div>
                                     <div style="flex:1;min-width:0;">
-                                        <div style="font-weight:600;font-size:13px;">
-                                            {{ $event->judul ?? $event->nama }}
-                                        </div>
+                                        <div style="font-weight:600;font-size:13px;">{{ $event->judul ?? $event->nama }}</div>
                                         @if($event->status === 'rejected' && $event->catatan_admin)
-                                            <div style="margin-top:5px;background:#fff0ed;border:1px solid #e76f5166;
-                                                        border-radius:8px;padding:6px 10px;">
-                                                <div style="font-size:10px;font-weight:700;color:var(--accent2);
-                                                            text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">
-                                                    📋 Catatan Admin
-                                                </div>
-                                                <div style="font-size:12px;color:#b45309;line-height:1.5;">
-                                                    {{ $event->catatan_admin }}
-                                                </div>
+                                            <div style="margin-top:5px;background:#fff0ed;border:1px solid #e76f5166;border-radius:8px;padding:6px 10px;">
+                                                <div style="font-size:10px;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">📋 Catatan Admin</div>
+                                                <div style="font-size:12px;color:#b45309;line-height:1.5;">{{ $event->catatan_admin }}</div>
                                             </div>
                                         @endif
                                     </div>
                                 </div>
                             </td>
-
-                            {{-- Lokasi --}}
                             <td style="font-size:13px;">{{ $event->lokasi ?? '-' }}</td>
-
-                            {{-- Tanggal --}}
-                            <td style="font-size:13px;">
-                                {{ \Carbon\Carbon::parse($event->tanggal)->translatedFormat('d M Y') }}
-                            </td>
-
-                            {{-- Kapasitas --}}
+                            <td style="font-size:13px;">{{ \Carbon\Carbon::parse($event->tanggal)->translatedFormat('d M Y') }}</td>
                             <td style="font-size:13px;">{{ $event->kapasitas ?? '-' }}</td>
-
-                            {{-- Status --}}
                             <td>
-                                @if($event->status === 'approved')
-                                    <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
-                                @elseif($event->status === 'rejected')
-                                    <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
-                                @else
-                                    <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
+                                @if($event->status === 'approved') <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
+                                @elseif($event->status === 'rejected') <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
+                                @else <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
                                 @endif
                             </td>
-
-                            {{-- Aksi --}}
                             <td>
                                 <div style="display:flex;gap:6px;align-items:center;">
-
-                                    {{-- Tombol Edit --}}
-                                    <button
-                                        class="btn-icon {{ $event->status === 'rejected' ? 'btn-resubmit' : '' }}"
+                                    <button class="btn-icon {{ $event->status === 'rejected' ? 'btn-resubmit' : '' }}"
                                         style="{{ $event->status === 'rejected' ? 'background:#fff0ed;border-color:#e76f51;color:#e76f51;' : '' }}"
                                         onclick="editEvent({{ $event->id }},'{{ addslashes($event->judul ?? $event->nama) }}','{{ $eTanggal }}','{{ $eWaktuMulai }}','{{ $eWaktuSelesai }}','{{ addslashes($event->lokasi ?? '') }}','{{ $event->kapasitas ?? '' }}','{{ addslashes($event->biaya ?? '') }}','{{ addslashes($event->deskripsi ?? '') }}','{{ $eGambar }}','{{ $event->phone ?? auth()->user()->phone ?? '' }}')"
                                         title="{{ $event->status === 'rejected' ? 'Edit & Kirim Ulang' : 'Edit' }}">
                                         @if($event->status === 'rejected')
-                                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <polyline points="23 4 23 10 17 10"/>
-                                                <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
-                                            </svg>
+                                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
                                         @else
-                                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                                                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                            </svg>
+                                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                         @endif
                                     </button>
-
-                                    {{-- Tombol Hapus --}}
-                                    <button class="btn-icon btn-icon-danger"
-                                            onclick="hapusEvent({{ $event->id }})"
-                                            title="Hapus">
-                                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <polyline points="3 6 5 6 21 6"/>
-                                            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
-                                            <path d="M10 11v6M14 11v6M9 6V4h6v2"/>
-                                        </svg>
+                                    <button class="btn-icon btn-icon-danger" onclick="hapusEvent({{ $event->id }})" title="Hapus">
+                                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
                                     </button>
-
                                 </div>
                             </td>
                         </tr>
-                        @endforeach
+                    @endforeach
                     </tbody>
                 </table>
             </div>
@@ -880,28 +676,16 @@ tbody td { padding: 14px 18px; font-size: 13px; }
         </div>
         <div class="profile-form-card">
             <div class="form-row">
-                <div class="form-group">
-                    <div class="form-label">Nama Lengkap</div>
-                    <div class="form-static">{{ auth()->user()->name }}</div>
-                </div>
-                <div class="form-group">
-                    <div class="form-label">Email</div>
-                    <div class="form-static">{{ auth()->user()->email }}</div>
-                </div>
+                <div class="form-group"><div class="form-label">Nama Lengkap</div><div class="form-static">{{ auth()->user()->name }}</div></div>
+                <div class="form-group"><div class="form-label">Email</div><div class="form-static">{{ auth()->user()->email }}</div></div>
                 <div class="form-group">
                     <div class="form-label">No. Telepon / WhatsApp</div>
                     <div class="form-static" style="display:flex;align-items:center;gap:8px">
-                        @if(auth()->user()->phone)
-                            <span style="color:#25d366">✓</span> {{ auth()->user()->phone }}
-                        @else
-                            <span style="color:var(--text-muted);font-style:italic">Belum diisi</span>
-                        @endif
+                        @if(auth()->user()->phone) <span style="color:#25d366">✓</span> {{ auth()->user()->phone }}
+                        @else <span style="color:var(--text-muted);font-style:italic">Belum diisi</span> @endif
                     </div>
                 </div>
-                <div class="form-group">
-                    <div class="form-label">Bidang Keahlian</div>
-                    <div class="form-static">{{ auth()->user()->bidang_keahlian ?? '-' }}</div>
-                </div>
+                <div class="form-group"><div class="form-label">Bidang Keahlian</div><div class="form-static">{{ auth()->user()->bidang_keahlian ?? '-' }}</div></div>
             </div>
             <div class="form-group">
                 <div class="form-label">Bio / Tentang Saya</div>
@@ -925,6 +709,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
         </div>
         <form id="form-kurikulum" method="POST" enctype="multipart/form-data" action="{{ route('trainer.kurikulum.store') }}">
             @csrf
+            <input type="hidden" name="tipe" value="kurikulum">
             <input type="hidden" name="_method" id="kurikulum-method" value="POST">
             <input type="hidden" name="kurikulum_edit_id" id="kurikulum-edit-id">
 
@@ -954,14 +739,8 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             <div class="form-group">
                 <label class="form-label">Ada Sertifikat?</label>
                 <div class="radio-group">
-                    <div class="radio-option">
-                        <input type="radio" name="sertifikat" id="sertifikat-ya" value="1">
-                        <label for="sertifikat-ya">🏆 Ya, ada sertifikat</label>
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" name="sertifikat" id="sertifikat-tidak" value="0" checked>
-                        <label for="sertifikat-tidak">Tidak ada sertifikat</label>
-                    </div>
+                    <div class="radio-option"><input type="radio" name="sertifikat" id="sertifikat-ya" value="1"><label for="sertifikat-ya">🏆 Ya, ada sertifikat</label></div>
+                    <div class="radio-option"><input type="radio" name="sertifikat" id="sertifikat-tidak" value="0" checked><label for="sertifikat-tidak">Tidak ada sertifikat</label></div>
                 </div>
             </div>
 
@@ -971,7 +750,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Metode</label>
-                    <select class="form-select" name="metode" id="k-metode">
+                    <select class="form-select" name="metode" id="k-metode" onchange="toggleAlamat(this.value)">
                         <option value="">-- Pilih --</option>
                         <option value="online">Online</option>
                         <option value="offline">Offline</option>
@@ -989,11 +768,20 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                 </div>
             </div>
 
+            {{-- 
+                PENTING: Field alamat SELALU ada di DOM dan SELALU terkirim.
+                Visibilitas dikontrol via CSS class, bukan display:none pada elemen berisi name=
+            --}}
+            <div class="form-group" id="k-alamat-group">
+                <label class="form-label">Alamat Lokasi</label>
+                <textarea class="form-textarea" name="alamat" id="k-alamat" rows="2"
+                    placeholder="Contoh: Jl. Raya Darmo No. 45, Surabaya"></textarea>
+                <div class="form-hint">Alamat tempat pelatihan offline/hybrid berlangsung</div>
+            </div>
+
             <div class="form-group">
                 <label class="form-label">No. WhatsApp untuk Pendaftaran</label>
-                <input class="form-input" type="text" name="phone" id="k-phone"
-                       value="{{ auth()->user()->phone ?? '' }}"
-                       placeholder="Contoh: 6281234567890">
+                <input class="form-input" type="text" name="phone" id="k-phone" value="{{ auth()->user()->phone ?? '' }}" placeholder="Contoh: 6281234567890">
                 <div class="form-hint">Otomatis diisi dari profil. Ubah jika ingin nomor berbeda untuk kurikulum ini.</div>
             </div>
 
@@ -1012,7 +800,6 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                 <input type="file" id="k-gambar" name="gambar" accept="image/*" style="display:none" onchange="showFileName(this, 'k-gambar-name')">
             </div>
 
-            {{-- ══ SECTION ABSENSI ══ --}}
             <hr class="form-divider">
             <div class="absensi-toggle-section">
                 <div class="absensi-toggle-header" onclick="toggleAbsensiSection()">
@@ -1020,7 +807,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                         <span style="font-size:18px">✅</span>
                         <div>
                             <div style="font-size:13px;font-weight:700">Tombol Absensi Otomatis</div>
-                            <div style="font-size:11px;font-weight:400;color:var(--text-muted);margin-top:2px">Atur jadwal buka & tutup absensi tombol muncul & hilang otomatis</div>
+                            <div style="font-size:11px;font-weight:400;color:var(--text-muted);margin-top:2px">Atur jadwal buka & tutup absensi</div>
                         </div>
                     </div>
                     <div style="display:flex;align-items:center;gap:10px">
@@ -1031,7 +818,6 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                         <svg id="absensi-chevron" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
                     </div>
                 </div>
-
                 <div class="absensi-toggle-body" id="absensi-body">
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
                         <div class="form-group" style="margin-bottom:0">
@@ -1045,31 +831,24 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                             <div class="form-hint">Tombol absensi hilang otomatis jam ini</div>
                         </div>
                     </div>
-
                     <div class="form-group" style="margin-top:14px;margin-bottom:0">
                         <label class="form-label">Link / URL Absensi</label>
-                        <input class="form-input" type="url" name="absensi_url" id="k-absensi-url"
-                               placeholder="https://forms.gle/... atau link absensi lainnya">
-                        <div class="form-hint">Link Google Form, Typeform, atau halaman absensi. Kosongkan untuk menggunakan halaman absensi bawaan sistem.</div>
+                        <input class="form-input" type="url" name="absensi_url" id="k-absensi-url" placeholder="https://forms.gle/...">
+                        <div class="form-hint">Kosongkan untuk menggunakan halaman absensi bawaan sistem.</div>
                     </div>
-
                     <div id="absensi-preview" style="display:none;margin-top:14px;background:#f0f9f4;border:1px solid #a7d7c566;border-radius:10px;padding:12px 16px">
                         <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Preview tombol absensi</div>
                         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
                             <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--accent)">
-                                <span style="width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block"></span>
-                                Absensi Berlangsung
+                                <span style="width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block"></span>Absensi Berlangsung
                             </div>
-                            <div style="background:var(--accent);color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700">
-                                ✅ Buka Link Absensi
-                            </div>
+                            <div style="background:var(--accent);color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700">✅ Buka Link Absensi</div>
                             <div style="font-size:12px;color:var(--text-muted)">Berakhir dalam <strong id="absensi-preview-dur" style="color:var(--accent)">–</strong></div>
                         </div>
                         <div id="absensi-preview-schedule" style="font-size:11px;color:var(--text-muted);margin-top:8px"></div>
                     </div>
                 </div>
             </div>
-            {{-- ══ END ABSENSI SECTION ══ --}}
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-ghost" onclick="resetKurikulumModal(); closeModal('modal-kurikulum')">Batal</button>
@@ -1152,13 +931,6 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 </div>
 
 {{-- ============ MODAL EVENT ============ --}}
-{{-- 
-    GANTI bagian modal-event di dashboard.blade.php trainer
-    Cari: <div class="modal-overlay" id="modal-event">
-    Ganti seluruh div hingga penutup </div> dengan kode di bawah
---}}
-
-{{-- ============ MODAL EVENT ============ --}}
 <div class="modal-overlay" id="modal-event">
     <div class="modal">
         <div class="modal-header">
@@ -1169,21 +941,14 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             @csrf
             <input type="hidden" name="_method" id="event-method" value="POST">
             <input type="hidden" name="event_id" id="event-id">
-
-            {{-- Nama Event --}}
             <div class="form-group">
                 <label class="form-label">Nama Event <span style="color:var(--accent2)">*</span></label>
-                <input class="form-input" type="text" name="judul" id="event-judul"
-                       placeholder="Contoh: Festival Kuliner UMKM 2025" required>
+                <input class="form-input" type="text" name="judul" id="event-judul" placeholder="Contoh: Festival Kuliner UMKM 2025" required>
             </div>
-
-            {{-- Tanggal --}}
             <div class="form-group">
                 <label class="form-label">Tanggal <span style="color:var(--accent2)">*</span></label>
                 <input class="form-input" type="date" name="tanggal" id="event-tanggal" required>
             </div>
-
-            {{-- Waktu Mulai & Selesai --}}
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Waktu Mulai</label>
@@ -1196,71 +961,42 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                     <div class="form-hint">Contoh: 15:00</div>
                 </div>
             </div>
-
-            {{-- Lokasi --}}
             <div class="form-group">
                 <label class="form-label">Lokasi</label>
-                <input class="form-input" type="text" name="lokasi" id="event-lokasi"
-                       placeholder="Contoh: Gedung KAJI INDONESIA, Surabaya">
+                <input class="form-input" type="text" name="lokasi" id="event-lokasi" placeholder="Contoh: Gedung KAJI INDONESIA, Surabaya">
             </div>
-
-            {{-- Kapasitas & Biaya --}}
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Kapasitas Peserta</label>
-                    <input class="form-input" type="number" name="kapasitas" id="event-kapasitas"
-                           min="1" placeholder="Contoh: 100">
+                    <input class="form-input" type="number" name="kapasitas" id="event-kapasitas" min="1" placeholder="Contoh: 100">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Biaya</label>
-                    <input class="form-input" type="text" name="biaya" id="event-biaya"
-                           placeholder="Gratis / Rp 50.000">
+                    <input class="form-input" type="text" name="biaya" id="event-biaya" placeholder="Gratis / Rp 50.000">
                     <div class="form-hint">Kosongkan atau isi "Gratis" jika tidak berbayar</div>
                 </div>
             </div>
-
-            {{-- Penyelenggara & WhatsApp --}}
-<div class="form-group">
-    <label class="form-label">No. WhatsApp </label>
-    <input class="form-input" type="text" name="phone" id="event-phone"
-           value="{{ auth()->user()->phone ?? '' }}"
-           placeholder="Contoh: 6281234567890">
-    <div class="form-hint">Otomatis diisi dari profil. Ubah jika ingin nomor berbeda untuk event ini.</div>
-</div>
-
-            {{-- Deskripsi --}}
+            <div class="form-group">
+                <label class="form-label">No. WhatsApp</label>
+                <input class="form-input" type="text" name="phone" id="event-phone" value="{{ auth()->user()->phone ?? '' }}" placeholder="Contoh: 6281234567890">
+                <div class="form-hint">Otomatis diisi dari profil. Ubah jika ingin nomor berbeda untuk event ini.</div>
+            </div>
             <div class="form-group">
                 <label class="form-label">Deskripsi Event <span style="color:var(--accent2)">*</span></label>
-                <textarea class="form-textarea" name="deskripsi" id="event-deskripsi"
-                          rows="4" placeholder="Jelaskan detail event ini..." required></textarea>
+                <textarea class="form-textarea" name="deskripsi" id="event-deskripsi" rows="4" placeholder="Jelaskan detail event ini..." required></textarea>
             </div>
-
-            {{-- Gambar / Banner --}}
             <div class="form-group">
                 <label class="form-label">Gambar / Banner Event</label>
                 <label class="upload-area" for="event-gambar" id="event-upload-area">
-
-                    {{-- IMG PREVIEW — tersembunyi saat belum ada gambar --}}
-                    <img id="event-gambar-preview"
-                        src=""
-                        alt="preview"
-                        style="display:none;width:100%;height:100%;object-fit:cover;
-                                border-radius:12px;position:absolute;top:0;left:0;">
-
+                    <img id="event-gambar-preview" src="" alt="preview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:12px;position:absolute;top:0;left:0;">
                     <div class="upload-icon" id="event-upload-icon">🖼️</div>
-                    <div class="upload-text" id="event-upload-text">
-                        Klik untuk upload atau <span>drag & drop</span><br>PNG, JPG hingga 5MB
-                    </div>
+                    <div class="upload-text" id="event-upload-text">Klik untuk upload atau <span>drag & drop</span><br>PNG, JPG hingga 5MB</div>
                     <div class="upload-fname" id="event-gambar-name"></div>
                 </label>
-                <input type="file" id="event-gambar" name="gambar" accept="image/*"
-                    style="display:none" onchange="onEventGambarChange(this)">
+                <input type="file" id="event-gambar" name="gambar" accept="image/*" style="display:none" onchange="onEventGambarChange(this)">
             </div>
-
-
             <div class="modal-footer">
-                <button type="button" class="btn btn-ghost"
-                        onclick="resetEventModal(); closeModal('modal-event')">Batal</button>
+                <button type="button" class="btn btn-ghost" onclick="resetEventModal(); closeModal('modal-event')">Batal</button>
                 <button type="submit" class="btn btn-primary">Kirim untuk Disetujui</button>
             </div>
         </form>
@@ -1302,7 +1038,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
     </div>
 </div>
 
-{{-- ============ PATCH 2: MODAL DAFTAR ABSENSI ============ --}}
+{{-- ============ MODAL DAFTAR ABSENSI ============ --}}
 <div class="modal-overlay" id="modal-absensi-daftar">
     <div class="modal" style="width:700px;max-width:95vw">
         <div class="modal-header">
@@ -1312,70 +1048,36 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             </div>
             <button class="modal-close" onclick="closeModal('modal-absensi-daftar')">×</button>
         </div>
-
-        {{-- Toolbar --}}
-        <div style="display:flex;align-items:center;justify-content:space-between;
-                    margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
             <div style="display:flex;align-items:center;gap:8px">
                 <span style="font-size:13px;color:var(--text-muted)">Total hadir:</span>
-                <span id="abs-total-badge"
-                    style="background:var(--accent);color:#fff;font-size:12px;
-                           font-weight:700;padding:3px 12px;border-radius:20px">–</span>
+                <span id="abs-total-badge" style="background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:3px 12px;border-radius:20px">–</span>
             </div>
             <div style="display:flex;gap:8px">
                 <button class="btn btn-sm btn-ghost" onclick="exportAbsensiCsv()" style="gap:6px">
-                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24"
-                         stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     Export CSV
                 </button>
                 <button class="btn btn-sm btn-ghost" onclick="refreshAbsensi()" style="gap:6px">
-                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24"
-                         stroke="currentColor" stroke-width="2">
-                        <polyline points="23 4 23 10 17 10"/>
-                        <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
-                    </svg>
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
                     Refresh
                 </button>
             </div>
         </div>
-
-        {{-- Loading --}}
-        <div id="abs-loading"
-             style="text-align:center;padding:44px;color:var(--text-muted);font-size:13px">
-            ⏳ Memuat data...
-        </div>
-
-        {{-- Tabel --}}
+        <div id="abs-loading" style="text-align:center;padding:44px;color:var(--text-muted);font-size:13px">⏳ Memuat data...</div>
         <div id="abs-table-wrap" style="display:none">
             <div class="table-wrap" style="margin-bottom:0;max-height:400px;overflow-y:auto">
                 <table>
-                    <thead>
-                        <tr>
-                            <th style="width:48px">#</th>
-                            <th>Nama</th>
-                            <th>Email</th>
-                            <th>Waktu Absen</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th style="width:48px">#</th><th>Nama</th><th>Email</th><th>Waktu Absen</th></tr></thead>
                     <tbody id="abs-tbody"></tbody>
                 </table>
             </div>
         </div>
-
-        {{-- Empty state --}}
-        <div id="abs-empty"
-             style="display:none;text-align:center;padding:50px 20px;color:var(--text-muted)">
+        <div id="abs-empty" style="display:none;text-align:center;padding:50px 20px;color:var(--text-muted)">
             <div style="font-size:42px;margin-bottom:12px">📭</div>
-            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px">
-                Belum ada yang absen
-            </div>
+            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px">Belum ada yang absen</div>
             <div style="font-size:13px">Peserta akan muncul di sini saat absensi aktif</div>
         </div>
-
         <div class="modal-footer">
             <button class="btn btn-ghost" onclick="closeModal('modal-absensi-daftar')">Tutup</button>
         </div>
@@ -1386,6 +1088,52 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 <form id="form-hapus-event" method="POST" style="display:none">@csrf @method('DELETE')</form>
 
 <script>
+/* ================================================================
+   toggleAlamat — pisah antara "show/hide saja" vs "reset nilai"
+================================================================ */
+function _setVisibilityAlamat(tampil) {
+    var grup = document.getElementById('k-alamat-group');
+    if (tampil) {
+        grup.style.maxHeight    = '200px';
+        grup.style.overflow     = 'visible';
+        grup.style.opacity      = '1';
+        grup.style.marginBottom = '18px';
+    } else {
+        grup.style.maxHeight    = '0';
+        grup.style.overflow     = 'hidden';
+        grup.style.opacity      = '0';
+        grup.style.marginBottom = '0';
+    }
+}
+
+// Dipanggil saat USER memilih metode dari dropdown — boleh kosongkan alamat
+function toggleAlamat(val) {
+    var isOfflineOrHybrid = (val === 'offline' || val === 'hybrid');
+    _setVisibilityAlamat(isOfflineOrHybrid);
+    // Kosongkan alamat hanya jika user memilih online (bukan saat load data edit)
+    if (!isOfflineOrHybrid) {
+        document.getElementById('k-alamat').value = '';
+    }
+}
+
+// Dipanggil saat LOAD DATA EDIT — tidak boleh mengosongkan nilai
+function _tampilkanAlamatTanpaReset(val) {
+    var isOfflineOrHybrid = (val === 'offline' || val === 'hybrid');
+    _setVisibilityAlamat(isOfflineOrHybrid);
+    // TIDAK mengosongkan nilai
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var grup = document.getElementById('k-alamat-group');
+    if (grup) {
+        grup.style.transition = 'max-height .3s ease, opacity .3s ease, margin-bottom .3s ease';
+        grup.style.maxHeight    = '0';
+        grup.style.overflow     = 'hidden';
+        grup.style.opacity      = '0';
+        grup.style.marginBottom = '0';
+    }
+});
+
 /* ================================================================
    NAVIGASI
 ================================================================ */
@@ -1408,30 +1156,26 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 document.querySelectorAll('.modal-overlay').forEach(m => {
     m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
 });
-
 function showFileName(input, labelId) {
     const label = document.getElementById(labelId);
     if (input.files && input.files[0]) label.textContent = '✓ ' + input.files[0].name;
 }
 
 /* ================================================================
-   ABSENSI TOGGLE (dalam form)
+   ABSENSI TOGGLE
 ================================================================ */
 function toggleAbsensiSection(forceState) {
     const checkbox = document.getElementById('k-absensi-aktif');
     const body     = document.getElementById('absensi-body');
     const chevron  = document.getElementById('absensi-chevron');
-
     if (typeof forceState === 'boolean') {
         checkbox.checked = forceState;
     } else {
         checkbox.checked = !checkbox.checked;
     }
-
     const isOpen = checkbox.checked;
     body.classList.toggle('open', isOpen);
     chevron.style.transform = isOpen ? 'rotate(180deg)' : '';
-
     if (!isOpen) {
         document.getElementById('k-absensi-mulai').value   = '';
         document.getElementById('k-absensi-selesai').value = '';
@@ -1441,7 +1185,7 @@ function toggleAbsensiSection(forceState) {
 }
 
 /* ================================================================
-   LIVE PREVIEW JADWAL ABSENSI (di dalam form modal)
+   ABSENSI PREVIEW
 ================================================================ */
 function updateAbsensiPreview() {
     const mulai   = document.getElementById('k-absensi-mulai').value;
@@ -1449,82 +1193,54 @@ function updateAbsensiPreview() {
     const preview = document.getElementById('absensi-preview');
     const durEl   = document.getElementById('absensi-preview-dur');
     const schEl   = document.getElementById('absensi-preview-schedule');
-
     if (!mulai || !selesai) { preview.style.display = 'none'; return; }
-
     const mDate = new Date(mulai);
     const sDate = new Date(selesai);
     if (sDate <= mDate) { preview.style.display = 'none'; return; }
-
     preview.style.display = 'block';
-
-    const diffMs  = sDate - mDate;
-    const diffMin = Math.round(diffMs / 60000);
-    if (diffMin < 60) {
-        durEl.textContent = diffMin + ' menit';
-    } else {
-        const h = Math.floor(diffMin / 60);
-        const m = diffMin % 60;
+    const diffMin = Math.round((sDate - mDate) / 60000);
+    if (diffMin < 60) { durEl.textContent = diffMin + ' menit'; }
+    else {
+        const h = Math.floor(diffMin / 60), m = diffMin % 60;
         durEl.textContent = h + ' jam' + (m ? ' ' + m + ' menit' : '');
     }
-
-    const fmt = d => d.toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' })
-                   + ', ' + d.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+    const fmt = d => d.toLocaleDateString('id-ID', {day:'numeric',month:'short',year:'numeric'}) + ', ' + d.toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'});
     schEl.textContent = 'Jadwal: ' + fmt(mDate) + ' – ' + fmt(sDate) + ' WIB';
 }
 
 /* ================================================================
-   ABSENSI COUNTDOWN (real-time di kurikulum block)
+   ABSENSI COUNTDOWN
 ================================================================ */
 function pad(n) { return String(n).padStart(2, '0'); }
-
 function formatCountdown(ms) {
     if (ms <= 0) return '00:00:00';
-    const totalSec = Math.floor(ms / 1000);
-    const h = Math.floor(totalSec / 3600);
-    const m = Math.floor((totalSec % 3600) / 60);
-    const s = totalSec % 60;
-    return h > 0
-        ? pad(h) + ':' + pad(m) + ':' + pad(s)
-        : pad(m) + ':' + pad(s);
+    const s = Math.floor(ms / 1000);
+    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60;
+    return h > 0 ? pad(h)+':'+pad(m)+':'+pad(ss) : pad(m)+':'+pad(ss);
 }
-
 function initAbsensiTimers() {
     document.querySelectorAll('[id^="absensi-bar-"]').forEach(function(bar) {
         const tsMulai   = parseInt(bar.dataset.mulai, 10) * 1000;
         const tsSelesai = parseInt(bar.dataset.selesai, 10) * 1000;
         const timerId   = bar.id.replace('absensi-bar-', '');
         const timerEl   = document.getElementById('timer-' + timerId);
-
-        if (!timerEl || isNaN(tsMulai) || isNaN(tsSelesai) || tsMulai === 0 || tsSelesai === 0) return;
-
+        if (!timerEl || isNaN(tsMulai) || isNaN(tsSelesai) || tsMulai === 0) return;
         var intervalId;
-
         function tick() {
-            var now         = Date.now();
-            var msToMulai   = tsMulai - now;
-            var msToSelesai = tsSelesai - now;
-
+            var now = Date.now();
+            var msToMulai = tsMulai - now, msToSelesai = tsSelesai - now;
             if (msToMulai > 0) {
                 timerEl.textContent = formatCountdown(msToMulai);
                 timerEl.className   = 'countdown-timer upcoming';
             } else if (msToSelesai > 0) {
                 timerEl.textContent = formatCountdown(msToSelesai);
-                timerEl.className   = msToSelesai < 600000
-                    ? 'countdown-timer warning'
-                    : 'countdown-timer';
-
-                if (bar.classList.contains('absensi-upcoming')) {
-                    location.reload();
-                }
+                timerEl.className   = msToSelesai < 600000 ? 'countdown-timer warning' : 'countdown-timer';
+                if (bar.classList.contains('absensi-upcoming')) location.reload();
             } else {
                 clearInterval(intervalId);
-                if (!bar.classList.contains('absensi-ended')) {
-                    location.reload();
-                }
+                if (!bar.classList.contains('absensi-ended')) location.reload();
             }
         }
-
         tick();
         intervalId = setInterval(tick, 1000);
     });
@@ -1536,7 +1252,6 @@ function initAbsensiTimers() {
 document.addEventListener('click', function(e) {
     const btn = e.target.closest('.btn-edit-kurikulum');
     if (!btn) return;
-
     const d = btn.dataset;
 
     document.getElementById('modal-kurikulum-title-text').textContent = 'Edit Kurikulum';
@@ -1544,32 +1259,49 @@ document.addEventListener('click', function(e) {
     document.getElementById('kurikulum-submit-text').textContent      = 'Simpan Perubahan';
     document.getElementById('kurikulum-edit-id').value = d.id;
     document.getElementById('k-judul').value           = d.judul;
-    document.getElementById('k-deskripsi').value       = d.deskripsi;
-    document.getElementById('k-metode').value          = d.metode;
-    document.getElementById('k-tingkat').value         = d.tingkat;
-    document.getElementById('k-bahasa').value          = d.bahasa;
-    document.getElementById('k-total-jam').value       = d.totalJam;
-    document.getElementById('k-jumlah-sesi').value     = d.jumlahSesi;
-    document.getElementById('k-phone').value           = d.phone || '';
+    document.getElementById('k-deskripsi').value       = d.deskripsi || '';
+    document.getElementById('k-tingkat').value         = d.tingkat  || '';
+    document.getElementById('k-bahasa').value          = d.bahasa   || '';
+    document.getElementById('k-total-jam').value       = d.totalJam || '';
+    document.getElementById('k-jumlah-sesi').value     = d.jumlahSesi || '';
+    document.getElementById('k-phone').value           = d.phone    || '';
     document.getElementById('kurikulum-method').value  = 'PUT';
     document.getElementById('form-kurikulum').action   = '/kurikulum/' + d.id;
 
+    // ① ISI ALAMAT DULU — sebelum apapun
+    try {
+    document.getElementById('k-alamat').value = JSON.parse(d.alamat) || '';
+} catch(e) {
+    document.getElementById('k-alamat').value = d.alamat || '';
+}
+
+    // ② Set metode dropdown
+    document.getElementById('k-metode').value = d.metode || '';
+
+    // ③ Tampilkan/sembunyikan field alamat TANPA mengosongkan nilainya
+    _tampilkanAlamatTanpaReset(d.metode || '');
+
+    // Sertifikat
     if (d.sertifikat == '1') {
         document.getElementById('sertifikat-ya').checked = true;
     } else {
         document.getElementById('sertifikat-tidak').checked = true;
     }
 
+    // Absensi
     const absensiAktif = d.absensiAktif === '1';
     document.getElementById('k-absensi-aktif').checked = absensiAktif;
     toggleAbsensiSection(absensiAktif);
-
     if (absensiAktif) {
         if (d.absensiMulai)   document.getElementById('k-absensi-mulai').value   = d.absensiMulai.substring(0, 16);
         if (d.absensiSelesai) document.getElementById('k-absensi-selesai').value = d.absensiSelesai.substring(0, 16);
         document.getElementById('k-absensi-url').value = d.absensiUrl || '';
         updateAbsensiPreview();
     }
+
+      document.querySelectorAll('input[name="_token"]').forEach(el => {
+        el.value = document.querySelector('meta[name="csrf-token"]').content;
+    });
 
     openModal('modal-kurikulum');
 });
@@ -1596,34 +1328,28 @@ function editModul(id, kurikulumId, judul, deskripsi, urutan) {
    EDIT EVENT
 ================================================================ */
 function editEvent(id, judul, tanggal, waktuMulai, waktuSelesai, lokasi, kapasitas, biaya, deskripsi, gambar, phone) {
-    document.getElementById('modal-event-title').textContent = 'Edit Event';
-    document.getElementById('event-id').value            = id;
-    document.getElementById('event-judul').value         = judul;
-    document.getElementById('event-tanggal').value       = tanggal;
-    document.getElementById('event-waktu-mulai').value   = waktuMulai   || '';
-    document.getElementById('event-waktu-selesai').value = waktuSelesai || '';
-    document.getElementById('event-lokasi').value        = lokasi       || '';
-    document.getElementById('event-kapasitas').value     = kapasitas    || '';
-    document.getElementById('event-biaya').value         = biaya        || '';
-    document.getElementById('event-deskripsi').value     = deskripsi    || '';
-    document.getElementById('event-method').value        = 'PUT';
-    document.getElementById('form-event').action         = '/trainer/event/' + id;
-    document.getElementById('event-phone').value = phone || '';
-    
-
-    // Tampilkan preview gambar lama jika ada
+    document.getElementById('modal-event-title').textContent    = 'Edit Event';
+    document.getElementById('event-id').value                   = id;
+    document.getElementById('event-judul').value                = judul;
+    document.getElementById('event-tanggal').value              = tanggal;
+    document.getElementById('event-waktu-mulai').value          = waktuMulai   || '';
+    document.getElementById('event-waktu-selesai').value        = waktuSelesai || '';
+    document.getElementById('event-lokasi').value               = lokasi       || '';
+    document.getElementById('event-kapasitas').value            = kapasitas    || '';
+    document.getElementById('event-biaya').value                = biaya        || '';
+    document.getElementById('event-deskripsi').value            = deskripsi    || '';
+    document.getElementById('event-method').value               = 'PUT';
+    document.getElementById('form-event').action                = '/trainer/event/' + id;
+    document.getElementById('event-phone').value                = phone        || '';
     if (gambar) {
         tampilkanPreviewEvent(gambar);
         document.getElementById('event-gambar-name').textContent = '✓ Gambar tersimpan — klik untuk mengganti';
     } else {
         resetPreviewEvent();
     }
-
     openModal('modal-event');
 }
 
-
-/* SESUDAH — ganti seluruh function resetEventModal */
 function resetEventModal() {
     document.getElementById('modal-event-title').textContent = 'Tambah Event';
     document.getElementById('event-method').value = 'POST';
@@ -1632,46 +1358,30 @@ function resetEventModal() {
     resetPreviewEvent();
 }
 
-// Dipanggil saat user pilih file baru dari komputer
 function onEventGambarChange(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
-        reader.onload = function(e) {
-            tampilkanPreviewEvent(e.target.result);
-        };
+        reader.onload = function(e) { tampilkanPreviewEvent(e.target.result); };
         reader.readAsDataURL(input.files[0]);
         document.getElementById('event-gambar-name').textContent = '✓ ' + input.files[0].name;
     }
 }
-
-// Tampilkan gambar di area upload (pakai <img> bukan background)
 function tampilkanPreviewEvent(src) {
-    var preview = document.getElementById('event-gambar-preview');
-    var icon    = document.getElementById('event-upload-icon');
-    var text    = document.getElementById('event-upload-text');
-
-    preview.src           = src;
-    preview.style.display = 'block';
-    icon.style.display    = 'none';
-    text.style.display    = 'none';
+    var p = document.getElementById('event-gambar-preview');
+    p.src = src; p.style.display = 'block';
+    document.getElementById('event-upload-icon').style.display = 'none';
+    document.getElementById('event-upload-text').style.display = 'none';
 }
-
-// Reset area upload ke kondisi kosong
 function resetPreviewEvent() {
-    var preview = document.getElementById('event-gambar-preview');
-    var icon    = document.getElementById('event-upload-icon');
-    var text    = document.getElementById('event-upload-text');
-    var namaEl  = document.getElementById('event-gambar-name');
-
-    preview.src           = '';
-    preview.style.display = 'none';
-    icon.style.display    = '';
-    text.style.display    = '';
-    namaEl.textContent    = '';
+    var p = document.getElementById('event-gambar-preview');
+    p.src = ''; p.style.display = 'none';
+    document.getElementById('event-upload-icon').style.display = '';
+    document.getElementById('event-upload-text').style.display = '';
+    document.getElementById('event-gambar-name').textContent   = '';
 }
 
 /* ================================================================
-   RESET MODAL
+   RESET MODAL KURIKULUM
 ================================================================ */
 function resetKurikulumModal() {
     document.getElementById('modal-kurikulum-title-text').textContent = 'Tambah Kurikulum';
@@ -1684,6 +1394,9 @@ function resetKurikulumModal() {
     document.getElementById('sertifikat-tidak').checked  = true;
     document.getElementById('k-phone').value = '{{ auth()->user()->phone ?? "" }}';
     document.getElementById('k-absensi-aktif').checked = false;
+    document.getElementById('k-alamat').value = '';
+    // Sembunyikan field alamat kembali
+    toggleAlamat('');
     toggleAbsensiSection(false);
 }
 
@@ -1701,10 +1414,6 @@ function resetModulModal() {
     if (pJudul) pJudul.textContent = 'Judul modul...';
     if (pDesc)  pDesc.textContent  = 'Deskripsi modul...';
 }
-
-
-
-
 
 /* ================================================================
    HAPUS
@@ -1745,7 +1454,6 @@ function openModalModul() {
     resetModulModal();
     openModal('modal-modul');
 }
-
 function openModalModulDenganKurikulum(kurikulumId, kurikulumJudul) {
     resetModulModal();
     document.getElementById('m-kurikulum-id').value = kurikulumId;
@@ -1754,78 +1462,51 @@ function openModalModulDenganKurikulum(kurikulumId, kurikulumJudul) {
 }
 
 /* ================================================================
-   PATCH 3: ABSENSI TRAINER — Daftar & Export
+   ABSENSI DAFTAR & EXPORT
 ================================================================ */
 var _absPelId = null;
-
 function bukaDaftarAbsensi(pelId, judul) {
     _absPelId = pelId;
-
     document.getElementById('modal-abs-subtitle').textContent = judul;
     document.getElementById('abs-total-badge').textContent    = '–';
     document.getElementById('abs-loading').style.display      = 'block';
     document.getElementById('abs-table-wrap').style.display   = 'none';
     document.getElementById('abs-empty').style.display        = 'none';
-
     openModal('modal-absensi-daftar');
     _muatAbsensi(pelId);
 }
-
-function refreshAbsensi() {
-    if (_absPelId) _muatAbsensi(_absPelId);
-}
-
+function refreshAbsensi() { if (_absPelId) _muatAbsensi(_absPelId); }
 function _muatAbsensi(pelId) {
     document.getElementById('abs-loading').style.display    = 'block';
     document.getElementById('abs-table-wrap').style.display = 'none';
     document.getElementById('abs-empty').style.display      = 'none';
-
     fetch('/trainer/kurikulum/' + pelId + '/absensi', {
-        headers: {
-            'Accept'      : 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-        }
+        headers: { 'Accept':'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
     })
-    .then(function(r) { return r.json(); })
-    .then(function(res) {
+    .then(r => r.json())
+    .then(res => {
         document.getElementById('abs-loading').style.display = 'none';
         if (!res.success) { alert('Gagal: ' + res.message); return; }
-
         document.getElementById('abs-total-badge').textContent = res.total;
-
-        if (res.total === 0) {
-            document.getElementById('abs-empty').style.display = 'block';
-            return;
-        }
-
+        if (res.total === 0) { document.getElementById('abs-empty').style.display = 'block'; return; }
         var tbody = document.getElementById('abs-tbody');
         tbody.innerHTML = '';
-        res.peserta.forEach(function(p) {
+        res.peserta.forEach(p => {
             var tr = document.createElement('tr');
-            tr.innerHTML =
-                '<td style="font-weight:600;color:var(--text-muted)">' + p.no + '</td>'
+            tr.innerHTML = '<td style="font-weight:600;color:var(--text-muted)">' + p.no + '</td>'
                 + '<td style="font-weight:500">' + _esc(p.nama) + '</td>'
                 + '<td style="font-size:12px;color:var(--text-muted)">' + _esc(p.email) + '</td>'
                 + '<td style="font-size:12px;color:var(--text-muted)">' + _esc(p.waktu) + '</td>';
             tbody.appendChild(tr);
         });
-
         document.getElementById('abs-table-wrap').style.display = 'block';
     })
-    .catch(function() {
-        document.getElementById('abs-loading').style.display = 'none';
-        alert('Gagal terhubung ke server.');
-    });
+    .catch(() => { document.getElementById('abs-loading').style.display = 'none'; alert('Gagal terhubung ke server.'); });
 }
-
-function exportAbsensiCsv() {
-    if (_absPelId) window.location.href = '/trainer/kurikulum/' + _absPelId + '/absensi/export';
-}
-
+function exportAbsensiCsv() { if (_absPelId) window.location.href = '/trainer/kurikulum/' + _absPelId + '/absensi/export'; }
 function _esc(s) {
     if (s == null) return '–';
-    return String(s)
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 /* ================================================================
@@ -1834,14 +1515,11 @@ function _esc(s) {
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('k-absensi-mulai').addEventListener('change', updateAbsensiPreview);
     document.getElementById('k-absensi-selesai').addEventListener('change', updateAbsensiPreview);
-
-    ['m-judul', 'm-deskripsi', 'm-urutan'].forEach(function(id) {
+    ['m-judul', 'm-deskripsi', 'm-urutan'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('input', updatePreview);
     });
-
     initAbsensiTimers();
-
     const hash = window.location.hash.replace('#', '');
     if (['beranda', 'program', 'event', 'profil'].includes(hash)) {
         showPage(hash);
