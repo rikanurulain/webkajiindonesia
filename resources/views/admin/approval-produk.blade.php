@@ -192,6 +192,19 @@
                                     </svg>
                                     Detail
                                 </button>
+                                {{-- TOMBOL HAPUS (sama seperti approval mentor) --}}
+                                <form method="POST"
+                                      action="{{ route('admin.approval.produk.destroy', $produk) }}"
+                                      style="display:inline;"
+                                      onsubmit="return confirmHapus('{{ addslashes($produk->nama) }}')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                        Hapus
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -269,6 +282,19 @@
                                     </svg>
                                     Detail
                                 </button>
+                                {{-- TOMBOL HAPUS (sama seperti approval mentor) --}}
+                                <form method="POST"
+                                      action="{{ route('admin.approval.produk.destroy', $produk) }}"
+                                      style="display:inline;"
+                                      onsubmit="return confirmHapus('{{ addslashes($produk->nama) }}')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                        Hapus
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -408,7 +434,6 @@ function openDetailModal(id) {
     const p = produkData[id];
     if (!p) return;
 
-    // Gambar
     const imgEl = document.getElementById('detail-img');
     if (p.foto) {
         imgEl.innerHTML = `<img src="/storage/${p.foto}" alt="${p.nama}" style="width:100%;height:100%;object-fit:cover;">`;
@@ -416,13 +441,15 @@ function openDetailModal(id) {
         imgEl.innerHTML = '<span>🛍️</span>';
     }
 
-    document.getElementById('d-nama').textContent     = p.nama;
-    document.getElementById('d-kategori').textContent = p.kategori ?? '-';
-    document.getElementById('d-harga').textContent    = 'Rp ' + (p.harga ?? 0).toLocaleString('id');
-    document.getElementById('d-whatsapp').textContent = p.whatsapp ?? '-';
+    document.getElementById('d-nama').textContent      = p.nama;
+    document.getElementById('d-kategori').textContent  = p.kategori ?? '-';
+    document.getElementById('d-harga').textContent     = 'Rp ' + (p.harga ?? 0).toLocaleString('id');
+    document.getElementById('d-whatsapp').textContent  = p.whatsapp ?? '-';
     document.getElementById('d-deskripsi').textContent = p.deskripsi ?? '-';
-    document.getElementById('d-alamat').textContent   = p.alamat ?? '-';
-    document.getElementById('d-tanggal').textContent  = p.created_at ? new Date(p.created_at).toLocaleDateString('id-ID', {day:'2-digit',month:'long',year:'numeric'}) : '-';
+    document.getElementById('d-alamat').textContent    = p.alamat ?? '-';
+    document.getElementById('d-tanggal').textContent   = p.created_at
+        ? new Date(p.created_at).toLocaleDateString('id-ID', {day:'2-digit',month:'long',year:'numeric'})
+        : '-';
 
     const statusMap = {
         pending:  '<span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>',
@@ -474,6 +501,11 @@ function openRejectModal(id, nama) {
     document.getElementById('reject-name').textContent = nama;
     document.getElementById('reject-form').action = `/admin/approval/produk/${id}/reject?tab=rejected`;
     openModal('modal-reject');
+}
+
+// Konfirmasi sebelum hapus — muncul dialog browser native
+function confirmHapus(nama) {
+    return confirm(`Hapus produk "${nama}"?\n\nTindakan ini tidak dapat dibatalkan.`);
 }
 </script>
 

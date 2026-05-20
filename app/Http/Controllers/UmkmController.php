@@ -123,15 +123,23 @@ class UmkmController extends Controller
         // Geocode produk approved yang belum punya koordinat
         $this->geocodeBelumAda();
 
+        // Total UMKM yang sudah diapprove (untuk counter)
+        $totalApproved = Produk::where('status', 'approved')->count();
+
         // Hanya tampilkan produk yang sudah diapprove admin dan sudah punya koordinat
         $produks = Produk::where('status', 'approved')
             ->whereNotNull('lat')
             ->whereNotNull('lng')
+            ->where('lat', '!=', 0)
+            ->where('lng', '!=', 0)
             ->select(['id', 'nama', 'logo', 'foto_produk', 'alamat', 'lat', 'lng', 'provinsi', 'kabupaten_kota', 'kecamatan'])
             ->get();
 
         $data = [];
         foreach ($produks as $p) {
+            // Validasi koordinat masuk akal untuk Indonesia
+            if (!$this->koordinatValid((float) $p->lat, (float) $p->lng)) continue;
+
             // Gunakan logo utama, fallback ke foto_produk
             $fotoFile = $p->logo ?: $p->foto_produk;
             $fotoUrl  = $fotoFile ? asset('storage/produk-pict/' . $fotoFile) : null;
@@ -151,8 +159,12 @@ class UmkmController extends Controller
                 'lng'    => (float) $p->lng,
             ];
         }
-    
-        return response()->json(['data' => $data]);
+
+        return response()->json([
+            'data'           => $data,
+            'total_approved' => $totalApproved,
+            'total_mapped'   => count($data),
+        ]);
     }
 
     // ─────────────────────────────────────────────────────────
@@ -161,7 +173,10 @@ class UmkmController extends Controller
     // ─────────────────────────────────────────────────────────
     public function petaDataMentor()
     {
-        // Ambil semua mentor yang SUDAH DISETUJUI dan punya minimal satu info lokasi
+        // Total mentor yang sudah diapprove (untuk counter)
+        $totalApproved = Mentor::where('status', 'approved')->count();
+
+        // Ambil semua mentor yang SUDAH DISETUJUI
         $mentors = Mentor::select([
                 'id', 'nama', 'full_name', 'white_bg_photo', 'foto',
                 'lokasi', 'gmaps_location', 'provinsi', 'kabupaten', 'kecamatan',
@@ -169,53 +184,48 @@ class UmkmController extends Controller
                 'phone', 'role', 'status',
             ])
             ->where('status', 'approved')
-            ->where(function ($q) {
-                $q->whereNotNull('gmaps_location')
-                  ->orWhereNotNull('lokasi')
-                  ->orWhereNotNull('provinsi');
-            })
             ->get();
 
         $data = [];
         foreach ($mentors as $m) {
-            // ── Alamat untuk DITAMPILKAN di popup ─────────────────────────
-            // Prioritas: gmaps_location (alamat lengkap dari user) > gabungan wilayah
-            $wilayah = trim(implode(', ', array_filter([$m->kecamatan, $m->kabupaten, $m->provinsi])));
-            $alamatTampil = $m->gmaps_location ?: ($wilayah ?: $m->lokasi);
-
-            // Pastikan alamat tampil bukan koordinat (angka seperti "-7.123, 112.456")
-            if ($alamatTampil && preg_match('/^-?\d+\.\d+\s*,\s*-?\d+\.\d+$/', trim($alamatTampil))) {
-                $alamatTampil = $wilayah ?: null;
-            }
-
-            // ── Alamat untuk GEOCODING (mencari koordinat) ────────────────
-            // Prioritas: gmaps_location > lokasi > wilayah administratif
-            // Hindari geocoding string koordinat mentah
-            $alamatGeocode = null;
-            foreach ([$m->gmaps_location, $wilayah, $m->lokasi] as $kandidat) {
-                if (!$kandidat) continue;
-                // Lewati jika isinya koordinat angka
-                if (preg_match('/^-?\d+\.\d+\s*,\s*-?\d+\.\d+$/', trim($kandidat))) continue;
-                $alamatGeocode = $kandidat;
-                break;
-            }
-
-            if (!$alamatGeocode) continue;
-
-            // Gunakan lat/lng tersimpan di DB jika ada, geocode jika belum
-            if ($m->lat && $m->lng) {
+            // ── Jika sudah punya koordinat tersimpan di DB, langsung pakai ──
+            if ($m->lat && $m->lng && $this->koordinatValid((float) $m->lat, (float) $m->lng)) {
                 $koordinat = ['lat' => (float) $m->lat, 'lng' => (float) $m->lng];
             } else {
+                // ── Susun alamat untuk geocoding ────────────────────────────
+                $wilayah = trim(implode(', ', array_filter([$m->kecamatan, $m->kabupaten, $m->provinsi])));
+                $alamatGeocode = null;
+                foreach ([$m->gmaps_location, $wilayah, $m->lokasi] as $kandidat) {
+                    if (!$kandidat) continue;
+                    // Lewati jika isinya koordinat angka mentah
+                    if (preg_match('/^-?\d+\.\d+\s*,\s*-?\d+\.\d+$/', trim($kandidat))) continue;
+                    $alamatGeocode = $kandidat;
+                    break;
+                }
+
+                if (!$alamatGeocode) {
+                    // Tidak ada data lokasi sama sekali — skip
+                    continue;
+                }
+
                 $koordinat = $this->geocodeAlamat($alamatGeocode);
                 if ($koordinat) {
                     // Simpan ke DB agar tidak geocode ulang tiap request
                     $m->update(['lat' => $koordinat['lat'], 'lng' => $koordinat['lng']]);
+                } else {
+                    continue;
                 }
             }
 
-            if (!$koordinat) continue;
+            // ── Alamat untuk ditampilkan di popup ──────────────────────────
+            $wilayah = trim(implode(', ', array_filter([$m->kecamatan, $m->kabupaten, $m->provinsi])));
+            $alamatTampil = $m->gmaps_location ?: ($wilayah ?: $m->lokasi);
+            // Jangan tampilkan string koordinat mentah
+            if ($alamatTampil && preg_match('/^-?\d+\.\d+\s*,\s*-?\d+\.\d+$/', trim($alamatTampil))) {
+                $alamatTampil = $wilayah ?: null;
+            }
 
-            // Foto: utamakan white_bg_photo, fallback foto
+            // ── Foto ────────────────────────────────────────────────────────
             $fotoPath = null;
             if ($m->white_bg_photo) {
                 $fotoPath = asset('storage/' . $m->white_bg_photo);
@@ -226,14 +236,18 @@ class UmkmController extends Controller
             $data[] = [
                 'id'     => $m->id,
                 'nama'   => $m->full_name ?: $m->nama,
-                'lokasi' => $alamatTampil, // alamat yang ditampilkan di popup
+                'lokasi' => $alamatTampil,
                 'foto'   => $fotoPath,
                 'lat'    => $koordinat['lat'],
                 'lng'    => $koordinat['lng'],
             ];
         }
 
-        return response()->json(['data' => $data]);
+        return response()->json([
+            'data'           => $data,
+            'total_approved' => $totalApproved,
+            'total_mapped'   => count($data),
+        ]);
     }
 
     private function geocodeBelumAda(): void

@@ -199,7 +199,7 @@ class AdminController extends Controller
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Produk berhasil disetujui.', 'produk' => $produk]);
         }
-        return redirect()->route('admin.approval.produk', ['status' => 'approved'])
+        return redirect()->route('admin.approval.produk', ['tab' => 'approved'])
             ->with('success', 'Produk berhasil disetujui.');
     }
     public function rejectProduk(Request $request, Produk $produk)
@@ -214,8 +214,15 @@ class AdminController extends Controller
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Produk berhasil ditolak.']);
         }
-        return redirect()->route('admin.approval.produk', ['status' => 'rejected'])
+        return redirect()->route('admin.approval.produk', ['tab' => 'rejected'])
             ->with('success', 'Produk telah ditolak.');
+    }
+    // ── BARU: Hapus produk (approved / rejected) ──────────────────────
+    public function destroyProduk(Produk $produk)
+    {
+        $nama = $produk->nama;
+        $produk->delete();
+        return back()->with('success', "Produk \"{$nama}\" berhasil dihapus.");
     }
 
     // ═════════════════════════════════════════════════════════════════════
@@ -326,8 +333,6 @@ class AdminController extends Controller
             'is_pembimbing'         => true,
             'pembimbing_expired_at' => now()->addYear(),
         ]);
-
-        // Ganti return back() dengan ini:
         return redirect()->to('/admin/approval/trainer')
             ->with('success', "{$user->name} berhasil disetujui sebagai Trainer.");
     }

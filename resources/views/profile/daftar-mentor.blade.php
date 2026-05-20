@@ -60,7 +60,7 @@
             {{-- ======================== LOKASI TINGGAL ======================== --}}
             <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-1">Lokasi Tinggal (Sesuai Google Maps) *</label>
-                <input type="text" name="gmaps_location" value="{{ old('gmaps_location') }}"
+                <input type="text" name="gmaps_location" id="gmaps_location" value="{{ old('gmaps_location') }}"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none transition"
                     required placeholder="Contoh: Jl. Raya Darmo No.1, RT 03/RW 05, Wonokromo, Surabaya, Jawa Timur 60241">
                 <p class="text-[10px] text-gray-400 mt-1">*wajib sertakan RT/RW dan kode pos</p>
@@ -100,6 +100,35 @@
                         <option value="">Pilih Desa/Kelurahan</option>
                     </select>
                 </div>
+            </div>
+
+            {{-- ======================== PETA ======================== --}}
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">
+                    Titik Lokasi di Peta <span class="text-red-500">*</span>
+                </label>
+                <p class="text-xs text-gray-500 mb-2">
+                    Peta akan otomatis mengarah ke lokasi Anda setelah <strong>Desa/Kelurahan</strong> dipilih.
+                    Anda juga bisa klik atau geser marker untuk menyesuaikan titik secara manual.
+                </p>
+
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css"/>
+                <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+
+                <div style="position:relative;">
+                    <div id="map-picker-mentor" style="height:320px;border-radius:10px;border:2px solid #fecaca;overflow:hidden;"></div>
+                    <div id="map-mentor-loading" style="display:none;position:absolute;inset:0;background:rgba(255,255,255,0.75);border-radius:10px;z-index:1000;align-items:center;justify-content:center;flex-direction:column;gap:8px;">
+                        <div style="width:32px;height:32px;border:4px solid #fecaca;border-top-color:#e53935;border-radius:50%;animation:spin-mentor 0.8s linear infinite;"></div>
+                        <span style="font-size:12px;color:#666;">Mencari lokasi...</span>
+                    </div>
+                </div>
+                <style>@keyframes spin-mentor{to{transform:rotate(360deg)}}</style>
+
+                <p id="map-picker-hint-mentor" class="text-xs text-gray-500 mt-1">
+                    📍 Pilih Desa/Kelurahan terlebih dahulu agar peta otomatis mengarah ke lokasi Anda.
+                </p>
+                <input type="hidden" name="lat" id="lat-mentor" value="{{ old('lat') }}" required>
+                <input type="hidden" name="lng" id="lng-mentor" value="{{ old('lng') }}" required>
             </div>
 
             {{-- ======================== TENTANG DIRI ======================== --}}
@@ -154,7 +183,6 @@
                     </p>
                 </div>
 
-                {{-- Info Rekening --}}
                 <div class="rounded-xl border border-gray-200 overflow-hidden">
                     <table class="w-full text-sm">
                         <tbody>
@@ -188,7 +216,6 @@
                     </table>
                 </div>
 
-                {{-- Upload Bukti Transfer --}}
                 <div class="space-y-2 pt-2">
                     <label class="block text-sm font-medium text-gray-700">Bukti Transfer <span class="text-red-500">*</span></label>
                     <p class="text-xs text-gray-500">Upload 1 file yang didukung (JPG, PNG, PDF). Maks 2 MB.</p>
@@ -234,113 +261,253 @@
 </div>
 
 <script>
-    function updateFileName(input, targetId) {
-        const fileName = input.files[0] ? input.files[0].name : "";
-        const label = document.getElementById(targetId);
-        if (fileName) {
-            label.textContent = "✓ File terpilih: " + fileName;
-        } else {
-            label.textContent = "";
-        }
+// ======================== UTILITY ========================
+function updateFileName(input, targetId) {
+    const fileName = input.files[0] ? input.files[0].name : '';
+    const label = document.getElementById(targetId);
+    label.textContent = fileName ? '✓ File terpilih: ' + fileName : '';
+}
+
+function copyRekening() {
+    const noRek = document.getElementById('nomor-rek').textContent.trim();
+    const label = document.getElementById('copy-label');
+    const done  = () => { label.textContent = '✓ Tersalin!'; setTimeout(() => { label.textContent = 'Salin'; }, 2000); };
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(noRek).then(done);
+    } else {
+        const el = document.createElement('textarea');
+        el.value = noRek; document.body.appendChild(el); el.select();
+        document.execCommand('copy'); document.body.removeChild(el); done();
     }
+}
 
-    function copyRekening() {
-        const noRek = document.getElementById('nomor-rek').textContent.trim();
-        const label = document.getElementById('copy-label');
+// ======================== PETA + GEOCODE ========================
+(function () {
+    var map        = L.map('map-picker-mentor').setView([-2.5, 118], 5);
+    var marker     = null;
+    var debTimer   = null;
+    var isGeocoding = false;
+    var hintEl     = document.getElementById('map-picker-hint-mentor');
+    var loadEl     = document.getElementById('map-mentor-loading');
 
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(noRek).then(() => {
-                label.textContent = '✓ Tersalin!';
-                setTimeout(() => { label.textContent = 'Salin'; }, 2000);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors', maxZoom: 19
+    }).addTo(map);
+
+    // Restore koordinat lama jika validasi gagal
+    var oldLat = document.getElementById('lat-mentor').value;
+    var oldLng = document.getElementById('lng-mentor').value;
+    if (oldLat && oldLng) setMarker(parseFloat(oldLat), parseFloat(oldLng), true);
+
+    function setMarker(lat, lng, zoomIn) {
+        if (marker) {
+            marker.setLatLng([lat, lng]);
+        } else {
+            marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+            marker.on('dragend', function (e) {
+                var p = e.target.getLatLng();
+                simpanKoordinat(p.lat, p.lng);
             });
-        } else {
-            const el = document.createElement('textarea');
-            el.value = noRek;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-            label.textContent = '✓ Tersalin!';
-            setTimeout(() => { label.textContent = 'Salin'; }, 2000);
         }
+        if (zoomIn) map.setView([lat, lng], 16);
+        simpanKoordinat(lat, lng);
     }
 
-    // ======================== WILAYAH API ========================
-    const BASE_URL = 'https://www.emsifa.com/api-wilayah-indonesia/api';
+    function simpanKoordinat(lat, lng) {
+        document.getElementById('lat-mentor').value = lat;
+        document.getElementById('lng-mentor').value = lng;
+        hintEl.textContent = '✅ ' + lat.toFixed(6) + ', ' + lng.toFixed(6) + ' — Geser marker untuk menyesuaikan.';
+        hintEl.style.color = '#16a34a';
+    }
 
-    const provinsiSelect  = document.getElementById('provinsi');
-    const kabupatenSelect = document.getElementById('kabupaten');
-    const kecamatanSelect = document.getElementById('kecamatan');
-    const kelurahanSelect = document.getElementById('kelurahan');
+    // Klik manual di peta
+    map.on('click', function (e) { setMarker(e.latlng.lat, e.latlng.lng, false); });
 
-    fetch(`${BASE_URL}/provinces.json`)
-        .then(res => res.json())
-        .then(data => {
-            data.forEach(prov => {
-                const opt = document.createElement('option');
-                opt.value = prov.id;
-                opt.textContent = prov.name;
-                provinsiSelect.appendChild(opt);
+    // Helper ambil teks option terpilih
+    function selText(id) {
+        var el = document.getElementById(id);
+        if (!el || !el.value) return '';
+        return el.options[el.selectedIndex].text;
+    }
+
+    // Fungsi geocode — dipanggil HANYA dari kelurahan.change
+    window.mentorGeocode = function () {
+        clearTimeout(debTimer);
+        debTimer = setTimeout(doGeocode, 600);
+    };
+
+    function doGeocode() {
+        if (isGeocoding) return;
+
+        var alamat   = (document.getElementById('gmaps_location') || {}).value || '';
+        var kelVal   = (document.getElementById('kelurahan') || {}).value || '';
+        var kelText  = selText('kelurahan');
+        var kecText  = selText('kecamatan');
+        var kabText  = selText('kabupaten');
+        var provText = selText('provinsi');
+
+        // Syarat: kelurahan sudah dipilih + gmaps_location terisi
+        if (!kelVal || alamat.trim().length < 5) return;
+
+        isGeocoding = true;
+        loadEl.style.display = 'flex';
+        hintEl.textContent   = '🔍 Mencari lokasi...';
+        hintEl.style.color   = '#6b7280';
+
+        // Strategi 1 — structured query: paling presisi
+        // street = isi gmaps_location, suburb = kelurahan, city = kabupaten, state = provinsi
+        var p1 = new URLSearchParams({
+            format          : 'json',
+            limit           : '1',
+            countrycodes    : 'id',
+            'accept-language': 'id,en',
+            street  : alamat.trim(),
+            suburb  : kelText,
+            city    : kabText,
+            state   : provText,
+            country : 'Indonesia'
+        });
+
+        fetch('https://nominatim.openstreetmap.org/search?' + p1.toString())
+            .then(function (r) { return r.json(); })
+            .then(function (h1) {
+                if (h1 && h1.length > 0) return h1[0];
+
+                // Strategi 2 — fallback: q= kelurahan + kecamatan + kabupaten + provinsi
+                // Hilangkan nama jalan sama sekali agar tidak ambigu
+                var q2 = [kelText, kecText, kabText, provText].filter(Boolean).join(', ');
+                var p2 = new URLSearchParams({
+                    format          : 'json',
+                    limit           : '1',
+                    countrycodes    : 'id',
+                    'accept-language': 'id,en',
+                    q       : q2 + ', Indonesia'
+                });
+                return fetch('https://nominatim.openstreetmap.org/search?' + p2.toString())
+                    .then(function (r2) { return r2.json(); })
+                    .then(function (h2) { return (h2 && h2.length > 0) ? h2[0] : null; });
+            })
+            .then(function (result) {
+                loadEl.style.display = 'none';
+                isGeocoding = false;
+                if (!result) {
+                    hintEl.textContent = '⚠️ Lokasi tidak ditemukan otomatis. Klik langsung di peta.';
+                    hintEl.style.color = '#b45309';
+                    return;
+                }
+                var lat = parseFloat(result.lat);
+                var lng = parseFloat(result.lon);
+                // Validasi: harus di wilayah Indonesia
+                if (lat >= -11 && lat <= 6 && lng >= 95 && lng <= 141) {
+                    setMarker(lat, lng, true);
+                } else {
+                    hintEl.textContent = '⚠️ Hasil di luar Indonesia. Klik langsung di peta.';
+                    hintEl.style.color = '#b45309';
+                }
+            })
+            .catch(function (err) {
+                console.warn('[geocode] error:', err);
+                loadEl.style.display = 'none';
+                isGeocoding = false;
+                hintEl.textContent = '⚠️ Gagal terhubung ke layanan peta. Klik titik di peta secara manual.';
+                hintEl.style.color = '#b45309';
+            });
+    }
+})();
+
+// ======================== WILAYAH API ========================
+(function () {
+    var BASE = 'https://www.emsifa.com/api-wilayah-indonesia/api';
+
+    var elProv = document.getElementById('provinsi');
+    var elKab  = document.getElementById('kabupaten');
+    var elKec  = document.getElementById('kecamatan');
+    var elKel  = document.getElementById('kelurahan');
+
+    function resetSelect(el, label) {
+        el.innerHTML = '<option value="">' + label + '</option>';
+        el.disabled  = true;
+    }
+
+    // Muat provinsi
+    fetch(BASE + '/provinces.json')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            data.forEach(function (p) {
+                var o = document.createElement('option');
+                o.value = p.id; o.textContent = p.name;
+                elProv.appendChild(o);
             });
         });
 
-    provinsiSelect.addEventListener('change', function () {
-        resetSelect(kabupatenSelect, '-- Pilih Kabupaten/Kota --');
-        resetSelect(kecamatanSelect, '-- Pilih Kecamatan --');
-        resetSelect(kelurahanSelect, '-- Pilih Desa/Kelurahan --');
+    elProv.addEventListener('change', function () {
+        resetSelect(elKab, 'Pilih Kabupaten/Kota');
+        resetSelect(elKec, 'Pilih Kecamatan');
+        resetSelect(elKel, 'Pilih Desa/Kelurahan');
         if (!this.value) return;
-        kabupatenSelect.disabled = true;
-        fetch(`${BASE_URL}/regencies/${this.value}.json`)
-            .then(res => res.json())
-            .then(data => {
-                data.forEach(kab => {
-                    const opt = document.createElement('option');
-                    opt.value = kab.id;
-                    opt.textContent = kab.name;
-                    kabupatenSelect.appendChild(opt);
+        elKab.disabled = true;
+        fetch(BASE + '/regencies/' + this.value + '.json')
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                data.forEach(function (k) {
+                    var o = document.createElement('option');
+                    o.value = k.id; o.textContent = k.name;
+                    elKab.appendChild(o);
                 });
-                kabupatenSelect.disabled = false;
+                elKab.disabled = false;
             });
     });
 
-    kabupatenSelect.addEventListener('change', function () {
-        resetSelect(kecamatanSelect, '-- Pilih Kecamatan --');
-        resetSelect(kelurahanSelect, '-- Pilih Desa/Kelurahan --');
+    elKab.addEventListener('change', function () {
+        resetSelect(elKec, 'Pilih Kecamatan');
+        resetSelect(elKel, 'Pilih Desa/Kelurahan');
         if (!this.value) return;
-        kecamatanSelect.disabled = true;
-        fetch(`${BASE_URL}/districts/${this.value}.json`)
-            .then(res => res.json())
-            .then(data => {
-                data.forEach(kec => {
-                    const opt = document.createElement('option');
-                    opt.value = kec.id;
-                    opt.textContent = kec.name;
-                    kecamatanSelect.appendChild(opt);
+        elKec.disabled = true;
+        fetch(BASE + '/districts/' + this.value + '.json')
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                data.forEach(function (k) {
+                    var o = document.createElement('option');
+                    o.value = k.id; o.textContent = k.name;
+                    elKec.appendChild(o);
                 });
-                kecamatanSelect.disabled = false;
+                elKec.disabled = false;
+                // TIDAK trigger geocode di sini
             });
     });
 
-    kecamatanSelect.addEventListener('change', function () {
-        resetSelect(kelurahanSelect, '-- Pilih Desa/Kelurahan --');
+    elKec.addEventListener('change', function () {
+        resetSelect(elKel, 'Pilih Desa/Kelurahan');
         if (!this.value) return;
-        kelurahanSelect.disabled = true;
-        fetch(`${BASE_URL}/villages/${this.value}.json`)
-            .then(res => res.json())
-            .then(data => {
-                data.forEach(kel => {
-                    const opt = document.createElement('option');
-                    opt.value = kel.id;
-                    opt.textContent = kel.name;
-                    kelurahanSelect.appendChild(opt);
+        elKel.disabled = true;
+        fetch(BASE + '/villages/' + this.value + '.json')
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                data.forEach(function (k) {
+                    var o = document.createElement('option');
+                    o.value = k.id; o.textContent = k.name;
+                    elKel.appendChild(o);
                 });
-                kelurahanSelect.disabled = false;
+                elKel.disabled = false;
+                // TIDAK trigger geocode di sini — tunggu kelurahan dipilih
             });
     });
 
-    function resetSelect(selectEl, placeholder) {
-        selectEl.innerHTML = `<option value="">${placeholder}</option>`;
-        selectEl.disabled = true;
+    // ← SATU-SATUNYA tempat geocode dipanggil dari dropdown
+    elKel.addEventListener('change', function () {
+        if (!this.value) return;
+        if (typeof window.mentorGeocode === 'function') window.mentorGeocode();
+    });
+
+    // Trigger dari kolom gmaps_location — jalan kalau kelurahan sudah dipilih
+    var inputLokasi = document.getElementById('gmaps_location');
+    if (inputLokasi) {
+        inputLokasi.addEventListener('input', function () {
+            // Hanya jalankan kalau kelurahan sudah dipilih
+            var kelVal = (document.getElementById('kelurahan') || {}).value || '';
+            if (kelVal) window.mentorGeocode();
+        });
     }
+})();
 </script>
 @endsection

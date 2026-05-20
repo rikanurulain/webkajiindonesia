@@ -150,10 +150,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/approval/program/{program}/approve', [AdminController::class, 'approveProgram'])->name('approval.program.approve');
     Route::patch('/approval/program/{program}/reject',  [AdminController::class, 'rejectProgram'])->name('approval.program.reject');
 
-    // Approval Produk
-    Route::get('/approval/produk', [AdminController::class, 'approvalProduk'])->name('approval.produk');
-    Route::patch('/approval/produk/{produk}/approve', [AdminController::class, 'approveProduk'])->name('approval.produk.approve');
-    Route::patch('/approval/produk/{produk}/reject',  [AdminController::class, 'rejectProduk'])->name('approval.produk.reject');
+// APPROVAL PRODUK
+Route::get('/approval/produk',                      [AdminController::class, 'approvalProduk'])->name('approval.produk');
+Route::patch('/approval/produk/{produk}/approve',   [AdminController::class, 'approveProduk'])->name('approval.produk.approve');
+Route::patch('/approval/produk/{produk}/reject',    [AdminController::class, 'rejectProduk'])->name('approval.produk.reject');
+Route::delete('/approval/produk/{produk}',          [AdminController::class, 'destroyProduk'])->name('approval.produk.destroy'); // ← BARU
 
     // Approval Event
     Route::get('/approval/event', [AdminController::class, 'approvalEvent'])->name('approval.event');
@@ -170,11 +171,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/approval/trainer/{user}/approve', [AdminController::class, 'approveTrainer'])->name('trainer.approve');
     Route::post('/approval/trainer/{user}/reject',  [AdminController::class, 'rejectTrainer'])->name('trainer.reject');
 
-    // Approval Mentor
-    Route::get('/approval/mentor',                     [AdminController::class, 'approvalMentor'])->name('approval.mentor');
-    Route::post('/approval/mentor/{mentor}/approve',   [AdminController::class, 'approveMentor'])->name('approval.mentor.approve');
-    Route::post('/approval/mentor/{mentor}/reject',    [AdminController::class, 'rejectMentor'])->name('approval.mentor.reject');
-    Route::delete('/approval/mentor/{mentor}',         [AdminController::class, 'destroyMentor'])->name('approval.mentor.destroy');
+// APPROVAL MENTOR (sudah ada, pastikan destroy-nya juga terdaftar)
+Route::get('/approval/mentor',                      [AdminController::class, 'approvalMentor'])->name('approval.mentor');
+Route::patch('/approval/mentor/{mentor}/approve',   [AdminController::class, 'approveMentor'])->name('approval.mentor.approve');
+Route::patch('/approval/mentor/{mentor}/reject',    [AdminController::class, 'rejectMentor'])->name('approval.mentor.reject');
+Route::delete('/approval/mentor/{mentor}',          [AdminController::class, 'destroyMentor'])->name('approval.mentor.destroy');
 
     // Pengguna
     Route::get('/pengguna', [AdminController::class, 'pengguna'])->name('pengguna');

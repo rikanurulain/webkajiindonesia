@@ -356,10 +356,16 @@ public function simpanUmkm(Request $request)
         'deskripsi'      => 'required|string',
         'logo'           => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
         'foto_produk'    => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
+        'lat'            => 'required|numeric|between:-11,6',
+        'lng'            => 'required|numeric|between:95,141',
         'terms'          => 'required', // Memastikan checkbox dicentang
     ], [
         'terms.required' => 'Anda harus menyetujui Syarat dan Ketentuan.',
         'logo.required'  => 'Logo usaha wajib diunggah.',
+        'lat.required'   => 'Titik lokasi di peta wajib dipilih.',
+        'lng.required'   => 'Titik lokasi di peta wajib dipilih.',
+        'lat.between'    => 'Koordinat tidak valid, pastikan lokasi berada di wilayah Indonesia.',
+        'lng.between'    => 'Koordinat tidak valid, pastikan lokasi berada di wilayah Indonesia.',
     ]);
 
     // 2. Proses Upload File
@@ -384,6 +390,8 @@ public function simpanUmkm(Request $request)
         'deskripsi'      => $request->deskripsi,
         'logo'           => $logoPath,        // Kolom logo baru
         'foto_produk'    => $fotoProdukPath,
+        'lat'            => $request->lat,
+        'lng'            => $request->lng,
         'status'         => 'pending',       // Default pending menunggu acc admin
     ]);
 
@@ -438,6 +446,8 @@ public function simpanMentor(Request $request)
         'ktp_scan'       => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
         'bukti_transfer' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
         'agree_terms'    => 'required|accepted',
+        'lat'            => 'required|numeric|between:-11,6',
+        'lng'            => 'required|numeric|between:95,141',
     ], [
         'full_name.required'      => 'Nama lengkap wajib diisi.',
         'phone.required'          => 'Nomor WhatsApp wajib diisi.',
@@ -460,6 +470,10 @@ public function simpanMentor(Request $request)
         'bukti_transfer.max'      => 'Ukuran bukti transfer maksimal 2 MB.',
         'agree_terms.required'    => 'Anda wajib menyetujui Syarat dan Ketentuan.',
         'agree_terms.accepted'    => 'Anda wajib menyetujui Syarat dan Ketentuan.',
+        'lat.required'            => 'Titik lokasi di peta wajib dipilih.',
+        'lng.required'            => 'Titik lokasi di peta wajib dipilih.',
+        'lat.between'             => 'Koordinat tidak valid, pastikan lokasi di wilayah Indonesia.',
+        'lng.between'             => 'Koordinat tidak valid, pastikan lokasi di wilayah Indonesia.',
     ]);
  
     $fotoPath     = $request->file('white_bg_photo')->store('mentor/foto', 'public');
@@ -493,6 +507,8 @@ public function simpanMentor(Request $request)
         'bukti_transfer' => $transferPath,
         'agree_terms'    => true,
         'role'           => 'Pembimbing',
+        'lat'            => $request->lat,
+        'lng'            => $request->lng,
         'status'         => 'pending',
     ]);
  

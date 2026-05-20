@@ -329,9 +329,14 @@ async function muatSemuaData() {
         const dataUMKM   = jsonUMKM.data   || [];
         const dataMentor = jsonMentor.data  || [];
 
+        // Gunakan total_approved agar counter mencerminkan jumlah yang sesungguhnya disetujui,
+        // bukan hanya yang berhasil terpetakan (sudah punya koordinat)
+        const totalUMKM   = jsonUMKM.total_approved   ?? dataUMKM.length;
+        const totalMentor = jsonMentor.total_approved ?? dataMentor.length;
+
         document.getElementById('loading').style.display = 'none';
-        document.getElementById('jumlah-umkm').textContent   = dataUMKM.length   + ' UMKM Terdaftar';
-        document.getElementById('jumlah-mentor').textContent = dataMentor.length + ' Mentor Terdaftar';
+        document.getElementById('jumlah-umkm').textContent   = totalUMKM   + ' UMKM Terdaftar';
+        document.getElementById('jumlah-mentor').textContent = totalMentor + ' Mentor Terdaftar';
 
         const allMarkers = [];
         const iconUMKM   = buatMarkerUMKM();
