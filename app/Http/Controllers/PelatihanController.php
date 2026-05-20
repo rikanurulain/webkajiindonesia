@@ -548,6 +548,16 @@ class PelatihanController extends Controller
 
     $trainers = $query->paginate(12);
 
+    // Bersihkan kolom location jika isinya koordinat angka (bukan alamat teks)
+    $trainers->getCollection()->transform(function ($trainer) {
+        $loc = trim($trainer->location ?? '');
+        // Jika hanya berisi angka, koma, titik, spasi, strip → itu koordinat bukan alamat
+        if ($loc === '' || preg_match('/^[\d\s\.,\-]+$/', $loc)) {
+            $trainer->location = null;
+        }
+        return $trainer;
+    });
+
     $bidangList = User::where('role', 'trainer')
                       ->whereNotNull('bidang_keahlian')
                       ->pluck('bidang_keahlian')

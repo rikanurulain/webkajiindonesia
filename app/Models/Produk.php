@@ -24,6 +24,14 @@ class Produk extends Model
     'logo',            
     'foto_produk',
     'status',
+    'lat',
+    'lng',
+    'catatan_admin',
+    'approved_at',
+    'approved_by',
+    'rejected_at',
+    'rejected_by',
+    'rejection_reason',
 ];
 
     protected $casts = [

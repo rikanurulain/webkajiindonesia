@@ -339,6 +339,7 @@ async function muatSemuaData() {
 
         // Pasang marker UMKM
         dataUMKM.forEach(umkm => {
+            if (!umkm.lat || !umkm.lng) return;
             const marker = L.marker([umkm.lat, umkm.lng], { icon: iconUMKM });
             marker.bindPopup(buatPopupUMKM(umkm), { maxWidth: 260 });
             marker.addTo(map);
@@ -347,6 +348,7 @@ async function muatSemuaData() {
 
         // Pasang marker Mentor
         dataMentor.forEach(mentor => {
+            if (!mentor.lat || !mentor.lng) return;
             const marker = L.marker([mentor.lat, mentor.lng], { icon: iconMentor });
             marker.bindPopup(buatPopupMentor(mentor), { maxWidth: 260 });
             marker.addTo(map);
@@ -357,6 +359,9 @@ async function muatSemuaData() {
         if (allMarkers.length > 0) {
             const group = L.featureGroup(allMarkers);
             map.fitBounds(group.getBounds().pad(0.2));
+        } else {
+            // Tampilkan info jika belum ada data terpetakan
+            tampilInfo('Belum ada data UMKM yang disetujui dan memiliki informasi lokasi. Data akan muncul setelah admin menyetujui pendaftaran UMKM.');
         }
 
     } catch (err) {
@@ -369,6 +374,15 @@ async function muatSemuaData() {
 function tampilError(msg) {
     const el = document.getElementById('error-box');
     el.textContent = '⚠️ ' + msg;
+    el.classList.remove('hidden');
+}
+
+function tampilInfo(msg) {
+    const el = document.getElementById('error-box');
+    el.style.background = '#eff6ff';
+    el.style.borderColor = '#bfdbfe';
+    el.style.color = '#1e40af';
+    el.textContent = 'ℹ️ ' + msg;
     el.classList.remove('hidden');
 }
 

@@ -88,49 +88,67 @@ class UmkmController extends Controller
         $produks = Produk::where('status', 'approved')
             ->whereNotNull('lat')
             ->whereNotNull('lng')
-            ->select(['id', 'nama', 'foto','alamat', 'lat', 'lng'])
+            ->select(['id', 'nama', 'logo', 'foto_produk', 'alamat', 'lat', 'lng', 'provinsi', 'kabupaten_kota', 'kecamatan'])
             ->get();
 
         $data = [];
         foreach ($produks as $p) {
+            $fotoFile = $p->logo ?: $p->foto_produk;
+            $fotoUrl  = $fotoFile ? asset('storage/produk-pict/' . $fotoFile) : null;
+
+            $wilayah = trim(implode(', ', array_filter([
+                $p->kecamatan, $p->kabupaten_kota, $p->provinsi
+            ])));
+            $alamatTampil = $p->alamat ?: $wilayah;
+
             $data[] = [
-                'id' => $p->id,
-                'nama' => $p->nama,
-                'alamat' => $p->alamat,
-                'foto' => $p->foto ? asset('storage/produk-pict/' . $p->foto) : null,
-                'lat' => $p->lat,
-                'lng' => $p->lng,
+                'id'     => $p->id,
+                'nama'   => $p->nama,
+                'alamat' => $alamatTampil,
+                'foto'   => $fotoUrl,
+                'lat'    => (float) $p->lat,
+                'lng'    => (float) $p->lng,
             ];
         }
 
         return response()->json([
             'status' => 'success',
-            'total' => count($data),
-            'data' => $data,
+            'total'  => count($data),
+            'data'   => $data,
         ]);
     }
 
     public function petaData()
     {
-        // Geocode produk yang belum punya koordinat
+        // Geocode produk approved yang belum punya koordinat
         $this->geocodeBelumAda();
 
-        // Hanya tampilkan produk yang sudah diapprove admin
+        // Hanya tampilkan produk yang sudah diapprove admin dan sudah punya koordinat
         $produks = Produk::where('status', 'approved')
             ->whereNotNull('lat')
             ->whereNotNull('lng')
-            ->select(['id', 'nama', 'foto', 'alamat', 'lat', 'lng'])
+            ->select(['id', 'nama', 'logo', 'foto_produk', 'alamat', 'lat', 'lng', 'provinsi', 'kabupaten_kota', 'kecamatan'])
             ->get();
 
         $data = [];
         foreach ($produks as $p) {
+            // Gunakan logo utama, fallback ke foto_produk
+            $fotoFile = $p->logo ?: $p->foto_produk;
+            $fotoUrl  = $fotoFile ? asset('storage/produk-pict/' . $fotoFile) : null;
+
+            // Susun alamat tampilan: alamat lengkap atau gabungan wilayah
+            $wilayah = trim(implode(', ', array_filter([
+                $p->kecamatan, $p->kabupaten_kota, $p->provinsi
+            ])));
+            $alamatTampil = $p->alamat ?: $wilayah;
+
             $data[] = [
                 'id'     => $p->id,
                 'nama'   => $p->nama,
-                'alamat' => $p->alamat,
-                'foto'   => $p->foto ? asset('storage/produk-pict/' . $p->foto) : null,
-                'lat'    => $p->lat,
-                'lng'    => $p->lng,
+                'alamat' => $alamatTampil,
+                'foto'   => $fotoUrl,
+                'lat'    => (float) $p->lat,
+                'lng'    => (float) $p->lng,
             ];
         }
     
@@ -220,14 +238,29 @@ class UmkmController extends Controller
 
     private function geocodeBelumAda(): void
     {
-        $belum = Produk::whereNull('lat')
+        // Hanya geocode produk yang sudah diapprove dan belum punya koordinat
+        $belum = Produk::where('status', 'approved')
+            ->whereNull('lat')
             ->whereNull('lng')
-            ->whereNotNull('alamat')
-            ->where('alamat', '!=', '')
+            ->where(function ($q) {
+                $q->where(function ($q2) {
+                    $q2->whereNotNull('alamat')->where('alamat', '!=', '');
+                })->orWhere(function ($q2) {
+                    $q2->whereNotNull('provinsi')->where('provinsi', '!=', '');
+                });
+            })
             ->get();
 
         foreach ($belum as $produk) {
-            $koordinat = $this->geocodeAlamat($produk->alamat);
+            // Susun alamat: gunakan alamat lengkap, fallback ke gabungan wilayah
+            $wilayah = trim(implode(', ', array_filter([
+                $produk->kecamatan, $produk->kabupaten_kota, $produk->provinsi
+            ])));
+            $alamatGeocode = $produk->alamat ?: $wilayah;
+
+            if (!$alamatGeocode) continue;
+
+            $koordinat = $this->geocodeAlamat($alamatGeocode);
             if ($koordinat) {
                 $produk->update([
                     'lat' => $koordinat['lat'],
