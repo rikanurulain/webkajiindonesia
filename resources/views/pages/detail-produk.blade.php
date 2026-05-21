@@ -75,10 +75,16 @@
                 </div>
                 @endif
 
-                @if ($produk->whatsapp)
+                @php
+                    $nomorWa = $produk->whatsapp ?? preg_replace('/[^0-9]/', '', $produk->kontak ?? '');
+                    if ($nomorWa && str_starts_with($nomorWa, '0')) {
+                        $nomorWa = '62' . substr($nomorWa, 1);
+                    }
+                @endphp
+                @if ($produk->kontak || $produk->whatsapp)
                 <div>
-                    <p class="text-sm font-bold text-gray-700">Kontak</p>
-                    <p class="text-gray-600 text-sm mt-1">{{ $produk->whatsapp }}</p>
+                    <p class="text-sm font-bold text-gray-700">Kontak WhatsApp</p>
+                    <p class="text-gray-600 text-sm mt-1">{{ $produk->kontak ?? $produk->whatsapp }}</p>
                 </div>
                 @endif
 
@@ -86,11 +92,11 @@
 
             {{-- Tombol --}}
             <div class="flex flex-col gap-3">
-                @if ($produk->whatsapp)
-                <a href="https://wa.me/{{ $produk->whatsapp }}"
+                @if ($nomorWa)
+                <a href="https://wa.me/{{ $nomorWa }}?text={{ urlencode('Halo UMKM ' . $produk->nama . ', saya tertarik dengan produk Anda setelah melihatnya di website KAJI Indonesia.' . "\n" . 'Boleh tanya-tanya lebih lanjut atau pesan produknya? Terima kasih!') }}"
                    target="_blank"
-                   class="bg-green-500 hover:bg-green-600 text-white font-semibold text-center py-4 rounded-xl transition-colors duration-200 text-base">
-                    Hubungi WhatsApp
+                   class="flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-semibold text-center py-4 rounded-xl transition-colors duration-200 text-base">
+                    Chat WhatsApp
                 </a>
                 @endif
 

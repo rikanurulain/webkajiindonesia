@@ -102,9 +102,16 @@
     {{-- Tombol --}}
     <div class="grid grid-cols-2">
         {{-- StopPropagation agar klik WhatsApp tidak membuka halaman Detail --}}
+        @php
+            $nomorWa = preg_replace('/[^0-9]/', '', $produk->whatsapp ?? $produk->kontak ?? '');
+            if ($nomorWa && str_starts_with($nomorWa, '0')) {
+                $nomorWa = '62' . substr($nomorWa, 1);
+            }
+            $pesanWa = urlencode('Halo UMKM ' . $produk->nama . ', saya tertarik dengan produk Anda setelah melihatnya di website KAJI Indonesia.' . "\n" . 'Boleh tanya-tanya lebih lanjut atau pesan produknya? Terima kasih!');
+        @endphp
         <span
-            onclick="event.stopPropagation(); window.open('https://wa.me/{{ $produk->kontak }}', '_blank')"
-            class="bg-green-500 hover:bg-green-600 text-white text-sm font-semibold text-center py-3 transition-colors duration-200">
+            onclick="event.stopPropagation(); {{ $nomorWa ? "window.open('https://wa.me/{$nomorWa}?text={$pesanWa}', '_blank')" : "alert('Nomor WhatsApp belum tersedia.')" }}"
+            class="flex items-center justify-center bg-green-500 hover:bg-green-600 text-white text-sm font-semibold text-center py-3 transition-colors duration-200 cursor-pointer">
             WhatsApp
         </span>
         <span class="bg-orange-400 hover:bg-orange-500 text-gray-900 text-sm font-semibold text-center py-3 transition-colors duration-200">

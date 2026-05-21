@@ -388,6 +388,7 @@ public function simpanUmkm(Request $request)
         'kelurahan'      => $request->kelurahan,
         'alamat'         => $request->alamat,
         'deskripsi'      => $request->deskripsi,
+        'whatsapp'       => preg_replace('/[^0-9]/', '', $request->kontak), // Simpan angka saja untuk wa.me
         'logo'           => $logoPath,        // Kolom logo baru
         'foto_produk'    => $fotoProdukPath,
         'lat'            => $request->lat,
