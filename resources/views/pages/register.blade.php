@@ -401,19 +401,52 @@
             </div>
 
             {{-- Terms --}}
-            <div class="terms-row">
-                <input type="checkbox" class="terms-checkbox" required>
+            @error('terms')
+                <div style="background:#fff5f5;border:1px solid #fecaca;color:#dc2626;border-radius:8px;padding:10px 14px;font-size:13px;display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 3a9 9 0 100 18A9 9 0 0012 3z"/></svg>
+                    {{ $message }}
+                </div>
+            @enderror
+            <div class="terms-row" id="terms-row">
+                <input type="checkbox" class="terms-checkbox" name="terms" id="terms" value="1">
                 <p class="terms-text">
                     Saya menyetujui <a href="#">Syarat &amp; Ketentuan</a> serta <a href="#">Kebijakan Privasi</a> KAJI Indonesia
                 </p>
             </div>
 
             {{-- Submit --}}
-            <button type="submit" class="btn-register">
+            <button type="submit" class="btn-register" id="btn-register" disabled
+                style="opacity:0.5;cursor:not-allowed;transition:opacity .2s,background .2s,transform .2s;">
                 Buat Akun Sekarang
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </button>
         </form>
+
+        <script>
+        (function () {
+            const cb  = document.getElementById('terms');
+            const btn = document.getElementById('btn-register');
+            const row = document.getElementById('terms-row');
+
+            function toggle() {
+                if (cb.checked) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.style.cursor  = 'pointer';
+                    row.style.outline = 'none';
+                } else {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor  = 'not-allowed';
+                }
+            }
+
+            cb.addEventListener('change', toggle);
+
+            // Jika halaman di-reload dengan nilai dari server (misal error validasi lain)
+            toggle();
+        })();
+        </script>
 
         {{-- Login link --}}
         <p class="login-link">

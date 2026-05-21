@@ -7,7 +7,6 @@ use App\Http\Controllers\KonsultanController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\UmkmController;
-use App\Http\Controllers\UmkmDashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
@@ -19,7 +18,7 @@ use App\Http\Controllers\AbsensiController;
 // =====================
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/media', [MediaController::class, 'index'])->name('media');
-Route::get('/produk/{id}', [UmkmController::class, 'produkDetail'])->name('produk.show');
+Route::get('/produk/{id}', [UmkmController::class, 'produkDetail'])->name('produk.show')->middleware('auth');
 
 // Auth System
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -30,24 +29,34 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 
 // Pelatihan, UMKM, Halal, Konsultan (Prefix Groups)
 Route::prefix('pelatihan')->name('pelatihan.')->group(function () {
+    // Bebas akses
     Route::get('/', [PelatihanController::class, 'program'])->name('index');
     Route::get('/program', [PelatihanController::class, 'program'])->name('program');
-    Route::get('/program/{id}', [PelatihanController::class, 'detailProgram'])->name('detail');
     Route::get('/event', [PelatihanController::class, 'event'])->name('event');
-    Route::get('/event/{id}', [PelatihanController::class, 'detailEvent'])->name('event.detail');
     Route::get('/mentor', [PelatihanController::class, 'pembimbing'])->name('pembimbing');
-    Route::get('/mentor/{id}', [PelatihanController::class, 'detailMentor'])->name('mentor.detail');
-    Route::post('/mentor/{id}/ulasan', [PelatihanController::class, 'simpanUlasan'])->name('mentor.ulasan')->middleware('auth');
+
+    // Wajib login
+    Route::middleware('auth')->group(function () {
+        Route::get('/program/{id}', [PelatihanController::class, 'detailProgram'])->name('detail');
+        Route::get('/event/{id}', [PelatihanController::class, 'detailEvent'])->name('event.detail');
+        Route::get('/mentor/{id}', [PelatihanController::class, 'detailMentor'])->name('mentor.detail');
+        Route::post('/mentor/{id}/ulasan', [PelatihanController::class, 'simpanUlasan'])->name('mentor.ulasan');
+    });
 });
 
 Route::prefix('umkm')->group(function () {
+    // Bebas akses
     Route::get('/', [UmkmController::class, 'index'])->name('umkm');
     Route::get('/produk', [UmkmController::class, 'produk'])->name('umkm.produk');
     Route::get('/pembimbing', [UmkmController::class, 'pembimbing'])->name('umkm.pembimbing');
-    Route::get('/pembimbing/{id}', [UmkmController::class, 'showMentor'])->name('umkm.mentor.detail');
-    Route::get('/lokasi', [UmkmController::class, 'lokasi'])->name('umkm.lokasi');
     Route::get('/peta-data', [UmkmController::class, 'petaData'])->name('umkm.peta-data');
     Route::get('/peta-data-mentor', [UmkmController::class, 'petaDataMentor'])->name('umkm.peta-data-mentor');
+
+    // Wajib login
+    Route::middleware('auth')->group(function () {
+        Route::get('/pembimbing/{id}', [UmkmController::class, 'showMentor'])->name('umkm.mentor.detail');
+        Route::get('/lokasi', [UmkmController::class, 'lokasi'])->name('umkm.lokasi');
+    });
 });
 
 Route::prefix('halal-center')->group(function () {
@@ -73,11 +82,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile/daftar-umkm', [ProfileController::class, 'showDaftarUmkm'])->name('profile.daftar-umkm');
     Route::post('/profile/simpan-umkm', [ProfileController::class, 'simpanUmkm'])->name('profile.simpan-umkm');
 
-    // Dashboard UMKM
-    Route::get('/dashboard-umkm', [App\Http\Controllers\UmkmDashboardController::class, 'index'])->name('dashboard-umkm');
-    Route::post('/dashboard-umkm/join-program/{id}', [App\Http\Controllers\UmkmDashboardController::class, 'joinProgram'])->name('dashboard.umkm.join-program');
-
-
     // Daftar Mentor
     Route::get('/profile/daftar-mentor', [ProfileController::class, 'showDaftarMentor'])->name('profile.daftar-mentor');
     Route::post('/profile/simpan-mentor', [ProfileController::class, 'simpanMentor'])->name('profile.simpan-mentor');
@@ -85,6 +89,12 @@ Route::middleware(['auth'])->group(function () {
     // Daftar Trainer
     Route::get('/profile/daftar-trainer', [ProfileController::class, 'showDaftarTrainer'])->name('profile.daftar-trainer');
     Route::post('/profile/simpan-trainer', [ProfileController::class, 'simpanTrainer'])->name('profile.simpan-trainer');
+
+    // Dashboard UMKM
+    Route::get('/dashboard-umkm', [App\Http\Controllers\UmkmDashboardController::class, 'index'])
+         ->name('dashboard-umkm');
+    Route::post('/dashboard-umkm/join-program/{id}', [App\Http\Controllers\UmkmDashboardController::class, 'joinProgram'])
+         ->name('dashboard.umkm.join-program');
 
     // Dashboard Trainer
     Route::get('/trainer/dashboard', [App\Http\Controllers\TrainerController::class, 'index'])

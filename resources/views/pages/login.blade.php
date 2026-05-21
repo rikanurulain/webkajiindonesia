@@ -291,6 +291,11 @@
         border: 1px solid #fecaca;
         color: #dc2626;
     }
+    .alert-warning {
+        background: #fffbeb;
+        border: 1px solid #fcd34d;
+        color: #92400e;
+    }
 </style>
 
 <div class="login-wrap">
@@ -307,6 +312,20 @@
         <p class="login-subtitle">Gunakan akun Anda untuk mengakses layanan kami.</p>
 
         {{-- Alerts --}}
+        @if(session('auth_required'))
+            <div class="alert alert-warning" style="display:flex;align-items:flex-start;gap:8px;">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 3a9 9 0 100 18A9 9 0 0012 3z"/></svg>
+                <div>
+                    {{ session('auth_required') }}
+                    <div style="margin-top:6px;">
+                        <a href="{{ route('register') }}" style="font-weight:700;color:#92400e;text-decoration:underline;">Daftar sekarang</a>
+                        &nbsp;atau&nbsp;
+                        <span style="font-weight:600;">login di bawah ini.</span>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         @if(session('success'))
             <div class="alert alert-success">
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>

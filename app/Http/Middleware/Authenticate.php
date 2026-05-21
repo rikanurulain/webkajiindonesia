@@ -9,6 +9,10 @@ class Authenticate extends Middleware
 {
     protected function redirectTo(Request $request): ?string
     {
-        return $request->expectsJson() ? null : route('login');
+        if (! $request->expectsJson()) {
+            session()->flash('auth_required', 'Kamu harus login atau daftar akun terlebih dahulu untuk mengakses halaman tersebut.');
+            return route('login');
+        }
+        return null;
     }
 }
