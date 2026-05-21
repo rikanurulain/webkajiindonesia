@@ -7,6 +7,7 @@ use App\Http\Controllers\KonsultanController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\UmkmController;
+use App\Http\Controllers\UmkmDashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
@@ -71,6 +72,11 @@ Route::middleware(['auth'])->group(function () {
     // Daftar UMKM
     Route::get('/profile/daftar-umkm', [ProfileController::class, 'showDaftarUmkm'])->name('profile.daftar-umkm');
     Route::post('/profile/simpan-umkm', [ProfileController::class, 'simpanUmkm'])->name('profile.simpan-umkm');
+
+    // Dashboard UMKM
+    Route::get('/dashboard-umkm', [App\Http\Controllers\UmkmDashboardController::class, 'index'])->name('dashboard-umkm');
+    Route::post('/dashboard-umkm/join-program/{id}', [App\Http\Controllers\UmkmDashboardController::class, 'joinProgram'])->name('dashboard.umkm.join-program');
+
 
     // Daftar Mentor
     Route::get('/profile/daftar-mentor', [ProfileController::class, 'showDaftarMentor'])->name('profile.daftar-mentor');

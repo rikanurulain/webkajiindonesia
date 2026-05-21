@@ -140,7 +140,7 @@
                         <p class="text-xs text-emerald-100 leading-relaxed mb-4">
                             Akun Anda telah diverifikasi. Mulai kelola produk usaha dan program pelatihan Anda.
                         </p>
-                        <a href="{{ route('dashboard.umkm') }}" 
+                        <a href="{{ route('dashboard-umkm') }}" 
                            class="block w-full bg-white text-emerald-800 py-2 rounded-lg font-bold text-sm text-center hover:bg-gray-100 transition">
                             Buka Dashboard UMKM →
                         </a>
@@ -186,7 +186,7 @@
                             <p class="text-xs text-emerald-100 leading-relaxed mb-4">
                                 Selamat! Akun Anda telah diverifikasi sebagai Mitra UMKM Kaji Indonesia.
                             </p>
-                            <a href="{{ route('dashboard.umkm') }}" 
+                            <a href="{{ route('dashboard-umkm') }}" 
                                class="block w-full bg-white text-emerald-800 py-2 rounded-lg font-bold text-sm text-center hover:bg-gray-100 transition shadow-sm">
                                 Buka Dashboard UMKM →
                             </a>
