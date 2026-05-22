@@ -70,6 +70,8 @@
   /* STATS */
   .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
   .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+  .stat-card.mentor-active-box { border-left: 4px solid var(--accent); }
+  .stat-card.mentor-empty-box { border-left: 4px solid var(--accent2); }
   .stat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 14px; }
   .stat-icon.green { background: var(--accent-light); }
   .stat-icon.orange { background: #fff3ed; }
@@ -133,20 +135,6 @@
   .form-input, .form-textarea, .form-select { width: 100%; padding: 11px 14px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); font-family: inherit; font-size: 14px; transition: border .2s; }
   .form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: var(--accent); background: #fff; }
   .form-textarea { min-height: 100px; resize: vertical; }
-
-  /* MODAL */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; }
-  .modal-overlay.open { display: flex; }
-  .modal { background: var(--surface); border-radius: 20px; width: 580px; max-height: 88vh; overflow-y: auto; padding: 30px; box-shadow: 0 24px 80px rgba(0,0,0,.2); animation: popIn .25s ease; border: 1px solid var(--border); }
-  @keyframes popIn { from { transform: scale(.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-  .modal-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; }
-  .modal-close { width: 34px; height: 34px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--text-muted); }
-  .modal-close:hover { background: #fee; border-color: #e76f51; color: #e76f51; }
-  .upload-area { border: 2px dashed var(--border); border-radius: 14px; padding: 30px; text-align: center; cursor: pointer; transition: all .2s; background: var(--surface2); }
-  .upload-area:hover { border-color: var(--accent); background: var(--accent-light); }
-  .upload-text { font-size: 13px; color: var(--text-muted); }
-  .upload-text span { color: var(--accent); font-weight: 700; }
 
   /* PAGE SECTIONS */
   .page-section { display: none; }
@@ -229,7 +217,7 @@
     {{-- NOTIFIKASI SUKSES DAFTAR KELAS --}}
     @if(session('success'))
       <div style="padding: 14px; background: #e8f5e9; border: 1px solid #a7d7c5; color: #2d6a4f; border-radius: 10px; margin-bottom: 20px; font-size: 14px; font-weight: 600;">
-         ✅ {{ session('success') }}
+           ✅ {{ session('success') }}
       </div>
     @endif
 
@@ -260,6 +248,50 @@
           <div class="stat-sub">Tampil di platform</div>
         </div>
       </div>
+
+      {{-- ========================================================= --}}
+      {{-- 🌟 FITUR TERHUBUNG MENTOR (DASHBOARD BOX) 🌟               --}}
+      {{-- ========================================================= --}}
+      @php
+        // Ambil baris produk UMKM pertama untuk memeriksa kolom mentor_id & relasi
+        $myUmkmData = $myProducts->first();
+      @endphp
+
+      @if($myUmkmData && $myUmkmData->mentor_id && $myUmkmData->mentor)
+        <div class="stat-card mentor-active-box" style="margin-bottom: 32px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div class="stat-icon green" style="margin-bottom: 0; font-size: 22px; width: 48px; height: 48px; border-radius: 50%;">👨‍🏫</div>
+            <div>
+              <div class="stat-label" style="font-size: 10px; color: var(--accent); font-weight: 700; letter-spacing: 1.5px;">Mentor Pendamping Anda</div>
+              <div style="font-size: 17px; font-weight: 700; color: var(--text); margin-top: 2px;">{{ $myUmkmData->mentor->full_name ?? $myUmkmData->mentor->nama }}</div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 3px;">
+                📞 {{ $myUmkmData->mentor->phone ?? '-' }} &nbsp;|&nbsp; 📧 {{ $myUmkmData->mentor->email ?? '-' }}
+              </div>
+            </div>
+          </div>
+          @if($myUmkmData->mentor->phone)
+            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $myUmkmData->mentor->phone) }}" 
+               target="_blank" 
+               class="btn btn-primary" 
+               style="font-size: 12px; padding: 8px 16px; border-radius: 8px; text-decoration: none; background: #25d366; box-shadow: none;">
+               💬 Chat Konsultasi
+            </a>
+          @endif
+        </div>
+      @else
+        <div class="stat-card mentor-empty-box" style="margin-bottom: 32px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; background: #fffcfb;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div class="stat-icon orange" style="margin-bottom: 0; font-size: 22px; width: 48px; height: 48px; border-radius: 50%;">📢</div>
+            <div>
+              <div style="font-size: 15px; font-weight: 700; color: var(--text);">Anda Belum Memiliki Mentor Pendamping</div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Hubungkan unit UMKM Anda dengan pembimbing terbaik kami untuk konsultasi usaha intensif gratis.</div>
+            </div>
+          </div>
+          <a href="{{ route('umkm') }}" class="btn btn-ghost" style="font-size: 12px; padding: 8px 16px; border-radius: 8px; text-decoration: none; border-color: var(--accent2); color: var(--accent2);">
+              Cari Mentor Terbaik →
+          </a>
+        </div>
+      @endif
 
       <div class="section-header">
         <div class="section-title">Status Pengajuan Produk <span>terbaru</span></div>
@@ -302,8 +334,8 @@
         @forelse($myProducts as $product)
         <div class="product-card">
           <div class="product-img">
-            @if($product->gambar)
-              <img src="{{ asset('storage/' . $product->gambar) }}" alt="{{ $product->nama }}">
+            @if($product->foto_produk)
+              <img src="{{ asset('storage/' . $product->foto_produk) }}" alt="{{ $product->nama }}">
             @else
               🛍️
             @endif
@@ -320,15 +352,29 @@
             <div class="product-name">{{ $product->nama }}</div>
             <div class="product-desc">{{ $product->deskripsi }}</div>
             <div class="product-price">Rp {{ number_format($product->harga, 0, ',', '.') }}</div>
-            <div class="product-footer">
-              @if($product->status == 'approved')
-                <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
-              @elseif($product->status == 'rejected')
-                <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
-              @else
-                <span class="badge badge-pending"><span class="badge-dot"></span>Pending</span>
-              @endif
+            
+            {{-- ========================================================= --}}
+            {{-- 🌟 FOOTER CARD PRODUK + ACTION EDIT (FIXED)               --}}
+            {{-- ========================================================= --}}
+            <div class="product-footer" style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 10px;">
+              <div>
+                @if($product->status == 'approved')
+                  <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
+                @elseif($product->status == 'rejected')
+                  <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
+                @else
+                  <span class="badge badge-pending"><span class="badge-dot"></span>Pending</span>
+                @endif
+              </div>
+
+              {{-- Tombol Edit Menuju Form Edit Dinamis --}}
+              <a href="{{ route('dashboard.produk.edit', $product->id) }}" 
+                 class="btn btn-outline btn-sm" 
+                 style="text-decoration: none; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                ✏️ Edit
+              </a>
             </div>
+
           </div>
         </div>
         @empty

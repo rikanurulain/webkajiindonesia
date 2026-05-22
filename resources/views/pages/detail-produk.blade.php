@@ -21,24 +21,33 @@
 
     <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-        {{-- KOLOM KIRI: Foto Detail --}}
+        {{-- KOLOM KIRI: Foto Produk Unggulan --}}
         <div class="lg:col-span-1">
-    <div class="bg-white p-4 rounded-2xl border shadow-sm text-center">
-        <h4 class="font-bold mb-4">{{ $produk->nama }}</h4>
-        <div class="rounded-xl overflow-hidden shadow-md">
-            {{-- Menampilkan POSTER di sini --}}
-            @if($produk->foto_produk)
-            <img src="{{ asset('storage/produk-pict/' . $produk->foto_produk) }}" 
-                 class="w-full h-auto" 
-                 alt="Poster Usaha">
-            @else
-            <div class="w-full h-64 bg-gray-100 flex items-center justify-center rounded-xl">
-                <span class="text-gray-400 text-sm">Foto belum tersedia</span>
+            <div class="bg-white p-4 rounded-2xl border shadow-sm text-center">
+                <h4 class="font-serif font-bold text-lg text-gray-900 mb-4">{{ $produk->nama }}</h4>
+                
+                {{-- Modifikasi Wadah Gambar Utama --}}
+                <div class="relative rounded-xl overflow-hidden shadow-md bg-gray-50 border border-gray-100 flex items-center justify-center min-h-[250px]">
+                    @if($produk->foto_produk)
+                        {{-- FIX: Menghapus folder duplikat 'produk-pict/' karena sudah terekam di variabel --}}
+                        <img src="{{ asset('storage/' . $produk->foto_produk) }}" 
+                             class="w-full h-auto object-cover max-h-[400px]" 
+                             alt="Foto Produk {{ $produk->nama }}">
+                    @else
+                        <div class="w-full h-64 bg-gray-100 flex items-center justify-center rounded-xl">
+                            <span class="text-gray-400 text-sm">Foto belum tersedia</span>
+                        </div>
+                    @endif
+
+                    {{-- MENAMPILKAN LOGO USAHA (Mengambang Ringan di Pojok Kanan Atas) --}}
+                    @if($produk->logo)
+                        <img src="{{ asset('storage/' . $produk->logo) }}" 
+                             alt="Logo {{ $produk->nama }}" 
+                             class="absolute top-3 right-3 w-16 h-16 object-contain bg-white/95 rounded-xl p-1.5 shadow-md border border-gray-200/50">
+                    @endif
+                </div>
             </div>
-            @endif
         </div>
-    </div>
-</div>
 
         {{-- KOLOM TENGAH: Info & Tombol --}}
         <div class="flex flex-col gap-6">
@@ -53,7 +62,6 @@
                 </div>
                 @endif
 
-                {{-- Tambahkan ini SEBELUM blok keterangan --}}
                 @if ($produk->kategori)
                 <div class="mb-4">
                     <p class="text-sm font-bold text-gray-700">Kategori</p>
@@ -95,15 +103,15 @@
                 @if ($nomorWa)
                 <a href="https://wa.me/{{ $nomorWa }}?text={{ urlencode('Halo UMKM ' . $produk->nama . ', saya tertarik dengan produk Anda setelah melihatnya di website KAJI Indonesia.' . "\n" . 'Boleh tanya-tanya lebih lanjut atau pesan produknya? Terima kasih!') }}"
                    target="_blank"
-                   class="flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-semibold text-center py-4 rounded-xl transition-colors duration-200 text-base">
+                   class="flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-semibold text-center py-4 rounded-xl transition-colors duration-200 text-base shadow-sm">
                     Chat WhatsApp
                 </a>
                 @endif
 
                 @if ($produk->alamat)
-                <a href="https://www.google.com/maps/search/{{ urlencode($produk->alamat) }}"
+                <a href="https://maps.google.com/?q={{ urlencode($produk->alamat) }}"
                    target="_blank"
-                   class="bg-orange-400 hover:bg-orange-500 text-white font-semibold text-center py-4 rounded-xl transition-colors duration-200 text-base">
+                   class="bg-orange-400 hover:bg-orange-500 text-white font-semibold text-center py-4 rounded-xl transition-colors duration-200 text-base shadow-sm">
                     Lihat Alamat
                 </a>
                 @endif
@@ -112,29 +120,39 @@
         </div>
 
         {{-- KOLOM KANAN: UMKM Lainnya --}}
-<div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-    <h3 class="font-serif font-bold text-gray-900 text-lg text-center mb-4">UMKM Lainnya</h3>
+        <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <h3 class="font-serif font-bold text-gray-900 text-lg text-center mb-4">UMKM Lainnya</h3>
 
-    <div class="flex flex-col gap-4 max-h-[600px] overflow-y-auto pr-1">
-        @foreach ($lainnya as $item)
-        <a href="{{ route('produk.show', $item->id) }}" class="flex flex-col items-center gap-2 group">
-            @if ($item->foto_produk)
-                <img
-                    src="{{ asset('storage/produk-pict/' . $item->foto_produk) }}"
-                    alt="{{ $item->nama }}"
-                    class="w-full h-24 object-cover rounded-xl group-hover:opacity-80 transition"
-                >
-            @else
-                <div class="w-full h-24 bg-gray-200 rounded-xl flex items-center justify-center">
-                    <span class="text-gray-400 text-xs">Tidak ada foto</span>
-                </div>
-            @endif
-            <p class="text-sm text-gray-700 font-medium text-center group-hover:text-green-600 transition">
-                {{ $item->nama }}
-            </p>
-        </a>
-        @endforeach
+            <div class="flex flex-col gap-4 max-h-[600px] overflow-y-auto pr-1">
+                @foreach ($lainnya as $item)
+                <a href="{{ route('produk.show', $item->id) }}" class="flex flex-col items-center gap-2 group border-b border-gray-100 pb-3 last:border-0">
+                    @if ($item->foto_produk)
+                        {{-- FIX: Menghapus juga folder duplikat di bagian sidebar rekomendasi --}}
+                        <img
+                            src="{{ asset('storage/' . $item->foto_produk) }}"
+                            alt="{{ $item->nama }}"
+                            class="w-full h-28 object-cover rounded-xl group-hover:opacity-90 transition shadow-sm"
+                        >
+                    @else
+                        <div class="w-full h-24 bg-gray-200 rounded-xl flex items-center justify-center">
+                            <span class="text-gray-400 text-xs">Tidak ada foto</span>
+                        </div>
+                    @endif
+                    <p class="text-sm text-gray-700 font-medium text-center group-hover:text-green-600 transition truncate w-full px-2">
+                        {{ $item->nama }}
+                    </p>
+                </a>
+                @endforeach
+            </div>
+        </div>
+
     </div>
-</div>
+
+    {{-- Pesan tidak ditemukan --}}
+    <div id="noResult" class="hidden text-center text-gray-400 py-20">
+        Produk tidak ditemukan.
+    </div>
+
+</section>
 
 @endsection

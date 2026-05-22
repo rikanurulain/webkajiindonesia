@@ -76,12 +76,15 @@
      data-nama="{{ strtolower($produk->nama) }}">
 
     {{-- Gambar: Menggunakan foto_produk (Produk Unggulan) --}}
+    {{-- Gambar: Menggunakan foto_produk (Produk Unggulan) --}}
     <div class="relative">
         
-    <img src="{{ asset('storage/produk-pict/' . $produk->foto_produk) }}" 
-         class="w-full h-44 object-cover" 
-         alt="Profil Toko">
-    {{-- Logo overlay tetap sama --}}
+        {{-- Diubah menjadi $produk sesuai definisi perulangan forelse di atas --}}
+        <img src="{{ asset('storage/' . $produk->foto_produk) }}" 
+             alt="{{ $produk->nama }}" 
+             class="w-full h-44 object-cover">
+        
+        {{-- Logo overlay tetap sama --}}
         <img src="{{ asset('storage/logo/KARYAKAMI.png') }}"
              alt="Logo"
              class="absolute top-2 right-2 w-20 h-10 object-contain rounded-md p-1 bg-white/80">

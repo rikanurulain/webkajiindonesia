@@ -26,7 +26,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
-
+Route::post('/umkm/pilih-mentor/{mentorId}', [\App\Http\Controllers\UmkmDashboardController::class, 'pilihMentor'])->name('umkm.pilih-mentor');
 // Pelatihan, UMKM, Halal, Konsultan (Prefix Groups)
 Route::prefix('pelatihan')->name('pelatihan.')->group(function () {
     // Bebas akses
@@ -96,6 +96,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard-umkm/join-program/{id}', [App\Http\Controllers\UmkmDashboardController::class, 'joinProgram'])
          ->name('dashboard.umkm.join-program');
 
+    Route::get('/dashboard-umkm/produk/{id}/edit', [\App\Http\Controllers\UmkmDashboardController::class, 'editProduk'])
+         ->name('dashboard.produk.edit');
+         
+    Route::put('/dashboard-umkm/produk/{id}/update', [\App\Http\Controllers\UmkmDashboardController::class, 'updateProduk'])
+         ->name('dashboard.produk.update');
+         
     // Dashboard Trainer
     Route::get('/trainer/dashboard', [App\Http\Controllers\TrainerController::class, 'index'])
          ->name('trainer.dashboard')

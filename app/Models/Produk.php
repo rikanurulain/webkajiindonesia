@@ -24,6 +24,7 @@ class Produk extends Model
     'logo',            
     'foto_produk',
     'status',
+    'mentor_id',
     'lat',
     'lng',
     'catatan_admin',
@@ -67,5 +68,11 @@ class Produk extends Model
                 ->get(['id', 'nama', 'alamat', 'lat', 'lng', 'foto']);
 
     return response()->json(['data' => $data]);
+}
+
+public function mentor()
+{
+    // Menghubungkan kolom mentor_id ke tabel mentor (Model Mentor)
+    return $this->belongsTo(Mentor::class, 'mentor_id');
 }
 }

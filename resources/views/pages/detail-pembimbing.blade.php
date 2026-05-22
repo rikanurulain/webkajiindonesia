@@ -19,6 +19,20 @@
 <section class="bg-gray-50 py-12 px-4 min-h-screen">
     <h2 class="font-serif text-center text-2xl font-bold text-gray-900 mb-10">Profil Mentor</h2>
 
+    {{-- Flash Alert Notifikasi --}}
+    <div class="max-w-6xl mx-auto mb-4">
+        @if(session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-4 text-sm font-medium">
+                ✅ {{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="bg-amber-100 border border-amber-400 text-amber-800 px-4 py-3 rounded-xl mb-4 text-sm font-medium">
+                ⚠️ {{ session('error') }}
+            </div>
+        @endif
+    </div>
+
     <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
 
         {{-- KIRI: Foto & Info Singkat --}}
@@ -90,6 +104,37 @@
                 Hubungi via WhatsApp
             </a>
             @endif
+
+            {{-- 🌟 4. TOMBOL HUBUNGKAN DENGAN MENTOR (REVISI TAILWIND CLASS) 🌟 --}}
+            <div class="mt-3">
+                @php
+                    $userUmkm = \App\Models\Produk::where('user_id', auth()->id())->first();
+                @endphp
+
+                @if($userUmkm && $userUmkm->mentor_id == $mentor->id)
+                    {{-- Tombol jika sudah sukses terhubung --}}
+                    <button class="w-full bg-blue-100 text-blue-700 text-sm font-semibold py-2.5 px-4 rounded-lg cursor-not-allowed flex items-center justify-center gap-2" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Terhubung sebagai Pendamping
+                    </button>
+                @elseif($userUmkm && !empty($userUmkm->mentor_id))
+                    {{-- Tombol jika user sudah mengikat diri ke mentor lain --}}
+                    <button class="w-full bg-gray-200 text-gray-500 text-sm font-semibold py-2.5 px-4 rounded-lg cursor-not-allowed text-center" disabled>
+                        Sudah Memiliki Mentor Lain
+                    </button>
+                @else
+                    {{-- Tombol Hubungkan Oranye bawaan template --}}
+                    <form action="{{ route('umkm.pilih-mentor', $mentor->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="w-full bg-orange-400 hover:bg-orange-500 text-white text-sm font-semibold py-2.5 px-4 rounded-lg transition duration-200 shadow-sm text-center" onclick="return confirm('Apakah Anda yakin ingin terhubung dengan mentor ini?')">
+                            Hubungkan dengan Mentor
+                        </button>
+                    </form>
+                @endif
+            </div>
+
         </div>
 
         {{-- TENGAH: Profil & Deskripsi --}}
