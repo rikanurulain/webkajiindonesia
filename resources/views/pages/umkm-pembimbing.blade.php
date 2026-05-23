@@ -61,12 +61,18 @@
 
                     <div class="px-4 py-3 text-gray-600">
                         <p class="text-xs mb-2">{{ $m->alamat_tampil ?? 'Lokasi tidak tersedia' }}</p>
-                        <div class="flex items-center gap-1 text-amber-400">
+                        @php
+                            $avgRating = round($m->avg_rating);
+                        @endphp
+                        <div class="flex items-center gap-1">
                             @for ($i = 1; $i <= 5; $i++)
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 {{ $i <= $avgRating ? 'text-amber-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
                                 </svg>
                             @endfor
+                            @if($m->total_ulasan > 0)
+                                <span class="text-xs text-gray-400 ml-1">{{ number_format($m->avg_rating, 1) }}</span>
+                            @endif
                         </div>
                     </div>
                 </a>

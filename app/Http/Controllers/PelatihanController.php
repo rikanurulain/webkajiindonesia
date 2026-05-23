@@ -548,13 +548,23 @@ class PelatihanController extends Controller
 
     $trainers = $query->paginate(12);
 
-    // Bersihkan kolom location jika isinya koordinat angka (bukan alamat teks)
+    // Untuk data lama yang location-nya tersimpan sebagai angka ID wilayah (bug lama),
+    // fallback ke gmaps_location yang berisi alamat domisili yang diketik user.
     $trainers->getCollection()->transform(function ($trainer) {
         $loc = trim($trainer->location ?? '');
-        // Jika hanya berisi angka, koma, titik, spasi, strip → itu koordinat bukan alamat
-        if ($loc === '' || preg_match('/^[\d\s\.,\-]+$/', $loc)) {
-            $trainer->location = null;
+
+        // Deteksi: kosong, hanya angka/koordinat, atau rangkaian ID wilayah
+        $isInvalid = $loc === ''
+            || preg_match('/^[\d\s\.,\-]+$/', $loc)
+            || preg_match('/^\d{1,2}(,\s*\d{3,12}){1,3}$/', $loc);
+
+        if ($isInvalid) {
+            // Fallback ke alamat domisili yang diketik user
+            $trainer->location = !empty(trim($trainer->gmaps_location ?? ''))
+                ? $trainer->gmaps_location
+                : null;
         }
+
         return $trainer;
     });
 

@@ -56,7 +56,7 @@
                 <a href="{{ route('pelatihan.mentor.detail', $trainer->id) }}"
                    class="pembimbing-card block bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition duration-300"
                    data-nama="{{ strtolower($trainer->name) }}"
-                   data-lokasi="{{ strtolower($trainer->location ?? '') }}"
+                   data-lokasi="{{ strtolower($trainer->gmaps_location ?? '') }}"
                    data-bidang="{{ strtolower($trainer->bidang_keahlian ?? '') }}">
 
                     {{-- Foto --}}
@@ -87,7 +87,7 @@
                     </div>
 
                     <div class="px-4 py-3 text-gray-600">
-                        <p class="text-xs mb-2">{{ $trainer->location ?? 'Lokasi tidak tersedia' }}</p>
+                        <p class="text-xs mb-2">{{ $trainer->gmaps_location ?? 'Lokasi tidak tersedia' }}</p>
                         <div class="flex items-center gap-1 text-amber-400">
                             @for($i = 1; $i <= 5; $i++)
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">

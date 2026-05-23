@@ -435,7 +435,7 @@ function copyRekening() {
         .then(function (data) {
             data.forEach(function (p) {
                 var o = document.createElement('option');
-                o.value = p.id; o.textContent = p.name;
+                o.value = p.name; o.dataset.id = p.id; o.textContent = p.name;
                 elProv.appendChild(o);
             });
         });
@@ -445,13 +445,14 @@ function copyRekening() {
         resetSelect(elKec, 'Pilih Kecamatan');
         resetSelect(elKel, 'Pilih Desa/Kelurahan');
         if (!this.value) return;
+        var provId = this.options[this.selectedIndex].dataset.id;
         elKab.disabled = true;
-        fetch(BASE + '/regencies/' + this.value + '.json')
+        fetch(BASE + '/regencies/' + provId + '.json')
             .then(function (r) { return r.json(); })
             .then(function (data) {
                 data.forEach(function (k) {
                     var o = document.createElement('option');
-                    o.value = k.id; o.textContent = k.name;
+                    o.value = k.name; o.dataset.id = k.id; o.textContent = k.name;
                     elKab.appendChild(o);
                 });
                 elKab.disabled = false;
@@ -462,13 +463,14 @@ function copyRekening() {
         resetSelect(elKec, 'Pilih Kecamatan');
         resetSelect(elKel, 'Pilih Desa/Kelurahan');
         if (!this.value) return;
+        var kabId = this.options[this.selectedIndex].dataset.id;
         elKec.disabled = true;
-        fetch(BASE + '/districts/' + this.value + '.json')
+        fetch(BASE + '/districts/' + kabId + '.json')
             .then(function (r) { return r.json(); })
             .then(function (data) {
                 data.forEach(function (k) {
                     var o = document.createElement('option');
-                    o.value = k.id; o.textContent = k.name;
+                    o.value = k.name; o.dataset.id = k.id; o.textContent = k.name;
                     elKec.appendChild(o);
                 });
                 elKec.disabled = false;
@@ -479,13 +481,14 @@ function copyRekening() {
     elKec.addEventListener('change', function () {
         resetSelect(elKel, 'Pilih Desa/Kelurahan');
         if (!this.value) return;
+        var kecId = this.options[this.selectedIndex].dataset.id;
         elKel.disabled = true;
-        fetch(BASE + '/villages/' + this.value + '.json')
+        fetch(BASE + '/villages/' + kecId + '.json')
             .then(function (r) { return r.json(); })
             .then(function (data) {
                 data.forEach(function (k) {
                     var o = document.createElement('option');
-                    o.value = k.id; o.textContent = k.name;
+                    o.value = k.name; o.dataset.id = k.id; o.textContent = k.name;
                     elKel.appendChild(o);
                 });
                 elKel.disabled = false;

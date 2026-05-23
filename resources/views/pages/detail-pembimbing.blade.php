@@ -299,22 +299,15 @@
                 </div>
 
                 @elseif($bisaMemberiUlasan && $sudahUlasan)
-                {{-- Sudah memberikan ulasan --}}
+                {{-- Sudah memberikan ulasan — hanya tampil jika tidak ada flash success --}}
+                @if(!session('success'))
                 <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 flex items-center gap-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                     <p class="text-sm text-blue-700">Anda sudah memberikan ulasan untuk mentor ini. Terima kasih!</p>
                 </div>
-
-                @elseif(auth()->check() && !$bisaMemberiUlasan)
-                {{-- Login tapi bukan UMKM yang terhubung --}}
-                <div class="bg-gray-50 border border-gray-100 rounded-xl p-4 mb-6 flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <p class="text-sm text-gray-500">Hanya UMKM yang terhubung dengan mentor ini yang dapat memberikan ulasan.</p>
-                </div>
+                @endif
                 @endif
 
             @else
@@ -330,11 +323,6 @@
             {{-- ── Daftar Ulasan ─────────────────────────── --}}
             @if($ulasan->isEmpty())
                 <div class="flex flex-col items-center justify-center py-12 text-center">
-                    <div class="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-amber-300" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                        </svg>
-                    </div>
                     <p class="text-gray-500 font-medium">Belum ada ulasan</p>
                     <p class="text-gray-400 text-sm mt-1">Jadilah yang pertama memberikan ulasan untuk mentor ini.</p>
                 </div>

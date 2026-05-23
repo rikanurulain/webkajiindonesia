@@ -61,6 +61,8 @@ class UmkmController extends Controller
     public function pembimbing(): View
     {
         $trainers = Mentor::where('status', 'approved')
+            ->withCount('ulasanList')
+            ->with('ulasanList')
             ->latest('reviewed_at')
             ->paginate(12);
 
@@ -324,7 +326,7 @@ public function showMentor($id): View
             $data[] = [
                 'id' => $m->id,
                 'nama' => $m->full_name ?: $m->nama,
-                'lokasi' => $m->lokasi,
+                'lokasi' => $m->gmaps_location ?: ($m->lokasi ?: implode(', ', array_filter([$m->kecamatan, $m->kabupaten, $m->provinsi]))),
                 'foto' => $fotoPath,
                 'lat' => $koordinat['lat'],
                 'lng' => $koordinat['lng'],

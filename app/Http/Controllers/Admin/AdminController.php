@@ -349,6 +349,49 @@ class AdminController extends Controller
             ->with('success', "Pendaftaran {$user->name} telah ditolak.");
     }
 
+    public function destroyTrainer(User $user)
+    {
+        // Hapus file storage yang terupload saat pendaftaran trainer
+        $fileCols = ['ktp_scan', 'bnsp_certificate', 'white_bg_photo', 'ijazah_file', 'bukti_transfer'];
+        foreach ($fileCols as $col) {
+            if (!empty($user->$col)) {
+                \Storage::disk('public')->delete($user->$col);
+            }
+        }
+
+        // Reset semua kolom pendaftaran trainer ke null
+        // sehingga user hilang dari halaman approval trainer DAN halaman daftar trainer
+        $user->update([
+            'role'                     => 'umum',  // ← reset ke role biasa; ENUM: umum|admin|trainer|umkm|mentor
+            'trainer_status'           => null,
+            'trainer_applied_at'       => null,
+            'rejection_reason'         => null,
+            'is_pembimbing'            => false,
+            'pembimbing_expired_at'    => null,
+            'location'                 => null,
+            'gmaps_location'           => null,
+            'provinsi'                 => null,
+            'kabupaten'                => null,
+            'kecamatan'                => null,
+            'kelurahan'                => null,
+            'nik'                      => null,
+            'npwp'                     => null,
+            'academic_degree'          => null,
+            'experience'               => null,
+            'bio'                      => null,
+            'ijazah_type'              => null,
+            'ijazah_file'              => null,
+            'ktp_scan'                 => null,
+            'bnsp_certificate'         => null,
+            'white_bg_photo'           => null,
+            'drive_link_documentation' => null,
+            'bukti_transfer'           => null,
+        ]);
+
+        return redirect()->route('admin.approval.trainer')
+            ->with('success', "Data trainer {$user->name} berhasil dihapus.");
+    }
+
     // ═════════════════════════════════════════════════════════════════════
     // APPROVAL MENTOR
     // ═════════════════════════════════════════════════════════════════════

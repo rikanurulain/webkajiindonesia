@@ -39,6 +39,8 @@ class User extends Authenticatable
 
         // Kolom tambahan untuk fitur pendaftaran Trainer
         'trainer_status',
+        'trainer_applied_at',
+        'rejection_reason',
         'nik',
         'npwp',
         'academic_degree',
@@ -47,6 +49,14 @@ class User extends Authenticatable
         'bnsp_certificate',
         'white_bg_photo',
         'drive_link_documentation',
+        'ijazah_file',
+        'ijazah_type',
+        'bukti_transfer',
+        'gmaps_location',
+        'provinsi',
+        'kabupaten',
+        'kecamatan',
+        'kelurahan',
     ];
 
     /**

@@ -327,6 +327,9 @@
     }
 
     // ======================== WILAYAH API ========================
+    // Catatan: opt.value diisi dengan NAMA wilayah (bukan ID),
+    // sehingga yang tersimpan ke database adalah nama, bukan angka.
+    // ID wilayah disimpan di data-id untuk keperluan fetch berantai.
     const BASE_URL = 'https://www.emsifa.com/api-wilayah-indonesia/api';
 
     const provinsiSelect  = document.getElementById('provinsi');
@@ -339,7 +342,8 @@
         .then(data => {
             data.forEach(prov => {
                 const opt = document.createElement('option');
-                opt.value = prov.id;
+                opt.value = prov.name;       // simpan nama, bukan ID
+                opt.dataset.id = prov.id;    // ID disimpan di data-id untuk fetch berantai
                 opt.textContent = prov.name;
                 provinsiSelect.appendChild(opt);
             });
@@ -350,13 +354,16 @@
         resetSelect(kecamatanSelect, '-- Pilih Kecamatan --');
         resetSelect(kelurahanSelect, '-- Pilih Desa/Kelurahan --');
         if (!this.value) return;
+        const selectedOpt = this.options[this.selectedIndex];
+        const provinsiId = selectedOpt.dataset.id;
         kabupatenSelect.disabled = true;
-        fetch(`${BASE_URL}/regencies/${this.value}.json`)
+        fetch(`${BASE_URL}/regencies/${provinsiId}.json`)
             .then(res => res.json())
             .then(data => {
                 data.forEach(kab => {
                     const opt = document.createElement('option');
-                    opt.value = kab.id;
+                    opt.value = kab.name;       // simpan nama, bukan ID
+                    opt.dataset.id = kab.id;    // ID disimpan di data-id untuk fetch berantai
                     opt.textContent = kab.name;
                     kabupatenSelect.appendChild(opt);
                 });
@@ -368,13 +375,16 @@
         resetSelect(kecamatanSelect, '-- Pilih Kecamatan --');
         resetSelect(kelurahanSelect, '-- Pilih Desa/Kelurahan --');
         if (!this.value) return;
+        const selectedOpt = this.options[this.selectedIndex];
+        const kabupatenId = selectedOpt.dataset.id;
         kecamatanSelect.disabled = true;
-        fetch(`${BASE_URL}/districts/${this.value}.json`)
+        fetch(`${BASE_URL}/districts/${kabupatenId}.json`)
             .then(res => res.json())
             .then(data => {
                 data.forEach(kec => {
                     const opt = document.createElement('option');
-                    opt.value = kec.id;
+                    opt.value = kec.name;       // simpan nama, bukan ID
+                    opt.dataset.id = kec.id;    // ID disimpan di data-id untuk fetch berantai
                     opt.textContent = kec.name;
                     kecamatanSelect.appendChild(opt);
                 });
@@ -385,13 +395,16 @@
     kecamatanSelect.addEventListener('change', function () {
         resetSelect(kelurahanSelect, '-- Pilih Desa/Kelurahan --');
         if (!this.value) return;
+        const selectedOpt = this.options[this.selectedIndex];
+        const kecamatanId = selectedOpt.dataset.id;
         kelurahanSelect.disabled = true;
-        fetch(`${BASE_URL}/villages/${this.value}.json`)
+        fetch(`${BASE_URL}/villages/${kecamatanId}.json`)
             .then(res => res.json())
             .then(data => {
                 data.forEach(kel => {
                     const opt = document.createElement('option');
-                    opt.value = kel.id;
+                    opt.value = kel.name;       // simpan nama, bukan ID
+                    opt.dataset.id = kel.id;
                     opt.textContent = kel.name;
                     kelurahanSelect.appendChild(opt);
                 });

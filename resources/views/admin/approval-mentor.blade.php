@@ -350,6 +350,14 @@
                 Lihat Pas Foto
             </a>
         </div>
+        <div style="display:flex;gap:10px;margin-top:8px;">
+            <a id="d-transfer-link" href="#" target="_blank" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center;">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                </svg>
+                Lihat Bukti Transfer
+            </a>
+        </div>
     </div>
 </div>
 
@@ -443,8 +451,18 @@ function openDetailModal(id) {
         fotoEl.innerHTML = '<span>🧑</span>';
     }
 
-    document.getElementById('d-ktp-link').href  = d.ktp_scan  ? `/storage/${d.ktp_scan}`  : '#';
-    document.getElementById('d-foto-link').href = d.white_bg_photo ? `/storage/${d.white_bg_photo}` : '#';
+    document.getElementById('d-ktp-link').href      = d.ktp_scan       ? `/storage/${d.ktp_scan}`       : '#';
+    document.getElementById('d-foto-link').href     = d.white_bg_photo ? `/storage/${d.white_bg_photo}` : '#';
+    const transferLink = document.getElementById('d-transfer-link');
+    if (d.bukti_transfer) {
+        transferLink.href = `/storage/${d.bukti_transfer}`;
+        transferLink.style.opacity = '1';
+        transferLink.style.pointerEvents = 'auto';
+    } else {
+        transferLink.href = '#';
+        transferLink.style.opacity = '0.4';
+        transferLink.style.pointerEvents = 'none';
+    }
 
     openModal('modal-detail');
 }

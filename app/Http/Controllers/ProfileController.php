@@ -79,24 +79,34 @@ public function update(Request $request)
     }
 
     public function updatePhoto(Request $request)
-{
-    $user = Auth::user();
+    {
+        $user = \App\Models\User::findOrFail(Auth::id());
 
-    $request->validate([
-        'photo' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-    ]);
+        $request->validate([
+            'photo' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
 
-    if ($request->hasFile('photo')) {
-        if ($user->profile_photo_path) {
-            Storage::disk('public')->delete($user->profile_photo_path);
+        if ($request->hasFile('photo')) {
+            if ($user->profile_photo_path) {
+                Storage::disk('public')->delete($user->profile_photo_path);
+            }
+            $path = $request->file('photo')->store('profile-photos', 'public');
+            $user->profile_photo_path = $path;
+            $user->save();
+
+            ActivityLog::create([
+                'user_id'     => $user->id,
+                'type'        => 'photo',
+                'label'       => 'Update foto profil',
+                'description' => 'Foto profil berhasil diperbarui',
+                'ip_address'  => $request->ip(),
+                'user_agent'  => $request->userAgent(),
+                'is_success'  => true,
+            ]);
         }
-        $path = $request->file('photo')->store('profile-photos', 'public');
-        $user->profile_photo_path = $path;
-        $user->save();
-    }
 
-    return redirect()->route('profile')->with('success', 'Foto profil berhasil diperbarui!');
-}
+        return redirect()->route('profile')->with('success', 'Foto profil berhasil diperbarui!');
+    }
 
 public function unsuspendPengguna(Request $request, User $user)
 {

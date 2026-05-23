@@ -199,6 +199,7 @@ Route::delete('/approval/produk/{produk}',          [AdminController::class, 'de
 
     Route::post('/approval/trainer/{user}/approve', [AdminController::class, 'approveTrainer'])->name('trainer.approve');
     Route::post('/approval/trainer/{user}/reject',  [AdminController::class, 'rejectTrainer'])->name('trainer.reject');
+    Route::delete('/approval/trainer/{user}',        [AdminController::class, 'destroyTrainer'])->name('trainer.destroy');
 
     // APPROVAL MENTOR (sudah ada, pastikan destroy-nya juga terdaftar)
     Route::get('/approval/mentor',                      [AdminController::class, 'approvalMentor'])->name('approval.mentor');
