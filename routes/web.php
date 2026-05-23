@@ -7,6 +7,7 @@ use App\Http\Controllers\KonsultanController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\UmkmController;
+use App\Http\Controllers\UmkmMentorUlasanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,7 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 Route::post('/umkm/pilih-mentor/{mentorId}', [\App\Http\Controllers\UmkmDashboardController::class, 'pilihMentor'])->name('umkm.pilih-mentor');
+
 // Pelatihan, UMKM, Halal, Konsultan (Prefix Groups)
 Route::prefix('pelatihan')->name('pelatihan.')->group(function () {
     // Bebas akses
@@ -52,10 +54,15 @@ Route::prefix('umkm')->group(function () {
     Route::get('/peta-data', [UmkmController::class, 'petaData'])->name('umkm.peta-data');
     Route::get('/peta-data-mentor', [UmkmController::class, 'petaDataMentor'])->name('umkm.peta-data-mentor');
 
+    // Bebas akses — detail mentor bisa dilihat siapa saja
+    Route::get('/pembimbing/{id}', [UmkmController::class, 'showMentor'])->name('umkm.mentor.detail');
+
     // Wajib login
     Route::middleware('auth')->group(function () {
-        Route::get('/pembimbing/{id}', [UmkmController::class, 'showMentor'])->name('umkm.mentor.detail');
         Route::get('/lokasi', [UmkmController::class, 'lokasi'])->name('umkm.lokasi');
+        // Kirim & hapus ulasan
+        Route::post('/pembimbing/{id}/ulasan', [UmkmMentorUlasanController::class, 'store'])->name('umkm.mentor.ulasan.store');
+        Route::delete('/pembimbing/{mentorId}/ulasan/{ulasanId}', [UmkmMentorUlasanController::class, 'destroy'])->name('umkm.mentor.ulasan.destroy');
     });
 });
 
@@ -193,11 +200,11 @@ Route::delete('/approval/produk/{produk}',          [AdminController::class, 'de
     Route::post('/approval/trainer/{user}/approve', [AdminController::class, 'approveTrainer'])->name('trainer.approve');
     Route::post('/approval/trainer/{user}/reject',  [AdminController::class, 'rejectTrainer'])->name('trainer.reject');
 
-// APPROVAL MENTOR (sudah ada, pastikan destroy-nya juga terdaftar)
-Route::get('/approval/mentor',                      [AdminController::class, 'approvalMentor'])->name('approval.mentor');
-Route::patch('/approval/mentor/{mentor}/approve',   [AdminController::class, 'approveMentor'])->name('approval.mentor.approve');
-Route::patch('/approval/mentor/{mentor}/reject',    [AdminController::class, 'rejectMentor'])->name('approval.mentor.reject');
-Route::delete('/approval/mentor/{mentor}',          [AdminController::class, 'destroyMentor'])->name('approval.mentor.destroy');
+    // APPROVAL MENTOR (sudah ada, pastikan destroy-nya juga terdaftar)
+    Route::get('/approval/mentor',                      [AdminController::class, 'approvalMentor'])->name('approval.mentor');
+    Route::patch('/approval/mentor/{mentor}/approve',   [AdminController::class, 'approveMentor'])->name('approval.mentor.approve');
+    Route::patch('/approval/mentor/{mentor}/reject',    [AdminController::class, 'rejectMentor'])->name('approval.mentor.reject');
+    Route::delete('/approval/mentor/{mentor}',          [AdminController::class, 'destroyMentor'])->name('approval.mentor.destroy');
 
     // Pengguna
     Route::get('/pengguna', [AdminController::class, 'pengguna'])->name('pengguna');

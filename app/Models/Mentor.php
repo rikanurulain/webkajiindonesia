@@ -46,7 +46,6 @@ class Mentor extends Model
     /**
      * Mengembalikan alamat yang layak ditampilkan ke publik.
      * Prioritas: gmaps_location > wilayah (kecamatan/kabupaten/provinsi) > lokasi
-     * Lewati jika isinya koordinat angka mentah (e.g. "-7.2575, 112.7521")
      */
     public function getAlamatTampilAttribute(): ?string
     {
@@ -73,5 +72,37 @@ class Mentor extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * UMKM (Produk) yang terhubung dengan mentor ini
+     */
+    public function produks()
+    {
+        return $this->hasMany(Produk::class, 'mentor_id');
+    }
+
+    /**
+     * Semua ulasan untuk mentor ini
+     */
+    public function ulasanList()
+    {
+        return $this->hasMany(MentorUlasan::class, 'mentor_id');
+    }
+
+    /**
+     * Rata-rata rating dari ulasan
+     */
+    public function getAvgRatingAttribute(): float
+    {
+        return round($this->ulasanList()->avg('rating') ?? 0, 1);
+    }
+
+    /**
+     * Total jumlah ulasan
+     */
+    public function getTotalUlasanAttribute(): int
+    {
+        return $this->ulasanList()->count();
     }
 }

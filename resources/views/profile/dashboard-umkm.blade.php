@@ -287,7 +287,7 @@
               <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Hubungkan unit UMKM Anda dengan pembimbing terbaik kami untuk konsultasi usaha intensif gratis.</div>
             </div>
           </div>
-          <a href="{{ route('umkm') }}" class="btn btn-ghost" style="font-size: 12px; padding: 8px 16px; border-radius: 8px; text-decoration: none; border-color: var(--accent2); color: var(--accent2);">
+          <a href="{{ route('umkm.pembimbing') }}" class="btn btn-ghost" style="font-size: 12px; padding: 8px 16px; border-radius: 8px; text-decoration: none; border-color: var(--accent2); color: var(--accent2);">
               Cari Mentor Terbaik →
           </a>
         </div>

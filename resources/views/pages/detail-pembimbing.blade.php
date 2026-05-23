@@ -19,7 +19,7 @@
 <section class="bg-gray-50 py-12 px-4 min-h-screen">
     <h2 class="font-serif text-center text-2xl font-bold text-gray-900 mb-10">Profil Mentor</h2>
 
-    {{-- Flash Alert Notifikasi --}}
+    {{-- Flash Alert --}}
     <div class="max-w-6xl mx-auto mb-4">
         @if(session('success'))
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-4 text-sm font-medium">
@@ -35,7 +35,9 @@
 
     <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
 
-        {{-- KIRI: Foto & Info Singkat --}}
+        {{-- ══════════════════════════════════════════
+             KIRI: Foto & Info Singkat
+        ══════════════════════════════════════════ --}}
         <div class="bg-white p-6 rounded-xl shadow-sm">
             <h3 class="text-center font-semibold mb-4">Pembimbing</h3>
 
@@ -53,14 +55,18 @@
                 </div>
             @endif
 
-            {{-- Bintang Ulasan --}}
-            <div class="flex items-center gap-1 mt-4 text-amber-400">
+            {{-- Bintang Rata-rata --}}
+            <div class="flex items-center gap-1 mt-4">
+                @php $avgDisplay = round($avgRating); @endphp
                 @for ($i = 1; $i <= 5; $i++)
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 {{ $i <= $avgDisplay ? 'text-amber-400' : 'text-gray-200' }}" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
                     </svg>
                 @endfor
-                <span class="text-gray-400 text-xs ml-1">({{ $mentor->ulasan ?? 0 }} Ulasan)</span>
+                <span class="text-gray-500 text-xs ml-1 font-medium">
+                    {{ number_format($avgRating, 1) }} / 5
+                    <span class="text-gray-400">({{ $totalUlasan }} ulasan)</span>
+                </span>
             </div>
 
             {{-- Lokasi --}}
@@ -105,39 +111,43 @@
             </a>
             @endif
 
-            {{-- 🌟 4. TOMBOL HUBUNGKAN DENGAN MENTOR (REVISI TAILWIND CLASS) 🌟 --}}
-            <div class="mt-3">
+            {{-- Tombol Hubungkan dengan Mentor --}}
+            @auth
                 @php
                     $userUmkm = \App\Models\Produk::where('user_id', auth()->id())->first();
                 @endphp
 
-                @if($userUmkm && $userUmkm->mentor_id == $mentor->id)
-                    {{-- Tombol jika sudah sukses terhubung --}}
-                    <button class="w-full bg-blue-100 text-blue-700 text-sm font-semibold py-2.5 px-4 rounded-lg cursor-not-allowed flex items-center justify-center gap-2" disabled>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Terhubung sebagai Pendamping
-                    </button>
-                @elseif($userUmkm && !empty($userUmkm->mentor_id))
-                    {{-- Tombol jika user sudah mengikat diri ke mentor lain --}}
-                    <button class="w-full bg-gray-200 text-gray-500 text-sm font-semibold py-2.5 px-4 rounded-lg cursor-not-allowed text-center" disabled>
-                        Sudah Memiliki Mentor Lain
-                    </button>
-                @else
-                    {{-- Tombol Hubungkan Oranye bawaan template --}}
-                    <form action="{{ route('umkm.pilih-mentor', $mentor->id) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="w-full bg-orange-400 hover:bg-orange-500 text-white text-sm font-semibold py-2.5 px-4 rounded-lg transition duration-200 shadow-sm text-center" onclick="return confirm('Apakah Anda yakin ingin terhubung dengan mentor ini?')">
-                            Hubungkan dengan Mentor
-                        </button>
-                    </form>
+                @if($userUmkm)
+                    <div class="mt-3">
+                        @if($userUmkm->mentor_id == $mentor->id)
+                            <button class="w-full bg-blue-100 text-blue-700 text-sm font-semibold py-2.5 px-4 rounded-lg cursor-not-allowed flex items-center justify-center gap-2" disabled>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                                Terhubung sebagai Pendamping
+                            </button>
+                        @elseif(!empty($userUmkm->mentor_id))
+                            <button class="w-full bg-gray-200 text-gray-500 text-sm font-semibold py-2.5 px-4 rounded-lg cursor-not-allowed text-center" disabled>
+                                Sudah Memiliki Mentor Lain
+                            </button>
+                        @else
+                            <form action="{{ route('umkm.pilih-mentor', $mentor->id) }}" method="POST">
+                                @csrf
+                                <button type="submit"
+                                        class="w-full bg-orange-400 hover:bg-orange-500 text-white text-sm font-semibold py-2.5 px-4 rounded-lg transition duration-200 shadow-sm text-center"
+                                        onclick="return confirm('Apakah Anda yakin ingin terhubung dengan mentor ini?')">
+                                    Hubungkan dengan Mentor
+                                </button>
+                            </form>
+                        @endif
+                    </div>
                 @endif
-            </div>
-
+            @endauth
         </div>
 
-        {{-- TENGAH: Profil & Deskripsi --}}
+        {{-- ══════════════════════════════════════════
+             TENGAH: Profil & Deskripsi
+        ══════════════════════════════════════════ --}}
         <div class="bg-white p-6 rounded-xl shadow-sm">
             <p class="text-sm font-semibold text-gray-500">Hai, Saya</p>
             <h3 class="text-xl font-bold text-gray-900 mb-1">{{ $mentor->full_name ?? $mentor->nama }}</h3>
@@ -151,26 +161,296 @@
             </p>
         </div>
 
-        {{-- KANAN: Training --}}
+        {{-- ══════════════════════════════════════════
+             KANAN: UMKM Terhubung
+        ══════════════════════════════════════════ --}}
         <div class="bg-white p-6 rounded-xl shadow-sm">
-            <h3 class="text-center font-semibold mb-4">Training</h3>
-
-            <div class="space-y-4">
-                <div class="bg-gray-100 h-20 rounded-lg flex items-center justify-center text-gray-400 text-xs text-center px-3">
-                    Panduan Praktis Membuat Akun UMKM
-                </div>
-
-                <div class="bg-gray-100 h-20 rounded-lg flex items-center justify-center text-gray-400 text-xs text-center px-3">
-                    Panduan Praktis Membuat IUMK Online
-                </div>
-
-                <div class="bg-gray-100 h-20 rounded-lg flex items-center justify-center text-gray-400 text-xs text-center px-3">
-                    Panduan Praktis Membuat Akun UMKM
-                </div>
+            <div class="mb-4">
+                <h3 class="font-semibold text-gray-900">UMKM Didampingi</h3>
             </div>
+
+            @if($connectedUmkm->isEmpty())
+                <div class="flex flex-col items-center justify-center py-8 text-center">
+                    <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                    </div>
+                    <p class="text-gray-400 text-xs">Belum ada UMKM yang terhubung</p>
+                </div>
+            @else
+                <div class="space-y-3 max-h-80 overflow-y-auto pr-1">
+                    @foreach($connectedUmkm as $umkm)
+                    <a href="{{ route('produk.show', $umkm->id) }}"
+                       class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg hover:bg-emerald-50 hover:shadow-sm transition group">
+                        @if($umkm->logo)
+                            <img src="{{ asset('storage/' . $umkm->logo) }}"
+                                 alt="{{ $umkm->nama }}"
+                                 class="w-10 h-10 rounded-lg object-cover flex-shrink-0 border border-gray-100">
+                        @else
+                            <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-sm flex-shrink-0">
+                                {{ strtoupper(substr($umkm->nama ?? 'U', 0, 2)) }}
+                            </div>
+                        @endif
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-semibold text-gray-900 truncate group-hover:text-emerald-700 transition">{{ $umkm->nama }}</p>
+                            @if($umkm->kategori)
+                                <span class="inline-block bg-white text-gray-400 text-xs px-2 py-0.5 rounded-full border border-gray-100 mt-0.5">
+                                    {{ $umkm->kategori }}
+                                </span>
+                            @endif
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-300 group-hover:text-emerald-500 transition flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    @endforeach
+                </div>
+            @endif
         </div>
 
     </div>
+
+    {{-- ══════════════════════════════════════════════════════════════════════
+         SEKSI ULASAN — full width di bawah grid 3 kolom
+    ══════════════════════════════════════════════════════════════════════ --}}
+    <div class="max-w-6xl mx-auto mt-8">
+        <div class="bg-white rounded-xl shadow-sm p-6">
+
+            {{-- ── Header Ulasan ────────────────────────── --}}
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">Ulasan & Penilaian</h3>
+                    <p class="text-sm text-gray-400 mt-0.5">Ulasan diberikan oleh UMKM yang didampingi mentor ini</p>
+                </div>
+                {{-- Ringkasan Rating --}}
+                <div class="text-center hidden sm:block">
+                    <p class="text-4xl font-extrabold text-amber-500">{{ number_format($avgRating, 1) }}</p>
+                    <div class="flex justify-center gap-0.5 mt-1">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 {{ $i <= round($avgRating) ? 'text-amber-400' : 'text-gray-200' }}" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                            </svg>
+                        @endfor
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1">dari {{ $totalUlasan }} ulasan</p>
+                </div>
+            </div>
+
+            {{-- ── Form Tulis Ulasan (hanya untuk UMKM yang terhubung & belum ulasan) ── --}}
+            @auth
+                @if($bisaMemberiUlasan && !$sudahUlasan)
+                <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-5 mb-8">
+                    <h4 class="font-semibold text-emerald-800 mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                        </svg>
+                        Tulis Ulasan Anda
+                    </h4>
+
+                    <form action="{{ route('umkm.mentor.ulasan.store', $mentor->id) }}" method="POST" id="formUlasan">
+                        @csrf
+
+                        {{-- Pilih Bintang --}}
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Rating <span class="text-red-500">*</span></label>
+                            <div class="flex gap-1" id="starContainer">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <button type="button"
+                                            class="star-btn w-9 h-9 text-gray-300 hover:text-amber-400 transition-colors duration-150 focus:outline-none"
+                                            data-value="{{ $i }}"
+                                            title="{{ $i }} bintang">
+                                        <svg fill="currentColor" viewBox="0 0 24 24" class="w-full h-full">
+                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                        </svg>
+                                    </button>
+                                @endfor
+                            </div>
+                            <input type="hidden" name="rating" id="ratingInput" value="">
+                            @error('rating')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Komentar --}}
+                        <div class="mb-4">
+                            <label for="komentar" class="block text-sm font-medium text-gray-700 mb-2">
+                                Komentar <span class="text-gray-400 font-normal">(opsional)</span>
+                            </label>
+                            <textarea id="komentar"
+                                      name="komentar"
+                                      rows="3"
+                                      maxlength="1000"
+                                      placeholder="Bagikan pengalaman Anda bersama mentor ini..."
+                                      class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent resize-none">{{ old('komentar') }}</textarea>
+                            <p class="text-xs text-gray-400 mt-1 text-right" id="charCount">0 / 1000 karakter</p>
+                            @error('komentar')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <button type="submit"
+                                id="btnKirimUlasan"
+                                class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled>
+                            Kirim Ulasan
+                        </button>
+                    </form>
+                </div>
+
+                @elseif($bisaMemberiUlasan && $sudahUlasan)
+                {{-- Sudah memberikan ulasan --}}
+                <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="text-sm text-blue-700">Anda sudah memberikan ulasan untuk mentor ini. Terima kasih!</p>
+                </div>
+
+                @elseif(auth()->check() && !$bisaMemberiUlasan)
+                {{-- Login tapi bukan UMKM yang terhubung --}}
+                <div class="bg-gray-50 border border-gray-100 rounded-xl p-4 mb-6 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="text-sm text-gray-500">Hanya UMKM yang terhubung dengan mentor ini yang dapat memberikan ulasan.</p>
+                </div>
+                @endif
+
+            @else
+            {{-- Belum login --}}
+            <div class="bg-gray-50 border border-dashed border-gray-200 rounded-xl p-5 mb-6 text-center">
+                <p class="text-sm text-gray-500 mb-3">Masuk terlebih dahulu sebagai UMKM untuk memberikan ulasan.</p>
+                <a href="{{ route('login') }}" class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-5 py-2 rounded-lg transition">
+                    Masuk Sekarang
+                </a>
+            </div>
+            @endauth
+
+            {{-- ── Daftar Ulasan ─────────────────────────── --}}
+            @if($ulasan->isEmpty())
+                <div class="flex flex-col items-center justify-center py-12 text-center">
+                    <div class="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-amber-300" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                        </svg>
+                    </div>
+                    <p class="text-gray-500 font-medium">Belum ada ulasan</p>
+                    <p class="text-gray-400 text-sm mt-1">Jadilah yang pertama memberikan ulasan untuk mentor ini.</p>
+                </div>
+            @else
+                <div class="divide-y divide-gray-100">
+                    @foreach($ulasan as $item)
+                    <div class="py-5 first:pt-0" id="ulasan-{{ $item->id }}">
+                        <div class="flex items-start gap-4">
+                            {{-- Avatar User --}}
+                            <div class="flex-shrink-0">
+                                @if($item->user->profile_photo_path)
+                                    <img src="{{ asset('storage/' . $item->user->profile_photo_path) }}"
+                                         alt="{{ $item->user->name }}"
+                                         class="w-10 h-10 rounded-full object-cover border border-gray-100">
+                                @else
+                                    <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">
+                                        {{ strtoupper(substr($item->user->name ?? 'U', 0, 2)) }}
+                                    </div>
+                                @endif
+                            </div>
+
+                            {{-- Konten Ulasan --}}
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between gap-2 flex-wrap">
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-900">{{ $item->user->name ?? 'Pengguna' }}</p>
+                                        <div class="flex items-center gap-1 mt-0.5">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     class="w-3.5 h-3.5 {{ $i <= $item->rating ? 'text-amber-400' : 'text-gray-200' }}"
+                                                     fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                                </svg>
+                                            @endfor
+                                            <span class="text-xs text-gray-400 ml-0.5">{{ $item->rating }}/5</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-xs text-gray-400">{{ $item->created_at->diffForHumans() }}</span>
+
+                                        {{-- Tombol Hapus — hanya untuk pemilik ulasan --}}
+                                        @auth
+                                            @if(auth()->id() === $item->user_id)
+                                                <form action="{{ route('umkm.mentor.ulasan.destroy', [$mentor->id, $item->id]) }}"
+                                                      method="POST"
+                                                      onsubmit="return confirm('Hapus ulasan ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                            class="text-xs text-red-400 hover:text-red-600 transition font-medium">
+                                                        Hapus
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        @endauth
+                                    </div>
+                                </div>
+
+                                @if($item->komentar)
+                                    <p class="text-sm text-gray-600 mt-2 leading-relaxed">{{ $item->komentar }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            @endif
+
+        </div>
+    </div>
 </section>
+
+{{-- ══ Script Interaksi Bintang ══ --}}
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const stars      = document.querySelectorAll('.star-btn');
+    const ratingInput = document.getElementById('ratingInput');
+    const btnKirim   = document.getElementById('btnKirimUlasan');
+    const textarea   = document.getElementById('komentar');
+    const charCount  = document.getElementById('charCount');
+
+    if (!stars.length) return;
+
+    let selectedRating = 0;
+
+    function highlightStars(value) {
+        stars.forEach(star => {
+            const v = parseInt(star.dataset.value);
+            star.classList.toggle('text-amber-400', v <= value);
+            star.classList.toggle('text-gray-300',  v > value);
+        });
+    }
+
+    // Hover
+    stars.forEach(star => {
+        star.addEventListener('mouseenter', () => highlightStars(parseInt(star.dataset.value)));
+        star.addEventListener('mouseleave', () => highlightStars(selectedRating));
+
+        // Klik pilih rating
+        star.addEventListener('click', () => {
+            selectedRating = parseInt(star.dataset.value);
+            ratingInput.value = selectedRating;
+            highlightStars(selectedRating);
+            if (btnKirim) btnKirim.disabled = false;
+        });
+    });
+
+    // Counter karakter textarea
+    if (textarea && charCount) {
+        textarea.addEventListener('input', () => {
+            charCount.textContent = textarea.value.length + ' / 1000 karakter';
+        });
+    }
+});
+</script>
+@endpush
 
 @endsection

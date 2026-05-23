@@ -89,12 +89,12 @@
                         $nomorWa = '62' . substr($nomorWa, 1);
                     }
                 @endphp
-                @if ($produk->kontak || $produk->whatsapp)
+                {{-- @if ($produk->kontak || $produk->whatsapp)
                 <div>
                     <p class="text-sm font-bold text-gray-700">Kontak WhatsApp</p>
                     <p class="text-gray-600 text-sm mt-1">{{ $produk->kontak ?? $produk->whatsapp }}</p>
                 </div>
-                @endif
+                @endif --}}
 
             </div>
 
