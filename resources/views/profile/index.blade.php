@@ -98,10 +98,8 @@
                                            text-white py-3 px-6 rounded-xl font-bold text-sm shadow-md 
                                            hover:shadow-emerald-200 hover:shadow-lg transition-all duration-300 
                                            hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
-                                
                                 <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent 
                                              -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></span>
-                                
                                 <svg xmlns="http://www.w3.org/2000/svg" 
                                      class="h-4 w-4 transition-transform duration-300 group-hover:scale-110 relative" 
                                      fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -121,10 +119,6 @@
                     </div>
                 </div>
 
-                {{-- ========================================== --}}
-                {{-- STATUS UMKM (Saat Peran Sudah Aktif)       --}}
-                {{-- ========================================== --}}
-                {{-- STATUS UMKM --}}
                 {{-- STATUS UMKM (sudah aktif) --}}
                 @if($user->role === 'umkm')
                 <div class="mt-6">
@@ -147,7 +141,6 @@
                     </div>
                 </div>
                 @endif
-
 
                 {{-- STATUS UMKM (untuk non-umkm) --}}
                 @if($user->role !== 'umkm')
@@ -199,7 +192,7 @@
                                 Pendaftaran UMKM Ditolak
                             </h4>
                             <p class="text-xs text-red-50 mb-3">Mohon maaf, data pendaftaran usaha Anda belum memenuhi syarat.</p>
-                            @if(isset($umkm) && $umkm->rejection_reason)
+                            @if($umkm->rejection_reason)
                                 <div class="mb-4 p-3 bg-black/20 border border-white/20 rounded-lg">
                                     <p class="text-[11px] font-bold text-red-200 uppercase tracking-wide mb-1">Alasan Penolakan:</p>
                                     <p class="text-xs text-white leading-relaxed">{{ $umkm->rejection_reason }}</p>
@@ -211,7 +204,6 @@
                             </a>
 
                         @else
-                            {{-- Belum daftar umkm sama sekali --}}
                             <h4 class="font-bold mb-2">Daftar sebagai UMKM</h4>
                             <p class="text-xs text-emerald-100 mb-4 leading-relaxed">Bergabunglah sebagai bagian dari mitra UMKM KAJI INDONESIA</p>
                             @if($user->profile_photo_path)
@@ -273,7 +265,7 @@
                 </div>
                 @endif
 
-                {{-- STATUS TRAINER (sudah aktif) --}}
+                {{-- STATUS TRAINER (sudah aktif — role = trainer) --}}
                 @if($user->role === 'trainer')
                 <div class="mt-6">
                     <div class="p-6 rounded-xl text-white shadow-md bg-emerald-800">
@@ -296,81 +288,70 @@
                 </div>
                 @endif
 
-               
-                {{-- STATUS TRAINER (untuk non-trainer) --}}
+                {{-- STATUS TRAINER (untuk non-trainer: pending / rejected / belum daftar) --}}
                 @if($user->role !== 'trainer')
                 <div class="mt-6">
                     <div class="p-6 rounded-xl text-white shadow-md transition-all duration-300
                         @if($user->trainer_status == 'pending') bg-amber-500 
-                        @elseif($user->trainer_status == 'approved') bg-emerald-800 
                         @elseif($user->trainer_status == 'rejected') bg-red-600 
                         @else bg-emerald-700 @endif">
 
                         @if($user->trainer_status == 'pending')
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="p-2 bg-white/20 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <h4 class="font-bold text-lg leading-tight">Pendaftaran Sedang Ditinjau</h4>
-                    </div>
-                    <p class="text-xs text-amber-50 leading-relaxed mb-4">
-                        Dokumen Anda telah kami terima. Tim Admin sedang melakukan verifikasi data pendaftaran Anda.
-                    </p>
-                    <div class="py-2 px-3 bg-black/10 rounded-lg border border-white/20 text-center">
-                        <span class="text-[10px] uppercase tracking-wider font-black">Status: Menunggu Persetujuan</span>
-                    </div>
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="p-2 bg-white/20 rounded-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <h4 class="font-bold text-lg leading-tight">Pendaftaran Sedang Ditinjau</h4>
+                            </div>
+                            <p class="text-xs text-amber-50 leading-relaxed mb-4">
+                                Dokumen Anda telah kami terima. Tim Admin sedang melakukan verifikasi data pendaftaran Anda.
+                            </p>
+                            <div class="py-2 px-3 bg-black/10 rounded-lg border border-white/20 text-center">
+                                <span class="text-[10px] uppercase tracking-wider font-black">Status: Menunggu Persetujuan</span>
+                            </div>
 
-                    @elseif($user->trainer_status == 'approved')
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="p-1 bg-white rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-800" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <h4 class="font-bold text-lg">Anda adalah Trainer!</h4>
-                    </div>
-                    <p class="text-xs text-emerald-100 leading-relaxed">
-                        Selamat! Akun Anda telah diverifikasi sebagai Trainer.
-                    </p>
+                        @elseif($user->trainer_status == 'rejected')
+                            <h4 class="font-bold mb-2 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                Pendaftaran Trainer Ditolak
+                            </h4>
+                            <p class="text-xs text-red-50 mb-3">Mohon maaf, data Anda belum memenuhi syarat.</p>
+                            {{-- ✅ FIX: Baca dari $trainer->rejection_reason, bukan $user->rejection_reason --}}
+                            @if($trainer?->rejection_reason)
+                                <div class="mb-4 p-3 bg-black/20 border border-white/20 rounded-lg">
+                                    <p class="text-[11px] font-bold text-red-200 uppercase tracking-wide mb-1">Alasan Penolakan:</p>
+                                    <p class="text-xs text-white leading-relaxed">{{ $trainer->rejection_reason }}</p>
+                                </div>
+                            @endif
+                            <a href="{{ route('profile.daftar-trainer') }}" 
+                               class="block w-full bg-white text-red-600 py-2 rounded-lg font-bold text-sm text-center hover:bg-gray-100 transition">
+                                Daftar Ulang Trainer
+                            </a>
+                            <div class="py-2 px-3 bg-black/10 rounded-lg border border-white/20 text-center mt-3">
+                                <span class="text-[10px] uppercase tracking-wider font-black">Status: Rejected</span>
+                            </div>
 
-                    @elseif($user->trainer_status == 'rejected')
-                    <h4 class="font-bold mb-2 flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                        Pendaftaran Trainer Ditolak
-                    </h4>
-                    <p class="text-xs text-red-50 mb-3">Mohon maaf, data Anda belum memenuhi syarat.</p>
-                    @if($user->rejection_reason)
-                        <div class="mb-4 p-3 bg-black/20 border border-white/20 rounded-lg">
-                            <p class="text-[11px] font-bold text-red-200 uppercase tracking-wide mb-1">Alasan Penolakan:</p>
-                            <p class="text-xs text-white leading-relaxed">{{ $user->rejection_reason }}</p>
-                        </div>
-                    @endif
-                    <a href="{{ route('profile.daftar-trainer') }}" 
-                       class="block w-full bg-white text-red-600 py-2 rounded-lg font-bold text-sm text-center hover:bg-gray-100 transition">
-                        Daftar Ulang Trainer
-                    </a>
-
-                    @else
-                        {{-- Belum daftar trainer sama sekali --}}
-                        <h4 class="font-bold mb-2">Daftar sebagai Trainer</h4>
-                        <p class="text-xs text-emerald-100 mb-4 leading-relaxed">Bergabunglah sebagai pengajar profesional di KAJI INDONESIA</p>
-                        @if($user->profile_photo_path)
-                            <a href="{{ route('profile.daftar-trainer') }}" class="block w-full bg-white text-emerald-700 py-2 rounded-lg font-bold text-sm text-center hover:bg-gray-100 transition">Daftar Sekarang</a>
                         @else
-                            <span class="block w-full bg-gray-300 text-gray-500 py-2 rounded-lg font-bold text-sm text-center cursor-not-allowed">Upload Foto Profil Dulu</span>
+                            {{-- Belum daftar trainer sama sekali --}}
+                            <h4 class="font-bold mb-2">Daftar sebagai Trainer</h4>
+                            <p class="text-xs text-emerald-100 mb-4 leading-relaxed">Bergabunglah sebagai pengajar profesional di KAJI INDONESIA</p>
+                            @if($user->profile_photo_path)
+                                <a href="{{ route('profile.daftar-trainer') }}" class="block w-full bg-white text-emerald-700 py-2 rounded-lg font-bold text-sm text-center hover:bg-gray-100 transition">Daftar Sekarang</a>
+                            @else
+                                <span class="block w-full bg-gray-300 text-gray-500 py-2 rounded-lg font-bold text-sm text-center cursor-not-allowed">Upload Foto Profil Dulu</span>
+                            @endif
                         @endif
-                    @endif
 
                     </div>
                 </div>
                 @endif
 
-                {{-- BOX MENTOR - selalu tampil kecuali sudah approved/pending --}}
-                @if(!isset($mentor) || $mentor->status == 'rejected')
+                {{-- BOX MENTOR - tampil jika belum daftar atau rejected --}}
+                @if(!isset($mentor))
                 <div class="mt-6">
                     <div class="bg-emerald-700 p-6 rounded-xl text-white shadow-md">
                         <h4 class="font-bold mb-2">Daftar sebagai Mentor</h4>
@@ -412,28 +393,26 @@
                             <textarea name="address" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500">{{ old('address', $user->address) }}</textarea>
                         </div>
                         <div class="pt-4">
-                        <button type="submit" 
-        class="group relative w-full overflow-hidden bg-gradient-to-r from-emerald-600 to-teal-600 
-               text-white py-3 px-6 rounded-xl font-bold text-sm shadow-md 
-               hover:shadow-emerald-200 hover:shadow-lg transition-all duration-300 
-               hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
-    
-    <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent 
-                 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></span>
-    
-    <svg xmlns="http://www.w3.org/2000/svg" 
-         class="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 relative" 
-         fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
-    </svg>
-    <span class="relative">Simpan</span>
-    <svg xmlns="http://www.w3.org/2000/svg" 
-         class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 relative" 
-         fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-    </svg>
-</button>
+                            <button type="submit" 
+                                    class="group relative w-full overflow-hidden bg-gradient-to-r from-emerald-600 to-teal-600 
+                                           text-white py-3 px-6 rounded-xl font-bold text-sm shadow-md 
+                                           hover:shadow-emerald-200 hover:shadow-lg transition-all duration-300 
+                                           hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+                                <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent 
+                                             -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></span>
+                                <svg xmlns="http://www.w3.org/2000/svg" 
+                                     class="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 relative" 
+                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                                </svg>
+                                <span class="relative">Simpan</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" 
+                                     class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 relative" 
+                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                </svg>
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -457,27 +436,25 @@
                             </div>
                         </div>
                         <button type="submit" 
-        class="group relative w-full overflow-hidden bg-gradient-to-r from-emerald-600 to-teal-600 
-               text-white py-3 px-6 rounded-xl font-bold text-sm shadow-md 
-               hover:shadow-emerald-200 hover:shadow-lg transition-all duration-300 
-               hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
-    
-    <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent 
-                 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></span>
-    
-    <svg xmlns="http://www.w3.org/2000/svg" 
-         class="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" 
-         fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-    </svg>
-    <span class="relative">Update Password</span>
-    <svg xmlns="http://www.w3.org/2000/svg" 
-         class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 relative" 
-         fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-    </svg>
-</button>
+                                class="group relative w-full overflow-hidden bg-gradient-to-r from-emerald-600 to-teal-600 
+                                       text-white py-3 px-6 rounded-xl font-bold text-sm shadow-md 
+                                       hover:shadow-emerald-200 hover:shadow-lg transition-all duration-300 
+                                       hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+                            <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent 
+                                         -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></span>
+                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                 class="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" 
+                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                            <span class="relative">Update Password</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                 class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 relative" 
+                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                            </svg>
+                        </button>
                     </form>
                 </div>
             </div>

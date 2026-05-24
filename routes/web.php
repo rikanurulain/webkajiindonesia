@@ -60,7 +60,6 @@ Route::prefix('umkm')->group(function () {
     // Wajib login
     Route::middleware('auth')->group(function () {
         Route::get('/lokasi', [UmkmController::class, 'lokasi'])->name('umkm.lokasi');
-        // Kirim & hapus ulasan
         Route::post('/pembimbing/{id}/ulasan', [UmkmMentorUlasanController::class, 'store'])->name('umkm.mentor.ulasan.store');
         Route::delete('/pembimbing/{mentorId}/ulasan/{ulasanId}', [UmkmMentorUlasanController::class, 'destroy'])->name('umkm.mentor.ulasan.destroy');
     });
@@ -83,7 +82,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/update-photo', [ProfileController::class, 'updatePhoto'])->name('profile.update-photo');
+    Route::delete('/profile/delete-photo', [ProfileController::class, 'deletePhoto'])->name('profile.delete-photo');
     Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+
+    // Notifikasi
+    Route::get('/profile/notifications', [ProfileController::class, 'notifications'])->name('profile.notifications');
+    Route::post('/profile/notifications', [ProfileController::class, 'updateNotifications'])->name('profile.notifications.update');
 
     // Daftar UMKM
     Route::get('/profile/daftar-umkm', [ProfileController::class, 'showDaftarUmkm'])->name('profile.daftar-umkm');
@@ -102,57 +106,41 @@ Route::middleware(['auth'])->group(function () {
          ->name('dashboard-umkm');
     Route::post('/dashboard-umkm/join-program/{id}', [App\Http\Controllers\UmkmDashboardController::class, 'joinProgram'])
          ->name('dashboard.umkm.join-program');
-
     Route::get('/dashboard-umkm/produk/{id}/edit', [\App\Http\Controllers\UmkmDashboardController::class, 'editProduk'])
          ->name('dashboard.produk.edit');
-         
     Route::put('/dashboard-umkm/produk/{id}/update', [\App\Http\Controllers\UmkmDashboardController::class, 'updateProduk'])
          ->name('dashboard.produk.update');
-         
+
     // Dashboard Trainer
     Route::get('/trainer/dashboard', [App\Http\Controllers\TrainerController::class, 'index'])
          ->name('trainer.dashboard')
          ->middleware('trainer');
 
-    // Peserta absen 1 klik
+    // Absensi
     Route::post('/absensi/{pelatihan}/submit', [AbsensiController::class, 'submit'])
         ->name('absensi.submit');
-
-    // Trainer: lihat daftar (JSON)
     Route::get('/trainer/kurikulum/{pelatihan}/absensi', [AbsensiController::class, 'daftarAbsensi'])
         ->name('trainer.absensi.daftar');
-
-    // Trainer: export CSV
     Route::get('/trainer/kurikulum/{pelatihan}/absensi/export', [AbsensiController::class, 'exportCsv'])
         ->name('trainer.absensi.export');
 
-    // =========================
-    // TRAINER PROGRAM
-    // =========================
+    // Trainer Program
     Route::post('/trainer/pelatihan/store', [App\Http\Controllers\TrainerController::class, 'storeProgram'])
         ->name('trainer.pelatihan.store');
-
     Route::put('/trainer/pelatihan/{id}', [App\Http\Controllers\TrainerController::class, 'updateProgram'])
         ->name('trainer.pelatihan.update');
-
     Route::delete('/trainer/pelatihan/{id}', [App\Http\Controllers\TrainerController::class, 'destroyProgram'])
         ->name('trainer.pelatihan.destroy');
 
-    // =========================
-    // TRAINER EVENT
-    // =========================
+    // Trainer Event
     Route::post('/trainer/event/store', [App\Http\Controllers\TrainerController::class, 'storeEvent'])
         ->name('trainer.event.store');
-
     Route::put('/trainer/event/{id}', [App\Http\Controllers\TrainerController::class, 'updateEvent'])
         ->name('trainer.event.update');
-
     Route::delete('/trainer/event/{id}', [App\Http\Controllers\TrainerController::class, 'destroyEvent'])
         ->name('trainer.event.destroy');
 
-    // =========================
-    // TRAINER PROFILE
-    // =========================
+    // Trainer Profile
     Route::put('/trainer/profil/update', [App\Http\Controllers\TrainerController::class, 'updateProfil'])
         ->name('trainer.profil.update');
 });
@@ -160,13 +148,13 @@ Route::middleware(['auth'])->group(function () {
 // =========================
 // TRAINER KURIKULUM & MATERI
 // =========================
-Route::post('/kurikulum',       [Trainerpelatihancontroller::class, 'storeKurikulum'])  ->name('trainer.kurikulum.store');
-Route::put('/kurikulum/{id}',   [Trainerpelatihancontroller::class, 'updateKurikulum']) ->name('trainer.kurikulum.update');
-Route::delete('/kurikulum/{id}',[Trainerpelatihancontroller::class, 'destroy'])         ->name('trainer.kurikulum.destroy');
+Route::post('/kurikulum',        [Trainerpelatihancontroller::class, 'storeKurikulum'])  ->name('trainer.kurikulum.store');
+Route::put('/kurikulum/{id}',    [Trainerpelatihancontroller::class, 'updateKurikulum']) ->name('trainer.kurikulum.update');
+Route::delete('/kurikulum/{id}', [Trainerpelatihancontroller::class, 'destroy'])         ->name('trainer.kurikulum.destroy');
 
-Route::post('/modul',           [Trainerpelatihancontroller::class, 'storeModul'])      ->name('trainer.modul.store');
-Route::put('/modul/{id}',       [Trainerpelatihancontroller::class, 'updateModul'])     ->name('trainer.modul.update');
-Route::delete('/modul/{id}',    [Trainerpelatihancontroller::class, 'destroy'])         ->name('trainer.modul.destroy');
+Route::post('/modul',            [Trainerpelatihancontroller::class, 'storeModul'])      ->name('trainer.modul.store');
+Route::put('/modul/{id}',        [Trainerpelatihancontroller::class, 'updateModul'])     ->name('trainer.modul.update');
+Route::delete('/modul/{id}',     [Trainerpelatihancontroller::class, 'destroy'])         ->name('trainer.modul.destroy');
 
 // =========================================================
 // GRUP ADMIN (KHUSUS ADMIN)
@@ -174,42 +162,37 @@ Route::delete('/modul/{id}',    [Trainerpelatihancontroller::class, 'destroy']) 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('dashboard');
 
-    // Approval Program
+    // ── Approval Program ─────────────────────────────────────────────
     Route::get('/approval/program', [AdminController::class, 'approvalProgram'])->name('approval.program');
-    Route::patch('/approval/program/{program}/approve', [AdminController::class, 'approveProgram'])->name('approval.program.approve');
-    Route::patch('/approval/program/{program}/reject',  [AdminController::class, 'rejectProgram'])->name('approval.program.reject');
+    Route::post('/approval/program/{program}/approve', [AdminController::class, 'approveProgram'])->name('approval.program.approve');
+    Route::post('/approval/program/{program}/reject',  [AdminController::class, 'rejectProgram'])->name('approval.program.reject');
 
-// APPROVAL PRODUK
-Route::get('/approval/produk',                      [AdminController::class, 'approvalProduk'])->name('approval.produk');
-Route::patch('/approval/produk/{produk}/approve',   [AdminController::class, 'approveProduk'])->name('approval.produk.approve');
-Route::patch('/approval/produk/{produk}/reject',    [AdminController::class, 'rejectProduk'])->name('approval.produk.reject');
-Route::delete('/approval/produk/{produk}',          [AdminController::class, 'destroyProduk'])->name('approval.produk.destroy'); // ← BARU
+    // ── Approval Produk ──────────────────────────────────────────────
+    Route::get('/approval/produk',                     [AdminController::class, 'approvalProduk'])->name('approval.produk');
+    Route::post('/approval/produk/{produk}/approve',   [AdminController::class, 'approveProduk'])->name('approval.produk.approve');
+    Route::post('/approval/produk/{produk}/reject',    [AdminController::class, 'rejectProduk'])->name('approval.produk.reject');
+    Route::delete('/approval/produk/{produk}',         [AdminController::class, 'destroyProduk'])->name('approval.produk.destroy');
 
-    // Approval Event
-    Route::get('/approval/event', [AdminController::class, 'approvalEvent'])->name('approval.event');
-    Route::patch('/approval/event/{event}/approve', [AdminController::class, 'approveEvent'])->name('approval.event.approve');
-    Route::patch('/approval/event/{event}/reject',  [AdminController::class, 'rejectEvent'])->name('approval.event.reject');
+    // ── Approval Event ───────────────────────────────────────────────
+    Route::get('/approval/event',                      [AdminController::class, 'approvalEvent'])->name('approval.event');
+    Route::post('/approval/event/{event}/approve',     [AdminController::class, 'approveEvent'])->name('approval.event.approve');
+    Route::post('/approval/event/{event}/reject',      [AdminController::class, 'rejectEvent'])->name('approval.event.reject');
 
-    // Approval Trainer
-    Route::get('/approval/trainer', [AdminController::class, 'approvalTrainer'])->name('approval.trainer');
+    // ── Approval Trainer ─────────────────────────────────────────────
+    Route::get('/approval/trainer',                        [AdminController::class, 'approvalTrainer'])->name('approval.trainer');
+    Route::post('/approval/trainer/{trainer}/approve',     [AdminController::class, 'approveTrainer'])->name('trainer.approve');
+    Route::post('/approval/trainer/{trainer}/reject',      [AdminController::class, 'rejectTrainer'])->name('trainer.reject');
+    Route::delete('/approval/trainer/{trainer}',           [AdminController::class, 'destroyTrainer'])->name('trainer.destroy');
 
-    // ↓ Fallback GET: cegah error 405 jika browser akses URL approve via GET (history/refresh)
-    Route::get('/approval/trainer/{user}/approve', fn() => redirect()->route('admin.approval.trainer'))
-        ->name('trainer.approve.get');
+    // ── Approval Mentor ──────────────────────────────────────────────
+    Route::get('/approval/mentor',                     [AdminController::class, 'approvalMentor'])->name('approval.mentor');
+    Route::post('/approval/mentor/{mentor}/approve',   [AdminController::class, 'approveMentor'])->name('approval.mentor.approve');
+    Route::post('/approval/mentor/{mentor}/reject',    [AdminController::class, 'rejectMentor'])->name('approval.mentor.reject');
+    Route::delete('/approval/mentor/{mentor}',         [AdminController::class, 'destroyMentor'])->name('approval.mentor.destroy');
 
-    Route::post('/approval/trainer/{user}/approve', [AdminController::class, 'approveTrainer'])->name('trainer.approve');
-    Route::post('/approval/trainer/{user}/reject',  [AdminController::class, 'rejectTrainer'])->name('trainer.reject');
-    Route::delete('/approval/trainer/{user}',        [AdminController::class, 'destroyTrainer'])->name('trainer.destroy');
-
-    // APPROVAL MENTOR (sudah ada, pastikan destroy-nya juga terdaftar)
-    Route::get('/approval/mentor',                      [AdminController::class, 'approvalMentor'])->name('approval.mentor');
-    Route::patch('/approval/mentor/{mentor}/approve',   [AdminController::class, 'approveMentor'])->name('approval.mentor.approve');
-    Route::patch('/approval/mentor/{mentor}/reject',    [AdminController::class, 'rejectMentor'])->name('approval.mentor.reject');
-    Route::delete('/approval/mentor/{mentor}',          [AdminController::class, 'destroyMentor'])->name('approval.mentor.destroy');
-
-    // Pengguna
-    Route::get('/pengguna', [AdminController::class, 'pengguna'])->name('pengguna');
-    Route::patch('/pengguna/{user}/verifikasi', [AdminController::class, 'verifikasiPengguna'])->name('pengguna.verifikasi');
-    Route::patch('/pengguna/{user}/suspend',    [AdminController::class, 'suspendPengguna'])->name('pengguna.suspend');
-    Route::patch('/pengguna/{user}/unsuspend',  [AdminController::class, 'unsuspendPengguna'])->name('pengguna.unsuspend');
+    // ── Manajemen Pengguna ───────────────────────────────────────────
+    Route::get('/pengguna',                            [AdminController::class, 'pengguna'])->name('pengguna');
+    Route::post('/pengguna/{user}/verifikasi',         [AdminController::class, 'verifikasiPengguna'])->name('pengguna.verifikasi');
+    Route::post('/pengguna/{user}/suspend',            [AdminController::class, 'suspendPengguna'])->name('pengguna.suspend');
+    Route::post('/pengguna/{user}/unsuspend',          [AdminController::class, 'unsuspendPengguna'])->name('pengguna.unsuspend');
 });

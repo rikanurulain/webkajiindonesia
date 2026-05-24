@@ -306,91 +306,113 @@ class AdminController extends Controller
     // ═════════════════════════════════════════════════════════════════════
     // APPROVAL TRAINER
     // ═════════════════════════════════════════════════════════════════════
-    public function approvalTrainer()
-    {
-        $pending = User::where('trainer_status', 'pending')
-            ->whereNotNull('nik')
-            ->latest('trainer_applied_at')
-            ->get();
-        $approved = User::where('trainer_status', 'approved')
-            ->latest('updated_at')
-            ->get();
-        $rejected = User::where('trainer_status', 'rejected')
-            ->latest('updated_at')
-            ->get();
-        $counts = [
-            'pending'  => $pending->count(),
-            'approved' => $approved->count(),
-            'rejected' => $rejected->count(),
-        ];
-        return view('admin.approval-trainer', compact('pending', 'approved', 'rejected', 'counts'));
-    }
-    public function approveTrainer(User $user)
-    {
-        $user->update([
-            'role'                  => 'trainer',
-            'trainer_status'        => 'approved',
-            'is_pembimbing'         => true,
-            'pembimbing_expired_at' => now()->addYear(),
+   public function approvalTrainer()
+{
+    // Query dari tabel trainer (bukan users)
+    $pending  = \App\Models\Trainer::with('user')
+                    ->where('status', 'pending')
+                    ->latest('applied_at')
+                    ->get();
+ 
+    $approved = \App\Models\Trainer::with('user')
+                    ->where('status', 'approved')
+                    ->latest('updated_at')
+                    ->get();
+ 
+    $rejected = \App\Models\Trainer::with('user')
+                    ->where('status', 'rejected')
+                    ->latest('updated_at')
+                    ->get();
+ 
+    $counts = [
+        'pending'  => $pending->count(),
+        'approved' => $approved->count(),
+        'rejected' => $rejected->count(),
+    ];
+ 
+    return view('admin.approval-trainer', compact('pending', 'approved', 'rejected', 'counts'));
+}
+ 
+public function approveTrainer(\App\Models\Trainer $trainer)
+{
+    \Illuminate\Support\Facades\DB::transaction(function () use ($trainer) {
+        // Update tabel trainer
+        $trainer->update([
+            'status'      => 'approved',
+            'reviewed_at' => now(),
         ]);
-        return redirect()->to('/admin/approval/trainer')
-            ->with('success', "{$user->name} berhasil disetujui sebagai Trainer.");
-    }
-    public function rejectTrainer(Request $request, User $user)
-    {
-        $request->validate([
-            'rejection_reason' => 'required|string|max:1000',
-        ]);
-        $user->update([
-            'trainer_status'   => 'rejected',
-            'rejection_reason' => $request->rejection_reason,
-        ]);
-        return redirect()->route('admin.approval.trainer')
-            ->with('success', "Pendaftaran {$user->name} telah ditolak.");
-    }
-
-    public function destroyTrainer(User $user)
-    {
-        // Hapus file storage yang terupload saat pendaftaran trainer
-        $fileCols = ['ktp_scan', 'bnsp_certificate', 'white_bg_photo', 'ijazah_file', 'bukti_transfer'];
-        foreach ($fileCols as $col) {
-            if (!empty($user->$col)) {
-                \Storage::disk('public')->delete($user->$col);
-            }
+ 
+        // Update tabel users: ubah role + trainer_status
+        if ($trainer->user_id) {
+            \App\Models\User::where('id', $trainer->user_id)->update([
+                'role'                  => 'trainer',
+                'trainer_status'        => 'approved',
+                'is_pembimbing'         => true,
+                'pembimbing_expired_at' => now()->addYear(),
+            ]);
         }
-
-        // Reset semua kolom pendaftaran trainer ke null
-        // sehingga user hilang dari halaman approval trainer DAN halaman daftar trainer
-        $user->update([
-            'role'                     => 'umum',  // ← reset ke role biasa; ENUM: umum|admin|trainer|umkm|mentor
-            'trainer_status'           => null,
-            'trainer_applied_at'       => null,
-            'rejection_reason'         => null,
-            'is_pembimbing'            => false,
-            'pembimbing_expired_at'    => null,
-            'location'                 => null,
-            'gmaps_location'           => null,
-            'provinsi'                 => null,
-            'kabupaten'                => null,
-            'kecamatan'                => null,
-            'kelurahan'                => null,
-            'nik'                      => null,
-            'npwp'                     => null,
-            'academic_degree'          => null,
-            'experience'               => null,
-            'bio'                      => null,
-            'ijazah_type'              => null,
-            'ijazah_file'              => null,
-            'ktp_scan'                 => null,
-            'bnsp_certificate'         => null,
-            'white_bg_photo'           => null,
-            'drive_link_documentation' => null,
-            'bukti_transfer'           => null,
+    });
+ 
+    return redirect()->to('/admin/approval/trainer')
+        ->with('success', "{$trainer->nama} berhasil disetujui sebagai Trainer.");
+}
+ 
+public function rejectTrainer(Request $request, \App\Models\Trainer $trainer)
+{
+    $request->validate([
+        'rejection_reason' => 'required|string|max:1000',
+    ]);
+ 
+    \Illuminate\Support\Facades\DB::transaction(function () use ($request, $trainer) {
+        // Update tabel trainer
+        $trainer->update([
+            'status'           => 'rejected',
+            'rejection_reason' => $request->rejection_reason,
+            'reviewed_at'      => now(),
         ]);
-
-        return redirect()->route('admin.approval.trainer')
-            ->with('success', "Data trainer {$user->name} berhasil dihapus.");
+ 
+        // Update tabel users: trainer_status + alasan penolakan
+        if ($trainer->user_id) {
+            \App\Models\User::where('id', $trainer->user_id)->update([
+                'role'                       => 'umum',
+                'trainer_status'             => 'rejected',
+                'trainer_rejection_reason'   => $request->rejection_reason,
+            ]);
+        }
+    });
+ 
+    return redirect()->route('admin.approval.trainer')
+        ->with('success', "Pendaftaran {$trainer->nama} telah ditolak.");
+}
+ 
+public function destroyTrainer(\App\Models\Trainer $trainer)
+{
+    // Hapus semua file dokumen dari storage
+    $fileCols = ['ktp_scan', 'bnsp_certificate', 'white_bg_photo', 'ijazah_file', 'bukti_transfer'];
+    foreach ($fileCols as $col) {
+        if (!empty($trainer->$col)) {
+            \Storage::disk('public')->delete($trainer->$col);
+        }
     }
+ 
+    // Reset trainer_status di users
+    if ($trainer->user_id) {
+        \App\Models\User::where('id', $trainer->user_id)->update([
+            'role'                   => 'umum',
+            'trainer_status'         => 'none',
+            'trainer_applied_at'     => null,
+            'trainer_rejection_reason' => null,
+            'is_pembimbing'          => false,
+            'pembimbing_expired_at'  => null,
+        ]);
+    }
+ 
+    $nama = $trainer->nama;
+    $trainer->delete(); // hapus record dari tabel trainer
+ 
+    return redirect()->route('admin.approval.trainer')
+        ->with('success', "Data trainer {$nama} berhasil dihapus.");
+}
 
     // ═════════════════════════════════════════════════════════════════════
     // APPROVAL MENTOR
@@ -408,23 +430,43 @@ class AdminController extends Controller
         return view('admin.approval-mentor', compact('pending', 'approved', 'rejected', 'stats'));
     }
     public function approveMentor(Mentor $mentor)
-    {
+{
+    \Illuminate\Support\Facades\DB::transaction(function () use ($mentor) {
         $mentor->update([
             'status'      => 'approved',
             'reviewed_at' => now(),
         ]);
-        return back()->with('success', "{$mentor->full_name} berhasil disetujui sebagai Mentor.");
-    }
-    public function rejectMentor(Request $request, Mentor $mentor)
-    {
-        $request->validate(['rejection_reason' => 'required|string|max:1000']);
+        if ($mentor->user_id) {
+            \App\Models\User::where('id', $mentor->user_id)->update([
+                'role'         => 'mentor',
+                'mentor_status' => 'approved',
+            ]);
+        }
+    });
+
+    return back()->with('success', "{$mentor->full_name} berhasil disetujui sebagai Mentor.");
+}
+public function rejectMentor(Request $request, Mentor $mentor)
+{
+    $request->validate(['rejection_reason' => 'required|string|max:1000']);
+
+    \Illuminate\Support\Facades\DB::transaction(function () use ($request, $mentor) {
         $mentor->update([
             'status'           => 'rejected',
             'rejection_reason' => $request->rejection_reason,
             'reviewed_at'      => now(),
         ]);
-        return back()->with('success', "Pendaftaran {$mentor->full_name} telah ditolak.");
-    }
+
+        if ($mentor->user_id) {
+            \App\Models\User::where('id', $mentor->user_id)->update([
+                'role'          => 'umum',
+                'mentor_status' => 'rejected',
+            ]);
+        }
+    });
+
+    return back()->with('success', "Pendaftaran {$mentor->full_name} telah ditolak.");
+}
     public function destroyMentor(Mentor $mentor)
     {
         $mentor->delete();
