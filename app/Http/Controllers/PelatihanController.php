@@ -627,4 +627,42 @@ public function simpanUlasanTrainer(Request $request, $id)
 
     return back()->with('success', 'Ulasan berhasil dikirim. Terima kasih!');
 }
+
+public function searchMentor(Request $request)
+{
+    $keyword = $request->get('q', '');
+
+    $trainers = User::where('role', 'trainer')
+        ->where(function ($q) use ($keyword) {
+            $q->where('name', 'like', "%{$keyword}%")
+              ->orWhere('address', 'like', "%{$keyword}%")
+              ->orWhere('bidang_keahlian', 'like', "%{$keyword}%");
+        })
+        ->get();
+
+    // Ambil data ulasan sekaligus (sama persis seperti di pembimbing())
+    $trainerIds = $trainers->pluck('id');
+    $ulasanData = \App\Models\TrainerUlasan::selectRaw('trainer_id, AVG(rating) as avg_rating, COUNT(*) as total_ulasan')
+        ->whereIn('trainer_id', $trainerIds)
+        ->groupBy('trainer_id')
+        ->get()
+        ->keyBy('trainer_id');
+
+    $result = $trainers->map(function ($trainer) use ($ulasanData) {
+        $u = $ulasanData->get($trainer->id);
+        return [
+            'id'                => $trainer->id,
+            'name'              => $trainer->name,
+            'academic_degree'   => $trainer->academic_degree,
+            'bidang_keahlian'   => $trainer->bidang_keahlian,
+            'location'          => !empty(trim($trainer->address ?? '')) ? $trainer->address : null,
+            'white_bg_photo'    => $trainer->white_bg_photo,
+            'profile_photo_path'=> $trainer->profile_photo_path,
+            'avg_rating'        => $u ? round($u->avg_rating, 1) : 0,
+            'total_ulasan'      => $u ? $u->total_ulasan : 0,
+        ];
+    });
+
+    return response()->json($result);
+}
 }

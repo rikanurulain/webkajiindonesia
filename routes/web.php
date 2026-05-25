@@ -36,13 +36,14 @@ Route::prefix('pelatihan')->name('pelatihan.')->group(function () {
     Route::get('/program', [PelatihanController::class, 'program'])->name('program');
     Route::get('/event', [PelatihanController::class, 'event'])->name('event');
     Route::get('/mentor', [PelatihanController::class, 'pembimbing'])->name('pembimbing');
+    Route::get('/mentor/search', [PelatihanController::class, 'searchMentor'])->name('pembimbing.search');
 
     // Wajib login
     Route::middleware('auth')->group(function () {
         Route::get('/program/{id}', [PelatihanController::class, 'detailProgram'])->name('detail');
         Route::get('/event/{id}', [PelatihanController::class, 'detailEvent'])->name('event.detail');
         Route::get('/mentor/{id}', [PelatihanController::class, 'detailMentor'])->name('mentor.detail');
-        Route::post('/mentor/{id}/ulasan', [PelatihanController::class, 'simpanUlasan'])->name('mentor.ulasan');
+        Route::post('/mentor/{id}/ulasan', [PelatihanController::class, 'simpanUlasanTrainer'])->name('mentor.ulasan');
     });
 });
 

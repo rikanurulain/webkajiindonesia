@@ -37,16 +37,9 @@
                     </svg>
                 </span>
                 <input type="text" id="searchInput"
-                       placeholder="Cari nama atau lokasi..."
+                       placeholder="Cari Nama Trainer"
                        class="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-green-300">
             </div>
-            <select id="bidangFilter"
-                    class="px-4 py-2.5 border border-gray-300 rounded-full text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
-                <option value="">Semua Bidang</option>
-                @foreach($bidangList as $bidang)
-                    <option value="{{ strtolower($bidang) }}">{{ $bidang }}</option>
-                @endforeach
-            </select>
         </div>
 
         {{-- Grid Kartu Trainer --}}
@@ -120,28 +113,104 @@
         </div>
     </section>
 
+    @php
+    $trainersJson = $trainers->getCollection()->map(function($t) {
+        return [
+            'id'                 => $t->id,
+            'name'               => $t->name,
+            'academic_degree'    => $t->academic_degree ?? $t->name,
+            'bidang_keahlian'    => $t->bidang_keahlian ?? 'Trainer',
+            'location'           => $t->location ?? 'Lokasi tidak tersedia',
+            'white_bg_photo'     => $t->white_bg_photo,
+            'profile_photo_path' => $t->profile_photo_path,
+            'avg_rating'         => $t->avg_rating ?? 0,
+            'total_ulasan'       => $t->total_ulasan ?? 0,
+        ];
+    });
+    @endphp
+
     <script>
+        // Semua data trainer dilempar dari PHP ke JS (tanpa fetch)
+        const allTrainers = @json($trainersJson);
+
         document.addEventListener('DOMContentLoaded', function () {
-            const searchInput = document.getElementById('searchInput');
-            const bidangFilter = document.getElementById('bidangFilter');
-            const cards = document.querySelectorAll('.pembimbing-card');
+            const searchInput  = document.getElementById('searchInput');
+            const trainerGrid  = document.getElementById('trainerGrid');
+            const paginationEl = document.querySelector('.mt-10.max-w-5xl');
+            const originalHTML = trainerGrid.innerHTML;
+            const originalPage = paginationEl ? paginationEl.innerHTML : '';
 
-            function filterCards() {
-                const keyword = searchInput.value.toLowerCase();
-                const bidang  = bidangFilter.value.toLowerCase();
+            searchInput.addEventListener('input', function () {
+                const keyword = this.value.trim().toLowerCase();
 
-                cards.forEach(card => {
-                    const matchSearch = card.dataset.nama.includes(keyword)
-                                     || card.dataset.lokasi.includes(keyword);
-                    const matchBidang = bidang === ''
-                                     || card.dataset.bidang.includes(bidang);
+                if (keyword === '') {
+                    trainerGrid.innerHTML = originalHTML;
+                    if (paginationEl) paginationEl.innerHTML = originalPage;
+                    return;
+                }
 
-                    card.style.display = (matchSearch && matchBidang) ? 'block' : 'none';
-                });
+                // Sembunyikan pagination saat search
+                if (paginationEl) paginationEl.innerHTML = '';
+
+                const filtered = allTrainers.filter(t =>
+                    t.name.toLowerCase().includes(keyword) ||
+                    (t.bidang_keahlian ?? '').toLowerCase().includes(keyword) ||
+                    (t.location ?? '').toLowerCase().includes(keyword)
+                );
+
+                renderCards(filtered, keyword);
+            });
+
+            function renderCards(trainers, keyword) {
+                if (trainers.length === 0) {
+                    trainerGrid.innerHTML = `
+                        <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-400 gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/>
+                            </svg>
+                            <p class="text-sm italic">Trainer "<strong>${keyword}</strong>" tidak ditemukan.</p>
+                        </div>`;
+                    return;
+                }
+
+                trainerGrid.innerHTML = trainers.map(t => {
+                    const avg   = parseFloat(t.avg_rating ?? 0).toFixed(1);
+                    const total = t.total_ulasan ?? 0;
+
+                    const foto = t.white_bg_photo
+                        ? `<img src="/storage/${t.white_bg_photo}" alt="${t.name}" class="w-full h-full object-cover">`
+                        : t.profile_photo_path
+                            ? `<img src="/storage/${t.profile_photo_path}" alt="${t.name}" class="w-full h-full object-cover">`
+                            : `<div class="text-3xl font-bold text-emerald-700">${t.name.substring(0,2).toUpperCase()}</div>`;
+
+                    const bintang = [1,2,3,4,5].map(i =>
+                        `<svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3"
+                            fill="${i <= Math.round(avg) ? 'currentColor' : 'none'}"
+                            stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                        </svg>`
+                    ).join('');
+
+                    return `
+                        <a href="/pelatihan/mentor/${t.id}"
+                        class="block bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition duration-300">
+                            <div class="w-full h-44 bg-gray-100 flex items-center justify-center overflow-hidden">
+                                ${foto}
+                            </div>
+                            <div class="bg-green-50 px-4 py-2 border-b">
+                                <h3 class="font-bold text-gray-900 text-sm line-clamp-1">${t.academic_degree}</h3>
+                                <p class="text-xs text-emerald-600 font-bold uppercase">${t.bidang_keahlian}</p>
+                            </div>
+                            <div class="px-4 py-3 text-gray-600">
+                                <p class="text-xs mb-2">${t.location}</p>
+                                <div class="flex items-center gap-1 mt-1">
+                                    <div class="flex items-center gap-0.5 text-amber-400">${bintang}</div>
+                                    <span class="text-xs text-gray-400 ml-1">${avg} (${total} ulasan)</span>
+                                </div>
+                            </div>
+                        </a>`;
+                }).join('');
             }
-
-            searchInput.addEventListener('input', filterCards);
-            bidangFilter.addEventListener('change', filterCards);
         });
     </script>
 

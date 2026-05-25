@@ -685,7 +685,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                         @else <span style="color:var(--text-muted);font-style:italic">Belum diisi</span> @endif
                     </div>
                 </div>
-                <div class="form-group"><div class="form-label">Bidang Keahlian</div><div class="form-static">{{ $trainer->bidang ?? '-' }}</div></div>
+                <div class="form-group"><div class="form-label">Bidang Keahlian (Opsional)</div><div class="form-static">{{ $trainer->bidang ?? '-' }}</div></div>
             </div>
             <div class="form-group">
                 <div class="form-label">Bio / Tentang Saya</div>
