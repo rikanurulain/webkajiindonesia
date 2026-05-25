@@ -96,8 +96,9 @@
                                     </svg>
                                     Detail
                                 </button>
+                                {{-- FIX: hapus @method('PATCH') — route sudah POST --}}
                                 <form method="POST" action="{{ route('admin.approval.produk.approve', $produk) }}" style="display:inline;">
-                                    @csrf @method('PATCH')
+                                    @csrf
                                     <button type="submit" class="btn btn-approve btn-sm">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path d="M5 13l4 4L19 7"/>
@@ -192,7 +193,6 @@
                                     </svg>
                                     Detail
                                 </button>
-                                {{-- TOMBOL HAPUS (sama seperti approval mentor) --}}
                                 <form method="POST"
                                       action="{{ route('admin.approval.produk.destroy', $produk) }}"
                                       style="display:inline;"
@@ -282,7 +282,6 @@
                                     </svg>
                                     Detail
                                 </button>
-                                {{-- TOMBOL HAPUS (sama seperti approval mentor) --}}
                                 <form method="POST"
                                       action="{{ route('admin.approval.produk.destroy', $produk) }}"
                                       style="display:inline;"
@@ -387,8 +386,9 @@
         <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:18px;line-height:1.6;">
             Berikan alasan penolakan untuk <strong id="reject-name"></strong>. Alasan ini akan tersimpan sebagai catatan.
         </p>
+        {{-- FIX: hapus @method('PATCH') — route sudah POST --}}
         <form id="reject-form" method="POST">
-            @csrf @method('PATCH')
+            @csrf
             <div class="form-group">
                 <label class="form-label">Alasan Penolakan *</label>
                 <textarea name="alasan" class="form-textarea" rows="4"
@@ -411,6 +411,7 @@
 {{-- Data JSON untuk JS --}}
 <script>
 const produkData = @json($pending->merge($approved)->merge($rejected)->keyBy('id'));
+const csrfToken  = '{{ csrf_token() }}';
 
 function switchTab(tab, btn) {
     ['pending', 'approved', 'rejected'].forEach(t => {
@@ -424,9 +425,9 @@ function switchTab(tab, btn) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    const params = new URLSearchParams(window.location.search);
+    const params    = new URLSearchParams(window.location.search);
     const activeTab = params.get('tab') || 'pending';
-    const tabBtn = document.querySelector(`.tab-btn[data-tab="${activeTab}"]`);
+    const tabBtn    = document.querySelector(`.tab-btn[data-tab="${activeTab}"]`);
     if (tabBtn) switchTab(activeTab, tabBtn);
 });
 
@@ -466,7 +467,6 @@ function openDetailModal(id) {
         rejectWrap.style.display = 'none';
     }
 
-    // Tombol aksi hanya tampil saat pending
     const actionBtns = document.getElementById('d-action-btns');
     const closeOnly  = document.getElementById('d-close-only');
     if (p.status === 'pending') {
@@ -488,11 +488,18 @@ function openDetailModal(id) {
     openModal('modal-detail');
 }
 
+
 function submitApprove(id) {
-    const form = document.createElement('form');
+    const form  = document.createElement('form');
     form.method = 'POST';
     form.action = `/admin/approval/produk/${id}/approve`;
-    form.innerHTML = `@csrf @method('PATCH')`;
+
+    const token   = document.createElement('input');
+    token.type    = 'hidden';
+    token.name    = '_token';
+    token.value   = csrfToken;
+
+    form.appendChild(token);
     document.body.appendChild(form);
     form.submit();
 }
@@ -503,7 +510,6 @@ function openRejectModal(id, nama) {
     openModal('modal-reject');
 }
 
-// Konfirmasi sebelum hapus — muncul dialog browser native
 function confirmHapus(nama) {
     return confirm(`Hapus produk "${nama}"?\n\nTindakan ini tidak dapat dibatalkan.`);
 }

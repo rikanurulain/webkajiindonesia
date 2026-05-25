@@ -184,24 +184,27 @@
                                 Buka Dashboard UMKM →
                             </a>
 
-                        @elseif(isset($umkm) && $umkm->status == 'rejected')
-                            <h4 class="font-bold mb-2 flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
-                                Pendaftaran UMKM Ditolak
-                            </h4>
-                            <p class="text-xs text-red-50 mb-3">Mohon maaf, data pendaftaran usaha Anda belum memenuhi syarat.</p>
-                            @if($umkm->rejection_reason)
-                                <div class="mb-4 p-3 bg-black/20 border border-white/20 rounded-lg">
-                                    <p class="text-[11px] font-bold text-red-200 uppercase tracking-wide mb-1">Alasan Penolakan:</p>
-                                    <p class="text-xs text-white leading-relaxed">{{ $umkm->rejection_reason }}</p>
-                                </div>
-                            @endif
-                            <a href="{{ route('profile.daftar-umkm') }}" 
-                               class="block w-full bg-white text-red-600 py-2 rounded-lg font-bold text-sm text-center hover:bg-gray-100 transition">
-                                Daftar Ulang UMKM
-                            </a>
+                            @elseif(isset($umkm) && $umkm->status == 'rejected')
+    <h4 class="font-bold mb-2 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        Pendaftaran UMKM Ditolak
+    </h4>
+    <p class="text-xs text-red-50 mb-3">Mohon maaf, data pendaftaran usaha Anda belum memenuhi syarat.</p>
+    @if($umkm->rejection_reason)
+        <div class="mb-4 p-3 bg-black/20 border border-white/20 rounded-lg">
+            <p class="text-[11px] font-bold text-red-200 uppercase tracking-wide mb-1">Alasan Penolakan:</p>
+            <p class="text-xs text-white leading-relaxed">{{ $umkm->rejection_reason }}</p>
+        </div>
+    @endif
+    <a href="{{ route('profile.daftar-umkm') }}" 
+       class="block w-full bg-white text-red-600 py-2 rounded-lg font-bold text-sm text-center hover:bg-gray-100 transition">
+        Daftar Ulang UMKM
+    </a>
+    <div class="py-2 px-3 bg-black/10 rounded-lg border border-white/20 text-center mt-3">
+        <span class="text-[10px] uppercase tracking-wider font-black">Status: Rejected</span>
+    </div>
 
                         @else
                             <h4 class="font-bold mb-2">Daftar sebagai UMKM</h4>

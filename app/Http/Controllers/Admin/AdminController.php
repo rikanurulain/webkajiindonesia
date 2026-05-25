@@ -208,6 +208,7 @@ class AdminController extends Controller
         $produk->update([
             'status'        => 'rejected',
             'catatan_admin' => $request->alasan,
+            'rejection_reason' => $request->alasan,
             'rejected_at'   => now(),
             'rejected_by'   => Auth::id(),
         ]);

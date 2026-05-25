@@ -568,12 +568,11 @@ class PelatihanController extends Controller
         return $trainer;
     });
 
-    $bidangList = User::where('role', 'trainer')
-                      ->whereNotNull('bidang_keahlian')
-                      ->pluck('bidang_keahlian')
-                      ->unique()
-                      ->sort()
-                      ->values();
+    $bidangList = Trainer::whereNotNull('keahlian')
+    ->pluck('keahlian')
+    ->unique()
+    ->sort()
+    ->values();
 
     return view('pages.pelatihan-pembimbing', compact('trainers', 'bidangList'));
 }
