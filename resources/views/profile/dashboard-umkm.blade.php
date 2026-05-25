@@ -67,7 +67,7 @@
 
   .content { padding: 32px; }
 
-  /* STATS - FIX: Diubah menjadi 3 kolom karena widget Produk Aktif dihapus */
+  /* STATS */
   .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
   .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
   .stat-card.mentor-active-box { border-left: 4px solid var(--accent); }
@@ -185,7 +185,7 @@
 
   <div class="content">
 
-    {{-- NOTIFIKASI SUKSES DAFTAR KELAS --}}
+    {{-- NOTIFIKASI SUKSES --}}
     @if(session('success'))
       <div style="padding: 14px; background: #e8f5e9; border: 1px solid #a7d7c5; color: #2d6a4f; border-radius: 10px; margin-bottom: 20px; font-size: 14px; font-weight: 600;">
            ✅ {{ session('success') }}
@@ -194,7 +194,6 @@
 
     <div class="page-section active" id="page-beranda">
       
-      {{-- STATS GRID - FIX: Sisa 3 kolom (Total UMKM, Menunggu ACC, Program Diikuti) --}}
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon green">🛍️</div>
@@ -216,7 +215,7 @@
         </div>
       </div>
 
-      {{-- FITUR TERHUBUNG MENTOR (DASHBOARD BOX) --}}
+      {{-- FITUR MENTOR --}}
       @php
         $myUmkmData = $myProducts->first();
       @endphp
@@ -257,7 +256,6 @@
         </div>
       @endif
 
-      {{-- FIX: Mengganti Status Pengajuan Produk -> Status Pengajuan UMKM --}}
       <div class="section-header">
         <div class="section-title">Status Pengajuan UMKM <span>terbaru</span></div>
       </div>
@@ -344,6 +342,7 @@
       </div>
     </div>
 
+    {{-- TAB HALAMAN UTAMA - PROGRAM TERSEDIA --}}
     <div class="page-section" id="page-program">
       <div class="section-header">
         <div class="section-title">Program Tersedia <span>dari Pembimbing/Trainer</span></div>
@@ -368,18 +367,16 @@
               <td><span style="text-transform: capitalize;">{{ $program->tipe }}</span></td>
               <td>{{ $program->tanggal ? $program->tanggal->translatedFormat('d M Y') : '-' }}</td>
               <td><span class="badge badge-approved"><span class="badge-dot"></span>Dibuka</span></td>
+              
+              {{-- 🌟 MODIFIKASI FINISHING: MENGUBAH TOMBOL DAFTAR MENJADI DETAIL LINK (GET) 🌟 --}}
               <td>
-                @if(in_array($program->id, $joinedProgramIds))
-                  <span class="badge badge-approved" style="background: #e8f5e9; color: #2d6a4f;">
-                    <span class="badge-dot"></span> Sudah Diikuti
-                  </span>
-                @else
-                  <form action="{{ route('dashboard.umkm.join-program', $program->id) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-primary btn-sm">Daftar</button>
-                  </form>
-                @endif
+                <a href="{{ route('pelatihan.detail', $program->id) }}" 
+                   class="btn btn-primary btn-sm" 
+                   style="text-decoration: none; padding: 6px 14px; text-align: center; min-width: 80px; display: inline-flex; justify-content: center;">
+                   Detail
+                </a>
               </td>
+              
             </tr>
             @empty
             <tr>
