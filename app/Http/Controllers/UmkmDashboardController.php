@@ -101,7 +101,6 @@ class UmkmDashboardController extends Controller
         $request->validate([
             'nama'        => 'required|string|max:255',
             'kategori'    => 'required',
-            'harga'       => 'required|numeric|min:0',
             'deskripsi'   => 'required|string',
             'foto_produk' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
         ]);
@@ -110,7 +109,6 @@ class UmkmDashboardController extends Controller
         $data = [
             'nama'      => $request->nama,
             'kategori'  => $request->kategori,
-            'harga'     => $request->harga,
             'deskripsi' => $request->deskripsi,
             'status'    => 'pending', // Diubah kembali ke pending agar di-review ulang oleh admin
         ];

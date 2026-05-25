@@ -29,7 +29,7 @@
     <section class="bg-gray-50 py-16 px-6 min-h-screen">
 
         <h2 class="font-serif text-center text-3xl font-bold text-gray-900 sm:text-4xl mb-10">
-            Produk UMKM
+            Daftar UMKM
         </h2>
 
         {{-- Search --}}

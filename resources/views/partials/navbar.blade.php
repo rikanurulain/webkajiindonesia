@@ -166,8 +166,8 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Produk</p>
-                            <p class="text-xs text-gray-400">Katalog produk UMKM</p>
+                            <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">UMKM</p>
+                            <p class="text-xs text-gray-400">Profile UMKM</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary group-hover/item:translate-x-0.5 transition-all duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>

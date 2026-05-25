@@ -67,8 +67,8 @@
 
   .content { padding: 32px; }
 
-  /* STATS */
-  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+  /* STATS - FIX: Diubah menjadi 3 kolom karena widget Produk Aktif dihapus */
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
   .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
   .stat-card.mentor-active-box { border-left: 4px solid var(--accent); }
   .stat-card.mentor-empty-box { border-left: 4px solid var(--accent2); }
@@ -86,10 +86,6 @@
   .section-title { font-size: 17px; font-weight: 700; }
   .section-title span { color: var(--text-muted); font-weight: 400; font-size: 14px; margin-left: 8px; }
 
-  .filter-bar { display: flex; gap: 8px; margin-bottom: 20px; }
-  .filter-btn { padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid var(--border); background: var(--surface); cursor: pointer; transition: all .2s; color: var(--text-muted); font-family: inherit; }
-  .filter-btn.active, .filter-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
-
   .product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 28px; }
   .product-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: all .25s; }
   .product-card:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(45,106,79,.12); border-color: var(--accent); }
@@ -105,8 +101,6 @@
   .btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 8px; }
   .btn-outline { background: transparent; border: 1.5px solid var(--accent); color: var(--accent); }
   .btn-outline:hover { background: var(--accent); color: #fff; }
-  .btn-danger-outline { background: transparent; border: 1.5px solid #e76f51; color: #e76f51; }
-  .btn-danger-outline:hover { background: #e76f51; color: #fff; }
 
   /* TABLE */
   .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 28px; box-shadow: var(--shadow); }
@@ -122,21 +116,6 @@
   .badge-rejected { background: #fff0ed; color: var(--accent2); border: 1px solid #e76f5166; }
   .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-  /* PROFILE */
-  .profile-hero { background: linear-gradient(135deg, var(--accent) 0%, #1b4332 100%); border-radius: var(--radius); padding: 32px; margin-bottom: 24px; display: flex; align-items: center; gap: 24px; box-shadow: var(--shadow); }
-  .profile-avatar-xl { width: 90px; height: 90px; border-radius: 20px; background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: #fff; border: 3px solid rgba(255,255,255,.3); flex-shrink: 0; overflow: hidden; }
-  .profile-avatar-xl img { width: 100%; height: 100%; object-fit: cover; }
-  .profile-hero-info h2 { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 4px; }
-  .profile-hero-info p { color: rgba(255,255,255,.7); font-size: 14px; }
-  .profile-form-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .form-group { margin-bottom: 18px; }
-  .form-label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-  .form-input, .form-textarea, .form-select { width: 100%; padding: 11px 14px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); font-family: inherit; font-size: 14px; transition: border .2s; }
-  .form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: var(--accent); background: #fff; }
-  .form-textarea { min-height: 100px; resize: vertical; }
-
-  /* PAGE SECTIONS */
   .page-section { display: none; }
   .page-section.active { display: block; }
 
@@ -168,7 +147,7 @@
     </div>
     <div class="nav-item" onclick="showPage('produk')">
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0"/></svg>
-      Produk UMKM
+      Profil UMKM
       <span class="nav-badge">{{ $stats['total_produk'] }}</span>
     </div>
     <div class="nav-item" onclick="showPage('program')">
@@ -177,16 +156,8 @@
     </div>
   </div>
 
-  <div class="nav-section">
-    <div class="nav-label">Akun</div>
-    <div class="nav-item" onclick="showPage('profil')">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      Profil Usaha
-    </div>
-  </div>
-
   <div class="sidebar-user">
-    <div class="user-card" onclick="showPage('profil')">
+    <div class="user-card" onclick="showPage('produk')">
       <div class="user-avatar">
         @if($user->profile_photo_path)
           <img src="{{ asset('storage/' . $user->profile_photo_path) }}" style="width:100%; height:100%; object-fit:cover;">
@@ -222,10 +193,12 @@
     @endif
 
     <div class="page-section active" id="page-beranda">
+      
+      {{-- STATS GRID - FIX: Sisa 3 kolom (Total UMKM, Menunggu ACC, Program Diikuti) --}}
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon green">🛍️</div>
-          <div class="stat-label">Total Produk</div>
+          <div class="stat-label">Total UMKM</div>
           <div class="stat-value">{{ $stats['total_produk'] }}</div>
           <div class="stat-sub">{{ $stats['pending_produk'] }} pending persetujuan</div>
         </div>
@@ -233,7 +206,7 @@
           <div class="stat-icon orange">⏳</div>
           <div class="stat-label">Menunggu Acc</div>
           <div class="stat-value">{{ $stats['pending_produk'] }}</div>
-          <div class="stat-sub">Produk baru diajukan</div>
+          <div class="stat-sub">UMKM baru diajukan</div>
         </div>
         <div class="stat-card">
           <div class="stat-icon blue">📋</div>
@@ -241,19 +214,10 @@
           <div class="stat-value">{{ $stats['program_diikuti'] }}</div>
           <div class="stat-sub">Terdaftar aktif</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon yellow">✅</div>
-          <div class="stat-label">Produk Aktif</div>
-          <div class="stat-value">{{ $stats['active_produk'] }}</div>
-          <div class="stat-sub">Tampil di platform</div>
-        </div>
       </div>
 
-      {{-- ========================================================= --}}
-      {{-- 🌟 FITUR TERHUBUNG MENTOR (DASHBOARD BOX) 🌟               --}}
-      {{-- ========================================================= --}}
+      {{-- FITUR TERHUBUNG MENTOR (DASHBOARD BOX) --}}
       @php
-        // Ambil baris produk UMKM pertama untuk memeriksa kolom mentor_id & relasi
         $myUmkmData = $myProducts->first();
       @endphp
 
@@ -287,24 +251,24 @@
               <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Hubungkan unit UMKM Anda dengan pembimbing terbaik kami untuk konsultasi usaha intensif gratis.</div>
             </div>
           </div>
-          <a href="{{ route('umkm.pembimbing') }}" class="btn btn-ghost" style="font-size: 12px; padding: 8px 16px; border-radius: 8px; text-decoration: none; border-color: var(--accent2); color: var(--accent2);">
+          <a href="{{ route('umkm') }}" class="btn btn-ghost" style="font-size: 12px; padding: 8px 16px; border-radius: 8px; text-decoration: none; border-color: var(--accent2); color: var(--accent2);">
               Cari Mentor Terbaik →
           </a>
         </div>
       @endif
 
+      {{-- FIX: Mengganti Status Pengajuan Produk -> Status Pengajuan UMKM --}}
       <div class="section-header">
-        <div class="section-title">Status Pengajuan Produk <span>terbaru</span></div>
+        <div class="section-title">Status Pengajuan UMKM <span>terbaru</span></div>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Nama Produk</th><th>Kategori</th><th>Harga</th><th>Diajukan</th><th>Status</th></tr></thead>
+          <thead><tr><th>Nama UMKM</th><th>Kategori</th><th>Diajukan</th><th>Status</th></tr></thead>
           <tbody>
             @forelse($myProducts->take(4) as $product)
             <tr>
               <td>{{ $product->nama }}</td>
               <td>{{ $product->kategori }}</td>
-              <td>Rp {{ number_format($product->harga, 0, ',', '.') }}</td>
               <td>{{ $product->created_at->translatedFormat('d M Y') }}</td>
               <td>
                 @if($product->status == 'approved')
@@ -318,7 +282,7 @@
             </tr>
             @empty
             <tr>
-              <td colspan="5" style="text-align: center; color: #7a7065;">Belum ada riwayat pengajuan produk.</td>
+              <td colspan="4" style="text-align: center; color: #7a7065;">Belum ada riwayat pengajuan UMKM.</td>
             </tr>
             @endforelse
           </tbody>
@@ -328,7 +292,7 @@
 
     <div class="page-section" id="page-produk">
       <div class="section-header">
-        <div class="section-title">Produk UMKM <span>{{ $stats['total_produk'] }} produk</span></div>
+        <div class="section-title">Profil UMKM <span>{{ $stats['total_produk'] }} unit</span></div>
       </div>
       <div class="product-grid">
         @forelse($myProducts as $product)
@@ -351,11 +315,7 @@
             <div class="product-category">{{ $product->kategori }}</div>
             <div class="product-name">{{ $product->nama }}</div>
             <div class="product-desc">{{ $product->deskripsi }}</div>
-            <div class="product-price">Rp {{ number_format($product->harga, 0, ',', '.') }}</div>
             
-            {{-- ========================================================= --}}
-            {{-- 🌟 FOOTER CARD PRODUK + ACTION EDIT (FIXED)               --}}
-            {{-- ========================================================= --}}
             <div class="product-footer" style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 10px;">
               <div>
                 @if($product->status == 'approved')
@@ -367,7 +327,6 @@
                 @endif
               </div>
 
-              {{-- Tombol Edit Menuju Form Edit Dinamis --}}
               <a href="{{ route('dashboard.produk.edit', $product->id) }}" 
                  class="btn btn-outline btn-sm" 
                  style="text-decoration: none; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
@@ -379,7 +338,7 @@
         </div>
         @empty
         <div style="grid-column: span 3; text-align: center; padding: 40px; color: #7a7065;">
-           Belum ada produk usaha yang diunggah.
+           Belum ada profil usaha yang diunggah.
         </div>
         @endforelse
       </div>
@@ -434,53 +393,6 @@
       </div>
     </div>
 
-    <div class="page-section" id="page-profil">
-      <div class="profile-hero">
-        <div class="profile-avatar-xl">
-          @if($user->profile_photo_path)
-            <img src="{{ asset('storage/' . $user->profile_photo_path) }}" class="w-full h-full object-cover">
-          @else
-            {{ substr($user->name, 0, 2) }}
-          @endif
-        </div>
-        <div class="profile-hero-info">
-          <h2>{{ $user->name }}</h2>
-          <p>Mitra UMKM Kaji Indonesia · {{ $user->location ?? 'Sidoarjo' }}</p>
-        </div>
-      </div>
-      <div class="profile-form-card">
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Nama Lengkap</label>
-            <input class="form-input" type="text" value="{{ $user->name }}" readonly disabled style="cursor: not-allowed;">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Email Utama</label>
-            <input class="form-input" type="email" value="{{ $user->email }}" readonly disabled style="cursor: not-allowed;">
-          </div>
-          <div class="form-group">
-            <label class="form-label">No. Telepon / WhatsApp</label>
-            <input class="form-input" type="text" value="{{ $user->phone }}" readonly disabled style="cursor: not-allowed;">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Wilayah / Kota</label>
-            <input class="form-input" type="text" value="{{ $user->location ?? 'Sidoarjo' }}" readonly disabled style="cursor: not-allowed;">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Alamat Lengkap Usaha</label>
-          <textarea class="form-textarea" readonly disabled style="cursor: not-allowed;">{{ $user->address ?? 'Belum melengkapi data alamat.' }}</textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Bio Singkat Usaha</label>
-          <textarea class="form-textarea" readonly disabled style="cursor: not-allowed;">{{ $user->bio ?? 'Mitra resmi binaan Kaji Indonesia.' }}</textarea>
-        </div>
-        <div style="display:flex;justify-content:flex-end">
-          <a href="{{ route('profile') }}" class="btn btn-primary" style="text-decoration: none;">Ubah Data di Pengaturan Utama</a>
-        </div>
-      </div>
-    </div>
-
   </div>
 </main>
 
@@ -489,7 +401,8 @@
     document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     document.getElementById('page-' + id).classList.add('active');
-    const titles = { beranda: 'Dashboard UMKM', produk: 'Produk UMKM', program: 'Program Tersedia', profil: 'Profil Usaha' };
+    
+    const titles = { beranda: 'Dashboard UMKM', produk: 'Profil UMKM', program: 'Program Tersedia' };
     document.getElementById('page-title').textContent = titles[id] || '';
     document.querySelectorAll('.nav-item').forEach(item => {
       if (item.getAttribute('onclick') && item.getAttribute('onclick').includes("'" + id + "'")) item.classList.add('active');

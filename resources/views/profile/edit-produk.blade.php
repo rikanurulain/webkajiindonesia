@@ -70,12 +70,6 @@
       @error('kategori') <p class="error-msg">{{ $message }}</p> @enderror
     </div>
 
-    {{-- Harga --}}
-    <div class="form-group">
-      <label class="form-label">Harga Produk (Rp)</label>
-      <input type="number" name="harga" class="form-input" value="{{ old('harga', $product->harga) }}" required min="0" placeholder="0">
-      @error('harga') <p class="error-msg">{{ $message }}</p> @enderror
-    </div>
 
     {{-- Deskripsi --}}
     <div class="form-group">

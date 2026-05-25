@@ -78,11 +78,7 @@
                     <input type="text" name="nib" value="{{ old('nib') }}"
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none transition">
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">ID TKM <span class="text-gray-400 font-normal">(Opsional)</span></label>
-                    <input type="text" name="id_tkm" value="{{ old('id_tkm') }}"
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none transition">
-                </div>
+
             </div>
 
             {{-- ======================== LOKASI USAHA ======================== --}}
