@@ -528,7 +528,13 @@
             
             <!-- Label Status di Bawah Kotak -->
             <span class="text-[9px] font-black uppercase tracking-[0.15em] text-gray-400 group-hover:text-primary transition-colors">
-                {{ Auth::user()->role === 'mentor' ? 'MENTOR' : 'MEMBER' }}
+            {{ match(Auth::user()->role) {
+    'trainer' => 'TRAINER',
+    'mentor'  => 'MENTOR',
+    'umkm'    => 'UMKM',
+    'admin'   => 'ADMIN',
+    default   => 'MEMBER',
+} }}
             </span>
         </a>
         <!-- Garis Pemisah Tipis -->

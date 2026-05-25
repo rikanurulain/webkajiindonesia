@@ -87,14 +87,22 @@
                     </div>
 
                     <div class="px-4 py-3 text-gray-600">
-                        <p class="text-xs mb-2">{{ $trainer->gmaps_location ?? 'Lokasi tidak tersedia' }}</p>
-                        <div class="flex items-center gap-1 text-amber-400">
-                            @for($i = 1; $i <= 5; $i++)
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                                </svg>
-                            @endfor
-                        </div>
+                    <p class="text-xs mb-2">{{ $trainer->location ?? 'Lokasi tidak tersedia' }}</p>
+                        <div class="flex items-center gap-1 mt-1">
+    <div class="flex items-center gap-0.5 text-amber-400">
+        @for($i = 1; $i <= 5; $i++)
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3"
+                 fill="{{ $i <= round($trainer->avg_rating ?? 0) ? 'currentColor' : 'none' }}"
+                 stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+            </svg>
+        @endfor
+    </div>
+    <span class="text-xs text-gray-400 ml-1">
+        {{ number_format($trainer->avg_rating ?? 0, 1) }}
+        ({{ $trainer->total_ulasan ?? 0 }} ulasan)
+    </span>
+</div>
                     </div>
 
                 </a>

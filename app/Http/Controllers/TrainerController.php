@@ -22,6 +22,8 @@ class TrainerController extends Controller
     public function index()
     {
         $user = Auth::user();
+        $trainer = \App\Models\Trainer::where('user_id', $user->id)->first();
+
     
         $pelatihanList = Program::where('trainer_id', $user->id)->latest()->get();
         $eventList     = Event::where('trainer_id', $user->id)->latest()->get();
@@ -53,7 +55,8 @@ class TrainerController extends Controller
             'pendingEventCount',
             'pelatihanList',
             'eventList',
-            'recentSubmissions'
+            'recentSubmissions',
+            'trainer'
         ));
     }
 
@@ -324,41 +327,51 @@ class TrainerController extends Controller
     // ═══════════════════════════════════════════════════════════════
 
     public function updateProfil(Request $request)
-    {
+{
+    $user = Auth::user();
 
-        $user = Auth::user();
+    $request->validate([
+        'name'            => 'required|string|max:255',
+        'email'           => 'required|email|max:255|unique:users,email,' . $user->id,
+        'phone'           => 'nullable|string|max:20',
+        'bidang_keahlian' => 'nullable|string|max:255',
+        'bio'             => 'nullable|string|max:1000',
+        'linkedin'        => 'nullable|url|max:255',
+        'foto'            => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        'password'        => 'nullable|string|min:8',
+    ]);
 
-        $request->validate([
-            'name'            => 'required|string|max:255',
-            'email'           => 'required|email|max:255|unique:users,email,' . $user->id,
-            'no_hp'           => 'nullable|string|max:20',
-            'bidang_keahlian' => 'nullable|string|max:255',
-            'bio'             => 'nullable|string|max:1000',
-            'linkedin'        => 'nullable|url|max:255',
-            'phone'           => 'nullable|string|max:20',
-            'foto'            => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'password'        => 'nullable|string|min:8',
-        ]);
+    // ── Data untuk tabel USERS ──────────────────────────
+    $userData = $request->only(['name', 'email', 'phone']);
 
-        $data = $request->only(['name', 'email', 'phone', 'bidang_keahlian', 'bio', 'linkedin']);
+    if ($request->filled('password')) {
+        $userData['password'] = Hash::make($request->password);
+    }
+
+    $user->update($userData);
+
+    // ── Data untuk tabel TRAINER ────────────────────────
+    $trainer = \App\Models\Trainer::where('user_id', $user->id)->first();
+
+    if ($trainer) {
+        $trainerData = [
+            'bio'    => $request->bio,
+            'bidang' => $request->bidang_keahlian,
+        ];
 
         // Ganti foto jika ada upload baru
         if ($request->hasFile('foto')) {
-            if ($user->foto) Storage::disk('public')->delete($user->foto);
-            $data['foto'] = $request->file('foto')->store('profil', 'public');
+            if ($trainer->foto) Storage::disk('public')->delete($trainer->foto);
+            $trainerData['foto'] = $request->file('foto')->store('profil', 'public');
         }
 
-        // Update password jika diisi
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
-        }
-
-        $user->update($data);
-
-        return back()
-            ->with('success', 'Profil berhasil diperbarui.')
-            ->with('active_page', 'profil');
+        $trainer->update($trainerData);
     }
+
+    return back()
+        ->with('success', 'Profil berhasil diperbarui.')
+        ->with('active_page', 'profil');
+}
 
     // ═══════════════════════════════════════════════════════════════
     // HELPER PRIVATE

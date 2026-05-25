@@ -685,11 +685,11 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                         @else <span style="color:var(--text-muted);font-style:italic">Belum diisi</span> @endif
                     </div>
                 </div>
-                <div class="form-group"><div class="form-label">Bidang Keahlian</div><div class="form-static">{{ auth()->user()->bidang_keahlian ?? '-' }}</div></div>
+                <div class="form-group"><div class="form-label">Bidang Keahlian</div><div class="form-static">{{ $trainer->bidang ?? '-' }}</div></div>
             </div>
             <div class="form-group">
                 <div class="form-label">Bio / Tentang Saya</div>
-                <div class="form-static" style="min-height:80px;line-height:1.7">{{ auth()->user()->bio ?? 'Belum ada bio.' }}</div>
+                <div class="form-static" style="min-height:80px;line-height:1.7">{{ $trainer->bio ?? 'Belum ada bio.' }}</div>
             </div>
         </div>
     </div>
@@ -1016,9 +1016,9 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                 <div class="form-group"><label class="form-label">Nama Lengkap *</label><input class="form-input" type="text" name="name" value="{{ auth()->user()->name }}" required></div>
                 <div class="form-group"><label class="form-label">Email *</label><input class="form-input" type="email" name="email" value="{{ auth()->user()->email }}" required></div>
                 <div class="form-group"><label class="form-label">No. Telepon</label><input class="form-input" type="text" name="phone" value="{{ auth()->user()->phone ?? '' }}"></div>
-                <div class="form-group"><label class="form-label">Bidang Keahlian</label><input class="form-input" type="text" name="bidang_keahlian" value="{{ auth()->user()->bidang_keahlian ?? '' }}"></div>
+                <div class="form-group"><label class="form-label">Bidang Keahlian</label><input class="form-input" type="text" name="bidang_keahlian" value="{{ $trainer->bidang ?? '' }}"></div>
             </div>
-            <div class="form-group"><label class="form-label">Bio</label><textarea class="form-textarea" name="bio">{{ auth()->user()->bio ?? '' }}</textarea></div>
+            <div class="form-group"><label class="form-label">Bio</label><textarea class="form-textarea" name="bio">{{ $trainer->bio ?? '' }}</textarea></div>
             <div class="form-group">
                 <label class="form-label">Foto Profil</label>
                 <label class="upload-area" for="profil-foto">

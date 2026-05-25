@@ -550,23 +550,23 @@ class PelatihanController extends Controller
 
     // Untuk data lama yang location-nya tersimpan sebagai angka ID wilayah (bug lama),
     // fallback ke gmaps_location yang berisi alamat domisili yang diketik user.
-    $trainers->getCollection()->transform(function ($trainer) {
-        $loc = trim($trainer->location ?? '');
+    $trainerIds = $trainers->pluck('id');
+$ulasanData = \App\Models\TrainerUlasan::selectRaw('trainer_id, AVG(rating) as avg_rating, COUNT(*) as total_ulasan')
+    ->whereIn('trainer_id', $trainerIds)
+    ->groupBy('trainer_id')
+    ->get()
+    ->keyBy('trainer_id');
 
-        // Deteksi: kosong, hanya angka/koordinat, atau rangkaian ID wilayah
-        $isInvalid = $loc === ''
-            || preg_match('/^[\d\s\.,\-]+$/', $loc)
-            || preg_match('/^\d{1,2}(,\s*\d{3,12}){1,3}$/', $loc);
+$trainers->getCollection()->transform(function ($trainer) use ($ulasanData) {
+    $trainer->location = !empty(trim($trainer->address ?? ''))
+    ? $trainer->address
+    : null;
+    $u = $ulasanData->get($trainer->id);
+    $trainer->avg_rating   = $u ? round($u->avg_rating, 1) : 0;
+    $trainer->total_ulasan = $u ? $u->total_ulasan : 0;
 
-        if ($isInvalid) {
-            // Fallback ke alamat domisili yang diketik user
-            $trainer->location = !empty(trim($trainer->gmaps_location ?? ''))
-                ? $trainer->gmaps_location
-                : null;
-        }
-
-        return $trainer;
-    });
+    return $trainer;
+});
 
     $bidangList = Trainer::whereNotNull('keahlian')
     ->pluck('keahlian')
