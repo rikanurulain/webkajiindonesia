@@ -31,6 +31,179 @@
     /* ── Biaya badge ── */
     .badge-gratis  { background:#dcfce7; color:#15803d; border:1px solid #86efac; }
     .badge-berbayar{ background:#fef3c7; color:#92400e; border:1px solid #fde68a; }
+
+    /* ===================== RESPONSIVE MOBILE - APPROVAL EVENT ===================== */
+
+    @media (max-width: 768px) {
+
+        /* Tab bar scroll horizontal */
+        .tab-bar {
+            width: 100% !important;
+            overflow-x: auto !important;
+            flex-wrap: nowrap !important;
+            -webkit-overflow-scrolling: touch;
+        }
+        .tab-btn {
+            white-space: nowrap !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Table card header */
+        .table-card-header {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 6px !important;
+            padding: 12px 14px !important;
+        }
+
+        /* Tabel: fixed layout */
+        .table-card table {
+            table-layout: fixed !important;
+            width: 100% !important;
+        }
+
+        /* Sembunyikan: Pembimbing(2), Lokasi(3), Tanggal(4), Kapasitas(5), Status(6) */
+        .table-card table thead tr th:nth-child(2),
+        .table-card table tbody tr td:nth-child(2),
+        .table-card table thead tr th:nth-child(3),
+        .table-card table tbody tr td:nth-child(3),
+        .table-card table thead tr th:nth-child(4),
+        .table-card table tbody tr td:nth-child(4),
+        .table-card table thead tr th:nth-child(5),
+        .table-card table tbody tr td:nth-child(5),
+        .table-card table thead tr th:nth-child(6),
+        .table-card table tbody tr td:nth-child(6) {
+            display: none !important;
+        }
+
+        /* Lebar kolom Event(1) dan Aksi(7) */
+        .table-card table thead tr th:nth-child(1),
+        .table-card table tbody tr td:nth-child(1) {
+            width: 60% !important;
+        }
+        .table-card table thead tr th:nth-child(7),
+        .table-card table tbody tr td:nth-child(7) {
+            width: 40% !important;
+        }
+
+        /* Padding baris */
+        thead th {
+            padding: 10px 10px !important;
+            font-size: 9px !important;
+        }
+        tbody td {
+            padding: 10px 10px !important;
+        }
+
+        /* Preview cell (kolom Event) */
+        .preview-cell { gap: 6px !important; }
+
+        .preview-thumb {
+            width: 36px !important;
+            height: 36px !important;
+            font-size: 16px !important;
+            flex-shrink: 0 !important;
+        }
+
+        .preview-name {
+            font-size: 11px !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+            max-width: 110px !important;
+        }
+
+        /* Sembunyikan badge biaya di tabel, tetap tampil di modal */
+        .preview-cell .badge-gratis,
+        .preview-cell .badge-berbayar {
+            display: none !important;
+        }
+
+        /* Tombol aksi: susun vertikal, semua sama lebar */
+        .action-group {
+            flex-direction: column !important;
+            gap: 4px !important;
+            align-items: stretch !important;
+            width: 100% !important;
+        }
+
+        .action-group .btn-sm {
+            font-size: 11px !important;
+            padding: 6px 4px !important;
+            white-space: nowrap !important;
+            justify-content: center !important;
+            width: 100% !important;
+            display: flex !important;
+            box-sizing: border-box !important;
+            min-height: 30px !important;
+        }
+
+        /* Tombol Detail tetap tampil */
+        .action-group .btn-ghost.btn-sm {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .action-group .btn-ghost.btn-sm svg {
+            width: 13px !important;
+            height: 13px !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* ── Modal: slide dari bawah ── */
+        .modal-overlay {
+            align-items: flex-end !important;
+            padding: 0 !important;
+        }
+
+        .modal {
+            width: 100% !important;
+            max-width: 100% !important;
+            border-radius: 20px 20px 0 0 !important;
+            padding: 20px 16px 32px !important;
+            max-height: 90vh !important;
+        }
+
+        #modal-reject .modal {
+            width: 100% !important;
+        }
+
+        /* Gambar preview di modal */
+        .img-preview {
+            height: 130px !important;
+            margin-bottom: 14px !important;
+        }
+
+        /* Detail grid: 1 kolom */
+        .detail-grid {
+            grid-template-columns: 1fr !important;
+            gap: 8px !important;
+        }
+
+        /* Tombol footer modal */
+        #modal-detail .modal > div:last-child {
+            flex-direction: column-reverse !important;
+            gap: 8px !important;
+        }
+
+        #modal-detail .modal > div:last-child .btn {
+            width: 100% !important;
+            justify-content: center !important;
+        }
+
+        /* Form reject */
+        .form-textarea {
+            font-size: 14px !important;
+        }
+
+        /* SweetAlert2 */
+        .swal2-popup {
+            width: 92% !important;
+            padding: 24px 18px !important;
+        }
+    }
+
 </style>
 @endpush
 

@@ -232,6 +232,260 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 #k-alamat-group.hidden-alamat {
     display: none !important;
 }
+
+/* ============ HAMBURGER BUTTON ============ */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+}
+.hamburger span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all .3s;
+}
+
+/* ============ SIDEBAR OVERLAY (mobile) ============ */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 99;
+    backdrop-filter: blur(2px);
+}
+.sidebar-overlay.open { display: block; }
+
+/* ============ RESPONSIVE: LARGE SCREEN (≥1400px) ============ */
+@media (min-width: 1400px) {
+    .content { padding: 36px 48px; }
+    .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .stat-value { font-size: 34px; }
+}
+
+/* ============ RESPONSIVE: TABLET (769px – 1100px) ============ */
+@media (min-width: 769px) and (max-width: 1100px) {
+    .sidebar { width: 220px; }
+    .main { margin-left: 220px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .content { padding: 24px 20px; }
+    .topbar { padding: 14px 20px; }
+    .modal { width: 90vw !important; }
+}
+
+/* ============ RESPONSIVE: MOBILE (≤768px) ============ */
+@media (max-width: 768px) {
+    /* Sidebar */
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform .3s ease;
+        width: 260px;
+        z-index: 100;
+        box-shadow: 4px 0 24px rgba(0,0,0,.2);
+    }
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    /* Main */
+    .main { margin-left: 0; }
+
+    /* Topbar */
+    .topbar { padding: 12px 16px; gap: 10px; }
+    .topbar-title { font-size: 18px; }
+    .hamburger { display: flex; }
+
+    /* Sembunyikan tombol lihat website di mobile */
+    .topbar .btn-ghost { display: none; }
+
+    /* Greeting teks */
+    .topbar > div > span { display: none; }
+
+    /* Content */
+    .content { padding: 16px; }
+
+    /* Stats grid */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    .stat-value { font-size: 24px; }
+    .stat-card { padding: 16px; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+    /* Khusus tabel Status Terbaru di beranda — sembunyikan kolom Tanggal */
+    @media (max-width: 480px) {
+        /* Sembunyikan kolom Tanggal (kolom ke-3) */
+        #page-beranda table thead th:nth-child(3),
+        #page-beranda table tbody td:nth-child(3) {
+            display: none;
+        }
+        /* Sembunyikan kolom Lokasi di tabel event (kolom ke-2) */
+        #page-event table thead th:nth-child(2),
+        #page-event table tbody td:nth-child(2) {
+            display: none;
+        }
+        /* Perkecil padding sel tabel */
+        tbody td, thead th { padding: 10px 10px; }
+        
+        /* Perkecil font badge di tabel */
+        .badge { font-size: 10px; padding: 3px 7px; }
+        .chip  { font-size: 10px; padding: 2px 8px; }
+    }
+
+    /* Form rows */
+    .form-row { grid-template-columns: 1fr; gap: 0; }
+
+    /* Kurikulum block header */
+    .kurikulum-block-header {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px;
+    }
+    .kurikulum-block-header > div:last-child {
+        width: 100%;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+    .k-meta { gap: 8px; }
+
+    /* Section header */
+    .section-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .section-actions { width: 100%; display: flex; flex-wrap: wrap; gap: 8px; }
+    .section-actions .btn { flex: 1; justify-content: center; }
+
+    /* Modal */
+    .modal-overlay { align-items: flex-end; }
+    .modal {
+        width: 100% !important;
+        max-height: 92vh;
+        border-radius: 20px 20px 0 0;
+        padding: 24px 20px;
+    }
+
+    /* Profile hero */
+    .profile-hero { flex-direction: column; text-align: center; gap: 16px; padding: 24px 20px; }
+    .profile-hero button { margin-left: 0 !important; width: 100%; justify-content: center; }
+
+    /* Absensi bar */
+    .absensi-bar { padding: 12px 14px; gap: 10px; }
+    .btn-absensi-live { width: 100%; justify-content: center; }
+
+    /* Radio group */
+    .radio-group { flex-direction: column; }
+
+    /* Modul row */
+    .modul-row { flex-wrap: wrap; gap: 10px; }
+    .modul-row > div:last-child { margin-left: auto; }
+
+    /* User card di sidebar */
+    .user-name { font-size: 12px; }
+}
+
+/* ============ CARD TABLE MOBILE ============ */
+@media (max-width: 768px) {
+    /* Hapus min-width paksa */
+    table { min-width: unset; width: 100%; }
+
+    /* Sembunyikan thead */
+    #page-beranda .table-wrap thead,
+    #page-event .table-wrap thead { display: none; }
+
+    /* Ubah tbody jadi block */
+    #page-beranda .table-wrap tbody,
+    #page-event .table-wrap tbody { display: block; }
+
+    /* Setiap baris jadi kartu */
+    #page-beranda .table-wrap tbody tr,
+    #page-event .table-wrap tbody tr {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin: 10px 12px;
+        padding: 12px 14px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        gap: 6px;
+    }
+
+    /* Semua td jadi block */
+    #page-beranda .table-wrap tbody td,
+    #page-event .table-wrap tbody td {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 2px 0;
+        font-size: 13px;
+        border: none;
+    }
+
+    /* Label otomatis sebelum setiap kolom */
+    #page-beranda .table-wrap tbody td::before,
+    #page-event .table-wrap tbody td::before {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        min-width: 60px;
+        flex-shrink: 0;
+    }
+
+    /* Beranda: Nama, Tipe, Tanggal, Status */
+    #page-beranda .table-wrap tbody td:nth-child(1)::before { content: 'Nama'; }
+    #page-beranda .table-wrap tbody td:nth-child(2)::before { content: 'Tipe'; }
+    #page-beranda .table-wrap tbody td:nth-child(3)::before { content: 'Tanggal'; }
+    #page-beranda .table-wrap tbody td:nth-child(4)::before { content: 'Status'; }
+
+    /* Event: Nama, Lokasi, Tanggal, Kapasitas, Status, Aksi */
+    #page-event .table-wrap tbody td:nth-child(1)::before  { content: 'Event'; }
+    #page-event .table-wrap tbody td:nth-child(2)::before  { content: 'Lokasi'; }
+    #page-event .table-wrap tbody td:nth-child(3)::before  { content: 'Tanggal'; }
+    #page-event .table-wrap tbody td:nth-child(4)::before  { content: 'Kapasitas'; }
+    #page-event .table-wrap tbody td:nth-child(5)::before  { content: 'Status'; }
+    #page-event .table-wrap tbody td:nth-child(6)::before  { content: 'Aksi'; }
+
+    /* Kolom nama rata atas (karena ada catatan admin) */
+    #page-event .table-wrap tbody td:nth-child(1) { align-items: flex-start; }
+
+    /* Hapus border antar baris lama */
+    #page-beranda .table-wrap tbody tr,
+    #page-event .table-wrap tbody tr { border-bottom: none !important; }
+
+    /* Tambah garis pemisah antar label-value */
+    #page-beranda .table-wrap tbody td:not(:last-child),
+    #page-event .table-wrap tbody td:not(:last-child) {
+        padding-bottom: 6px;
+        border-bottom: 1px solid var(--surface2);
+    }
+
+    /* Stat card teks tidak terpotong */
+    .stat-label { font-size: 11px; }
+    .stat-sub   { font-size: 11px; }
+
+    /* Topbar greeting sembunyikan di mobile */
+    .topbar > div > span { display: none; }
+}
+/* ============ RESPONSIVE: MOBILE KECIL (≤400px) ============ */
+@media (max-width: 400px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .stat-value { font-size: 28px; }
+    .topbar-title { font-size: 16px; }
+}
+
 </style>
 </head>
 <body>
@@ -301,9 +555,16 @@ tbody td { padding: 14px 18px; font-size: 13px; }
     </div>
 </aside>
 
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
 {{-- ============ MAIN ============ --}}
 <main class="main">
 <header class="topbar">
+    <button class="hamburger" onclick="toggleSidebar()" aria-label="Toggle Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
     <div class="topbar-title" id="page-title">Dashboard Trainer</div>
     <div style="display:flex;gap:10px;align-items:center">
         <span style="font-size:13px;color:var(--text-muted)">Halo, {{ auth()->user()->name }} 👋</span>
@@ -1135,9 +1396,26 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /* ================================================================
+   SIDEBAR TOGGLE (MOBILE)
+================================================================ */
+function toggleSidebar() {
+    const sidebar  = document.querySelector('.sidebar');
+    const overlay  = document.getElementById('sidebar-overlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+    document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+}
+function closeSidebar() {
+    document.querySelector('.sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+/* ================================================================
    NAVIGASI
 ================================================================ */
 function showPage(id) {
+    if (window.innerWidth <= 768) closeSidebar();
     document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     document.getElementById('page-' + id).classList.add('active');

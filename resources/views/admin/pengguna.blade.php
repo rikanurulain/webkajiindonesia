@@ -2,6 +2,177 @@
 
 @section('page-title', 'Manajemen Pengguna')
 
+@push('styles')
+<style>
+/* ===================== RESPONSIVE MOBILE - PENGGUNA ===================== */
+
+@media (max-width: 768px) {
+
+    /* Header: title + filter susun vertikal */
+    div[style*="justify-content:space-between"][style*="margin-bottom:18px"] {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+
+    /* Filter select: full width */
+    div[style*="justify-content:space-between"] form {
+        width: 100% !important;
+    }
+
+    div[style*="justify-content:space-between"] .form-select {
+        width: 100% !important;
+    }
+
+    /* Tabel: fixed layout */
+    .table-card table {
+        table-layout: fixed !important;
+        width: 100% !important;
+    }
+
+    /* Sembunyikan: Role(2), Email(3), Kota(4), Bergabung(5) */
+    .table-card table thead tr th:nth-child(2),
+    .table-card table tbody tr td:nth-child(2),
+    .table-card table thead tr th:nth-child(3),
+    .table-card table tbody tr td:nth-child(3),
+    .table-card table thead tr th:nth-child(4),
+    .table-card table tbody tr td:nth-child(4),
+    .table-card table thead tr th:nth-child(5),
+    .table-card table tbody tr td:nth-child(5) {
+        display: none !important;
+    }
+
+    /* Lebar kolom yang tersisa */
+    .table-card table thead tr th:nth-child(1),
+    .table-card table tbody tr td:nth-child(1) { width: 40% !important; }
+
+    .table-card table thead tr th:nth-child(6),
+    .table-card table tbody tr td:nth-child(6) { width: 20% !important; }
+
+    .table-card table thead tr th:nth-child(7),
+    .table-card table tbody tr td:nth-child(7) { width: 40% !important; }
+
+    /* Padding baris */
+    thead th {
+        padding: 10px 10px !important;
+        font-size: 9px !important;
+    }
+    tbody td {
+        padding: 10px 10px !important;
+    }
+
+    /* Submitter cell */
+    .submitter { gap: 6px !important; }
+
+    .submitter-avatar {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 10px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .submitter-name {
+        font-size: 11px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        max-width: 90px !important;
+    }
+
+    /* Sembunyikan nomor telepon di bawah nama */
+    .submitter-sub {
+        display: none !important;
+    }
+
+    /* Badge status */
+    .badge {
+        font-size: 10px !important;
+        padding: 2px 6px !important;
+        white-space: nowrap !important;
+    }
+
+    /* Tombol aksi: susun vertikal, sama lebar */
+    .action-group {
+        flex-direction: column !important;
+        gap: 4px !important;
+        align-items: stretch !important;
+        width: 100% !important;
+    }
+
+    .action-group .btn-sm {
+        font-size: 11px !important;
+        padding: 6px 4px !important;
+        white-space: nowrap !important;
+        justify-content: center !important;
+        width: 100% !important;
+        display: flex !important;
+        box-sizing: border-box !important;
+        min-height: 30px !important;
+    }
+
+    /* ── Pagination ── */
+    div[style*="justify-content:space-between"][style*="padding:14px 18px"] {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 10px !important;
+        padding: 12px 14px !important;
+    }
+
+    /* Sembunyikan info "Menampilkan x-y dari z" */
+    div[style*="justify-content:space-between"][style*="padding:14px 18px"] > div:first-child {
+        display: none !important;
+    }
+
+    /* Nomor halaman: wrap agar tidak meluber */
+    div[style*="justify-content:space-between"][style*="padding:14px 18px"] > div:last-child {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 4px !important;
+    }
+
+    /* ── Modal: slide dari bawah ── */
+    .modal-overlay {
+        align-items: flex-end !important;
+        padding: 0 !important;
+    }
+
+    .modal {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 20px 20px 0 0 !important;
+        padding: 20px 16px 32px !important;
+        max-height: 92vh !important;
+    }
+
+    /* Header avatar di modal */
+    #user-detail-body > div:first-child {
+        flex-direction: row !important;
+        padding: 12px !important;
+    }
+
+    /* Detail grid di modal: 1 kolom */
+    .detail-grid {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+
+    .detail-item.full {
+        grid-column: 1 !important;
+    }
+
+    /* Tombol tutup modal */
+    #modal-user-detail .modal > div:last-child {
+        justify-content: stretch !important;
+    }
+
+    #modal-user-detail .modal > div:last-child .btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+}
+</style>
+@endpush
+
 @section('content')
 
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">

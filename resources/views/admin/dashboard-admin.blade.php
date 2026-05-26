@@ -2,6 +2,224 @@
 
 @section('page-title', 'Overview')
 
+
+@push('styles')
+<style>
+/* ===== RESPONSIVE MOBILE ===== */
+
+/* Stats Grid: 2 kolom di mobile */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+
+    .stat-card {
+        padding: 12px 10px !important;
+    }
+
+    .stat-num {
+        font-size: 22px !important;
+    }
+
+    .stat-icon {
+        font-size: 18px !important;
+    }
+
+    .stat-label {
+        font-size: 11px !important;
+    }
+
+    .stat-trend {
+        font-size: 10px !important;
+    }
+}
+
+/* Section header: stack vertikal */
+@media (max-width: 768px) {
+    .section-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+    }
+}
+
+/* Tabel: scroll horizontal di dalam wrapper */
+@media (max-width: 768px) {
+    .table-card {
+        overflow-x: hidden !important;
+    }
+
+    .table-card table {
+        width: 100% !important;
+        table-layout: fixed !important;
+    }
+
+    /* Sembunyikan kolom Tipe (duplikat dengan preview-meta) */
+    .table-card table thead tr th:nth-child(2),
+    .table-card table tbody tr td:nth-child(2) {
+        display: none !important;
+    }
+
+    /* Kolom Item */
+    .table-card table thead tr th:nth-child(1),
+    .table-card table tbody tr td:nth-child(1) {
+        width: 35% !important;
+    }
+
+    /* Kolom Diajukan oleh */
+    .table-card table thead tr th:nth-child(3),
+    .table-card table tbody tr td:nth-child(3) {
+        width: 30% !important;
+    }
+
+    /* Kolom Tanggal */
+    .table-card table thead tr th:nth-child(4),
+    .table-card table tbody tr td:nth-child(4) {
+        width: 20% !important;
+        font-size: 10px !important;
+    }
+
+    /* Kolom Status: sembunyikan di tabel utama (info sudah cukup) */
+    .table-card table thead tr th:nth-child(5),
+    .table-card table tbody tr td:nth-child(5) {
+        display: none !important;
+    }
+
+    /* Kolom Aksi */
+    .table-card table thead tr th:nth-child(6),
+    .table-card table tbody tr td:nth-child(6) {
+        width: 15% !important;
+    }
+
+    .preview-cell {
+        gap: 6px !important;
+    }
+
+    .preview-thumb {
+        width: 32px !important;
+        height: 32px !important;
+        flex-shrink: 0 !important;
+        font-size: 14px !important;
+    }
+
+    .preview-name {
+        font-size: 11px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 80px !important;
+    }
+
+    .preview-meta {
+        font-size: 10px !important;
+    }
+
+    /* Submitter: sembunyikan email/role sub-text */
+    .submitter {
+        gap: 5px !important;
+    }
+
+    .submitter-avatar {
+        width: 26px !important;
+        height: 26px !important;
+        font-size: 9px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .submitter-name {
+        font-size: 11px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 70px !important;
+    }
+
+    .submitter-sub {
+        display: none !important;
+    }
+
+    /* Tombol Aksi: susun vertikal, ikon saja */
+    .action-group {
+        flex-direction: column !important;
+        gap: 4px !important;
+    }
+
+    .action-group .btn-approve,
+    .action-group .btn-reject {
+        font-size: 10px !important;
+        padding: 4px 6px !important;
+        white-space: nowrap !important;
+    }
+}
+
+/* Grid bawah: 2 kolom → 1 kolom di mobile */
+@media (max-width: 768px) {
+    div[style*="grid-template-columns:1fr 1fr"] {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 14px !important;
+    }
+}
+
+/* Tabel pengguna & produk di bawah */
+@media (max-width: 768px) {
+    .table-card-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 6px !important;
+    }
+
+    /* Kolom Bergabung di tabel pengguna terbaru */
+    .table-card table th:last-child,
+    .table-card table td:last-child {
+        font-size: 10px !important;
+    }
+}
+
+/* Modal: full width di mobile */
+@media (max-width: 768px) {
+    .modal-overlay {
+        padding: 16px !important;
+        align-items: flex-end !important;  /* muncul dari bawah */
+    }
+
+    .modal.confirm-modal {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 16px 16px 0 0 !important;
+        padding: 24px 16px !important;
+    }
+
+    .confirm-btns {
+        flex-direction: column-reverse !important;
+        gap: 8px !important;
+    }
+
+    .confirm-btns .btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    .form-textarea {
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+@media (max-width: 768px) {
+    .bottom-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+    }
+}
+}
+</style>
 @section('content')
 
 {{-- STATS GRID --}}
@@ -133,8 +351,7 @@
 </div>
 
 {{-- RINGKASAN BARIS BAWAH --}}
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
-
+<div class="bottom-grid">
     {{-- Pengguna Terbaru --}}
     <div class="table-card">
         <div class="table-card-header">

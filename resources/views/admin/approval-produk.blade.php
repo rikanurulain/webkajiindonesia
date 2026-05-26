@@ -3,6 +3,239 @@
 
 @section('page-title', 'Approval Produk')
 
+@push('styles')
+<style>
+/* ===================== RESPONSIVE MOBILE - APPROVAL PRODUK ===================== */
+
+/* Tab bar scroll horizontal */
+@media (max-width: 768px) {
+    .tab-bar {
+        width: 100% !important;
+        overflow-x: auto !important;
+        flex-wrap: nowrap !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tab-btn {
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* Table card header */
+    .table-card-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 6px !important;
+        padding: 12px 14px !important;
+    }
+
+    /* ── TAB PENDING: kolom Kategori, Lokasi, Dikirim disembunyikan ── */
+    #tab-pending table,
+    #tab-approved table,
+    #tab-rejected table {
+        table-layout: fixed !important;
+        width: 100% !important;
+    }
+
+    /* Pending: sembunyikan Kategori(2), Harga(3), Lokasi(4), Dikirim(5) */
+    #tab-pending thead tr th:nth-child(2),
+    #tab-pending tbody tr td:nth-child(2),
+    #tab-pending thead tr th:nth-child(3),
+    #tab-pending tbody tr td:nth-child(3),
+    #tab-pending thead tr th:nth-child(4),
+    #tab-pending tbody tr td:nth-child(4),
+    #tab-pending thead tr th:nth-child(5),
+    #tab-pending tbody tr td:nth-child(5) {
+        display: none !important;
+    }
+
+    /* Pending: lebar kolom Produk(1) dan Aksi(6) */
+    #tab-pending thead tr th:nth-child(1),
+    #tab-pending tbody tr td:nth-child(1) {
+        width: 60% !important;
+    }
+    #tab-pending thead tr th:nth-child(6),
+    #tab-pending tbody tr td:nth-child(6) {
+        width: 40% !important;
+    }
+
+    /* Approved: sembunyikan Kategori(2), Harga(3), Lokasi(4), Disetujui(5), Status(6) */
+    #tab-approved thead tr th:nth-child(2),
+    #tab-approved tbody tr td:nth-child(2),
+    #tab-approved thead tr th:nth-child(3),
+    #tab-approved tbody tr td:nth-child(3),
+    #tab-approved thead tr th:nth-child(4),
+    #tab-approved tbody tr td:nth-child(4),
+    #tab-approved thead tr th:nth-child(5),
+    #tab-approved tbody tr td:nth-child(5),
+    #tab-approved thead tr th:nth-child(6),
+    #tab-approved tbody tr td:nth-child(6) {
+        display: none !important;
+    }
+
+    /* Approved: lebar kolom Produk(1) dan Aksi(7) */
+    #tab-approved thead tr th:nth-child(1),
+    #tab-approved tbody tr td:nth-child(1) {
+        width: 65% !important;
+    }
+    #tab-approved thead tr th:nth-child(7),
+    #tab-approved tbody tr td:nth-child(7) {
+        width: 35% !important;
+    }
+
+    /* Rejected: sembunyikan Kategori(2), Alasan(3), Ditolak(4) */
+    #tab-rejected thead tr th:nth-child(2),
+    #tab-rejected tbody tr td:nth-child(2),
+    #tab-rejected thead tr th:nth-child(3),
+    #tab-rejected tbody tr td:nth-child(3),
+    #tab-rejected thead tr th:nth-child(4),
+    #tab-rejected tbody tr td:nth-child(4) {
+        display: none !important;
+    }
+
+    /* Rejected: lebar kolom Produk(1) dan Aksi(5) */
+    #tab-rejected thead tr th:nth-child(1),
+    #tab-rejected tbody tr td:nth-child(1) {
+        width: 60% !important;
+    }
+    #tab-rejected thead tr th:nth-child(5),
+    #tab-rejected tbody tr td:nth-child(5) {
+        width: 40% !important;
+    }
+
+    /* Thead & tbody padding */
+    thead th {
+        padding: 10px 10px !important;
+        font-size: 9px !important;
+    }
+    tbody td {
+        padding: 10px 10px !important;
+    }
+
+    /* Submitter cell (dipakai sebagai preview produk) */
+    .submitter {
+        gap: 6px !important;
+    }
+
+    .submitter-avatar {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 14px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .submitter-name {
+        font-size: 11px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        max-width: 120px !important;
+    }
+
+    .submitter-sub {
+        font-size: 10px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        max-width: 120px !important;
+    }
+
+/* Tombol aksi: susun vertikal, semua sama lebar */
+    .action-group {
+        flex-direction: column !important;
+        gap: 4px !important;
+        align-items: stretch !important;
+        width: 100% !important;
+    }
+
+    /* Semua tombol sama lebar & tinggi */
+    .action-group .btn-sm {
+        font-size: 11px !important;
+        padding: 6px 4px !important;
+        white-space: nowrap !important;
+        justify-content: center !important;
+        width: 100% !important;
+        display: flex !important;
+        box-sizing: border-box !important;
+        min-height: 30px !important;
+    }
+
+    /* Tombol Detail: tampilkan ikon + teks kecil */
+    .action-group .btn-ghost.btn-sm {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px !important;
+    }
+
+    .action-group .btn-ghost.btn-sm svg {
+        width: 13px !important;
+        height: 13px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .action-group .btn-ghost.btn-sm svg {
+        width: 14px !important;
+        height: 14px !important;
+        font-size: 14px !important; /* kembalikan ukuran ikon */
+    }
+
+    /* ── Modal: tampil di tengah ── */
+    .modal-overlay {
+        align-items: center !important;
+        padding: 16px !important;
+    }
+
+    .modal {
+        width: 100% !important;
+        max-width: 420px !important;
+        border-radius: 20px !important;
+        padding: 20px 16px 24px !important;
+        max-height: 88vh !important;
+        margin: auto !important;
+    }
+
+    #modal-reject .modal {
+        width: 100% !important;
+        max-width: 420px !important;
+    }
+
+    /* Detail grid: 1 kolom */
+    .detail-grid {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+
+    .detail-item.full {
+        grid-column: 1 !important;
+    }
+
+    /* Gambar preview di modal lebih kecil */
+    .img-preview {
+        height: 130px !important;
+        margin-bottom: 14px !important;
+    }
+
+    /* Tombol aksi di modal: susun vertikal */
+    #d-action-btns {
+        flex-direction: column-reverse !important;
+        gap: 8px !important;
+    }
+
+    #d-action-btns .btn {
+        flex: unset !important;
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    /* Form reject */
+    .form-textarea {
+        font-size: 14px !important;
+    }
+}
+</style>
+@endpush
+
 @section('content')
 
 {{-- Tab Bar --}}

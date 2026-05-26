@@ -103,6 +103,226 @@
         width: 100%;
         height: 100%;
     }
+
+    /* ===================== RESPONSIVE MOBILE - APPROVAL TRAINER ===================== */
+
+    @media (max-width: 768px) {
+
+        /* Tab bar scroll horizontal */
+        .tab-bar {
+            width: 100% !important;
+            overflow-x: auto !important;
+            flex-wrap: nowrap !important;
+            -webkit-overflow-scrolling: touch;
+        }
+        .tab-btn {
+            white-space: nowrap !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Table card header */
+        .table-card-header {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 6px !important;
+            padding: 12px 14px !important;
+        }
+
+        /* Tabel: fixed layout */
+        .table-card table {
+            table-layout: fixed !important;
+            width: 100% !important;
+        }
+
+        /* ── TAB PENDING (6 kolom): Trainer|NIK|Dokumen|Pengalaman|Dikirim|Aksi ── */
+        /* Sembunyikan: NIK(2), Dokumen(3), Pengalaman(4), Dikirim(5) */
+        #tab-pending thead tr th:nth-child(2),
+        #tab-pending tbody tr td:nth-child(2),
+        #tab-pending thead tr th:nth-child(3),
+        #tab-pending tbody tr td:nth-child(3),
+        #tab-pending thead tr th:nth-child(4),
+        #tab-pending tbody tr td:nth-child(4),
+        #tab-pending thead tr th:nth-child(5),
+        #tab-pending tbody tr td:nth-child(5) {
+            display: none !important;
+        }
+        #tab-pending thead tr th:nth-child(1),
+        #tab-pending tbody tr td:nth-child(1) { width: 55% !important; }
+        #tab-pending thead tr th:nth-child(6),
+        #tab-pending tbody tr td:nth-child(6) { width: 45% !important; }
+
+        /* ── TAB APPROVED (7 kolom): Trainer|NIK|Dokumen|Pengalaman|Disetujui|Status|Aksi ── */
+        /* Sembunyikan: NIK(2), Dokumen(3), Pengalaman(4), Disetujui(5), Status(6) */
+        #tab-approved thead tr th:nth-child(2),
+        #tab-approved tbody tr td:nth-child(2),
+        #tab-approved thead tr th:nth-child(3),
+        #tab-approved tbody tr td:nth-child(3),
+        #tab-approved thead tr th:nth-child(4),
+        #tab-approved tbody tr td:nth-child(4),
+        #tab-approved thead tr th:nth-child(5),
+        #tab-approved tbody tr td:nth-child(5),
+        #tab-approved thead tr th:nth-child(6),
+        #tab-approved tbody tr td:nth-child(6) {
+            display: none !important;
+        }
+        #tab-approved thead tr th:nth-child(1),
+        #tab-approved tbody tr td:nth-child(1) { width: 55% !important; }
+        #tab-approved thead tr th:nth-child(7),
+        #tab-approved tbody tr td:nth-child(7) { width: 45% !important; }
+
+        /* ── TAB REJECTED (6 kolom): Pendaftar|NIK|Dokumen|Alasan|Ditolak|Aksi ── */
+        /* Sembunyikan: NIK(2), Dokumen(3), Alasan(4), Ditolak(5) */
+        #tab-rejected thead tr th:nth-child(2),
+        #tab-rejected tbody tr td:nth-child(2),
+        #tab-rejected thead tr th:nth-child(3),
+        #tab-rejected tbody tr td:nth-child(3),
+        #tab-rejected thead tr th:nth-child(4),
+        #tab-rejected tbody tr td:nth-child(4),
+        #tab-rejected thead tr th:nth-child(5),
+        #tab-rejected tbody tr td:nth-child(5) {
+            display: none !important;
+        }
+        #tab-rejected thead tr th:nth-child(1),
+        #tab-rejected tbody tr td:nth-child(1) { width: 55% !important; }
+        #tab-rejected thead tr th:nth-child(6),
+        #tab-rejected tbody tr td:nth-child(6) { width: 45% !important; }
+
+        /* Padding baris */
+        thead th {
+            padding: 10px 10px !important;
+            font-size: 9px !important;
+        }
+        tbody td {
+            padding: 10px 10px !important;
+        }
+
+        /* Submitter cell */
+        .submitter { gap: 6px !important; }
+
+        .submitter-avatar {
+            width: 32px !important;
+            height: 32px !important;
+            font-size: 10px !important;
+            flex-shrink: 0 !important;
+        }
+
+        .submitter-name {
+            font-size: 11px !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+            max-width: 100px !important;
+        }
+
+        .submitter-sub {
+            font-size: 10px !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+            max-width: 100px !important;
+        }
+
+        /* Tombol aksi: susun vertikal, semua sama lebar */
+        .action-group {
+            flex-direction: column !important;
+            gap: 4px !important;
+            align-items: stretch !important;
+            width: 100% !important;
+        }
+
+        .action-group .btn-sm {
+            font-size: 11px !important;
+            padding: 6px 4px !important;
+            white-space: nowrap !important;
+            justify-content: center !important;
+            width: 100% !important;
+            display: flex !important;
+            box-sizing: border-box !important;
+            min-height: 30px !important;
+        }
+
+        .action-group .btn-sm svg {
+            width: 13px !important;
+            height: 13px !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* ── Modal: slide dari bawah ── */
+        .modal-overlay {
+            align-items: flex-end !important;
+            padding: 0 !important;
+        }
+
+        .modal {
+            width: 100% !important;
+            max-width: 100% !important;
+            border-radius: 20px 20px 0 0 !important;
+            padding: 20px 16px 32px !important;
+            max-height: 92vh !important;
+        }
+
+        #modal-reject .modal {
+            width: 100% !important;
+        }
+
+        /* Avatar foto di modal */
+        #detail-avatar-wrap {
+            min-height: 100px !important;
+            max-height: 200px !important;
+            margin-bottom: 14px !important;
+            border-radius: 12px !important;
+        }
+
+        /* Detail grid: 1 kolom */
+        .detail-grid {
+            grid-template-columns: 1fr !important;
+            gap: 8px !important;
+        }
+
+        .detail-item.full {
+            grid-column: 1 !important;
+        }
+
+        /* Tombol dokumen di modal: wrap 2 kolom */
+        #modal-detail .modal > div[style*="gap:10px"] {
+            flex-wrap: wrap !important;
+        }
+
+        #modal-detail .modal > div[style*="gap:10px"] .btn {
+            flex: 1 1 calc(50% - 5px) !important;
+            min-width: 0 !important;
+            font-size: 11px !important;
+            padding: 7px 4px !important;
+            justify-content: center !important;
+        }
+
+        #d-drive-wrap .btn {
+            font-size: 12px !important;
+        }
+
+        /* Form reject */
+        .form-textarea {
+            font-size: 14px !important;
+        }
+
+        /* SweetAlert2 */
+        .swal2-popup {
+            width: 92% !important;
+            padding: 24px 18px !important;
+        }
+
+        /* Doc btn group di modal (jika tampil) */
+        .doc-btn-group {
+            flex-wrap: wrap !important;
+            gap: 4px !important;
+        }
+
+        .doc-btn {
+            font-size: 10px !important;
+            padding: 4px 8px !important;
+        }
+    }
+
 </style>
 @endpush
 

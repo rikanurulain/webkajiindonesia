@@ -71,6 +71,229 @@
     .kurikulum-ref .kr-icon { font-size: 18px; }
     .kurikulum-ref .kr-label { font-size: 10px; color: #3b82f6; text-transform: uppercase; letter-spacing: .06em; }
     .kurikulum-ref .kr-title { font-weight: 700; color: #1d4ed8; }
+
+    /* ===================== RESPONSIVE MOBILE ===================== */
+
+    /* Tab bar: scroll horizontal jika muat */
+    @media (max-width: 768px) {
+        .tab-bar {
+            width: 100% !important;
+            overflow-x: auto !important;
+            flex-wrap: nowrap !important;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-btn {
+            white-space: nowrap !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Chips filter tipe */
+        .tipe-filter {
+            gap: 6px !important;
+        }
+
+        .tipe-chip {
+            font-size: 11px !important;
+            padding: 4px 10px !important;
+        }
+
+        /* Table card */
+        .table-card {
+            border-radius: 12px !important;
+        }
+
+        /* Sembunyikan kolom yang tidak penting di mobile */
+        /* Kolom Tipe (duplikat, sudah ada di preview-meta) */
+        .table-card table thead tr th:nth-child(2),
+        .table-card table tbody tr td:nth-child(2) {
+            display: none !important;
+        }
+
+        /* Kolom Metode/Induk */
+        .table-card table thead tr th:nth-child(4),
+        .table-card table tbody tr td:nth-child(4) {
+            display: none !important;
+        }
+
+        /* Kolom Diajukan (tanggal) */
+        .table-card table thead tr th:nth-child(5),
+        .table-card table tbody tr td:nth-child(5) {
+            display: none !important;
+        }
+
+        /* Kolom Status */
+        .table-card table thead tr th:nth-child(6),
+        .table-card table tbody tr td:nth-child(6) {
+            display: none !important;
+        }
+
+        /* Ukuran kolom yang tersisa */
+        .table-card table {
+            table-layout: fixed !important;
+            width: 100% !important;
+        }
+
+        /* Kolom Program */
+        .table-card table thead tr th:nth-child(1),
+        .table-card table tbody tr td:nth-child(1) {
+            width: 40% !important;
+        }
+
+        /* Kolom Trainer */
+        .table-card table thead tr th:nth-child(3),
+        .table-card table tbody tr td:nth-child(3) {
+            width: 30% !important;
+        }
+
+        /* Kolom Aksi */
+        .table-card table thead tr th:nth-child(7),
+        .table-card table tbody tr td:nth-child(7) {
+            width: 30% !important;
+        }
+
+        /* Preview cell */
+        .preview-cell {
+            gap: 6px !important;
+        }
+
+        .preview-thumb {
+            width: 34px !important;
+            height: 34px !important;
+            font-size: 14px !important;
+            flex-shrink: 0 !important;
+        }
+
+        .preview-name {
+            font-size: 11px !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+            max-width: 90px !important;
+        }
+
+        .preview-meta {
+            font-size: 10px !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+            max-width: 90px !important;
+        }
+
+        /* Submitter (trainer) */
+        .submitter-avatar {
+            width: 26px !important;
+            height: 26px !important;
+            font-size: 9px !important;
+            border-radius: 6px !important;
+            flex-shrink: 0 !important;
+        }
+
+        .submitter-name {
+            font-size: 11px !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+            max-width: 70px !important;
+        }
+
+        .submitter-sub {
+            display: none !important;
+        }
+
+        /* Tombol aksi: susun vertikal */
+        .action-group {
+            flex-direction: column !important;
+            gap: 4px !important;
+        }
+
+        .action-group .btn-sm {
+            font-size: 10px !important;
+            padding: 4px 6px !important;
+            white-space: nowrap !important;
+        }
+
+        /* Sembunyikan tombol ikon detail di mobile (hemat ruang) */
+        .action-group .btn-icon {
+            display: none !important;
+        }
+
+        /* Thead padding */
+        thead th {
+            padding: 10px 10px !important;
+            font-size: 9px !important;
+        }
+
+        tbody td {
+            padding: 10px 10px !important;
+        }
+
+        /* Pagination */
+        .pagination {
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+            gap: 4px !important;
+        }
+
+        /* ── Modal: slide dari bawah ── */
+        .modal-overlay {
+            align-items: flex-end !important;
+            padding: 0 !important;
+        }
+
+        .modal {
+            width: 100% !important;
+            max-width: 100% !important;
+            border-radius: 20px 20px 0 0 !important;
+            padding: 20px 16px 28px !important;
+            max-height: 88vh !important;
+        }
+
+        /* Info grid di modal */
+        .info-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+            padding: 10px !important;
+        }
+
+        .ig-val {
+            font-size: 15px !important;
+        }
+
+        /* Detail grid di modal: 1 kolom */
+        .detail-grid {
+            grid-template-columns: 1fr !important;
+        }
+
+        .detail-item.full {
+            grid-column: 1 !important;
+        }
+
+        /* Tombol di footer modal */
+        #modal-detail .modal > div:last-child,
+        #modal-reject .modal > div:last-child {
+            flex-direction: column-reverse !important;
+        }
+
+        /* Form reject textarea */
+        .form-textarea {
+            font-size: 14px !important;
+        }
+
+        /* SweetAlert2 di mobile */
+        .swal2-popup {
+            width: 92% !important;
+            padding: 24px 18px !important;
+        }
+
+        /* Table card header */
+        .table-card-header {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 6px !important;
+            padding: 12px 14px !important;
+        }
+    }
+
 </style>
 @endpush
 

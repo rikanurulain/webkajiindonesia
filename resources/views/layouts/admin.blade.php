@@ -771,17 +771,74 @@
         }
 
         @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1000;
+            }
             .sidebar.open { transform: translateX(0); }
             .main-wrap { margin-left: 0; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .main-content { padding: 18px 16px; }
         }
+
+        /* Hamburger Button */
+        .hamburger-btn {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+            width: 38px;
+            height: 38px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            padding: 8px;
+            flex-shrink: 0;
+        }
+
+        .hamburger-btn span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: var(--text);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* Overlay gelap saat sidebar terbuka */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active { display: block; }
+
+        @media (max-width: 768px) {
+            .hamburger-btn { display: flex; }
+
+            .topbar {
+                padding: 12px 16px !important;
+            }
+
+            .topbar-title {
+                font-size: 17px !important;
+            }
+
+            /* Sembunyikan date chip di mobile, terlalu panjang */
+            .date-chip {
+                display: none !important;
+            }
+        }
     </style>
     @stack('styles')
 </head>
 <body>
-
+<!-- OVERLAY MOBILE -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
@@ -918,6 +975,11 @@
     <!-- TOPBAR -->
     <header class="topbar">
         <div class="topbar-left">
+            <button class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
             <h1 class="topbar-title">@yield('page-title', 'Dashboard')</h1>
         </div>
         <div class="topbar-right">
@@ -957,36 +1019,60 @@
 
 <!-- TOAST -->
 <div id="toast"></div>
+    <script>
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            const colors = { success: 'var(--accent)', error: 'var(--accent2)', info: 'var(--accent3)' };
+            const icons  = { success: '✅', error: '❌', info: 'ℹ️' };
+            t.innerHTML = `<span>${icons[type]}</span><span>${msg}</span>`;
+            t.style.color = colors[type];
+            t.style.transform = 'translateY(0)';
+            t.style.opacity   = '1';
+            setTimeout(() => { t.style.transform = 'translateY(70px)'; t.style.opacity = '0'; }, 3200);
+        }
 
-<script>
-    function showToast(msg, type = 'success') {
-        const t = document.getElementById('toast');
-        const colors = { success: 'var(--accent)', error: 'var(--accent2)', info: 'var(--accent3)' };
-        const icons  = { success: '✅', error: '❌', info: 'ℹ️' };
-        t.innerHTML = `<span>${icons[type]}</span><span>${msg}</span>`;
-        t.style.color = colors[type];
-        t.style.transform = 'translateY(0)';
-        t.style.opacity   = '1';
-        setTimeout(() => { t.style.transform = 'translateY(70px)'; t.style.opacity = '0'; }, 3200);
-    }
+        function openModal(id)  { document.getElementById(id).classList.add('open'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-    function openModal(id)  { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-    // Close modal on overlay click
-    document.querySelectorAll('.modal-overlay').forEach(m => {
-        m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
-    });
-
-    // Tab switching
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            this.closest('.tab-bar').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
+        // Close modal on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(m => {
+            m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
         });
-    });
-</script>
 
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.closest('.tab-bar').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        // Tutup sidebar saat klik overlay
+        document.getElementById('sidebar-overlay').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('open');
+            this.classList.remove('active');
+        });
+
+        // Tutup sidebar otomatis saat klik menu (pindah halaman)
+        document.querySelectorAll('.sidebar .nav-item').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('sidebar').classList.remove('open');
+                document.getElementById('sidebar-overlay').classList.remove('active');
+            });
+        });
+    </script>
+
+    @stack('scripts')
+    </body>
+    
 @stack('scripts')
 </body>
 </html>
