@@ -290,6 +290,9 @@ if ($isDB && $tanggal)    $infoRows[] = ['Tanggal', $tanggal];
 if ($isDB && $jumlahSesi) $infoRows[] = ['Jumlah Sesi', $jumlahSesi];
 if ($isDB && $alamat)     $infoRows[] = ['Alamat Lokasi', $alamat];
 if (!$isDB)               $infoRows[] = ['Durasi', $totalJam];
+
+$biayaProgram = $isDB ? ($program->biaya ?? null) : ($program['biaya'] ?? null);
+if ($biayaProgram)        $infoRows[] = ['Biaya', $biayaProgram];
                     @endphp
                     @foreach($infoRows as [$lbl, $val])
                     <div>

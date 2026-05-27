@@ -27,6 +27,7 @@ class Trainerpelatihancontroller extends Controller
             'absensi_mulai'   => 'nullable|date',
             'absensi_selesai' => 'nullable|date|after:absensi_mulai',
             'absensi_url'     => 'nullable|url|max:500',
+            
         ]);
 
         // ✅ BENAR: gunakan variabel $absensiAktif secara konsisten
@@ -51,6 +52,7 @@ class Trainerpelatihancontroller extends Controller
             'absensi_mulai'   => $absensiAktif ? $request->absensi_mulai   : null,
             'absensi_selesai' => $absensiAktif ? $request->absensi_selesai : null,
             'absensi_url'     => $absensiAktif ? $request->absensi_url     : null,
+            'biaya' => $request->biaya,
         ];
 
         if ($request->hasFile('gambar')) {
@@ -71,16 +73,25 @@ class Trainerpelatihancontroller extends Controller
         ->firstOrFail();
 
     // Jika sudah approved — hanya update alamat & phone saja
-    if ($program->status === 'approved') {
-        $program->update([
-            'alamat' => $request->alamat,
-            'phone'  => $request->phone,
-        ]);
+    // Jika sudah approved — boleh update field operasional tanpa reset status
+if ($program->status === 'approved') {
+    $program->update([
+        'alamat'     => $request->alamat,
+        'phone'      => $request->phone,
+        'bahasa'     => $request->bahasa ?? 'Bahasa Indonesia',
+        'biaya'      => $request->biaya,
+        'jumlah_sesi'=> $request->jumlah_sesi,
+        'total_jam'  => $request->total_jam,
+        'absensi_aktif'   => $request->input('absensi_aktif') == '1',
+        'absensi_mulai'   => $request->input('absensi_aktif') == '1' ? $request->absensi_mulai   : null,
+        'absensi_selesai' => $request->input('absensi_aktif') == '1' ? $request->absensi_selesai : null,
+        'absensi_url'     => $request->input('absensi_aktif') == '1' ? $request->absensi_url     : null,
+    ]);
 
-        return redirect()->route('trainer.dashboard')
-            ->with('success', 'Alamat lokasi berhasil diperbarui.')
-            ->with('active_page', 'program');
-    }
+    return redirect()->route('trainer.dashboard')
+        ->with('success', 'Kurikulum berhasil diperbarui.')
+        ->with('active_page', 'program');
+}
 
     // Untuk pending/rejected — update semua field
     $request->validate([

@@ -733,6 +733,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                             data-jumlah-sesi="{{ $k->jumlah_sesi ?? '' }}"
                             data-sertifikat="{{ $k->sertifikat ? 1 : 0 }}"
                             data-phone="{{ $k->phone ?? auth()->user()->phone ?? '' }}"
+                            data-biaya="{{ $k->biaya ?? '' }}"
                             data-absensi-aktif="{{ !empty($k->absensi_mulai) ? 1 : 0 }}"
                             data-absensi-mulai="{{ $k->absensi_mulai ?? '' }}"
                             data-absensi-selesai="{{ $k->absensi_selesai ?? '' }}"
@@ -1046,10 +1047,20 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                 <div class="form-hint">Otomatis diisi dari profil. Ubah jika ingin nomor berbeda untuk kurikulum ini.</div>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">Bahasa</label>
-                <input class="form-input" type="text" name="bahasa" id="k-bahasa" value="Bahasa Indonesia">
-            </div>
+            <div class="form-row">
+    <div class="form-group">
+        <label class="form-label">Bahasa</label>
+        <input class="form-input" type="text" name="bahasa" id="k-bahasa" value="Bahasa Indonesia">
+    </div>
+    <div class="form-group">
+        <label class="form-label">Biaya</label>
+        <select class="form-select" name="biaya" id="k-biaya">
+            <option value="">-- Pilih --</option>
+            <option value="Gratis">Gratis</option>
+            <option value="Berbayar">Berbayar</option>
+        </select>
+    </div>
+</div>
 
             <div class="form-group">
                 <label class="form-label">Gambar Kurikulum</label>
@@ -1543,6 +1554,7 @@ document.addEventListener('click', function(e) {
     document.getElementById('k-total-jam').value       = d.totalJam || '';
     document.getElementById('k-jumlah-sesi').value     = d.jumlahSesi || '';
     document.getElementById('k-phone').value           = d.phone    || '';
+    document.getElementById('k-biaya').value = d.biaya || '';
     document.getElementById('kurikulum-method').value  = 'PUT';
     document.getElementById('form-kurikulum').action   = '/kurikulum/' + d.id;
 
@@ -1673,7 +1685,7 @@ function resetKurikulumModal() {
     document.getElementById('k-phone').value = '{{ auth()->user()->phone ?? "" }}';
     document.getElementById('k-absensi-aktif').checked = false;
     document.getElementById('k-alamat').value = '';
-    // Sembunyikan field alamat kembali
+    document.getElementById('k-biaya').value = '';  
     toggleAlamat('');
     toggleAbsensiSection(false);
 }

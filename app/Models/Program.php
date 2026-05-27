@@ -37,6 +37,7 @@ class Program extends Model
         'absensi_selesai',
         'absensi_url',
         'alamat',
+        'biaya',
     ];
 
     protected $casts = [
