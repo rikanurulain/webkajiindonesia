@@ -70,93 +70,100 @@
              observer.observe($el);
          ">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
 
-            {{-- Acara --}}
-            <div class="rounded-2xl border border-gray-100 bg-gray-50 p-6 text-center transition-all duration-300 hover:border-primary/20 hover:bg-primary/5">
-                <p class="text-4xl font-bold tracking-tight text-primary sm:text-5xl"
-                   x-text="counters.event.toLocaleString('id-ID')">0</p>
-                <p class="mt-2 text-sm text-gray-500">Acara</p>
-            </div>
+{{-- Acara --}}
+<div class="rounded-2xl border border-gray-100 bg-gray-50 p-6 text-center transition-all duration-300 hover:border-primary/20 hover:bg-primary/5">
+    <p class="text-3xl font-bold tracking-tight text-primary sm:text-4xl lg:text-5xl"
+       x-text="counters.event.toLocaleString('id-ID')">0</p>
+    <p class="mt-2 text-sm text-gray-500">Acara</p>
+</div>
 
-            {{-- Pembicara --}}
-            <div class="rounded-2xl border border-gray-100 bg-gray-50 p-6 text-center transition-all duration-300 hover:border-primary/20 hover:bg-primary/5">
-                <p class="text-4xl font-bold tracking-tight text-primary sm:text-5xl"
-                   x-text="counters.speakers.toLocaleString('id-ID')">0</p>
-                <p class="mt-2 text-sm text-gray-500">Pembicara</p>
-            </div>
+{{-- Pembicara --}}
+<div class="rounded-2xl border border-gray-100 bg-gray-50 p-6 text-center transition-all duration-300 hover:border-primary/20 hover:bg-primary/5">
+    <p class="text-3xl font-bold tracking-tight text-primary sm:text-4xl lg:text-5xl"
+       x-text="counters.speakers.toLocaleString('id-ID')">0</p>
+    <p class="mt-2 text-sm text-gray-500">Pembicara</p>
+</div>
 
-            {{-- Peserta --}}
-            <div class="rounded-2xl border border-gray-100 bg-gray-50 p-6 text-center transition-all duration-300 hover:border-primary/20 hover:bg-primary/5">
-                <p class="text-4xl font-bold tracking-tight text-primary sm:text-5xl"
-                   x-text="counters.participants.toLocaleString('id-ID')">0</p>
-                <p class="mt-2 text-sm text-gray-500">Peserta</p>
-            </div>
+{{-- Peserta --}}
+<div class="rounded-2xl border border-gray-100 bg-gray-50 p-6 text-center transition-all duration-300 hover:border-primary/20 hover:bg-primary/5">
+    <p class="text-3xl font-bold tracking-tight text-primary sm:text-4xl lg:text-5xl"
+       x-text="counters.participants.toLocaleString('id-ID')">0</p>
+    <p class="mt-2 text-sm text-gray-500">Peserta</p>
+</div>
 
-            {{-- Topik Dibahas --}}
-            <div class="col-span-2 rounded-2xl border border-gray-100 bg-gray-50 p-6 text-center transition-all duration-300 hover:border-primary/20 hover:bg-primary/5 lg:col-span-1">
-                <p class="text-4xl font-bold tracking-tight text-primary sm:text-5xl"
-                   x-text="counters.topics.toLocaleString('id-ID')">0</p>
-                <p class="mt-2 text-sm text-gray-500">Topik Dibahas</p>
-            </div>
+{{-- Topik Dibahas --}}
+<div class="rounded-2xl border border-gray-100 bg-gray-50 p-6 text-center transition-all duration-300 hover:border-primary/20 hover:bg-primary/5">
+    <p class="text-3xl font-bold tracking-tight text-primary sm:text-4xl lg:text-5xl"
+       x-text="counters.topics.toLocaleString('id-ID')">0</p>
+    <p class="mt-2 text-sm text-gray-500">Topik Dibahas</p>
+</div>
 
-        </div>
+</div>
     </div>
 </section>
 
-    {{-- 3. LAYANAN UNGGULAN --}}
-    <section class="bg-gray-50 py-16 sm:py-20" id="layanan">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="text-center">
-                <h2 class="font-serif text-3xl font-bold text-gray-900 sm:text-4xl">Layanan Unggulan</h2>
-                <p class="mx-auto mt-3 max-w-2xl text-gray-600">Berbagai program dan layanan untuk mendukung perkembangan bisnis dan SDM Anda.</p>
-            </div>
-            <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                @php
-                    $layanan = [
-                        ['route' => 'pelatihan.index', 'icon' => 'academic', 'title' => 'Pelatihan.index', 'desc' => 'Program pelatihan berkualitas untuk peningkatan kompetensi SDM dan profesional.'],
-                        ['route' => 'umkm', 'icon' => 'store', 'title' => 'UMKM', 'desc' => 'Pendampingan dan penguatan kapasitas usaha mikro, kecil, dan menengah.'],
-                        ['route' => 'halal-center', 'icon' => 'halal', 'title' => 'Halal Center', 'desc' => 'Sertifikasi dan konsultasi halal untuk produk dan proses bisnis Anda.'],
-                        ['route' => 'konsultan', 'icon' => 'consult', 'title' => 'Konsultan', 'desc' => 'Konsultasi strategi bisnis, manajemen, dan pengembangan organisasi.'],
-                        ['route' => 'media', 'icon' => 'media', 'title' => 'Media', 'desc' => 'Konten edukatif dan informasi seputar kajian, bisnis, dan halal.'],
-                        ['title' => 'Kajian', 'icon' => 'book', 'desc' => 'Forum kajian dan diskusi untuk pengembangan wawasan dan jaringan.', 'route' => null],
-                    ];
-                @endphp
-                @foreach ($layanan as $item)
-                    <div class="rounded-2xl bg-white p-6 shadow-lg ring-1 ring-gray-200/50 transition-shadow hover:shadow-xl">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                            @if (($item['icon'] ?? '') === 'academic')
-                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
-                            @elseif (($item['icon'] ?? '') === 'store')
-                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                            @elseif (($item['icon'] ?? '') === 'halal')
-                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            @elseif (($item['icon'] ?? '') === 'consult')
-                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                            @elseif (($item['icon'] ?? '') === 'media')
-                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                            @else
-                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                            @endif
-                        </div>
-                        <h3 class="mt-4 font-serif text-xl font-semibold text-gray-900">{{ $item['title'] }}</h3>
-                        <p class="mt-2 text-sm text-gray-600">{{ $item['desc'] }}</p>
-                        @if (!empty($item['route']))
-                            <a href="{{ route($item['route']) }}" class="mt-4 inline-flex items-center text-sm font-semibold text-primary hover:underline">
-                                Selengkapnya
-                                <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                            </a>
+{{-- 3. LAYANAN UNGGULAN --}}
+<section class="bg-gray-50 py-10 sm:py-16 lg:py-20" id="layanan">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h2 class="font-serif text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">Layanan Unggulan</h2>
+            <p class="mx-auto mt-3 max-w-2xl text-sm sm:text-base text-gray-600">Berbagai program dan layanan untuk mendukung perkembangan bisnis dan SDM Anda.</p>
+        </div>
+        <div class="mt-8 sm:mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        @php
+    $layanan = [
+        ['route' => 'pelatihan.program',   'external' => false, 'icon' => 'academic', 'title' => 'Pelatihan',    'desc' => 'Program pelatihan berkualitas untuk peningkatan kompetensi SDM dan profesional.'],
+        ['route' => 'umkm.produk',         'external' => false, 'icon' => 'store',    'title' => 'UMKM',         'desc' => 'Pendampingan dan penguatan kapasitas usaha mikro, kecil, dan menengah.'],
+        ['route' => 'halal-center.gratis', 'external' => false, 'icon' => 'halal',    'title' => 'Halal Center', 'desc' => 'Sertifikasi dan konsultasi halal untuk produk dan proses bisnis Anda.'],
+        ['route' => 'konsultan.layanan',   'external' => false, 'icon' => 'consult',  'title' => 'Konsultan',    'desc' => 'Konsultasi strategi bisnis, manajemen, dan pengembangan organisasi.'],
+        ['route' => 'https://infojawatimur.com', 'external' => true, 'icon' => 'media', 'title' => 'Media',      'desc' => 'Konten edukatif dan informasi seputar kajian, bisnis, dan halal.'],
+        ['route' => null,                  'external' => false, 'icon' => 'book',     'title' => 'Kajian',       'desc' => 'Forum kajian dan diskusi untuk pengembangan wawasan dan jaringan.'],
+    ];
+@endphp
+            @foreach ($layanan as $item)
+                <div class="rounded-2xl bg-white p-5 sm:p-6 shadow-sm ring-1 ring-gray-200/50 transition-shadow hover:shadow-lg">
+                    <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                        @if (($item['icon'] ?? '') === 'academic')
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+                        @elseif (($item['icon'] ?? '') === 'store')
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        @elseif (($item['icon'] ?? '') === 'halal')
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        @elseif (($item['icon'] ?? '') === 'consult')
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        @elseif (($item['icon'] ?? '') === 'media')
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                         @else
-                            <a href="#kontak" class="mt-4 inline-flex items-center text-sm font-semibold text-primary hover:underline">
-                                Selengkapnya
-                                <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                            </a>
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                         @endif
                     </div>
-                @endforeach
-            </div>
+                    <h3 class="mt-4 font-serif text-lg sm:text-xl font-semibold text-gray-900">{{ $item['title'] }}</h3>
+                    <p class="mt-2 text-sm text-gray-600 leading-relaxed">{{ $item['desc'] }}</p>
+                    @if ($item['external'])
+                        <a href="{{ $item['route'] }}" target="_blank" rel="noopener noreferrer"
+                           class="mt-4 inline-flex items-center text-sm font-semibold text-primary hover:underline">
+                            Selengkapnya
+                            <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </a>
+                    @elseif (!empty($item['route']))
+                        <a href="{{ route($item['route']) }}"
+                           class="mt-4 inline-flex items-center text-sm font-semibold text-primary hover:underline">
+                            Selengkapnya
+                            <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                    @else
+                        <a href="#kontak" class="mt-4 inline-flex items-center text-sm font-semibold text-primary hover:underline">
+                            Selengkapnya
+                            <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                    @endif
+                </div>
+            @endforeach
         </div>
-    </section>
+    </div>
+</section>
 
  {{-- 4. TENTANG KAMI --}}
 <section class="bg-white py-16 sm:py-20" id="tentang-kami">

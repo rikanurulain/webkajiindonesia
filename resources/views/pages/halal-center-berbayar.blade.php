@@ -132,6 +132,81 @@
         text-transform: uppercase;
         padding: 0.25rem 0.75rem;
         border-radius: 9999px;
+
+        /* ============ MOBILE RESPONSIVE ============ */
+@media (max-width: 640px) {
+
+/* ── Hero ── */
+section h1 { font-size: 1.75rem !important; }
+section p.text-lg { font-size: 0.95rem !important; }
+
+/* ── Tabel perbandingan — jadikan card stack ── */
+.overflow-x-auto table { min-width: unset; }
+.overflow-x-auto table thead { display: none; }
+.overflow-x-auto table tbody tr {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    margin: 0 0 0.75rem 0;
+    padding: 0.75rem 1rem;
+    background: #fff;
+}
+.overflow-x-auto table tbody td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    border: none;
+    font-size: 0.8rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+.overflow-x-auto table tbody td:last-child { border-bottom: none; }
+.overflow-x-auto table tbody td:first-child {
+    font-weight: 600;
+    color: #111827;
+    font-size: 0.8rem;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+/* Label kolom otomatis */
+.overflow-x-auto table tbody td:nth-child(2)::before { content: 'Gratis: '; font-size: 0.7rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 0.5rem; }
+.overflow-x-auto table tbody td:nth-child(3)::before { content: 'Berbayar: '; font-size: 0.7rem; font-weight: 700; color: #1D9E75; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 0.5rem; }
+
+/* ── Pricing cards ── */
+.pricing-card { padding: 1.5rem 1.25rem; }
+.pricing-card .text-3xl { font-size: 1.5rem; }
+
+/* ── Premium cards (layanan) ── */
+.premium-card { padding: 1.25rem; }
+
+/* ── Step card ── */
+.step-card { padding: 1rem 1rem; }
+.step-card .flex.items-start { gap: 0.75rem; }
+
+/* ── Syarat item ── */
+.syarat-item { padding: 0.75rem; }
+
+/* ── Section padding ── */
+section { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
+.py-16 { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
+.py-14 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+
+/* ── Heading sizes ── */
+.font-serif.text-3xl { font-size: 1.5rem !important; }
+.font-serif.text-4xl { font-size: 1.75rem !important; }
+
+/* ── CTA buttons ── */
+#daftar .flex.gap-4 { flex-direction: column; }
+#daftar a { width: 100%; }
+
+/* ── Contact info wrap ── */
+#daftar .flex.flex-wrap { flex-direction: column; align-items: center; gap: 0.5rem; }
+
+/* ── Overflow tabel horizontal fallback ── */
+.overflow-x-auto { overflow-x: unset; border-radius: 0.75rem; }
+}
     }
 </style>
 {{-- ===================== END STYLES ===================== --}}

@@ -5,9 +5,20 @@
 @section('content')
 
 {{-- Header --}}
+{{-- Header --}}
 <section class="bg-gradient-to-br from-primary-dark via-primary to-primary- py-10 text-white">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h1 class="font-serif text-2xl font-bold">Profil Trainer</h1>
+        <div class="flex items-center gap-3">
+            <a href="{{ url()->previous() }}"
+               class="flex items-center justify-center w-8 h-8 rounded-full
+                      hover:bg-white/20 transition-colors">
+                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </a>
+            <h1 class="font-serif text-2xl font-bold">Profil Trainer</h1>
+        </div>
     </div>
 </section>
 

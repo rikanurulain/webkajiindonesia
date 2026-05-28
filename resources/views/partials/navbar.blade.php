@@ -88,7 +88,7 @@
 
                     <div class="mx-5 border-t border-gray-100"></div>
 
-                    {{-- Pembimbing --}}
+                    {{-- Trainer (sebelumnya: Pembimbing) --}}
                     <a href="{{ route('pelatihan.pembimbing') }}" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
@@ -157,7 +157,7 @@
                         <p class="text-xs font-semibold text-primary uppercase tracking-wider">Pendampingan UMKM</p>
                     </div>
 
-                    {{-- Produk --}}
+                    {{-- UMKM (sebelumnya: Produk) --}}
                     <a href="{{ route('umkm.produk') }}" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
@@ -176,7 +176,7 @@
 
                     <div class="mx-5 border-t border-gray-100"></div>
 
-                    {{-- Pembimbing --}}
+                    {{-- Trainer (sebelumnya: Pembimbing) --}}
                     <a href="{{ route('umkm.pembimbing') }}" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
@@ -185,7 +185,7 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Mentor</p>
+                            <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Trainer</p>
                             <p class="text-xs text-gray-400">Pendamping dan Fasilitator</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary group-hover/item:translate-x-0.5 transition-all duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -460,7 +460,7 @@
                         <p class="text-xs font-semibold text-primary uppercase tracking-wider">Kanal Media</p>
                     </div>
 
-                    {{-- Info Jawa Timur (lama) --}}
+                    {{-- Info Jawa Timur --}}
                     <a href="https://www.infojawatimur.com/" target="_blank" rel="noopener noreferrer" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 group-hover/item:bg-emerald-100 transition-colors duration-200">
@@ -482,7 +482,7 @@
 
                     <div class="mx-5 border-t border-gray-100"></div>
 
-                    {{-- Ini Jawa Timur (baru) --}}
+                    {{-- Ini Jawa Timur --}}
                     <a href="https://www.inijawatimur.com/" target="_blank" rel="noopener noreferrer" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 group-hover/item:bg-emerald-100 transition-colors duration-200">
@@ -510,71 +510,92 @@
 
         </div>
 
-        {{-- Kanan: Tombol profile --}}
-<div class="flex shrink-0 items-center gap-4">
-    @auth
-        <!-- Profil Minimalis (Kotak Inisial / Foto) -->
-        <a href="{{ route('profile') }}" class="group flex flex-col items-center gap-1">
-            <!-- Kotak Foto atau Inisial -->
-            <div class="h-11 w-11 flex items-center justify-center rounded-xl bg-white text-white font-bold text-base shadow-sm transition group-hover:scale-105 border-2 border-white ring-2 ring-primary/20 overflow-hidden">
-                @if(Auth::user()->profile_photo_path)
-                    <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}"
-                         alt="Foto Profil"
-                         class="w-full h-full object-cover">
+        {{-- Kanan: Tombol profile (DESKTOP) + Hamburger (MOBILE) --}}
+        <div class="flex shrink-0 items-center gap-3">
+
+            {{-- Desktop: Profile & Logout --}}
+            <div class="hidden md:flex items-center gap-4">
+                @auth
+                    <a href="{{ route('profile') }}" class="group flex flex-col items-center gap-1">
+                        <div class="h-11 w-11 flex items-center justify-center rounded-xl bg-white text-white font-bold text-base shadow-sm transition group-hover:scale-105 border-2 border-white ring-2 ring-primary/20 overflow-hidden">
+                            @if(Auth::user()->profile_photo_path)
+                                <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}"
+                                     alt="Foto Profil"
+                                     class="w-full h-full object-cover">
+                            @else
+                                <span class="text-primary">{{ strtoupper(substr(Auth::user()->name, 0, 2)) }}</span>
+                            @endif
+                        </div>
+                        <span class="text-[9px] font-black uppercase tracking-[0.15em] text-gray-400 group-hover:text-primary transition-colors">
+                            {{ match(Auth::user()->role) {
+                                'trainer' => 'TRAINER',
+                                'mentor'  => 'MENTOR',
+                                'umkm'    => 'UMKM',
+                                'admin'   => 'ADMIN',
+                                default   => 'MEMBER',
+                            } }}
+                        </span>
+                    </a>
+                    <div class="h-8 w-[1px] bg-gray-200"></div>
+                    <form action="{{ route('logout') }}" method="POST" class="flex items-center">
+                        @csrf
+                        <button type="submit" class="p-2 text-gray-400 hover:text-red-500 transition-all hover:bg-red-50 rounded-lg" title="Keluar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                        </button>
+                    </form>
                 @else
-                    {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
-                @endif
+                    <a href="{{ route('login') }}" class="rounded-xl border-2 border-primary px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/10">
+                        Masuk
+                    </a>
+                    <a href="{{ route('register') }}" class="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-primary-dark">
+                        Daftar
+                    </a>
+                @endauth
             </div>
-            
-            <!-- Label Status di Bawah Kotak -->
-            <span class="text-[9px] font-black uppercase tracking-[0.15em] text-gray-400 group-hover:text-primary transition-colors">
-            {{ match(Auth::user()->role) {
-    'trainer' => 'TRAINER',
-    'mentor'  => 'MENTOR',
-    'umkm'    => 'UMKM',
-    'admin'   => 'ADMIN',
-    default   => 'MEMBER',
-} }}
-            </span>
-        </a>
-        <!-- Garis Pemisah Tipis -->
-        <div class="h-8 w-[1px] bg-gray-200"></div>
 
-        <!-- Tombol Logout -->
-        <form action="{{ route('logout') }}" method="POST" class="flex items-center">
-            @csrf
-            <button type="submit" class="p-2 text-gray-400 hover:text-red-500 transition-all hover:bg-red-50 rounded-lg" title="Keluar">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-            </button>
-        </form>
-    @else
-        <!-- Tombol Masuk/Daftar jika belum login -->
-        <div class="hidden md:flex items-center gap-3">
-            <a href="{{ route('login') }}" class="rounded-xl border-2 border-primary px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/10">
-                Masuk
-            </a>
-            <a href="{{ route('register') }}" class="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-primary-dark">
-                Daftar
-            </a>
-        </div>
-    @endauth
-</div>
+            {{-- Mobile: Profile icon + Hamburger (saat login) --}}
+            <div class="flex md:hidden items-center gap-2">
+                @auth
+                    {{-- Profile kecil di mobile --}}
+                    <a href="{{ route('profile') }}" class="flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-gray-100 transition">
+                        <div class="h-8 w-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary font-bold text-xs overflow-hidden ring-1 ring-primary/20">
+                            @if(Auth::user()->profile_photo_path)
+                                <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}"
+                                     alt="Foto Profil"
+                                     class="w-full h-full object-cover">
+                            @else
+                                {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                            @endif
+                        </div>
+                    </a>
+                    {{-- Logout kecil di mobile --}}
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="p-2 text-gray-400 hover:text-red-500 transition-all hover:bg-red-50 rounded-lg" title="Keluar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                        </button>
+                    </form>
+                @endauth
 
-            {{-- Mobile: hamburger --}}
-            <button type="button"
-                    class="flex h-10 w-10 items-center justify-center rounded-xl text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary md:hidden"
-                    aria-label="Buka menu"
-                    :aria-expanded="mobileOpen"
-                    @click="mobileOpen = !mobileOpen">
-                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-show="!mobileOpen">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-show="mobileOpen" x-cloak style="display: none;">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
+                {{-- Hamburger --}}
+                <button type="button"
+                        class="flex h-10 w-10 items-center justify-center rounded-xl text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary"
+                        aria-label="Buka menu"
+                        :aria-expanded="mobileOpen"
+                        @click="mobileOpen = !mobileOpen">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-show="!mobileOpen">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-show="mobileOpen" x-cloak style="display: none;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
         </div>
 
     </nav>
@@ -610,7 +631,7 @@
                 <div x-show="sub" x-cloak class="pl-4 pb-1">
                     <a href="{{ route('pelatihan.program') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Program</a>
                     <a href="{{ route('pelatihan.event') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Event</a>
-                    <a href="{{ route('pelatihan.pembimbing') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Pembimbing</a>
+                    <a href="{{ route('pelatihan.pembimbing') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Trainer</a>
                     <a href="https://kamilatih.com/" target="_blank" rel="noopener noreferrer" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Selengkapnya ↗</a>
                 </div>
             </div>
@@ -624,8 +645,8 @@
                     </svg>
                 </button>
                 <div x-show="sub" x-cloak class="pl-4 pb-1">
-                    <a href="{{ route('umkm.produk') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Produk</a>
-                    <a href="{{ route('umkm.pembimbing') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Pembimbing</a>
+                    <a href="{{ route('umkm.produk') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">UMKM</a>
+                    <a href="{{ route('umkm.pembimbing') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Mentor</a>
                     <a href="{{ route('umkm.lokasi') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Lokasi</a>
                     <a href="{{ route('umkm') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Selengkapnya</a>
                 </div>
@@ -657,8 +678,8 @@
                 <div x-show="sub" x-cloak class="pl-4 pb-1">
                     <a href="{{ route('konsultan.layanan') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Layanan</a>
                     <a href="{{ route('konsultan.paket') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Paket</a>
-                    <a href="https://kopigaya.com/" target="_blank" rel="noopener noreferrer" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Konsultan Bisnis</a>
-                    <a href="https://sertifikatin.com/" target="_blank" rel="noopener noreferrer" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Konsultan Legalitas</a>
+                    <a href="https://kopigaya.com/" target="_blank" rel="noopener noreferrer" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Konsultan Bisnis ↗</a>
+                    <a href="https://sertifikatin.com/" target="_blank" rel="noopener noreferrer" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Konsultan Legalitas ↗</a>
                 </div>
             </div>
 
@@ -676,10 +697,14 @@
                 </div>
             </div>
 
+            {{-- Tombol Masuk/Daftar HANYA saat belum login --}}
+            @guest
             <div class="mt-3 flex flex-col gap-2 border-t border-gray-200 pt-3">
                 <a href="{{ route('login') }}" class="rounded-xl border-2 border-primary px-4 py-3 text-center text-sm font-semibold text-primary" @click="mobileOpen = false">Masuk</a>
                 <a href="{{ route('register') }}" class="rounded-xl bg-primary px-4 py-3 text-center text-sm font-semibold text-white" @click="mobileOpen = false">Daftar</a>
             </div>
+            @endguest
+
         </div>
     </div>
 </header>
