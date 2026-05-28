@@ -122,9 +122,216 @@
   ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ===================== RESPONSIVE MOBILE - DASHBOARD UMKM ===================== */
+
+  @media (max-width: 768px) {
+
+    /* Sidebar: sembunyikan, muncul lewat hamburger */
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+    }
+    .sidebar.open { transform: translateX(0); }
+
+    /* Overlay gelap */
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+    }
+    .sidebar-overlay.active { display: block; }
+
+    /* Main: full lebar */
+    .main { margin-left: 0 !important; }
+
+    /* Topbar: padding lebih kecil */
+    .topbar {
+        padding: 12px 16px !important;
+        gap: 8px;
+    }
+
+    .topbar-title {
+        font-size: 18px !important;
+    }
+
+    /* Tombol kembali: teks lebih pendek */
+    .topbar a.btn {
+        font-size: 11px !important;
+        padding: 7px 10px !important;
+    }
+
+    /* Hamburger button */
+    .hamburger-btn {
+        display: flex !important;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        width: 38px;
+        height: 38px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        cursor: pointer;
+        padding: 8px;
+        flex-shrink: 0;
+    }
+    .hamburger-btn span {
+        display: block;
+        width: 100%;
+        height: 2px;
+        background: var(--text);
+        border-radius: 2px;
+    }
+
+    /* Content padding */
+    .content { padding: 16px !important; }
+
+    /* Stats grid: 2 kolom */
+    .stats-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        margin-bottom: 16px !important;
+    }
+
+    /* Stat card ke-3 (Program Diikuti): span full */
+    .stats-grid .stat-card:nth-child(3) {
+        grid-column: span 2 !important;
+    }
+
+    .stat-card {
+        padding: 14px !important;
+    }
+
+    .stat-icon {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 16px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .stat-value {
+        font-size: 22px !important;
+    }
+
+    .stat-label {
+        font-size: 10px !important;
+    }
+
+    .stat-sub {
+        font-size: 10px !important;
+    }
+
+    /* Mentor card: susun vertikal */
+    .stat-card.mentor-active-box,
+    .stat-card.mentor-empty-box {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+        padding: 14px !important;
+    }
+
+    .stat-card.mentor-active-box > div:first-child,
+    .stat-card.mentor-empty-box > div:first-child {
+        gap: 10px !important;
+    }
+
+    .stat-card.mentor-active-box a,
+    .stat-card.mentor-empty-box a {
+        width: 100% !important;
+        justify-content: center !important;
+        font-size: 13px !important;
+    }
+
+    /* Section header */
+    .section-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 6px !important;
+        margin-bottom: 12px !important;
+    }
+
+    /* Tabel status pengajuan */
+    .table-wrap {
+        border-radius: 12px !important;
+        overflow: hidden !important;
+    }
+
+    .table-wrap table {
+        table-layout: fixed !important;
+        width: 100% !important;
+    }
+
+    /* Sembunyikan kolom Kategori(2) dan Diajukan(3) */
+    .table-wrap table thead tr th:nth-child(2),
+    .table-wrap table tbody tr td:nth-child(2),
+    .table-wrap table thead tr th:nth-child(3),
+    .table-wrap table tbody tr td:nth-child(3) {
+        display: none !important;
+    }
+
+    .table-wrap table thead tr th:nth-child(1),
+    .table-wrap table tbody tr td:nth-child(1) { width: 60% !important; }
+    .table-wrap table thead tr th:nth-child(4),
+    .table-wrap table tbody tr td:nth-child(4) { width: 40% !important; }
+
+    thead th { padding: 10px 12px !important; font-size: 9px !important; }
+    tbody td { padding: 10px 12px !important; font-size: 12px !important; }
+
+    /* Product grid: 1 kolom */
+    .product-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+    }
+
+    .product-img {
+        height: 140px !important;
+    }
+
+    .product-body {
+        padding: 14px !important;
+    }
+
+    /* Tabel program: sembunyikan Pembimbing(2), Tipe(3), Tanggal(4) */
+    #page-program .table-wrap table {
+        table-layout: fixed !important;
+        width: 100% !important;
+    }
+
+    #page-program .table-wrap table thead tr th:nth-child(2),
+    #page-program .table-wrap table tbody tr td:nth-child(2),
+    #page-program .table-wrap table thead tr th:nth-child(3),
+    #page-program .table-wrap table tbody tr td:nth-child(3),
+    #page-program .table-wrap table thead tr th:nth-child(4),
+    #page-program .table-wrap table tbody tr td:nth-child(4) {
+        display: none !important;
+    }
+
+    #page-program .table-wrap table thead tr th:nth-child(1),
+    #page-program .table-wrap table tbody tr td:nth-child(1) { width: 45% !important; }
+    #page-program .table-wrap table thead tr th:nth-child(5),
+    #page-program .table-wrap table tbody tr td:nth-child(5) { width: 25% !important; }
+    #page-program .table-wrap table thead tr th:nth-child(6),
+    #page-program .table-wrap table tbody tr td:nth-child(6) { width: 30% !important; }
+
+    /* Tombol Detail di tabel program */
+    #page-program .btn-primary.btn-sm {
+        font-size: 11px !important;
+        padding: 5px 8px !important;
+        min-width: unset !important;
+    }
+  }
+
+  /* Hamburger: sembunyikan di desktop */
+  .hamburger-btn { display: none; }
+
 </style>
 </head>
 <body>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
 
 <aside class="sidebar">
   <div class="sidebar-brand">
@@ -175,6 +382,9 @@
 
 <main class="main">
   <header class="topbar">
+    <button class="hamburger-btn" onclick="toggleSidebar()">
+        <span></span><span></span><span></span>
+    </button>
     <div class="topbar-title" id="page-title">Dashboard UMKM</div>
     <div style="display:flex;gap:10px;align-items:center">
       <a href="{{ route('profile') }}" class="btn btn-ghost" style="gap:6px;font-size:13px; text-decoration: none;">
@@ -405,6 +615,25 @@
       if (item.getAttribute('onclick') && item.getAttribute('onclick').includes("'" + id + "'")) item.classList.add('active');
     });
   }
+
+  function toggleSidebar() {
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('active');
+  }
+
+  document.getElementById('sidebar-overlay').addEventListener('click', function() {
+    document.querySelector('.sidebar').classList.remove('open');
+    this.classList.remove('active');
+  });
+
+  // Tutup sidebar saat klik nav item
+  document.querySelectorAll('.nav-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      document.querySelector('.sidebar').classList.remove('open');
+      document.getElementById('sidebar-overlay').classList.remove('active');
+    });
+  });
+
 </script>
 </body>
 </html>

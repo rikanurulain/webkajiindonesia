@@ -117,8 +117,176 @@
         font-weight: 700;
         flex-shrink: 0;
     }
+
+/* ===================== RESPONSIVE MOBILE - HALAL CENTER GRATIS ===================== */
+
+    @media (max-width: 768px) {
+
+        /* Hero section */
+        .bg-gradient-to-br h1 {
+            font-size: 2rem !important;
+        }
+
+        /* Padding section lebih compact */
+        .py-16 {
+            padding-top: 2.5rem !important;
+            padding-bottom: 2.5rem !important;
+        }
+
+        /* Grid Layanan: 1 kolom */
+        .grid.gap-4 {
+            grid-template-columns: 1fr !important;
+        }
+
+        /* Halal card */
+        .halal-card {
+            padding: 1.25rem !important;
+        }
+
+        .halal-card h3 {
+            font-size: 0.875rem !important;
+        }
+
+        .halal-card p {
+            font-size: 0.8rem !important;
+            line-height: 1.55 !important;
+        }
+
+        .halal-card .inline-flex.h-11 {
+            width: 2.25rem !important;
+            height: 2.25rem !important;
+            border-radius: 0.6rem !important;
+            margin-bottom: 0.75rem !important;
+        }
+
+        /* ── Portofolio tags hijau ── */
+        .flex.flex-wrap.justify-center.gap-2 {
+            gap: 0.5rem !important;
+            padding: 0 0.5rem !important;
+        }
+
+        .portfolio-tag {
+            font-size: 0.75rem !important;
+            padding: 0.35rem 0.85rem !important;
+            border-radius: 9999px !important;
+            font-weight: 600 !important;
+        }
+
+        /* ── Klien box: grid 2 kolom kartu ── */
+        .rounded-2xl {
+            padding: 1rem !important;
+        }
+
+        .rounded-2xl p.text-xs {
+            font-size: 0.65rem !important;
+            margin-bottom: 0.75rem !important;
+        }
+
+        .rounded-2xl .flex.flex-wrap {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 0.4rem !important;
+        }
+
+        .rounded-2xl .flex.flex-wrap span {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 0.68rem !important;
+            font-weight: 500 !important;
+            padding: 0.45rem 0.5rem !important;
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 0.5rem !important;
+            color: #374151 !important;
+            text-align: center !important;
+            line-height: 1.35 !important;
+            min-height: 2.2rem !important;
+            word-break: break-word !important;
+            white-space: normal !important;
+        }
+
+        /* Item panjang sendirian: span full */
+        .rounded-2xl .flex.flex-wrap span:last-child:nth-child(odd) {
+            grid-column: span 2 !important;
+        }
+
+        /* ── Syarat Pendaftaran: 3 kolom → 1 kolom ── */
+        .grid.gap-8.lg\\:grid-cols-3 {
+            grid-template-columns: 1fr !important;
+            gap: 1rem !important;
+        }
+
+        .grid.gap-8.lg\\:grid-cols-3 > div {
+            padding: 1rem !important;
+            border-radius: 0.875rem !important;
+        }
+
+        .grid.gap-8.lg\\:grid-cols-3 .inline-flex.items-center.gap-2 {
+            padding: 0.35rem 0.75rem !important;
+            font-size: 0.7rem !important;
+        }
+
+        .grid.gap-8.lg\\:grid-cols-3 li {
+            font-size: 0.8rem !important;
+            line-height: 1.5 !important;
+        }
+
+        .grid.gap-8.lg\\:grid-cols-3 li svg {
+            width: 0.9rem !important;
+            height: 0.9rem !important;
+            flex-shrink: 0 !important;
+            margin-top: 0.15rem !important;
+        }
+
+        /* ── Alur Sertifikasi ── */
+        .step-card {
+            padding: 1.1rem !important;
+        }
+
+        .step-card .flex.items-start.gap-4 {
+            gap: 0.75rem !important;
+        }
+
+        /* ── Tim grid: 1 kolom ── */
+        .grid.gap-4.sm\\:grid-cols-2.lg\\:grid-cols-3 {
+            grid-template-columns: 1fr !important;
+        }
+
+        /* ── FAQ ── */
+        .mx-auto.max-w-3xl {
+            max-width: 100% !important;
+        }
+
+        /* ── CTA Section ── */
+        .mt-6.flex.flex-wrap.justify-center.gap-4 {
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+        }
+
+        .mt-8.flex.flex-col.sm\\:flex-row {
+            flex-direction: column !important;
+            gap: 0.75rem !important;
+        }
+
+        .mt-8.flex.flex-col.sm\\:flex-row a {
+            width: 100% !important;
+            justify-content: center !important;
+        }
+
+        /* Section header */
+        .mb-12 { margin-bottom: 1.75rem !important; }
+        .mb-10 { margin-bottom: 1.25rem !important; }
+
+        /* Info box estimasi */
+        .mt-4.rounded-xl {
+            padding: 0.875rem 1rem !important;
+            font-size: 0.8rem !important;
+        }
+    }
+
 </style>
-{{-- ===================== END STYLES ===================== --}}
 
 
 {{-- Tentang Program --}}
@@ -209,9 +377,8 @@
         <div class="flex flex-wrap justify-center gap-2 mb-10">
             @foreach ([
                 'Katering', 'Restoran', 'Daging Impor', 'Logistik',
-                'Barang Gunaan Rumah Tangga', 'Peralatan Rumah Tangga',
-                'Makanan Kaleng Impor', 'Industri Bakery',
-                'Jasa Penyimpanan', 'Bahan Kosmetik',
+                'Barang Gunaan Rumah Tangga','Peralatan Rumah Tangga',
+                'Makanan Kaleng Impor', 'Industri Bakery','Jasa Penyimpanan', 'Bahan Kosmetik',
                 'Industri Pembuatan Selai, Saos, Kopi', 'Industri Frozen',
             ] as $industri)
             <span class="portfolio-tag">

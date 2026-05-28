@@ -164,6 +164,73 @@
     .testi-card:hover::before {
         transform: scaleX(1);
     }
+
+    /* ===================== RESPONSIVE MOBILE - PAKET KONSULTAN ===================== */
+
+    @media (max-width: 768px) {
+
+        /* Hero section */
+        .bg-gradient-to-br h1 {
+            font-size: 2rem !important;
+        }
+
+        /* ── Pricing Grid: paksa 1 kolom ── */
+        div[style*="grid-template-columns: 1fr 1fr 1fr"] {
+            grid-template-columns: 1fr !important;
+            gap: 1rem !important;
+        }
+
+        /* Pricing card */
+        .plan-card {
+            padding: 1.75rem 1.5rem !important;
+        }
+
+        /* Featured card (Advance): tampil di tengah urutan kedua, 
+           beri efek agar tetap menonjol */
+        .plan-card.featured {
+            order: -1 !important; /* tampil pertama di mobile */
+        }
+
+        /* Harga lebih kecil sedikit */
+        .card-price {
+            font-size: 2.25rem !important;
+        }
+
+        /* CTA button */
+        .plan-cta {
+            margin-top: 1.5rem !important;
+            padding: 0.75rem 0 !important;
+            font-size: 0.9rem !important;
+        }
+
+        /* ── Testimoni Grid: paksa 1 kolom ── */
+        div[style*="grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem;"] {
+            grid-template-columns: 1fr !important;
+            gap: 1rem !important;
+        }
+
+        /* Testimoni card */
+        .testi-card {
+            padding: 1.25rem !important;
+        }
+
+        /* Section header */
+        .mb-12 {
+            margin-bottom: 2rem !important;
+        }
+
+        /* Catatan di bawah pricing */
+        .mt-8 {
+            margin-top: 1.25rem !important;
+        }
+
+        /* Padding section */
+        .py-16 {
+            padding-top: 3rem !important;
+            padding-bottom: 3rem !important;
+        }
+    }
+
 </style>
 {{-- ===================== END STYLES ===================== --}}
 
