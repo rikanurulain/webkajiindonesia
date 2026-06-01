@@ -1,7 +1,7 @@
 {{-- resources/views/admin/approval-produk.blade.php --}}
 @extends('layouts.admin')
 
-@section('page-title', 'Approval Produk')
+@section('page-title', 'Approval UMKM')
 
 @push('styles')
 <style>
