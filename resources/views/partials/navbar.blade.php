@@ -1,4 +1,4 @@
-<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm" x-data="{ mobileOpen: false }">
+<header class="sticky top-0 z-[9999] bg-white/95 backdrop-blur-md shadow-sm" x-data="{ mobileOpen: false }">
     <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8" aria-label="Navigasi utama">
 
         {{-- Logo (kiri) --}}
@@ -27,9 +27,9 @@
             </a>
 
             {{-- Dropdown Pelatihan --}}
-           <div class="relative" x-data="{ open: false, timer: null }" 
-     @mouseenter="clearTimeout(timer); timer = setTimeout(() => open = true, 100)"
-     @mouseleave="clearTimeout(timer); open = false">
+            <div class="relative" x-data="{ open: false, timer: null }"
+                 @mouseenter="clearTimeout(timer); timer = setTimeout(() => open = true, 100)"
+                 @mouseleave="clearTimeout(timer); open = false">
                 <button class="flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-200
                                {{ Request::routeIs('pelatihan.index') ? 'text-primary bg-primary/10' : 'text-gray-700 hover:bg-primary/10 hover:text-primary' }}">
                     Pelatihan
@@ -49,8 +49,6 @@
                     <div class="bg-gradient-to-r from-primary/10 to-primary/5 px-5 py-3 border-b border-gray-100">
                         <p class="text-xs font-semibold text-primary uppercase tracking-wider">Program Pelatihan</p>
                     </div>
-
-                    {{-- Program --}}
                     <a href="{{ route('pelatihan.program') }}" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
@@ -66,10 +64,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </a>
-
                     <div class="mx-5 border-t border-gray-100"></div>
-
-                    {{-- Event --}}
                     <a href="{{ route('pelatihan.event') }}" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
@@ -85,10 +80,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </a>
-
                     <div class="mx-5 border-t border-gray-100"></div>
-
-                    {{-- Trainer (sebelumnya: Pembimbing) --}}
                     <a href="{{ route('pelatihan.pembimbing') }}" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
@@ -104,10 +96,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </a>
-
                     <div class="mx-5 border-t border-gray-100"></div>
-
-                    {{-- Selengkapnya (eksternal) --}}
                     <a href="https://kamilatih.com/" target="_blank" rel="noopener noreferrer" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
@@ -126,7 +115,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                         </svg>
                     </a>
-
                     <div class="bg-gray-50/80 px-5 py-2.5 border-t border-gray-100">
                         <p class="text-xs text-gray-400 text-center">KAJI Indonesia © {{ date('Y') }}</p>
                     </div>
@@ -134,9 +122,9 @@
             </div>
 
             {{-- Dropdown UMKM --}}
-          <div class="relative" x-data="{ open: false, timer: null }" 
-     @mouseenter="clearTimeout(timer); timer = setTimeout(() => open = true, 100)"
-     @mouseleave="clearTimeout(timer); open = false">
+            <div class="relative" x-data="{ open: false, timer: null }"
+                 @mouseenter="clearTimeout(timer); timer = setTimeout(() => open = true, 100)"
+                 @mouseleave="clearTimeout(timer); open = false">
                 <button class="flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-200
                                {{ Request::routeIs('umkm') ? 'text-primary bg-primary/10' : 'text-gray-700 hover:bg-primary/10 hover:text-primary' }}">
                     UMKM
@@ -156,8 +144,6 @@
                     <div class="bg-gradient-to-r from-primary/10 to-primary/5 px-5 py-3 border-b border-gray-100">
                         <p class="text-xs font-semibold text-primary uppercase tracking-wider">Pendampingan UMKM</p>
                     </div>
-
-                    {{-- UMKM (sebelumnya: Produk) --}}
                     <a href="{{ route('umkm.produk') }}" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
@@ -173,10 +159,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </a>
-
                     <div class="mx-5 border-t border-gray-100"></div>
-
-                    {{-- Trainer (sebelumnya: Pembimbing) --}}
                     <a href="{{ route('umkm.pembimbing') }}" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
@@ -192,10 +175,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </a>
-
                     <div class="mx-5 border-t border-gray-100"></div>
-
-                    {{-- Lokasi --}}
                     <a href="{{ route('umkm.lokasi') }}" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
@@ -212,10 +192,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </a>
-
                     <div class="mx-5 border-t border-gray-100"></div>
-
-                    {{-- Selengkapnya --}}
                     <a href="{{ route('umkm') }}" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
@@ -231,7 +208,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </a>
-
                     <div class="bg-gray-50/80 px-5 py-2.5 border-t border-gray-100">
                         <p class="text-xs text-gray-400 text-center">KAJI Indonesia © {{ date('Y') }}</p>
                     </div>
@@ -239,9 +215,9 @@
             </div>
 
             {{-- Dropdown Halal Center --}}
-            <div class="relative" x-data="{ open: false, timer: null }" 
-     @mouseenter="clearTimeout(timer); timer = setTimeout(() => open = true, 100)"
-     @mouseleave="clearTimeout(timer); open = false">
+            <div class="relative" x-data="{ open: false, timer: null }"
+                 @mouseenter="clearTimeout(timer); timer = setTimeout(() => open = true, 100)"
+                 @mouseleave="clearTimeout(timer); open = false">
                 <button class="flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-200
                                {{ Request::routeIs('halal-center') ? 'text-primary bg-primary/10' : 'text-gray-700 hover:bg-primary/10 hover:text-primary' }}">
                     Halal Center
@@ -261,8 +237,6 @@
                     <div class="bg-gradient-to-r from-primary/10 to-primary/5 px-5 py-3 border-b border-gray-100">
                         <p class="text-xs font-semibold text-primary uppercase tracking-wider">Sertifikasi Halal</p>
                     </div>
-
-                    {{-- Gratis --}}
                     <a href="{{ route('halal-center.gratis') }}" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 group-hover/item:bg-emerald-100 transition-colors duration-200">
@@ -281,10 +255,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </a>
-
                     <div class="mx-5 border-t border-gray-100"></div>
-
-                    {{-- Berbayar --}}
                     <a href="{{ route('halal-center.berbayar') }}" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
@@ -300,10 +271,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </a>
-
                     <div class="mx-5 border-t border-gray-100"></div>
-
-                    {{-- Selengkapnya (eksternal) --}}
                     <a href="https://halalcenter.co.id/" target="_blank" rel="noopener noreferrer" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
@@ -322,7 +290,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                         </svg>
                     </a>
-
                     <div class="bg-gray-50/80 px-5 py-2.5 border-t border-gray-100">
                         <p class="text-xs text-gray-400 text-center">KAJI Indonesia © {{ date('Y') }}</p>
                     </div>
@@ -330,9 +297,9 @@
             </div>
 
             {{-- Dropdown Konsultan --}}
-           <div class="relative" x-data="{ open: false, timer: null }" 
-     @mouseenter="clearTimeout(timer); timer = setTimeout(() => open = true, 100)"
-     @mouseleave="clearTimeout(timer); open = false">
+            <div class="relative" x-data="{ open: false, timer: null }"
+                 @mouseenter="clearTimeout(timer); timer = setTimeout(() => open = true, 100)"
+                 @mouseleave="clearTimeout(timer); open = false">
                 <button class="flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-200
                                {{ Request::routeIs('konsultan') ? 'text-primary bg-primary/10' : 'text-gray-700 hover:bg-primary/10 hover:text-primary' }}">
                     Konsultan
@@ -352,8 +319,6 @@
                     <div class="bg-gradient-to-r from-primary/10 to-primary/5 px-5 py-3 border-b border-gray-100">
                         <p class="text-xs font-semibold text-primary uppercase tracking-wider">Layanan Konsultan</p>
                     </div>
-
-                    {{-- Layanan --}}
                     <a href="{{ route('konsultan.layanan') }}" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
@@ -369,10 +334,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </a>
-
                     <div class="mx-5 border-t border-gray-100"></div>
-
-                    {{-- Paket --}}
                     <a href="{{ route('konsultan.paket') }}" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
@@ -388,10 +350,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </a>
-
                     <div class="mx-5 border-t border-gray-100"></div>
-
-                    {{-- Selengkapnya (eksternal) --}}
                     <a href="https://kopigaya.com/" target="_blank" rel="noopener noreferrer" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
@@ -410,7 +369,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                         </svg>
                     </a>
-
                     <a href="https://sertifikatin.com/" target="_blank" rel="noopener noreferrer" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover/item:bg-primary/20 transition-colors duration-200">
@@ -429,7 +387,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                         </svg>
                     </a>
-
                     <div class="bg-gray-50/80 px-5 py-2.5 border-t border-gray-100">
                         <p class="text-xs text-gray-400 text-center">KAJI Indonesia © {{ date('Y') }}</p>
                     </div>
@@ -437,9 +394,9 @@
             </div>
 
             {{-- Dropdown Media --}}
-           <div class="relative" x-data="{ open: false, timer: null }" 
-     @mouseenter="clearTimeout(timer); timer = setTimeout(() => open = true, 100)"
-     @mouseleave="clearTimeout(timer); open = false">
+            <div class="relative" x-data="{ open: false, timer: null }"
+                 @mouseenter="clearTimeout(timer); timer = setTimeout(() => open = true, 100)"
+                 @mouseleave="clearTimeout(timer); open = false">
                 <button class="flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-200
                                {{ Request::routeIs('media') ? 'text-primary bg-primary/10' : 'text-gray-700 hover:bg-primary/10 hover:text-primary' }}">
                     Media
@@ -459,8 +416,6 @@
                     <div class="bg-gradient-to-r from-primary/10 to-primary/5 px-5 py-3 border-b border-gray-100">
                         <p class="text-xs font-semibold text-primary uppercase tracking-wider">Kanal Media</p>
                     </div>
-
-                    {{-- Info Jawa Timur --}}
                     <a href="https://www.infojawatimur.com/" target="_blank" rel="noopener noreferrer" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 group-hover/item:bg-emerald-100 transition-colors duration-200">
@@ -479,10 +434,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                         </svg>
                     </a>
-
                     <div class="mx-5 border-t border-gray-100"></div>
-
-                    {{-- Ini Jawa Timur --}}
                     <a href="https://www.inijawatimur.com/" target="_blank" rel="noopener noreferrer" @click="open = false"
                        class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 group-hover/item:bg-emerald-100 transition-colors duration-200">
@@ -501,7 +453,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                         </svg>
                     </a>
-
                     <div class="bg-gray-50/80 px-5 py-2.5 border-t border-gray-100">
                         <p class="text-xs text-gray-400 text-center">KAJI Indonesia © {{ date('Y') }}</p>
                     </div>
@@ -510,10 +461,12 @@
 
         </div>
 
-        {{-- Kanan: Tombol profile (DESKTOP) + Hamburger (MOBILE) --}}
+        {{-- ============================================================
+             KANAN: Desktop profile + Mobile hamburger SAJA
+             ============================================================ --}}
         <div class="flex shrink-0 items-center gap-3">
 
-            {{-- Desktop: Profile & Logout --}}
+            {{-- Desktop: Avatar + divider + logout --}}
             <div class="hidden md:flex items-center gap-4">
                 @auth
                     <a href="{{ route('profile') }}" class="group flex flex-col items-center gap-1">
@@ -555,33 +508,8 @@
                 @endauth
             </div>
 
-            {{-- Mobile: Profile icon + Hamburger (saat login) --}}
-            <div class="flex md:hidden items-center gap-2">
-                @auth
-                    {{-- Profile kecil di mobile --}}
-                    <a href="{{ route('profile') }}" class="flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-gray-100 transition">
-                        <div class="h-8 w-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary font-bold text-xs overflow-hidden ring-1 ring-primary/20">
-                            @if(Auth::user()->profile_photo_path)
-                                <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}"
-                                     alt="Foto Profil"
-                                     class="w-full h-full object-cover">
-                            @else
-                                {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
-                            @endif
-                        </div>
-                    </a>
-                    {{-- Logout kecil di mobile --}}
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="p-2 text-gray-400 hover:text-red-500 transition-all hover:bg-red-50 rounded-lg" title="Keluar">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                            </svg>
-                        </button>
-                    </form>
-                @endauth
-
-                {{-- Hamburger --}}
+            {{-- Mobile: Hamburger SAJA (avatar + logout pindah ke drawer) --}}
+            <div class="flex md:hidden items-center">
                 <button type="button"
                         class="flex h-10 w-10 items-center justify-center rounded-xl text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary"
                         aria-label="Buka menu"
@@ -600,7 +528,9 @@
 
     </nav>
 
-    {{-- Mobile menu --}}
+    {{-- ============================================================
+         MOBILE DRAWER
+         ============================================================ --}}
     <div class="border-t border-gray-200/80 bg-white/95 backdrop-blur-md md:hidden"
          x-show="mobileOpen"
          x-transition:enter="transition ease-out duration-200"
@@ -614,6 +544,41 @@
          @click.away="mobileOpen = false">
         <div class="mx-auto max-w-7xl space-y-0.5 px-4 py-3 pb-4">
 
+            {{-- ── PROFIL SECTION (hanya saat login) ── --}}
+            @auth
+            <div class="mb-2 flex items-center gap-3 rounded-2xl bg-primary/5 px-4 py-3 border border-primary/10">
+                <div class="h-10 w-10 shrink-0 flex items-center justify-center rounded-xl overflow-hidden ring-2 ring-primary/20">
+                    @if(Auth::user()->profile_photo_path)
+                        <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}"
+                             alt="Foto Profil"
+                             class="w-full h-full object-cover">
+                    @else
+                        <span class="text-primary font-bold text-sm bg-primary/10 w-full h-full flex items-center justify-center">
+                            {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                        </span>
+                    @endif
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-gray-800 truncate">{{ Auth::user()->name }}</p>
+                    <p class="text-xs text-primary font-medium">
+                        {{ match(Auth::user()->role) {
+                            'trainer' => 'Trainer',
+                            'mentor'  => 'Mentor',
+                            'umkm'    => 'Mitra UMKM',
+                            'admin'   => 'Admin',
+                            default   => 'Member',
+                        } }}
+                    </p>
+                </div>
+                <a href="{{ route('profile') }}"
+                   @click="mobileOpen = false"
+                   class="shrink-0 rounded-lg bg-white border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:text-primary hover:border-primary transition">
+                    Edit Profil
+                </a>
+            </div>
+            @endauth
+
+            {{-- ── MENU NAVIGASI ── --}}
             <a href="{{ route('home') }}"
                class="block rounded-xl px-4 py-3 text-sm font-medium {{ Request::routeIs('home') ? 'bg-primary/15 text-primary' : 'text-gray-700 hover:bg-gray-100' }}"
                @click="mobileOpen = false">
@@ -697,13 +662,27 @@
                 </div>
             </div>
 
-            {{-- Tombol Masuk/Daftar HANYA saat belum login --}}
+            {{-- ── FOOTER DRAWER: Login/Daftar (guest) atau Logout (auth) ── --}}
             @guest
-            <div class="mt-3 flex flex-col gap-2 border-t border-gray-200 pt-3">
-                <a href="{{ route('login') }}" class="rounded-xl border-2 border-primary px-4 py-3 text-center text-sm font-semibold text-primary" @click="mobileOpen = false">Masuk</a>
-                <a href="{{ route('register') }}" class="rounded-xl bg-primary px-4 py-3 text-center text-sm font-semibold text-white" @click="mobileOpen = false">Daftar</a>
-            </div>
-            @endguest
+                <div class="mt-3 flex flex-col gap-2 border-t border-gray-200 pt-3">
+                    <a href="{{ route('login') }}" class="rounded-xl border-2 border-primary px-4 py-3 text-center text-sm font-semibold text-primary" @click="mobileOpen = false">Masuk</a>
+                    <a href="{{ route('register') }}" class="rounded-xl bg-primary px-4 py-3 text-center text-sm font-semibold text-white" @click="mobileOpen = false">Daftar</a>
+                </div>
+            @else
+                {{-- ── TOMBOL LOGOUT di paling bawah drawer ── --}}
+                <div class="mt-3 border-t border-gray-200 pt-3">
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit"
+                                class="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            Keluar dari Akun
+                        </button>
+                    </form>
+                </div>
+            @endauth
 
         </div>
     </div>
