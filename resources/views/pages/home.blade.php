@@ -1,38 +1,140 @@
 @extends('layouts.app')
 
 @section('content')
-    {{-- 1. HERO --}}
-    <section class="relative overflow-hidden bg-gradient-to-br from-primary-dark via-primary to-primary-light">
-        <div class="absolute inset-0 opacity-[0.03]" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23000\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
-        <div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:flex lg:items-center lg:gap-12 lg:px-8">
-            <div class="max-w-2xl lg:max-w-xl">
-                <h1 class="font-serif text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-                    Membangun Indonesia Melalui Kajian & Pelatihan
-                </h1>
-                <p class="mt-4 text-lg text-white/90">
-                    Kaji Indonesia hadir sebagai mitra terpercaya dalam pengembangan SDM, pendampingan UMKM, sertifikasi halal, dan konsultasi bisnis dengan nilai-nilai profesional dan islami.
-                </p>
-                <div class="mt-8 flex flex-wrap gap-4">
-                    <a href="#layanan" class="inline-flex items-center justify-center rounded-xl bg-secondary px-6 py-3.5 text-base font-semibold text-gray-900 shadow-lg transition-all hover:bg-secondary-dark hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2">
-                        Lihat Program
-                    </a>
-                    <a href="#kontak" class="inline-flex items-center justify-center rounded-xl border-2 border-white/80 bg-white/10 px-6 py-3.5 text-base font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary">
-                        Hubungi Kami
-                    </a>
-                </div>
+{{-- 1. HERO --}}
+<section
+    class="relative overflow-hidden"
+    style="min-height: 580px;"
+    x-data="{
+        active: 0,
+        total: 5,
+        autoplay: null,
+        slides: [
+            { url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1600&q=80&auto=format&fit=crop', label: 'Pelatihan & Pengembangan SDM' },
+            { url: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1600&q=80&auto=format&fit=crop', label: 'Pelatihan Bisnis Profesional' },
+            { url: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1600&q=80&auto=format&fit=crop', label: 'Konsultasi & Strategi Bisnis' },
+            { url: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1600&q=80&auto=format&fit=crop', label: 'Pendampingan UMKM' },
+            { url: 'https://images.unsplash.com/photo-1579621970795-87facc2f976d?w=1600&q=80&auto=format&fit=crop', label: 'Sertifikasi & Legalitas Halal' },
+        ],
+        restartBar() {
+            const bar = document.getElementById('hero-progress-bar');
+            if (!bar) return;
+            const parent = bar.parentNode;
+            const clone = bar.cloneNode(false);
+            clone.style.animation = 'none';
+            parent.replaceChild(clone, bar);
+            void clone.offsetWidth;
+            clone.style.animation = 'hero-progress 5s linear forwards';
+        },
+        go(i) {
+            this.active = (i + this.total) % this.total;
+            this.restartBar();
+            clearInterval(this.autoplay);
+            this.autoplay = setInterval(() => { this.go(this.active + 1); }, 5000);
+        },
+        init() {
+            this.$nextTick(() => { this.restartBar(); });
+            this.autoplay = setInterval(() => { this.go(this.active + 1); }, 5000);
+        }
+    }"
+    x-init="init()">
+
+    {{-- ── SLIDE BACKGROUNDS ── --}}
+    <div class="absolute inset-0 z-0">
+        <template x-for="(slide, index) in slides" :key="index">
+            <div
+                class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out"
+                :style="'background-image: url(' + slide.url + ')'"
+                :class="active === index ? 'opacity-100' : 'opacity-0'">
             </div>
-            <div class="mt-10 flex justify-center lg:mt-0 lg:shrink-0">
-                <div class="relative rounded-2xl bg-white/10 p-6 backdrop-blur-sm ring-1 ring-white/20">
-                    <div class="flex h-64 w-64 items-center justify-center rounded-xl bg-white/5 sm:h-80 sm:w-80">
-                        <svg class="h-40 w-40 text-white/80 sm:h-52 sm:w-52" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                        </svg>
-                    </div>
-                </div>
+        </template>
+        <div class="absolute inset-0 bg-gradient-to-br from-primary-dark/88 via-primary/78 to-primary-light/65"></div>
+        <div class="absolute inset-0 opacity-[0.035]"
+             style="background-image:url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23fff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+    </div>
+
+    {{-- ── ARROW PREV ── --}}
+    <button @click="go(active - 1)"
+        class="absolute left-2 sm:left-4 top-1/2 z-20 -translate-y-1/2
+               flex h-8 w-8 sm:h-11 sm:w-11 items-center justify-center
+               rounded-full bg-black/20 sm:bg-white/15 backdrop-blur-sm border border-white/20
+               text-white transition-all duration-200 hover:bg-white/30 hover:scale-110 focus:outline-none"
+        aria-label="Sebelumnya">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+        </svg>
+    </button>
+
+    {{-- ── ARROW NEXT ── --}}
+    <button @click="go(active + 1)"
+        class="absolute right-2 sm:right-4 top-1/2 z-20 -translate-y-1/2
+               flex h-8 w-8 sm:h-11 sm:w-11 items-center justify-center
+               rounded-full bg-black/20 sm:bg-white/15 backdrop-blur-sm border border-white/20
+               text-white transition-all duration-200 hover:bg-white/30 hover:scale-110 focus:outline-none"
+        aria-label="Berikutnya">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+        </svg>
+    </button>
+
+    {{-- ── KONTEN UTAMA ── --}}
+    {{-- px-12 di mobile: cukup ruang untuk arrow (w-8 = 32px + left-2 = 8px = 40px) --}}
+    <div class="relative z-10 mx-auto max-w-7xl px-12 py-16 sm:px-16 sm:py-24 lg:px-20 lg:py-28 lg:flex lg:items-center lg:gap-12">
+        <div class="w-full max-w-2xl mx-auto lg:mx-0 lg:max-w-xl text-center lg:text-left">
+
+            {{-- Label slide aktif --}}
+            <div class="mb-3 sm:mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 sm:px-4 sm:py-1.5 backdrop-blur-sm ring-1 ring-white/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-secondary animate-pulse flex-shrink-0"></span>
+                <span class="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-white/90 truncate max-w-[180px] sm:max-w-none"
+                      x-text="slides[active].label"></span>
+            </div>
+
+            <h1 class="font-serif text-3xl font-bold tracking-tight text-white drop-shadow-lg sm:text-4xl lg:text-5xl xl:text-6xl">
+                Membangun Indonesia Melalui Kajian & Pelatihan
+            </h1>
+            <p class="mt-3 sm:mt-4 text-sm sm:text-base lg:text-lg text-white/90 drop-shadow leading-relaxed">
+                Kaji Indonesia hadir sebagai mitra terpercaya dalam pengembangan SDM, pendampingan UMKM, sertifikasi halal, dan konsultasi bisnis dengan nilai-nilai profesional dan islami.
+            </p>
+            <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-center lg:justify-start gap-3 sm:gap-4">
+                <a href="#layanan"
+                   class="inline-flex items-center justify-center rounded-xl bg-secondary px-6 py-3 sm:py-3.5 text-sm sm:text-base font-semibold text-gray-900 shadow-lg transition-all hover:bg-secondary-dark hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2">
+                    Lihat Program
+                </a>
+                <a href="#kontak"
+                   class="inline-flex items-center justify-center rounded-xl border-2 border-white/80 bg-white/10 px-6 py-3 sm:py-3.5 text-sm sm:text-base font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary">
+                    Hubungi Kami
+                </a>
             </div>
         </div>
-    </section>
+    </div>
 
+    {{-- ── DOTS ── --}}
+    <div class="absolute bottom-5 left-1/2 z-20 -translate-x-1/2 flex items-center gap-1.5 sm:gap-2">
+        <template x-for="(slide, index) in slides" :key="index">
+            <button
+                @click="go(index)"
+                :aria-label="'Slide ' + (index + 1)"
+                :class="active === index
+                    ? 'w-5 sm:w-7 bg-white shadow-[0_0_8px_rgba(255,255,255,0.6)]'
+                    : 'w-1.5 sm:w-2 bg-white/40 hover:bg-white/70'"
+                class="h-1.5 sm:h-2 rounded-full transition-all duration-300 focus:outline-none cursor-pointer">
+            </button>
+        </template>
+    </div>
+
+    {{-- ── PROGRESS BAR ── --}}
+    <div class="absolute bottom-0 left-0 right-0 z-20 h-[3px] bg-white/10">
+        <div id="hero-progress-bar" class="h-full bg-white/70 rounded-r-full"></div>
+    </div>
+
+</section>
+
+<style>
+@keyframes hero-progress {
+    from { width: 0%; }
+    to   { width: 100%; }
+}
+</style>
  {{-- 2. STATISTIK --}}
 <section class="bg-white py-16 sm:py-20" id="statistik"
          x-data="{
