@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>Dashboard Trainer – Kaji Indonesia</title>
+<title>Dashboard Trainer – KAJI Indonesia</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -500,7 +500,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                 </svg>
             </div>
             <div>
-                <div class="brand-name">Kaji Indonesia</div>
+                <div class="brand-name">KAJI Indonesia</div>
                 <div class="brand-role">Trainer</div>
             </div>
         </div>
@@ -1235,7 +1235,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             </div>
             <div class="form-group">
                 <label class="form-label">Lokasi</label>
-                <input class="form-input" type="text" name="lokasi" id="event-lokasi" placeholder="Contoh: Gedung KAJI INDONESIA, Surabaya">
+                <input class="form-input" type="text" name="lokasi" id="event-lokasi" placeholder="Contoh: Gedung KAJI Indonesia, Surabaya">
             </div>
             <div class="form-row">
                 <div class="form-group">

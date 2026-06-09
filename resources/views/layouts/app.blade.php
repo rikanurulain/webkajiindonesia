@@ -4,19 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Kaji Indonesia' }} | Kaji Indonesia</title>
+    <title>{{ $title ?? 'KAJI Indonesia' }} | KAJI Indonesia</title>
      {{-- Tambahkan di sini --}}
     <link rel="icon" type="image/png" href="{{ asset('storage/logo/logo.png') }}">
-    <meta name="description" content="{{ $metaDescription ?? 'Kaji Indonesia - Membangun Indonesia melalui kajian, pelatihan, pendampingan UMKM, Halal Center, dan konsultasi profesional.' }}">
-    <meta name="keywords" content="{{ $metaKeywords ?? 'Kaji Indonesia, pelatihan, UMKM, halal, konsultan, kajian' }}">
-    <meta name="author" content="Kaji Indonesia">
+    <meta name="description" content="{{ $metaDescription ?? 'KAJI Indonesia - Membangun Indonesia melalui kajian, pelatihan, pendampingan UMKM, Halal Center, dan konsultasi profesional.' }}">
+    <meta name="keywords" content="{{ $metaKeywords ?? 'KAJI Indonesia, pelatihan, UMKM, halal, konsultan, kajian' }}">
+    <meta name="author" content="KAJI Indonesia">
     {{-- Open Graph --}}
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="{{ $title ?? 'Kaji Indonesia' }} | Kaji Indonesia">
+    <meta property="og:title" content="{{ $title ?? 'KAJI Indonesia' }} | KAJI Indonesia">
     <meta property="og:description" content="{{ $metaDescription ?? 'Membangun Indonesia melalui kajian & pelatihan.' }}">
     <meta property="og:locale" content="id_ID">
-    <meta property="og:site_name" content="Kaji Indonesia">
+    <meta property="og:site_name" content="KAJI Indonesia">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">

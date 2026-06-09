@@ -318,11 +318,11 @@
         {{-- Testimoni --}}
         <div class="text-center">
             <h2 class="font-serif text-3xl font-bold text-gray-900 sm:text-4xl">Apa Kata Mereka</h2>
-            <p class="mx-auto mt-3 max-w-2xl text-gray-600">Testimoni dari mitra dan peserta program Kaji Indonesia.</p>
+            <p class="mx-auto mt-3 max-w-2xl text-gray-600">Testimoni dari mitra dan peserta program KAJI Indonesia.</p>
         </div>
         <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <div class="rounded-2xl bg-white p-6 shadow-lg ring-1 ring-gray-200/50">
-                <p class="text-gray-700">"Pelatihan dari Kaji Indonesia sangat aplikatif. Tim kami langsung bisa mengimplementasikan di lapangan."</p>
+                <p class="text-gray-700">"Pelatihan dari KAJI Indonesia sangat aplikatif. Tim kami langsung bisa mengimplementasikan di lapangan."</p>
                 <p class="mt-4 font-semibold text-gray-900">Bapak Ahmad, Direktur HR</p>
                 <p class="text-sm text-gray-500">Perusahaan Manufaktur</p>
             </div>

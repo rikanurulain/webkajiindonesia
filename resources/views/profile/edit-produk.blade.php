@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Edit Produk – Kaji Indonesia</title>
+<title>Edit Produk – KAJI Indonesia</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Cormorant+Garamond:wght@700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -90,7 +90,7 @@
           <img src="{{ asset('storage/' . $product->foto_produk) }}" class="preview-img" alt="Foto Saat Ini">
           <div class="preview-text">
             <strong>Foto Saat Ini Aktif</strong>
-            <span>Terpajang di platform Kaji Indonesia</span>
+            <span>Terpajang di platform KAJI Indonesia</span>
           </div>
         </div>
       @endif
