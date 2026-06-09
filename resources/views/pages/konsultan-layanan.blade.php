@@ -3,12 +3,29 @@
 @section('content')
 
 {{-- Hero Section --}}
-<section class="bg-gradient-to-br from-primary-dark via-primary to-primary-light py-16 text-white">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h1 class="font-serif text-4xl font-bold sm:text-5xl">Konsultan</h1>
-        <p class="mt-4 max-w-2xl text-lg text-white/90">Konsultan Bisnis - Digital Marketing - Website - Apps - Streaming - Sertifikasi dan Legalitas Usaha.</p>
-    </div>
-</section>
+<section class="bg-gradient-to-br from-primary-dark via-primary to-primary- py-16 text-white">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-8">
+            
+            <!-- TEXT -->
+            <div class="max-w-2xl">
+                <h1 class="font-serif text-4xl font-bold sm:text-5xl">
+                Layanan
+                </h1>
+
+                <p class="mt-4 text-lg text-white/90">
+                Konsultan Bisnis - Digital Marketing - Website - Apps - Streaming - Sertifikasi dan Legalitas Usaha.                </p>
+            </div>
+
+            <!-- IMAGE -->
+            <div>
+                <img 
+                    src="{{ asset('storage/logo/SYNTARA.png') }}"
+                    alt="Logo Karya Kami"
+                    class="w-64 md:w-80 object-contain"
+                >
+            </div>
+        </div>
+    </section>
 
 {{-- Tentang Layanan Kami --}}
 <section class="bg-gray-50 py-16">

@@ -74,7 +74,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Event</p>
-                            <p class="text-xs text-gray-400">Acara Diluar Program</p>
+                            <p class="text-xs text-gray-400">Acara Diluar Pelatihan</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary group-hover/item:translate-x-0.5 transition-all duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -168,7 +168,7 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Trainer</p>
+                            <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Mentor</p>
                             <p class="text-xs text-gray-400">Pendamping dan Fasilitator</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary group-hover/item:translate-x-0.5 transition-all duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -246,7 +246,7 @@
                         </div>
                         <div>
                             <div class="flex items-center gap-1.5">
-                                <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Gratis</p>
+                                <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Self-Diclare</p>
                                 <span class="inline-flex items-center rounded-full bg-emerald-50 px-1.5 py-0.5 text-xs font-medium text-emerald-600 ring-1 ring-emerald-200">Free</span>
                             </div>
                             <p class="text-xs text-gray-400">Sertifikasi halal tanpa biaya</p>
@@ -264,7 +264,7 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Berbayar</p>
+                            <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Reguler</p>
                             <p class="text-xs text-gray-400">Layanan sertifikasi premium</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary group-hover/item:translate-x-0.5 transition-all duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -395,29 +395,31 @@
 
             {{-- Dropdown Media --}}
             <div class="relative" x-data="{ open: false, timer: null }"
-                 @mouseenter="clearTimeout(timer); timer = setTimeout(() => open = true, 100)"
-                 @mouseleave="clearTimeout(timer); open = false">
+                @mouseenter="clearTimeout(timer); timer = setTimeout(() => open = true, 100)"
+                @mouseleave="clearTimeout(timer); open = false">
                 <button class="flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-200
-                               {{ Request::routeIs('media') ? 'text-primary bg-primary/10' : 'text-gray-700 hover:bg-primary/10 hover:text-primary' }}">
+                            {{ Request::routeIs('media') ? 'text-primary bg-primary/10' : 'text-gray-700 hover:bg-primary/10 hover:text-primary' }}">
                     Media
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform duration-300" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
                 <div x-show="open"
-                     x-transition:enter="transition ease-out duration-200"
-                     x-transition:enter-start="opacity-0 -translate-y-2 scale-95"
-                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                     x-transition:leave="transition ease-in duration-150"
-                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                     x-transition:leave-end="opacity-0 -translate-y-2 scale-95"
-                     x-cloak
-                     class="absolute left-0 mt-1 w-64 origin-top-left rounded-2xl bg-white shadow-2xl border border-gray-100 overflow-hidden z-50">
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 -translate-y-2 scale-95"
+                    x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                    x-transition:leave="transition ease-in duration-150"
+                    x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                    x-transition:leave-end="opacity-0 -translate-y-2 scale-95"
+                    x-cloak
+                    class="absolute left-0 mt-1 w-64 origin-top-left rounded-2xl bg-white shadow-2xl border border-gray-100 overflow-hidden z-50">
                     <div class="bg-gradient-to-r from-primary/10 to-primary/5 px-5 py-3 border-b border-gray-100">
                         <p class="text-xs font-semibold text-primary uppercase tracking-wider">Kanal Media</p>
                     </div>
+
+                    {{-- Info Jawa Timur --}}
                     <a href="https://www.infojawatimur.com/" target="_blank" rel="noopener noreferrer" @click="open = false"
-                       class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
+                    class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 group-hover/item:bg-emerald-100 transition-colors duration-200">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"/>
@@ -435,8 +437,10 @@
                         </svg>
                     </a>
                     <div class="mx-5 border-t border-gray-100"></div>
+
+                    {{-- Ini Jawa Timur --}}
                     <a href="https://www.inijawatimur.com/" target="_blank" rel="noopener noreferrer" @click="open = false"
-                       class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
+                    class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 group-hover/item:bg-emerald-100 transition-colors duration-200">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"/>
@@ -448,6 +452,27 @@
                                 <span class="inline-flex items-center rounded-full bg-emerald-50 px-1.5 py-0.5 text-xs font-medium text-emerald-600 ring-1 ring-emerald-200">Eksternal</span>
                             </div>
                             <p class="text-xs text-gray-400">www.inijawatimur.com</p>
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                    </a>
+                    <div class="mx-5 border-t border-gray-100"></div>
+
+                    {{-- Donasi --}}
+                    <a href="https://berkahin.id/" target="_blank" rel="noopener noreferrer" @click="open = false"
+                    class="group/item flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-primary/5">
+                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 group-hover/item:bg-emerald-100 transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <p class="text-sm font-semibold text-gray-800 group-hover/item:text-primary transition-colors duration-200">Donasi</p>
+                                <span class="inline-flex items-center rounded-full bg-emerald-50 px-1.5 py-0.5 text-xs font-medium text-emerald-600 ring-1 ring-emerald-200">Eksternal</span>
+                            </div>
+                            <p class="text-xs text-gray-400">berkahin.id</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-300 group-hover/item:text-primary transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
@@ -626,8 +651,8 @@
                     </svg>
                 </button>
                 <div x-show="sub" x-cloak class="pl-4 pb-1">
-                    <a href="{{ route('halal-center.gratis') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Gratis</a>
-                    <a href="{{ route('halal-center.berbayar') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Berbayar</a>
+                    <a href="{{ route('halal-center.gratis') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Self Diclare</a>
+                    <a href="{{ route('halal-center.berbayar') }}" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Reguler</a>
                     <a href="https://halalcenter.co.id/" target="_blank" rel="noopener noreferrer" class="block pl-4 py-2.5 text-sm text-gray-600 hover:text-primary" @click="mobileOpen = false">Selengkapnya ↗</a>
                 </div>
             </div>

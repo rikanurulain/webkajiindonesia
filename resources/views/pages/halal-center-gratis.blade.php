@@ -3,15 +3,30 @@
 @section('content')
 
 {{-- Hero Section --}}
-<section class="bg-gradient-to-br from-primary-dark via-primary to-primary-light py-16 text-white">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h1 class="font-serif text-4xl font-bold sm:text-5xl">HALAL CENTER</h1>
-        <p class="mt-4 max-w-2xl text-lg text-white/90">
-            Pendampingan sertifikasi halal untuk UMKM, Koperasi, dan Komunitas Bisnis oleh tim konsultan bersertifikat dan kompeten.
-        </p>
+<section class="bg-gradient-to-br from-primary-dark via-primary to-primary- py-16 text-white">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-8">
+            
+            <!-- TEXT -->
+            <div class="max-w-2xl">
+                <h1 class="font-serif text-4xl font-bold sm:text-5xl">
+                    HALAL CENTER
+                </h1>
+
+                <p class="mt-4 text-lg text-white/90">
+                    Pendampingan sertifikasi halal untuk UMKM, Koperasi, dan Komunitas Bisnis oleh tim konsultan bersertifikat dan kompeten.
+                </p>
+            </div>
+
+            <!-- IMAGE -->
+            <div>
+                <img 
+                    src="{{ asset('storage/logo/SYNTARA.png') }}"
+                    alt="Logo Karya Kami"
+                    class="w-64 md:w-80 object-contain"
+                >
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
 
 {{-- ===================== STYLES ===================== --}}
