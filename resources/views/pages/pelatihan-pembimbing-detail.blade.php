@@ -8,9 +8,9 @@
 <section class="bg-gradient-to-br from-primary-dark via-primary to-primary- py-10 text-white">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex items-center gap-3">
-            <a href="{{ url()->previous() }}"
-               class="flex items-center justify-center w-8 h-8 rounded-full
-                      hover:bg-white/20 transition-colors">
+        <a href="{{ route('pelatihan.pembimbing') }}"
+   class="flex items-center justify-center w-8 h-8 rounded-full
+          hover:bg-white/20 transition-colors">
                 <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24"
                      stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
@@ -24,31 +24,46 @@
 <div class="bg-gray-50 min-h-screen py-10">
     <div class="max-w-3xl mx-auto px-4 space-y-5">
 
-        {{-- ── Kartu Utama ─────────────────────────────────────── --}}
-        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-            <div class="flex flex-col sm:flex-row">
+    {{-- ── Kartu Utama ─────────────────────────────────────── --}}
+<div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
 
-                {{-- Foto --}}
-                <div class="w-full sm:w-52 h-52 bg-green-100 flex-shrink-0 overflow-hidden">
-                    @if($trainer->foto)
-                        <img src="{{ asset('storage/' . $trainer->foto) }}"
-                             alt="{{ $trainer->name }}"
-                             class="w-full h-full object-cover object-top">
-                    @else
-                        <div class="w-full h-full flex items-center justify-center text-5xl font-bold text-green-800">
-                            {{ strtoupper(substr($trainer->name, 0, 2)) }}
-                        </div>
-                    @endif
+    {{-- Foto header full width di mobile, sidebar di desktop --}}
+    <div class="flex flex-col sm:flex-row">
+
+        {{-- Foto --}}
+        <div class="w-full sm:w-44 sm:min-h-full bg-green-100 flex-shrink-0 overflow-hidden"
+             style="min-height: 180px;">
+            @if($trainer->foto)
+                <img src="{{ asset('storage/' . $trainer->foto) }}"
+                     alt="{{ $trainer->name }}"
+                     class="w-full h-full object-cover object-top"
+                     style="min-height:180px">
+            @elseif($trainer->profile_photo_path)
+                <img src="{{ asset('storage/' . $trainer->profile_photo_path) }}"
+                     alt="{{ $trainer->name }}"
+                     class="w-full h-full object-cover object-top"
+                     style="min-height:180px">
+            @else
+                <div class="w-full h-full flex items-center justify-center
+                            text-5xl font-bold text-green-800"
+                     style="min-height:180px">
+                    {{ strtoupper(substr($trainer->name, 0, 2)) }}
                 </div>
+            @endif
+        </div>
 
-                {{-- Info --}}
-                <div class="p-6 flex-1">
-                    @if($trainer->bidang_keahlian)
-                    <span class="inline-block bg-green-100 text-green-700 text-xs font-bold
-                                 px-3 py-1 rounded-full mb-3">
-                        {{ $trainer->bidang_keahlian }}
-                    </span>
-                    @endif
+        {{-- Info --}}
+        <div class="p-6 flex-1 min-w-0">
+                @if($trainer->bidang_keahlian)
+<div class="flex flex-wrap gap-1.5 mb-3">
+    @foreach(array_filter(array_map('trim', explode(',', $trainer->bidang_keahlian))) as $keahlian)
+    <span class="inline-block bg-green-100 text-green-700 text-xs font-bold
+                 px-3 py-1 rounded-full">
+        {{ $keahlian }}
+    </span>
+    @endforeach
+</div>
+@endif
 
                     <h2 class="text-xl font-bold text-gray-900 mb-1">{{ $trainer->name }}</h2>
                     <p class="text-sm text-gray-400 mb-3">Trainer Profesional · KAJI INDONESIA</p>
@@ -105,9 +120,78 @@
                         Hubungi via WhatsApp
                     </a>
                     @endif
-                </div>
-            </div>
-        </div>
+
+{{-- Sosial Media --}}
+@if($trainer->sosmed)
+@php
+    $sosmed = is_array($trainer->sosmed) ? $trainer->sosmed : json_decode($trainer->sosmed, true);
+@endphp
+<div class="flex flex-wrap gap-2 mt-4">
+    @if(!empty($sosmed['instagram']))
+    <a href="https://instagram.com/{{ $sosmed['instagram'] }}" target="_blank" rel="noopener"
+       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-pink-50
+              border border-pink-200 text-pink-600 text-xs font-semibold
+              hover:bg-pink-100 transition-colors">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.333.014 7.053.072 5.197.157 3.355.673 2.014 2.014.673 3.355.157 5.197.072 7.053.014 8.333 0 8.741 0 12c0 3.259.014 3.667.072 4.947.085 1.856.601 3.698 1.942 5.039 1.341 1.341 3.183 1.857 5.039 1.942C8.333 23.986 8.741 24 12 24s3.667-.014 4.947-.072c1.856-.085 3.698-.601 5.039-1.942 1.341-1.341 1.857-3.183 1.942-5.039.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947c-.085-1.856-.601-3.698-1.942-5.039C20.645.673 18.803.157 16.947.072 15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 10.162a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+        </svg>
+        {{ $sosmed['instagram'] }}
+    </a>
+    @endif
+
+    @if(!empty($sosmed['twitter']))
+    <a href="https://x.com/{{ $sosmed['twitter'] }}" target="_blank" rel="noopener"
+       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50
+              border border-gray-200 text-gray-700 text-xs font-semibold
+              hover:bg-gray-100 transition-colors">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+        {{ $sosmed['twitter'] }}
+    </a>
+    @endif
+
+    @if(!empty($sosmed['linkedin']))
+    <a href="{{ $sosmed['linkedin'] }}" target="_blank" rel="noopener"
+       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50
+              border border-blue-200 text-blue-700 text-xs font-semibold
+              hover:bg-blue-100 transition-colors">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+        </svg>
+        LinkedIn
+    </a>
+    @endif
+
+    @if(!empty($sosmed['youtube']))
+    <a href="{{ $sosmed['youtube'] }}" target="_blank" rel="noopener"
+       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50
+              border border-red-200 text-red-600 text-xs font-semibold
+              hover:bg-red-100 transition-colors">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+        </svg>
+        YouTube
+    </a>
+    @endif
+
+    @if(!empty($sosmed['facebook']))
+    <a href="{{ $sosmed['facebook'] }}" target="_blank" rel="noopener"
+       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50
+              border border-blue-200 text-blue-800 text-xs font-semibold
+              hover:bg-blue-100 transition-colors">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+        </svg>
+        Facebook
+    </a>
+    @endif
+</div>
+@endif
+
+</div>
+</div>
+</div>
 
         {{-- ── Bio ─────────────────────────────────────────────────── --}}
         @if($trainer->bio)

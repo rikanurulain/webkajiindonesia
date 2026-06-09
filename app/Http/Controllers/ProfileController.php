@@ -25,13 +25,11 @@ class ProfileController extends Controller
             'name'    => 'required|string|max:255',
             'phone'   => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
-           
         ]);
 
         $user->name    = $request->name;
         $user->phone   = $request->phone;
         $user->address = $request->address;
-      
 
         $user->save();
 
@@ -179,9 +177,9 @@ class ProfileController extends Controller
         $activities = ActivityLog::where('user_id', $user->id)->latest()->take(5)->get();
         $umkm       = \App\Models\Produk::where('user_id', $user->id)->latest()->first();
         $mentor     = \App\Models\Mentor::where('user_id', $user->id)->latest()->first();
-        $trainer    = \App\Models\Trainer::where('user_id', $user->id)->latest()->first(); // ← FIX
+        $trainer    = \App\Models\Trainer::where('user_id', $user->id)->latest()->first();
 
-        return view('profile.index', compact('user', 'activities', 'umkm', 'mentor', 'trainer')); // ← FIX
+        return view('profile.index', compact('user', 'activities', 'umkm', 'mentor', 'trainer'));
     }
 
     public function daftarMentor(Request $request)
@@ -201,27 +199,43 @@ class ProfileController extends Controller
         return back()->with('success', 'Pengajuan sebagai trainer telah dikirim!');
     }
 
+    // =====================
+    // TRAINER
+    // =====================
+
     /**
-     * Menampilkan halaman formulir persyaratan trainer
+     * Tampilkan formulir pendaftaran trainer.
+     * Sosmed di-flatten ke $sosmedData agar mudah di-prefill via old().
      */
     public function showDaftarTrainer()
     {
-        $user    = Auth::user();
-        $trainer = \App\Models\Trainer::where('user_id', $user->id)->first();
+        $user       = Auth::user();
+        $trainer    = \App\Models\Trainer::where('user_id', $user->id)->first();
+        $sosmedData = $trainer?->sosmed ?? [];   // sudah di-cast array oleh model
 
-        return view('profile.daftar-trainer', compact('user', 'trainer'));
+        return view('profile.daftar-trainer', compact('user', 'trainer', 'sosmedData'));
     }
 
     /**
-     * Menyimpan data bio dan lokasi calon trainer
+     * Simpan / update data pendaftaran trainer.
+     * Kolom sosmed (JSON) dan keahlian (text/CSV) sudah ada di tabel.
      */
     public function simpanTrainer(Request $request)
     {
+        $user     = Auth::user();
+        $existing = \App\Models\Trainer::where('user_id', $user->id)->first();
+
+        // Cegah submit ulang jika sedang pending
+        if ($existing && $existing->status === 'pending') {
+            return back()->with('error', 'Pendaftaran kamu sedang dalam proses review admin.');
+        }
+
+        // ── Validasi ─────────────────────────────────────────────────
         $request->validate([
             'academic_degree'          => 'required|string|max:255',
             'no_hp'                    => 'required|string|max:20',
             'email'                    => 'required|email|max:255',
-            'nik'                      => 'required|string|max:20',
+            'nik'                      => 'required|digits:16',
             'npwp'                     => 'nullable|string|max:30',
             'gmaps_location'           => 'required|string|max:500',
             'provinsi'                 => 'required|string|max:255',
@@ -232,109 +246,129 @@ class ProfileController extends Controller
             'drive_link_documentation' => 'required|url|max:255',
             'experience'               => 'required|string',
             'bio'                      => 'required|string',
-            'ktp_scan'                 => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'bnsp_certificate'         => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'white_bg_photo'           => 'required|file|mimes:jpg,jpeg,png|max:2048',
-            'bukti_transfer'           => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'agree_terms'              => 'required|accepted',
+            'bidang_keahlian'          => 'required|string',
+            // Sosmed tidak wajib satu per satu — dicek manual di bawah
+            'sosmed_instagram'         => 'nullable|string|max:100',
+            'sosmed_twitter'           => 'nullable|string|max:100',
+            'sosmed_linkedin'          => 'nullable|url|max:255',
+            'sosmed_youtube'           => 'nullable|url|max:255',
+            'sosmed_facebook'          => 'nullable|url|max:255',
+            // File — wajib hanya jika belum pernah diupload
+            'ktp_scan'        => ($existing?->ktp_scan        ? 'nullable' : 'required') . '|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'bnsp_certificate'=> ($existing?->bnsp_certificate ? 'nullable' : 'required') . '|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'white_bg_photo'  => ($existing?->white_bg_photo   ? 'nullable' : 'required') . '|file|mimes:jpg,jpeg,png|max:2048',
+            'bukti_transfer'  => ($existing?->bukti_transfer   ? 'nullable' : 'required') . '|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'agree_terms'     => 'required|accepted',
         ]);
 
-        $user = Auth::user();
+        // ── Jalankan dalam transaksi ──────────────────────────────────
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($request, $user, $existing) {
 
-        // Cegah submit ulang jika sedang pending
-        $existing = \App\Models\Trainer::where('user_id', $user->id)->first();
-        if ($existing && $existing->status === 'pending') {
-            return back()->with('error', 'Pendaftaran kamu sedang dalam proses review admin.');
+                // Cek minimal 1 sosmed diisi
+                $sosmedFilled = collect([
+                    'sosmed_instagram', 'sosmed_twitter', 'sosmed_linkedin',
+                    'sosmed_youtube',   'sosmed_facebook',
+                ])->some(fn($f) => !empty($request->input($f)));
+
+                if (!$sosmedFilled) {
+                    throw new \Exception('Isi minimal satu akun sosial media.');
+                }
+
+                // Bangun array sosmed → disimpan sebagai JSON
+                $sosmed = array_filter([
+                    'instagram' => $request->input('sosmed_instagram'),
+                    'twitter'   => $request->input('sosmed_twitter'),
+                    'linkedin'  => $request->input('sosmed_linkedin'),
+                    'youtube'   => $request->input('sosmed_youtube'),
+                    'facebook'  => $request->input('sosmed_facebook'),
+                ]);
+
+                // Bidang keahlian (CSV dari hidden input di Blade)
+                $keahlian = $request->input('bidang_keahlian');
+
+                // ── Data utama ────────────────────────────────────────
+                $data = [
+                    'user_id'                  => $user->id,
+                    'nama'                     => $user->name,
+                    'full_name'                => $user->name,
+                    'email'                    => $request->email,
+                    'no_hp'                    => $request->no_hp,
+                    'phone'                    => $request->no_hp,
+                    'academic_degree'          => $request->academic_degree,
+                    'nik'                      => $request->nik,
+                    'npwp'                     => $request->npwp,
+                    'gmaps_location'           => $request->gmaps_location,
+                    'lokasi'                   => $request->gmaps_location,
+                    'provinsi'                 => $request->provinsi,
+                    'kabupaten'                => $request->kabupaten,
+                    'kecamatan'                => $request->kecamatan,
+                    'kelurahan'                => $request->kelurahan,
+                    'ijazah_type'              => $request->ijazah_type,
+                    'drive_link_documentation' => $request->drive_link_documentation,
+                    'experience'               => $request->experience,
+                    'bio'                      => $request->bio,
+                    'keahlian'                 => $keahlian,   // ← kolom text/CSV
+                    'sosmed'                   => $sosmed,     // ← kolom JSON
+                    'agree_terms'              => 1,
+                    'status'                   => 'pending',
+                    'applied_at'               => now(),
+                ];
+
+                // ── Upload file (ganti jika ada file baru) ────────────
+                $fileMap = [
+                    'ktp_scan'         => 'trainer_docs',
+                    'bnsp_certificate' => 'trainer_docs',
+                    'white_bg_photo'   => 'trainer_docs',
+                    'bukti_transfer'   => 'trainer_docs',
+                ];
+
+                foreach ($fileMap as $field => $folder) {
+                    if ($request->hasFile($field)) {
+                        // Hapus file lama jika ada
+                        if ($existing?->$field) {
+                            \Storage::disk('public')->delete($existing->$field);
+                        }
+                        $data[$field] = $request->file($field)->store($folder, 'public');
+                    }
+                }
+
+                // ── Insert atau update ────────────────────────────────
+                \App\Models\Trainer::updateOrCreate(
+                    ['user_id' => $user->id],
+                    $data
+                );
+
+                // ── Update status di tabel users ──────────────────────
+                $user->update([
+                    'trainer_status'     => 'pending',
+                    'trainer_applied_at' => now(),
+                ]);
+
+                // ── Activity log ──────────────────────────────────────
+                \App\Models\ActivityLog::create([
+                    'user_id'     => $user->id,
+                    'type'        => 'profile',
+                    'label'       => 'Menunggu Persetujuan Trainer',
+                    'description' => 'User melengkapi persyaratan dan menunggu verifikasi admin',
+                    'ip_address'  => request()->ip(),
+                    'user_agent'  => request()->userAgent(),
+                    'is_success'  => true,
+                ]);
+            });
+
+        } catch (\Exception $e) {
+            return back()->withErrors(['sosmed' => $e->getMessage()])->withInput();
         }
-
-        \Illuminate\Support\Facades\DB::transaction(function () use ($request, $user, $existing) {
-
-            $data = [
-                'user_id'                  => $user->id,
-                'nama'                     => $user->name,
-                'full_name'                => $user->name,
-                'email'                    => $request->email,
-                'no_hp'                    => $request->no_hp,
-                'phone'                    => $request->no_hp,
-                'academic_degree'          => $request->academic_degree,
-                'nik'                      => $request->nik,
-                'npwp'                     => $request->npwp,
-                'gmaps_location'           => $request->gmaps_location,
-                'lokasi'                   => $request->gmaps_location,
-                'provinsi'                 => $request->provinsi,
-                'kabupaten'                => $request->kabupaten,
-                'kecamatan'                => $request->kecamatan,
-                'kelurahan'                => $request->kelurahan,
-                'ijazah_type'              => $request->ijazah_type,
-                'drive_link_documentation' => $request->drive_link_documentation,
-                'experience'               => $request->experience,
-                'bio'                      => $request->bio,
-                'agree_terms'              => 1,
-                'status'                   => 'pending',
-                'applied_at'               => now(),
-            ];
-
-            // Upload ktp_scan
-            if ($request->hasFile('ktp_scan')) {
-                if ($existing?->ktp_scan) {
-                    \Storage::disk('public')->delete($existing->ktp_scan);
-                }
-                $data['ktp_scan'] = $request->file('ktp_scan')->store('trainer_docs', 'public');
-            }
-
-            // Upload bnsp_certificate
-            if ($request->hasFile('bnsp_certificate')) {
-                if ($existing?->bnsp_certificate) {
-                    \Storage::disk('public')->delete($existing->bnsp_certificate);
-                }
-                $data['bnsp_certificate'] = $request->file('bnsp_certificate')->store('trainer_docs', 'public');
-            }
-
-            // Upload white_bg_photo
-            if ($request->hasFile('white_bg_photo')) {
-                if ($existing?->white_bg_photo) {
-                    \Storage::disk('public')->delete($existing->white_bg_photo);
-                }
-                $data['white_bg_photo'] = $request->file('white_bg_photo')->store('trainer_docs', 'public');
-            }
-
-            // Upload bukti_transfer
-            if ($request->hasFile('bukti_transfer')) {
-                if ($existing?->bukti_transfer) {
-                    \Storage::disk('public')->delete($existing->bukti_transfer);
-                }
-                $data['bukti_transfer'] = $request->file('bukti_transfer')->store('trainer_docs', 'public');
-            }
-
-            // Insert atau update tabel trainer
-            \App\Models\Trainer::updateOrCreate(
-                ['user_id' => $user->id],
-                $data
-            );
-
-            // Update status di tabel users
-            $user->update([
-                'trainer_status'     => 'pending',
-                'trainer_applied_at' => now(),
-            ]);
-
-            // Catat activity log
-            \App\Models\ActivityLog::create([
-                'user_id'     => $user->id,
-                'type'        => 'profile',
-                'label'       => 'Menunggu Persetujuan Trainer',
-                'description' => 'User melengkapi persyaratan dan menunggu verifikasi admin',
-                'ip_address'  => request()->ip(),
-                'user_agent'  => request()->userAgent(),
-                'is_success'  => true,
-            ]);
-        });
 
         return redirect()->route('profile')
             ->with('success', 'Pendaftaran trainer berhasil dikirim! Tunggu verifikasi admin.');
     }
 
-    // Show form daftar UMKM
+    // =====================
+    // UMKM
+    // =====================
+
     public function showDaftarUmkm()
     {
         $user = Auth::user();
@@ -344,7 +378,6 @@ class ProfileController extends Controller
         return view('profile.daftar-umkm');
     }
 
-    // Simpan pendaftaran UMKM
     public function simpanUmkm(Request $request)
     {
         $user = Auth::user();
@@ -416,7 +449,10 @@ class ProfileController extends Controller
         return redirect()->route('profile')->with('success', 'Pendaftaran UMKM berhasil dikirim! Mohon tunggu verifikasi admin.');
     }
 
-    // Show form daftar Mentor
+    // =====================
+    // MENTOR
+    // =====================
+
     public function showDaftarMentor()
     {
         $user = Auth::user();
@@ -426,7 +462,6 @@ class ProfileController extends Controller
         return view('profile.daftar-mentor', compact('user'));
     }
 
-    // Simpan pendaftaran Mentor
     public function simpanMentor(Request $request)
     {
         $user = Auth::user();

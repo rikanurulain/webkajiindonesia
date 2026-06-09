@@ -536,49 +536,67 @@ class PelatihanController extends Controller
     // HALAMAN MENTOR / PEMBIMBING
     // =========================================================
     public function pembimbing(Request $request)
-{
-    $query = User::where('role', 'trainer');
-
-    if ($request->filled('search')) {
-        $query->where(function ($q) use ($request) {
-            $q->where('name', 'like', '%' . $request->search . '%')
-              ->orWhere('location', 'like', '%' . $request->search . '%');
+    {
+        $trainers = User::where('users.role', 'trainer')
+            ->leftJoin('trainer', 'trainer.user_id', '=', 'users.id')  // ← trainer
+            ->where('trainer.status', '=', 'approved')
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $q->where(function ($q2) use ($request) {
+                    $q2->where('users.name', 'like', '%' . $request->search . '%')
+                       ->orWhere('trainer.lokasi', 'like', '%' . $request->search . '%')
+                       ->orWhere('trainer.keahlian', 'like', '%' . $request->search . '%');
+                });
+            })
+            ->select(
+                'users.*',
+                'trainer.keahlian',
+                'trainer.displayed_bidang',
+                'trainer.white_bg_photo',
+                'trainer.academic_degree',
+                'trainer.gmaps_location',
+                'trainer.lokasi as location',
+            )
+            ->paginate(12);
+    
+        $trainerIds = $trainers->pluck('id');
+        $ulasanData = \App\Models\TrainerUlasan::selectRaw('trainer_id, AVG(rating) as avg_rating, COUNT(*) as total_ulasan')
+            ->whereIn('trainer_id', $trainerIds)
+            ->groupBy('trainer_id')
+            ->get()
+            ->keyBy('trainer_id');
+    
+        $trainers->getCollection()->transform(function ($trainer) use ($ulasanData) {
+            $u = $ulasanData->get($trainer->id);
+            $trainer->avg_rating   = $u ? round($u->avg_rating, 1) : 0;
+            $trainer->total_ulasan = $u ? $u->total_ulasan : 0;
+            return $trainer;
         });
+    
+        $bidangList = \App\Models\Trainer::whereNotNull('keahlian')
+            ->pluck('keahlian')
+            ->unique()
+            ->sort()
+            ->values();
+    
+        return view('pages.pelatihan-pembimbing', compact('trainers', 'bidangList'));
     }
-
-    $trainers = $query->paginate(12);
-
-    // Untuk data lama yang location-nya tersimpan sebagai angka ID wilayah (bug lama),
-    // fallback ke gmaps_location yang berisi alamat domisili yang diketik user.
-    $trainerIds = $trainers->pluck('id');
-$ulasanData = \App\Models\TrainerUlasan::selectRaw('trainer_id, AVG(rating) as avg_rating, COUNT(*) as total_ulasan')
-    ->whereIn('trainer_id', $trainerIds)
-    ->groupBy('trainer_id')
-    ->get()
-    ->keyBy('trainer_id');
-
-$trainers->getCollection()->transform(function ($trainer) use ($ulasanData) {
-    $trainer->location = !empty(trim($trainer->address ?? ''))
-    ? $trainer->address
-    : null;
-    $u = $ulasanData->get($trainer->id);
-    $trainer->avg_rating   = $u ? round($u->avg_rating, 1) : 0;
-    $trainer->total_ulasan = $u ? $u->total_ulasan : 0;
-
-    return $trainer;
-});
-
-    $bidangList = Trainer::whereNotNull('keahlian')
-    ->pluck('keahlian')
-    ->unique()
-    ->sort()
-    ->values();
-
-    return view('pages.pelatihan-pembimbing', compact('trainers', 'bidangList'));
-}
 public function detailMentor($id)
 {
     $trainer = \App\Models\User::where('role', 'trainer')->findOrFail($id);
+
+    // Ambil data trainer (sosmed, bio, keahlian, foto, dll)
+    $trainerData = \App\Models\Trainer::where('user_id', $id)
+        ->where('status', 'approved')
+        ->first();
+
+    // Gabungkan sosmed dan data lain ke objek $trainer
+    if ($trainerData) {
+        $trainer->sosmed   = $trainerData->sosmed;
+        $trainer->bio      = $trainerData->bio      ?? $trainer->bio;
+        $trainer->keahlian = $trainerData->keahlian ?? null;
+        $trainer->foto = $trainerData->white_bg_photo ?? $trainerData->foto ?? null;
+        $trainer->bidang_keahlian = $trainerData->keahlian ?? $trainer->bidang_keahlian ?? null;
+    }
 
     $ulasan = \App\Models\TrainerUlasan::with('user')
         ->where('trainer_id', $id)
@@ -632,13 +650,21 @@ public function searchMentor(Request $request)
 {
     $keyword = $request->get('q', '');
 
-    $trainers = User::where('role', 'trainer')
-        ->where(function ($q) use ($keyword) {
-            $q->where('name', 'like', "%{$keyword}%")
-              ->orWhere('address', 'like', "%{$keyword}%")
-              ->orWhere('bidang_keahlian', 'like', "%{$keyword}%");
-        })
-        ->get();
+    $trainers = User::where('users.role', 'trainer')
+    ->leftJoin('trainers', 'trainers.user_id', '=', 'users.id')
+    ->where('trainers.status', 'approved')
+    ->select(
+        'users.*',
+        'trainers.keahlian',
+        'trainers.displayed_bidang',
+        'trainers.white_bg_photo',
+        'trainers.academic_degree',
+        'trainers.gmaps_location',
+        'trainers.lokasi as location',
+        'trainers.avg_rating',
+        'trainers.total_ulasan',
+    )
+    ->paginate(12);
 
     // Ambil data ulasan sekaligus (sama persis seperti di pembimbing())
     $trainerIds = $trainers->pluck('id');

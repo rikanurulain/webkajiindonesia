@@ -71,12 +71,14 @@
 
                     {{-- Info --}}
                     <div class="bg-green-50 px-4 py-2 border-b">
-                        <h3 class="font-bold text-gray-900 text-sm line-clamp-1">
-                            {{ $trainer->academic_degree ?? $trainer->name }}
-                        </h3>
+                    <h3 class="font-bold text-gray-900 text-sm line-clamp-1">
+    {{ $trainer->academic_degree ?? $trainer->name }}
+</h3>
                         <p class="text-xs text-emerald-600 font-bold uppercase">
-                            {{ $trainer->bidang_keahlian ?? 'Trainer' }}
-                        </p>
+    {{ $trainer->displayed_bidang 
+        ?? trim(explode(',', $trainer->keahlian ?? '')[0]) 
+        ?: 'Trainer' }}
+</p>
                     </div>
 
                     <div class="px-4 py-3 text-gray-600">
@@ -119,7 +121,9 @@
             'id'                 => $t->id,
             'name'               => $t->name,
             'academic_degree'    => $t->academic_degree ?? $t->name,
-            'bidang_keahlian'    => $t->bidang_keahlian ?? 'Trainer',
+            'bidang_keahlian'    => $t->displayed_bidang 
+                     ?? trim(explode(',', $t->keahlian ?? '')[0]) 
+                     ?: 'Trainer',
             'location'           => $t->location ?? 'Lokasi tidak tersedia',
             'white_bg_photo'     => $t->white_bg_photo,
             'profile_photo_path' => $t->profile_photo_path,

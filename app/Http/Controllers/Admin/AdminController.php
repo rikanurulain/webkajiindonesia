@@ -337,13 +337,28 @@ class AdminController extends Controller
 public function approveTrainer(\App\Models\Trainer $trainer)
 {
     \Illuminate\Support\Facades\DB::transaction(function () use ($trainer) {
+        // ── Auto-fill displayed_bidang ──────────────────────────────
+        $displayed = $trainer->displayed_bidang;
+        if (empty($displayed) && !empty($trainer->keahlian)) {
+            $keahlianList = array_values(array_filter(
+                array_map('trim', explode(',', $trainer->keahlian))
+            ));
+            if (count($keahlianList) === 1) {
+                $displayed = $keahlianList[0];
+            } elseif (count($keahlianList) > 1) {
+                $displayed = $keahlianList[array_rand($keahlianList)];
+            }
+        }
+        // ────────────────────────────────────────────────────────────
+
         // Update tabel trainer
         $trainer->update([
-            'status'      => 'approved',
-            'reviewed_at' => now(),
+            'status'           => 'approved',
+            'reviewed_at'      => now(),
+            'displayed_bidang' => $displayed,  // ← tambahan ini
         ]);
- 
-        // Update tabel users: ubah role + trainer_status
+
+        // Update tabel users
         if ($trainer->user_id) {
             \App\Models\User::where('id', $trainer->user_id)->update([
                 'role'                  => 'trainer',
@@ -353,7 +368,7 @@ public function approveTrainer(\App\Models\Trainer $trainer)
             ]);
         }
     });
- 
+
     return redirect()->to('/admin/approval/trainer')
         ->with('success', "{$trainer->nama} berhasil disetujui sebagai Trainer.");
 }

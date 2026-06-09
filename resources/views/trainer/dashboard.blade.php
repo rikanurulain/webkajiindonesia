@@ -947,7 +947,43 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                         @else <span style="color:var(--text-muted);font-style:italic">Belum diisi</span> @endif
                     </div>
                 </div>
-                <div class="form-group"><div class="form-label">Bidang Keahlian (Opsional)</div><div class="form-static">{{ $trainer->bidang ?? '-' }}</div></div>
+                <div class="form-group">
+    <div class="form-label">Bidang Keahlian Ditampilkan</div>
+
+    @php
+        $keahlianList = array_values(array_filter(
+            array_map('trim', explode(',', $trainer->keahlian ?? ''))
+        ));
+    @endphp
+
+    @if(count($keahlianList) <= 1)
+        <div class="form-static">
+            {{ $trainer->displayed_bidang ?? ($keahlianList[0] ?? '-') }}
+        </div>
+        @if(count($keahlianList) === 1)
+            <div class="form-hint">Otomatis terisi karena hanya satu bidang keahlian.</div>
+        @endif
+    @else
+        <form method="POST" action="{{ route('trainer.profil.bidang') }}"
+              style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            @csrf
+            <select name="displayed_bidang" class="form-select" style="flex:1;min-width:180px">
+                @foreach($keahlianList as $k)
+                    <option value="{{ $k }}"
+                        {{ ($trainer->displayed_bidang === $k) ? 'selected' : '' }}>
+                        {{ $k }}
+                    </option>
+                @endforeach
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm">
+                ✓ Simpan
+            </button>
+        </form>
+        <div class="form-hint" style="margin-top:6px">
+            Bidang ini yang tampil di halaman publik Daftar Trainer.
+        </div>
+    @endif
+</div>
             </div>
             <div class="form-group">
                 <div class="form-label">Bio / Tentang Saya</div>

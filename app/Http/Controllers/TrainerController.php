@@ -320,6 +320,24 @@ class TrainerController extends Controller
             ->with('active_page', 'event');
     }
 
+    public function updateDisplayedBidang(Request $request)
+{
+    $user    = Auth::user();
+    $trainer = \App\Models\Trainer::where('user_id', $user->id)->first();
+
+    if (!$trainer) {
+        return back()->with('error', 'Data trainer tidak ditemukan.');
+    }
+
+    $request->validate([
+        'displayed_bidang' => 'required|string|max:100',
+    ]);
+
+    $trainer->update(['displayed_bidang' => $request->displayed_bidang]);
+
+    return back()->with('success', 'Bidang keahlian berhasil diperbarui!');
+}
+
     // ═══════════════════════════════════════════════════════════════
     // PROFIL — UPDATE
     // FIX: handle semua field dari form: name, email, no_hp,

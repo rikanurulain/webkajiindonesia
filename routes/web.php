@@ -144,6 +144,9 @@ Route::middleware(['auth'])->group(function () {
     // Trainer Profile
     Route::put('/trainer/profil/update', [App\Http\Controllers\TrainerController::class, 'updateProfil'])
         ->name('trainer.profil.update');
+    
+        Route::post('/trainer/profil/bidang', [App\Http\Controllers\TrainerController::class, 'updateDisplayedBidang'])
+    ->name('trainer.profil.bidang');
 
     // =========================
 // TRAINER KURIKULUM & MATERI

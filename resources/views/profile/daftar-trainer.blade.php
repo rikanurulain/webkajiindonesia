@@ -63,11 +63,12 @@
 
         {{-- FORM --}}
         <form
-            action="{{ route('profile.simpan-trainer') }}"
-            method="POST"
-            enctype="multipart/form-data"
-            @if ($trainer?->status === 'pending') onsubmit="return false;" @endif
-        >
+    action="{{ route('profile.simpan-trainer') }}"
+    method="POST"
+    enctype="multipart/form-data"
+    novalidate
+    @if ($trainer && $trainer->status === 'pending') onsubmit="return false;" @endif
+>
             @csrf
 
             {{-- ===== SEKSI: DATA DIRI ===== --}}
@@ -236,7 +237,7 @@
         <div style="position:relative">
             <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;color:#9ca3af;pointer-events:none">@</span>
             <input type="text" name="sosmed_instagram"
-                value="{{ old('sosmed_instagram', $trainer?->sosmed_instagram) }}"
+            value="{{ old('sosmed_instagram', $sosmedData['instagram'] ?? '') }}"
                 placeholder="username"
                 class="tf-input" style="padding-left:28px"
                 @if($trainer?->status === 'pending') readonly @endif>
@@ -253,7 +254,7 @@
         <div style="position:relative">
             <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;color:#9ca3af;pointer-events:none">@</span>
             <input type="text" name="sosmed_twitter"
-                value="{{ old('sosmed_twitter', $trainer?->sosmed_twitter) }}"
+                value="{{ old('sosmed_twitter', $sosmedData['twitter'] ?? '') }}"
                 placeholder="username"
                 class="tf-input" style="padding-left:28px"
                 @if($trainer?->status === 'pending') readonly @endif>
@@ -268,7 +269,7 @@
             </span>
         </label>
         <input type="url" name="sosmed_linkedin"
-            value="{{ old('sosmed_linkedin', $trainer?->sosmed_linkedin) }}"
+            value="{{ old('sosmed_linkedin', $sosmedData['linkedin'] ?? '') }}" 
             placeholder="https://linkedin.com/in/username"
             class="tf-input"
             @if($trainer?->status === 'pending') readonly @endif>
@@ -282,7 +283,7 @@
             </span>
         </label>
         <input type="url" name="sosmed_youtube"
-            value="{{ old('sosmed_youtube', $trainer?->sosmed_youtube) }}"
+            value="{{ old('sosmed_youtube', $sosmedData['youtube'] ?? '') }}"
             placeholder="https://youtube.com/@channel"
             class="tf-input"
             @if($trainer?->status === 'pending') readonly @endif>
@@ -296,7 +297,7 @@
             </span>
         </label>
         <input type="url" name="sosmed_facebook"
-            value="{{ old('sosmed_facebook', $trainer?->sosmed_facebook) }}"
+            value="{{ old('sosmed_facebook', $sosmedData['facebook'] ?? '') }}" 
             placeholder="https://facebook.com/username"
             class="tf-input"
             @if($trainer?->status === 'pending') readonly @endif>
@@ -380,7 +381,7 @@
                 'Produktivitas & Time Management', 'Teknologi Informasi', 'Hukum Bisnis',
                 'K3 & Safety', 'Ekspor Impor', 'Pemasaran Konten',
             ];
-            $savedKeahlian = old('bidang_keahlian', $trainer?->bidang_keahlian ?? '');
+            $savedKeahlian = old('bidang_keahlian', $trainer?->keahlian ?? '');
             $savedArr = $savedKeahlian ? array_map('trim', explode(',', $savedKeahlian)) : [];
         @endphp
         @foreach ($presets as $preset)
@@ -1175,19 +1176,16 @@ function removeTag(btn, label) {
     setKeahlianValue(arr);
 }
 
-    /* ---- Validasi minimal 1 sosmed ---- */
-const sosmedFields = ['sosmed_instagram', 'sosmed_twitter', 'sosmed_linkedin', 'sosmed_youtube', 'sosmed_facebook'];
-
 document.querySelector('form').addEventListener('submit', function (e) {
     const isPending = {{ $trainer?->status === 'pending' ? 'true' : 'false' }};
     if (isPending) return;
 
-    // ---- cek sosmed (sudah ada) ----
+    // ---- 1. cek sosmed ----
+    const sosmedFields = ['sosmed_instagram','sosmed_twitter','sosmed_linkedin','sosmed_youtube','sosmed_facebook'];
     const filled = sosmedFields.some(name => {
         const el = this.querySelector(`[name="${name}"]`);
         return el && el.value.trim() !== '';
     });
-
     if (!filled) {
         e.preventDefault();
         let banner = document.getElementById('sosmed-error');
@@ -1201,80 +1199,69 @@ document.querySelector('form').addEventListener('submit', function (e) {
                 </svg>
                 <div>
                     <p class="tf-banner__title">Sosial Media Wajib Diisi</p>
-                    <p class="tf-banner__body">Isi minimal satu akun sosial media (Instagram, X, LinkedIn, YouTube, atau Facebook).</p>
+                    <p class="tf-banner__body">Isi minimal satu akun sosial media.</p>
                 </div>
             `;
             const sosmedCard = document.querySelector('.tf-card:nth-of-type(3)');
             sosmedCard.parentNode.insertBefore(banner, sosmedCard);
         }
         banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return; // <-- tambahkan return agar tidak lanjut ke cek NIK
+        return; // stop
     }
-
-    // ---- TAMBAHAN: cek NIK 16 digit ----
+ 
+    // ---- 2. cek NIK 16 digit ----
     const nikEl = this.querySelector('[name="nik"]');
-    if (nikEl) {
-        const nikVal = nikEl.value.trim();
-        if (!/^\d{16}$/.test(nikVal)) {
-            e.preventDefault();
-
-            // Hapus banner lama kalau ada
-            const oldBanner = document.getElementById('nik-error');
-            if (oldBanner) oldBanner.remove();
-
-            const nikBanner = document.createElement('div');
-            nikBanner.id = 'nik-error';
-            nikBanner.className = 'tf-banner tf-banner--rejected';
-            nikBanner.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="tf-banner__icon">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                </svg>
-                <div>
-                    <p class="tf-banner__title">NIK Tidak Valid</p>
-                    <p class="tf-banner__body">Nomor NIK/KTP harus terdiri dari tepat <strong>16 digit angka</strong>.</p>
-                </div>
-            `;
-
-            // Sisipkan banner tepat di bawah input NIK
-            nikEl.closest('.tf-field').appendChild(nikBanner);
-
-            // Highlight border merah
-            nikEl.style.borderColor = '#ef4444';
-            nikEl.style.boxShadow = '0 0 0 3px rgba(239,68,68,.1)';
-            nikEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-            // Reset saat user mengetik ulang
-            nikEl.addEventListener('input', function () {
-                nikEl.style.borderColor = '';
-                nikEl.style.boxShadow = '';
-                const b = document.getElementById('nik-error');
-                if (b) b.remove();
-            }, { once: true });
-        }
-        const keahlianVal = document.getElementById('bidang-keahlian-value').value.trim();
-if (!keahlianVal) {
-    e.preventDefault();
-
-    const oldBanner = document.getElementById('keahlian-error');
-    if (oldBanner) oldBanner.remove();
-
-    const banner = document.createElement('div');
-    banner.id = 'keahlian-error';
-    banner.className = 'tf-banner tf-banner--rejected';
-    banner.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="tf-banner__icon">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-        </svg>
-        <div>
-            <p class="tf-banner__title">Bidang Keahlian Wajib Diisi</p>
-            <p class="tf-banner__body">Pilih atau tambahkan minimal <strong>1 bidang keahlian</strong>.</p>
-        </div>
-    `;
-    const keahlianCard = document.getElementById('bidang-keahlian-value').closest('.tf-card');
-    keahlianCard.prepend(banner);
-    keahlianCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    return;
-}
+    if (nikEl && !/^\d{16}$/.test(nikEl.value.trim())) {
+        e.preventDefault();
+        const oldNik = document.getElementById('nik-error');
+        if (oldNik) oldNik.remove();
+        const nikBanner = document.createElement('div');
+        nikBanner.id = 'nik-error';
+        nikBanner.className = 'tf-banner tf-banner--rejected';
+        nikBanner.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="tf-banner__icon">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            </svg>
+            <div>
+                <p class="tf-banner__title">NIK Tidak Valid</p>
+                <p class="tf-banner__body">Nomor NIK/KTP harus terdiri dari tepat <strong>16 digit angka</strong>.</p>
+            </div>
+        `;
+        nikEl.closest('.tf-field').appendChild(nikBanner);
+        nikEl.style.borderColor = '#ef4444';
+        nikEl.style.boxShadow = '0 0 0 3px rgba(239,68,68,.1)';
+        nikEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        nikEl.addEventListener('input', function () {
+            nikEl.style.borderColor = '';
+            nikEl.style.boxShadow = '';
+            const b = document.getElementById('nik-error');
+            if (b) b.remove();
+        }, { once: true });
+        return; // stop
+    }
+ 
+    // ---- 3. cek bidang keahlian ----
+    const keahlianVal = document.getElementById('bidang-keahlian-value').value.trim();
+    if (!keahlianVal) {
+        e.preventDefault();
+        const oldK = document.getElementById('keahlian-error');
+        if (oldK) oldK.remove();
+        const banner = document.createElement('div');
+        banner.id = 'keahlian-error';
+        banner.className = 'tf-banner tf-banner--rejected';
+        banner.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="tf-banner__icon">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            </svg>
+            <div>
+                <p class="tf-banner__title">Bidang Keahlian Wajib Diisi</p>
+                <p class="tf-banner__body">Pilih atau tambahkan minimal <strong>1 bidang keahlian</strong>.</p>
+            </div>
+        `;
+        const keahlianCard = document.getElementById('bidang-keahlian-value').closest('.tf-card');
+        keahlianCard.prepend(banner);
+        keahlianCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return; // stop
     }
 });
 

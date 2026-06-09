@@ -39,6 +39,7 @@ class Trainer extends Model
         'keahlian',
         'experience',
         'sosmed',
+        'displayed_bidang',
 
         // Lokasi
         'lokasi',
