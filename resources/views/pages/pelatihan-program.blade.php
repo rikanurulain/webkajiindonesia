@@ -12,7 +12,7 @@
                 <p class="mt-4 text-lg text-white/90">Kurikulum dan materi pelatihan untuk penguatan kapasitas Usaha.</p>
             </div>
             <div>
-                <img src="{{ asset('storage/logo/KAMILATIH.png') }}" alt="Logo Karya Kami" class="w-64 md:w-80 object-contain">
+                <img src="{{ asset('storage/logo/KAMILATIH.png') }}" alt="Logo Karya Kami" class="w-32 md:w-40 object-contain">
             </div>
         </div>
     </section>
