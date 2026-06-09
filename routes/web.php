@@ -144,9 +144,8 @@ Route::middleware(['auth'])->group(function () {
     // Trainer Profile
     Route::put('/trainer/profil/update', [App\Http\Controllers\TrainerController::class, 'updateProfil'])
         ->name('trainer.profil.update');
-});
 
-// =========================
+    // =========================
 // TRAINER KURIKULUM & MATERI
 // =========================
 Route::post('/kurikulum',        [Trainerpelatihancontroller::class, 'storeKurikulum'])  ->name('trainer.kurikulum.store');
@@ -156,6 +155,7 @@ Route::delete('/kurikulum/{id}', [Trainerpelatihancontroller::class, 'destroy'])
 Route::post('/modul',            [Trainerpelatihancontroller::class, 'storeModul'])      ->name('trainer.modul.store');
 Route::put('/modul/{id}',        [Trainerpelatihancontroller::class, 'updateModul'])     ->name('trainer.modul.update');
 Route::delete('/modul/{id}',     [Trainerpelatihancontroller::class, 'destroy'])         ->name('trainer.modul.destroy');
+});
 
 // =========================================================
 // GRUP ADMIN (KHUSUS ADMIN)
