@@ -464,8 +464,9 @@
 
                         @if($st !== 'approved')
                         <form method="POST" action="{{ route('admin.approval.program.approve', $program->id) }}"
-                              id="form-approve-{{ $program->id }}" style="display:inline;">
-                            @csrf @method('PATCH')
+      id="form-approve-{{ $program->id }}" style="display:inline;">
+    @csrf
+
                             <button type="button" class="btn btn-approve btn-sm"
                                 onclick="confirmApprove({{ $program->id }}, '{{ addslashes($program->judul ?? $program->nama) }}')">
                                 ✓ Setujui
@@ -521,7 +522,7 @@
                     <div class="ig-label">Jumlah Materi</div>
                 </div>
                 <div class="info-grid-item">
-                    <div class="ig-val" id="d-total-jam">-</div>
+                    <dAiv class="ig-val" id="d-total-jam">-</dAiv>
                     <div class="ig-label">Total Jam</div>
                 </div>
                 <div class="info-grid-item">
@@ -569,7 +570,7 @@
             Berikan alasan penolakan untuk <strong id="reject-name"></strong>. Alasan ini akan tersimpan sebagai catatan untuk trainer.
         </p>
         <form id="form-reject" method="POST">
-            @csrf @method('PATCH')
+    @csrf
             <div class="form-group">
                 <label class="form-label">Alasan Penolakan *</label>
                 <textarea name="catatan" class="form-textarea" rows="4"

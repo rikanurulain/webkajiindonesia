@@ -54,7 +54,7 @@
                 data-title="{{ strtolower($program->judul) }}"
                 data-desc="{{ strtolower($program->deskripsi ?? '') }}"
                 data-judul="{{ $program->judul }}"
-                data-deskripsi="{{ Str::limit($program->deskripsi, 80) }}"
+                data-deskripsi="{{ $program->deskripsi ?? '' }}"
                 data-gambar="{{ $program->gambar ? asset('storage/' . $program->gambar) : '' }}"
                 data-trainer="{{ $program->trainer ? ($program->trainer->academic_degree ?? $program->trainer->name) : '' }}"
                 data-phone="{{ !empty($program->phone) ? $program->phone : (!empty($program->trainer->phone) ? $program->trainer->phone : '6281234567890') }}"
@@ -125,41 +125,47 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Build card HTML ──────────────────────────────────────
     function buildCard(p) {
-        const imgHtml = p.gambar
-            ? `<img src="${p.gambar}" alt="${p.judul}" class="w-full h-full object-cover">`
-            : `<span class="text-5xl">🎓</span>`;
+    const imgHtml = p.gambar
+        ? `<img src="${p.gambar}" alt="${p.judul}" class="w-full h-full object-cover">`
+        : `<span class="text-5xl">🎓</span>`;
 
-        const trainerHtml = p.trainer
-            ? `<p class="text-xs text-gray-400 text-center mt-2">oleh ${p.trainer}</p>`
-            : '';
+    const waText = encodeURIComponent(`Halo, saya ingin tahu lebih lanjut tentang ${p.judul}`);
 
-        const waText = encodeURIComponent(`Halo, saya ingin tahu lebih lanjut tentang ${p.judul}`);
+    return `
+    <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200 flex flex-col duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer"
+         onclick="window.location='${p.detailUrl}'">
 
-        return `
-        <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200 flex flex-col duration-300 hover:shadow-lg hover:-translate-y-1">
-            <div class="w-full h-44 flex items-center justify-center overflow-hidden bg-green-50">
-                ${imgHtml}
-            </div>
-            <div class="bg-green-100 px-4 py-2">
-                <h3 class="font-serif font-bold text-gray-900 text-lg text-center">${p.judul}</h3>
-            </div>
-            <div class="px-4 py-3 flex-1">
-                <p class="text-sm text-gray-600 text-center leading-relaxed">${p.deskripsi}</p>
-                ${trainerHtml}
-            </div>
-            <div class="grid grid-cols-2">
-                <a href="https://wa.me/${p.phone}?text=${waText}"
-                   target="_blank"
-                   class="bg-green-500 hover:bg-green-600 text-white text-sm font-semibold text-center py-3 transition-colors duration-200">
-                    WhatsApp
-                </a>
-                <a href="${p.detailUrl}"
-                   class="bg-orange-400 hover:bg-orange-500 text-gray-900 text-sm font-semibold text-center py-3 transition-colors duration-200">
-                    Detail
-                </a>
-            </div>
-        </div>`;
-    }
+        {{-- Gambar + logo overlay --}}
+        <div class="relative w-full h-44 flex items-center justify-center overflow-hidden bg-green-50">
+            ${imgHtml}
+            <img src="/storage/logo/KAMILATIH.png"
+                 alt="Logo"
+                 class="absolute top-2 right-2 w-20 h-10 object-contain rounded-md p-1 bg-white/80">
+        </div>
+
+        {{-- Badge judul --}}
+        <div class="bg-green-100 px-4 py-2">
+            <h3 class="font-serif font-bold text-gray-900 text-lg text-center truncate">${p.judul}</h3>
+        </div>
+
+        {{-- Deskripsi seragam --}}
+<div class="px-4 py-3 flex-1 flex flex-col">
+    <p style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;min-height:3.75rem;font-size:0.875rem;color:#4b5563;text-align:center;line-height:1.625;">${p.deskripsi}</p>
+    ${p.trainer ? `<p style="font-size:0.75rem;color:#9ca3af;text-align:center;margin-top:auto;padding-top:8px;">oleh ${p.trainer}</p>` : ''}
+</div>
+
+        {{-- Tombol --}}
+        <div class="grid grid-cols-2">
+            <span onclick="event.stopPropagation(); window.open('https://wa.me/${p.phone}?text=${waText}', '_blank')"
+                  class="flex items-center justify-center bg-green-500 hover:bg-green-600 text-white text-sm font-semibold py-3 transition-colors duration-200 cursor-pointer">
+                WhatsApp
+            </span>
+            <span class="flex items-center justify-center bg-orange-400 hover:bg-orange-500 text-gray-900 text-sm font-semibold py-3 transition-colors duration-200">
+                Detail
+            </span>
+        </div>
+    </div>`;
+}
 
     // ── Render kartu sesuai halaman ──────────────────────────
     function renderPage() {
