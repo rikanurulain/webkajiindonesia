@@ -38,6 +38,7 @@ class Trainer extends Model
         'deskripsi',
         'keahlian',
         'experience',
+        'sosmed',
 
         // Lokasi
         'lokasi',
@@ -60,12 +61,14 @@ class Trainer extends Model
         'reviewed_at',
         'agree_terms',
         'applied_at',
+
     ];
 
     protected $casts = [
         'agree_terms' => 'boolean',
         'reviewed_at' => 'datetime',
         'applied_at'  => 'datetime',
+        'sosmed' => 'array',
     ];
 
     // ═══════════════════════════════════════════

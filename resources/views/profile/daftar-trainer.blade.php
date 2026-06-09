@@ -116,13 +116,20 @@
                     <div class="tf-field">
                         <label class="tf-label">Nomor NIK/KTP <span class="tf-req">*</span></label>
                         <input
-                            type="text"
-                            name="nik"
-                            value="{{ old('nik', $trainer?->nik) }}"
-                            class="tf-input"
-                            required
-                            @if ($trainer?->status === 'pending') readonly @endif
-                        >
+    type="text"
+    name="nik"
+    value="{{ old('nik', $trainer?->nik) }}"
+    class="tf-input"
+    required
+    maxlength="16"
+    minlength="16"
+    pattern="\d{16}"
+    inputmode="numeric"
+    placeholder="16 digit angka"
+    @if ($trainer?->status === 'pending') readonly @endif
+    oninput="updateNikCounter(this)"
+>
+<p class="tf-hint" id="nik-counter">0 / 16 digit</p>
                     </div>
                     <div class="tf-field">
                         <label class="tf-label">
@@ -214,6 +221,88 @@
                 </div>
             </div>
 
+            {{-- ===== SEKSI: SOSIAL MEDIA ===== --}}
+<div class="tf-card">
+    <div class="tf-card__header">Sosial Media</div>
+    <p style="font-size:12px;color:#6b7280;margin-bottom:14px">Isi minimal satu akun sosial media yang aktif.</p>
+
+    <div class="tf-field">
+        <label class="tf-label">
+            <span style="display:inline-flex;align-items:center;gap:6px">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#E1306C"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.333.014 7.053.072 5.197.157 3.355.673 2.014 2.014.673 3.355.157 5.197.072 7.053.014 8.333 0 8.741 0 12c0 3.259.014 3.667.072 4.947.085 1.856.601 3.698 1.942 5.039 1.341 1.341 3.183 1.857 5.039 1.942C8.333 23.986 8.741 24 12 24s3.667-.014 4.947-.072c1.856-.085 3.698-.601 5.039-1.942 1.341-1.341 1.857-3.183 1.942-5.039.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947c-.085-1.856-.601-3.698-1.942-5.039C20.645.673 18.803.157 16.947.072 15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 10.162a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                Instagram
+            </span>
+        </label>
+        <div style="position:relative">
+            <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;color:#9ca3af;pointer-events:none">@</span>
+            <input type="text" name="sosmed_instagram"
+                value="{{ old('sosmed_instagram', $trainer?->sosmed_instagram) }}"
+                placeholder="username"
+                class="tf-input" style="padding-left:28px"
+                @if($trainer?->status === 'pending') readonly @endif>
+        </div>
+    </div>
+
+    <div class="tf-field">
+        <label class="tf-label">
+            <span style="display:inline-flex;align-items:center;gap:6px">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#000"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                X / Twitter
+            </span>
+        </label>
+        <div style="position:relative">
+            <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;color:#9ca3af;pointer-events:none">@</span>
+            <input type="text" name="sosmed_twitter"
+                value="{{ old('sosmed_twitter', $trainer?->sosmed_twitter) }}"
+                placeholder="username"
+                class="tf-input" style="padding-left:28px"
+                @if($trainer?->status === 'pending') readonly @endif>
+        </div>
+    </div>
+
+    <div class="tf-field">
+        <label class="tf-label">
+            <span style="display:inline-flex;align-items:center;gap:6px">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                LinkedIn
+            </span>
+        </label>
+        <input type="url" name="sosmed_linkedin"
+            value="{{ old('sosmed_linkedin', $trainer?->sosmed_linkedin) }}"
+            placeholder="https://linkedin.com/in/username"
+            class="tf-input"
+            @if($trainer?->status === 'pending') readonly @endif>
+    </div>
+
+    <div class="tf-field">
+        <label class="tf-label">
+            <span style="display:inline-flex;align-items:center;gap:6px">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                YouTube
+            </span>
+        </label>
+        <input type="url" name="sosmed_youtube"
+            value="{{ old('sosmed_youtube', $trainer?->sosmed_youtube) }}"
+            placeholder="https://youtube.com/@channel"
+            class="tf-input"
+            @if($trainer?->status === 'pending') readonly @endif>
+    </div>
+
+    <div class="tf-field" style="margin-bottom:0">
+        <label class="tf-label">
+            <span style="display:inline-flex;align-items:center;gap:6px">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                Facebook
+            </span>
+        </label>
+        <input type="url" name="sosmed_facebook"
+            value="{{ old('sosmed_facebook', $trainer?->sosmed_facebook) }}"
+            placeholder="https://facebook.com/username"
+            class="tf-input"
+            @if($trainer?->status === 'pending') readonly @endif>
+    </div>
+</div>
+
             {{-- ===== SEKSI: KUALIFIKASI ===== --}}
             <div class="tf-card">
                 <div class="tf-card__header">Kualifikasi</div>
@@ -273,6 +362,80 @@
                     >{{ old('bio', $trainer?->bio) }}</textarea>
                 </div>
             </div>
+
+            {{-- ===== SEKSI: BIDANG KEAHLIAN ===== --}}
+<div class="tf-card">
+    <div class="tf-card__header">Bidang Keahlian / Spesialisasi</div>
+    <p style="font-size:12px;color:#6b7280;margin-bottom:14px">
+        Pilih dari daftar atau ketik untuk menambah bidang keahlian kustom. Minimal <strong>1 bidang</strong>.
+    </p>
+
+    {{-- Preset chips --}}
+    <div class="tf-chips" id="preset-chips">
+        @php
+            $presets = [
+                'Leadership & Manajemen', 'Public Speaking', 'Digital Marketing',
+                'Keuangan & Akuntansi', 'SDM & HRD', 'Kewirausahaan',
+                'Penjualan & Negosiasi', 'Komunikasi Bisnis', 'Pengembangan Diri',
+                'Produktivitas & Time Management', 'Teknologi Informasi', 'Hukum Bisnis',
+                'K3 & Safety', 'Ekspor Impor', 'Pemasaran Konten',
+            ];
+            $savedKeahlian = old('bidang_keahlian', $trainer?->bidang_keahlian ?? '');
+            $savedArr = $savedKeahlian ? array_map('trim', explode(',', $savedKeahlian)) : [];
+        @endphp
+        @foreach ($presets as $preset)
+            <button
+                type="button"
+                class="tf-chip {{ in_array($preset, $savedArr) ? 'tf-chip--active' : '' }}"
+                onclick="toggleChip(this)"
+                @if ($trainer?->status === 'pending') disabled @endif
+            >{{ $preset }}</button>
+        @endforeach
+    </div>
+
+    {{-- Input tambah custom --}}
+    @if (!($trainer?->status === 'pending'))
+    <div class="tf-keahlian-add">
+        <input
+            type="text"
+            id="custom-keahlian-input"
+            placeholder="Ketik bidang keahlian lain..."
+            class="tf-input"
+            style="flex:1"
+            maxlength="60"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomKeahlian();}"
+        >
+        <button type="button" class="tf-add-btn" onclick="addCustomKeahlian()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+            </svg>
+            Tambah
+        </button>
+    </div>
+    @endif
+
+    {{-- Tag terpilih --}}
+    <div class="tf-selected-tags" id="selected-tags">
+        @foreach ($savedArr as $item)
+            @if (!in_array($item, $presets) && $item !== '')
+                <span class="tf-tag tf-tag--custom">
+                    {{ $item }}
+                    @if (!($trainer?->status === 'pending'))
+                        <button type="button" onclick="removeTag(this, '{{ $item }}')" class="tf-tag__remove">×</button>
+                    @endif
+                </span>
+            @endif
+        @endforeach
+    </div>
+
+    {{-- Counter --}}
+    <p class="tf-hint" id="keahlian-counter" style="margin-top:8px">
+        <span id="keahlian-count">{{ count($savedArr) }}</span> bidang dipilih
+    </p>
+
+    {{-- Hidden input untuk dikirim ke server --}}
+    <input type="hidden" name="bidang_keahlian" id="bidang-keahlian-value" value="{{ $savedKeahlian }}">
+</div>
 
             {{-- ===== SEKSI: UPLOAD DOKUMEN ===== --}}
             <div class="tf-card">
@@ -832,6 +995,107 @@
     .tf-page { padding: 32px 0 60px; }
     .tf-hero { padding: 28px 24px; }
 }
+
+/* ---- Chips ---- */
+.tf-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 12px;
+}
+.tf-chip {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1.5px solid #d1d5db;
+    background: #f9fafb;
+    color: #4b5563;
+    cursor: pointer;
+    transition: all .15s;
+    font-family: inherit;
+    line-height: 1.4;
+}
+.tf-chip:hover:not(:disabled) {
+    border-color: #0f6e56;
+    color: #0f6e56;
+    background: #f0faf6;
+}
+.tf-chip--active {
+    background: #0f6e56;
+    border-color: #0f6e56;
+    color: #fff;
+}
+.tf-chip--active:hover:not(:disabled) {
+    background: #085041;
+    border-color: #085041;
+    color: #fff;
+}
+.tf-chip:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+/* ---- Custom input row ---- */
+.tf-keahlian-add {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+.tf-add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 9px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    background: #0f6e56;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: inherit;
+    transition: background .15s;
+    flex-shrink: 0;
+}
+.tf-add-btn:hover { background: #085041; }
+
+/* ---- Selected tags ---- */
+.tf-selected-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 0;
+}
+.tf-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+.tf-tag--custom {
+    background: #ede9fe;
+    color: #5b21b6;
+    border: 1.5px solid #c4b5fd;
+}
+.tf-tag__remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    color: inherit;
+    padding: 0;
+    margin-left: 2px;
+    opacity: .7;
+    font-family: inherit;
+}
+.tf-tag__remove:hover { opacity: 1; }
 </style>
 
 {{-- ======================== SCRIPTS ======================== --}}
@@ -841,6 +1105,178 @@
         const el = document.getElementById(id);
         if (el && !el.disabled) el.click();
     }
+
+    function updateNikCounter(input) {
+    // Hanya izinkan angka
+    input.value = input.value.replace(/\D/g, '').slice(0, 16);
+    const counter = document.getElementById('nik-counter');
+    if (counter) {
+        const len = input.value.length;
+        counter.textContent = `${len} / 16 digit`;
+        counter.style.color = len === 16 ? '#059669' : (len > 0 ? '#d97706' : '#9ca3af');
+    }
+}
+
+/* ======================== BIDANG KEAHLIAN ======================== */
+function getKeahlianArray() {
+    const val = document.getElementById('bidang-keahlian-value').value;
+    return val ? val.split(',').map(s => s.trim()).filter(Boolean) : [];
+}
+
+function setKeahlianValue(arr) {
+    document.getElementById('bidang-keahlian-value').value = arr.join(',');
+    const counter = document.getElementById('keahlian-count');
+    if (counter) counter.textContent = arr.length;
+}
+
+function toggleChip(btn) {
+    const label = btn.textContent.trim();
+    let arr = getKeahlianArray();
+    if (btn.classList.contains('tf-chip--active')) {
+        btn.classList.remove('tf-chip--active');
+        arr = arr.filter(v => v !== label);
+    } else {
+        btn.classList.add('tf-chip--active');
+        if (!arr.includes(label)) arr.push(label);
+    }
+    setKeahlianValue(arr);
+}
+
+function addCustomKeahlian() {
+    const input = document.getElementById('custom-keahlian-input');
+    const label = input.value.trim();
+    if (!label) return;
+
+    let arr = getKeahlianArray();
+    if (arr.includes(label)) {
+        input.value = '';
+        return;
+    }
+
+    arr.push(label);
+    setKeahlianValue(arr);
+
+    // Render tag custom
+    const container = document.getElementById('selected-tags');
+    const tag = document.createElement('span');
+    tag.className = 'tf-tag tf-tag--custom';
+    tag.dataset.value = label;
+    tag.innerHTML = `${label} <button type="button" onclick="removeTag(this, '${label.replace(/'/g,"\\'")}') " class="tf-tag__remove">×</button>`;
+    container.appendChild(tag);
+
+    input.value = '';
+    input.focus();
+}
+
+function removeTag(btn, label) {
+    btn.closest('.tf-tag').remove();
+    let arr = getKeahlianArray();
+    arr = arr.filter(v => v !== label);
+    setKeahlianValue(arr);
+}
+
+    /* ---- Validasi minimal 1 sosmed ---- */
+const sosmedFields = ['sosmed_instagram', 'sosmed_twitter', 'sosmed_linkedin', 'sosmed_youtube', 'sosmed_facebook'];
+
+document.querySelector('form').addEventListener('submit', function (e) {
+    const isPending = {{ $trainer?->status === 'pending' ? 'true' : 'false' }};
+    if (isPending) return;
+
+    // ---- cek sosmed (sudah ada) ----
+    const filled = sosmedFields.some(name => {
+        const el = this.querySelector(`[name="${name}"]`);
+        return el && el.value.trim() !== '';
+    });
+
+    if (!filled) {
+        e.preventDefault();
+        let banner = document.getElementById('sosmed-error');
+        if (!banner) {
+            banner = document.createElement('div');
+            banner.id = 'sosmed-error';
+            banner.className = 'tf-banner tf-banner--rejected';
+            banner.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="tf-banner__icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                </svg>
+                <div>
+                    <p class="tf-banner__title">Sosial Media Wajib Diisi</p>
+                    <p class="tf-banner__body">Isi minimal satu akun sosial media (Instagram, X, LinkedIn, YouTube, atau Facebook).</p>
+                </div>
+            `;
+            const sosmedCard = document.querySelector('.tf-card:nth-of-type(3)');
+            sosmedCard.parentNode.insertBefore(banner, sosmedCard);
+        }
+        banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return; // <-- tambahkan return agar tidak lanjut ke cek NIK
+    }
+
+    // ---- TAMBAHAN: cek NIK 16 digit ----
+    const nikEl = this.querySelector('[name="nik"]');
+    if (nikEl) {
+        const nikVal = nikEl.value.trim();
+        if (!/^\d{16}$/.test(nikVal)) {
+            e.preventDefault();
+
+            // Hapus banner lama kalau ada
+            const oldBanner = document.getElementById('nik-error');
+            if (oldBanner) oldBanner.remove();
+
+            const nikBanner = document.createElement('div');
+            nikBanner.id = 'nik-error';
+            nikBanner.className = 'tf-banner tf-banner--rejected';
+            nikBanner.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="tf-banner__icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                </svg>
+                <div>
+                    <p class="tf-banner__title">NIK Tidak Valid</p>
+                    <p class="tf-banner__body">Nomor NIK/KTP harus terdiri dari tepat <strong>16 digit angka</strong>.</p>
+                </div>
+            `;
+
+            // Sisipkan banner tepat di bawah input NIK
+            nikEl.closest('.tf-field').appendChild(nikBanner);
+
+            // Highlight border merah
+            nikEl.style.borderColor = '#ef4444';
+            nikEl.style.boxShadow = '0 0 0 3px rgba(239,68,68,.1)';
+            nikEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Reset saat user mengetik ulang
+            nikEl.addEventListener('input', function () {
+                nikEl.style.borderColor = '';
+                nikEl.style.boxShadow = '';
+                const b = document.getElementById('nik-error');
+                if (b) b.remove();
+            }, { once: true });
+        }
+        const keahlianVal = document.getElementById('bidang-keahlian-value').value.trim();
+if (!keahlianVal) {
+    e.preventDefault();
+
+    const oldBanner = document.getElementById('keahlian-error');
+    if (oldBanner) oldBanner.remove();
+
+    const banner = document.createElement('div');
+    banner.id = 'keahlian-error';
+    banner.className = 'tf-banner tf-banner--rejected';
+    banner.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="tf-banner__icon">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        </svg>
+        <div>
+            <p class="tf-banner__title">Bidang Keahlian Wajib Diisi</p>
+            <p class="tf-banner__body">Pilih atau tambahkan minimal <strong>1 bidang keahlian</strong>.</p>
+        </div>
+    `;
+    const keahlianCard = document.getElementById('bidang-keahlian-value').closest('.tf-card');
+    keahlianCard.prepend(banner);
+    keahlianCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+}
+    }
+});
 
     function updateUploadLabel(input, labelId) {
         const label = document.getElementById(labelId);

@@ -5,7 +5,6 @@
 @section('content')
 
 {{-- Header --}}
-{{-- Header --}}
 <section class="bg-gradient-to-br from-primary-dark via-primary to-primary- py-10 text-white">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex items-center gap-3">
