@@ -10,7 +10,7 @@ class KonsultanController extends Controller
     {
         return view('pages.konsultan', [
             'title' => 'Konsultan',
-            'metaDescription' => 'Layanan konsultasi strategi bisnis, manajemen, dan pengembangan organisasi oleh Kaji Indonesia.',
+            'metaDescription' => 'Layanan konsultasi strategi bisnis, manajemen, dan pengembangan organisasi oleh KAJI Indonesia.',
         ]);
     }
 
@@ -18,7 +18,7 @@ class KonsultanController extends Controller
     {
         return view('pages.konsultan-layanan', [   // ← titik di-escape dengan \
             'title' => 'Layanan Konsultan',
-            'metaDescription' => 'Berbagai jenis layanan konsultasi yang ditawarkan Kaji Indonesia.',
+            'metaDescription' => 'Berbagai jenis layanan konsultasi yang ditawarkan KAJI Indonesia.',
         ]);
     }
 

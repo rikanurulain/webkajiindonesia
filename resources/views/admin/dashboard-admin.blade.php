@@ -476,7 +476,7 @@
     <div class="modal confirm-modal">
         <div class="confirm-icon">✅</div>
         <div class="confirm-title">Konfirmasi Persetujuan</div>
-        <div class="confirm-desc">Anda akan menyetujui item ini. Item akan langsung aktif dan terlihat di platform Kaji Indonesia.</div>
+        <div class="confirm-desc">Anda akan menyetujui item ini. Item akan langsung aktif dan terlihat di platform KAJI Indonesia.</div>
         <form id="form-approve" method="POST">
             @csrf
             @method('PATCH')

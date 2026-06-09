@@ -10,7 +10,7 @@ class MediaController extends Controller
     {
         return view('pages.media', [
             'title' => 'Media',
-            'metaDescription' => 'Konten edukatif dan informasi seputar kajian, bisnis, dan halal dari Kaji Indonesia.',
+            'metaDescription' => 'Konten edukatif dan informasi seputar kajian, bisnis, dan halal dari KAJI Indonesia.',
         ]);
     }
 }

@@ -22,7 +22,7 @@ class UmkmController extends Controller
 
         return view('pages.umkm', [
             'title' => 'UMKM',
-            'metaDescription' => 'Pendampingan dan penguatan kapasitas UMKM oleh Kaji Indonesia.',
+            'metaDescription' => 'Pendampingan dan penguatan kapasitas UMKM oleh KAJI Indonesia.',
             'members' => $members,
             'teams' => $teams,
         ]);
@@ -68,7 +68,7 @@ class UmkmController extends Controller
 
         return view('pages.umkm-pembimbing', [
             'title' => 'Pembimbing UMKM',
-            'metaDescription' => 'Tim pembimbing UMKM yang berpengalaman di Kaji Indonesia.',
+            'metaDescription' => 'Tim pembimbing UMKM yang berpengalaman di KAJI Indonesia.',
             'trainers' => $trainers,
         ]);
     }
@@ -139,7 +139,7 @@ public function showMentor($id): View
     {
         return view('pages.umkm-lokasi', [
             'title' => 'Lokasi UMKM',
-            'metaDescription' => 'Lokasi UMKM yang didampingi oleh Kaji Indonesia.',
+            'metaDescription' => 'Lokasi UMKM yang didampingi oleh KAJI Indonesia.',
         ]);
     }
 

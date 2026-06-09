@@ -1,6 +1,6 @@
-# Landing Page - Kaji Indonesia
+# Landing Page - KAJI Indonesia
 
-Landing page company profile sederhana untuk **Kaji Indonesia**, dibangun dengan HTML, CSS, dan JavaScript tanpa framework.
+Landing page company profile sederhana untuk **KAJI Indonesia**, dibangun dengan HTML, CSS, dan JavaScript tanpa framework.
 
 ## Struktur
 

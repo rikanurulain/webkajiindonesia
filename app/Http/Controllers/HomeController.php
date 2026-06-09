@@ -10,7 +10,7 @@ class HomeController extends Controller
     {
         return view('pages.home', [
             'title' => 'Beranda',
-            'metaDescription' => 'Kaji Indonesia - Membangun Indonesia melalui kajian, pelatihan, pendampingan UMKM, Halal Center, dan konsultasi profesional.',
+            'metaDescription' => 'KAJI Indonesia - Membangun Indonesia melalui kajian, pelatihan, pendampingan UMKM, Halal Center, dan konsultasi profesional.',
         ]);
     }
 }
