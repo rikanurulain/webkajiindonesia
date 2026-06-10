@@ -99,36 +99,59 @@ class AdminController extends Controller
     // APPROVAL PROGRAM (kurikulum + modul)
     // ═════════════════════════════════════════════════════════════════════
     public function approvalProgram(Request $request)
-    {
-        $status = $request->get('status', 'pending');
-        $tipe   = $request->get('tipe', 'all');
-        $programs = Program::with('trainer')
-            ->when($status !== 'all', fn($q) => $q->where('status', $status))
-            ->when($tipe   !== 'all', fn($q) => $q->where('tipe', $tipe))
-            ->latest()
-            ->paginate(15)
-            ->withQueryString();
-        $counts = [
-            'pending'  => Program::where('status', 'pending')->count(),
-            'approved' => Program::where('status', 'approved')->count(),
-            'rejected' => Program::where('status', 'rejected')->count(),
-        ];
-        $tipeBase = $status !== 'all'
-            ? Program::where('status', $status)
-            : Program::query();
-        $countTipe = [
-            'all'       => (clone $tipeBase)->count(),
-            'kurikulum' => (clone $tipeBase)->where('tipe', 'kurikulum')->count(),
-            'modul'     => (clone $tipeBase)->where('tipe', 'modul')->count(),
-        ];
-        return view('admin.approval-program', compact(
-            'programs',
-            'counts',
-            'countTipe',
-            'status',
-            'tipe'
-        ));
-    }
+{
+    $status = $request->get('status', 'pending');
+    $tipe   = $request->get('tipe', 'all');
+
+    $programs = Program::with('trainer')
+        ->when($status !== 'all', fn($q) => $q->where('status', $status))
+        ->when($tipe   !== 'all', fn($q) => $q->where('tipe', $tipe))
+        ->latest()
+        ->paginate(15)
+        ->withQueryString();
+
+    $counts = [
+        'pending'  => Program::where('status', 'pending')->count(),
+        'approved' => Program::where('status', 'approved')->count(),
+        'rejected' => Program::where('status', 'rejected')->count(),
+    ];
+
+    $tipeBase = $status !== 'all'
+        ? Program::where('status', $status)
+        : Program::query();
+
+    $countTipe = [
+        'all'       => (clone $tipeBase)->count(),
+        'kurikulum' => (clone $tipeBase)->where('tipe', 'kurikulum')->count(),
+        'modul'     => (clone $tipeBase)->where('tipe', 'modul')->count(),
+    ];
+
+    // ── Tambahan untuk tab pendaftaran ──────────────────────────────
+    // Di method approvalProgram, ganti baris $statusDaftar
+$statusDaftar = $request->get('status_daftar',
+$request->get('tab') === 'pendaftaran'
+    ? ($status === 'approved' ? 'diterima' : ($status === 'rejected' ? 'ditolak' : 'menunggu_verifikasi'))
+    : 'menunggu_verifikasi'
+);
+
+    $pendaftarans = \App\Models\PendaftaranProgram::with(['user', 'program'])
+        ->when($statusDaftar !== 'all', fn($q) => $q->where('status', $statusDaftar))
+        ->latest()
+        ->paginate(20, ['*'], 'daftar_page')
+        ->withQueryString();
+
+    $countsDaftar = [
+        'menunggu_verifikasi' => \App\Models\PendaftaranProgram::where('status', 'menunggu_verifikasi')->count(),
+        'diterima'            => \App\Models\PendaftaranProgram::where('status', 'diterima')->count(),
+        'ditolak'             => \App\Models\PendaftaranProgram::where('status', 'ditolak')->count(),
+    ];
+    // ────────────────────────────────────────────────────────────────
+
+    return view('admin.approval-program', compact(
+        'programs', 'counts', 'countTipe', 'status', 'tipe',
+        'pendaftarans', 'countsDaftar', 'statusDaftar'  // ← pastikan ini ada
+    ));
+}
     public function detailProgram(Program $program)
     {
         return response()->json($program->load('trainer'));
@@ -165,6 +188,55 @@ class AdminController extends Controller
         }
         return back()->with('success', "Program \"{$program->judul}\" telah ditolak.");
     }
+
+    // ═════════════════════════════════════════════════════════════════════
+// APPROVAL PENDAFTARAN PROGRAM
+// ═════════════════════════════════════════════════════════════════════
+public function pendaftaranIndex(Request $request)
+{
+    $status = $request->get('status', 'menunggu_verifikasi');
+
+    $pendaftarans = \App\Models\PendaftaranProgram::with(['user', 'program'])
+        ->when($status !== 'all', fn($q) => $q->where('status', $status))
+        ->latest()
+        ->paginate(20)
+        ->withQueryString();
+
+    $counts = [
+        'menunggu_verifikasi' => \App\Models\PendaftaranProgram::where('status', 'menunggu_verifikasi')->count(),
+        'diterima'            => \App\Models\PendaftaranProgram::where('status', 'diterima')->count(),
+        'ditolak'             => \App\Models\PendaftaranProgram::where('status', 'ditolak')->count(),
+    ];
+
+    return view('admin.approval-pendaftaran', compact('pendaftarans', 'counts', 'status'));
+}
+
+public function pendaftaranApprove($id)
+{
+    $pendaftaran = \App\Models\PendaftaranProgram::findOrFail($id);
+    $pendaftaran->update(['status' => 'diterima']);
+
+    return back()->with('success', "Pendaftaran {$pendaftaran->nama_lengkap} berhasil diterima.");
+}
+
+public function pendaftaranReject(Request $request, $id)
+{
+    $request->validate(['alasan_penolakan' => 'required|string|max:500']);
+
+    $pendaftaran = \App\Models\PendaftaranProgram::findOrFail($id);
+    $pendaftaran->update([
+        'status'           => 'ditolak',
+        'alasan_penolakan' => $request->alasan_penolakan,
+    ]);
+
+    return back()->with('success', "Pendaftaran {$pendaftaran->nama_lengkap} telah ditolak.");
+}
+
+public function unsuspendPengguna(Request $request, User $user)
+{
+    $user->update(['status' => 'active']);
+    return back()->with('success', 'Pengguna berhasil di-unsuspend.');
+}
 
     // ═════════════════════════════════════════════════════════════════════
     // APPROVAL PRODUK

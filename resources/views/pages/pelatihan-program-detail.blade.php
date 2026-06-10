@@ -110,11 +110,80 @@
                     <p class="text-sm text-gray-600 leading-relaxed">{{ $deskripsi }}</p>
 
                     <div class="flex flex-wrap gap-3 mt-1">
-                        <a href="https://wa.me/{{ $noWa }}?text=Halo,%20saya%20ingin%20mendaftar%20program%20{{ urlencode($judul) }}"
-                           target="_blank"
-                           class="bg-green-500 hover:bg-green-600 text-white text-sm font-bold px-5 py-2.5 rounded-lg transition-colors">
-                            Daftar via WhatsApp
-                        </a>
+                    @if($isDB)
+@php
+    $pendaftaranSaya = auth()->check()
+        ? \App\Models\PendaftaranProgram::where('user_id', auth()->id())
+            ->where('program_id', $program->id)
+            ->whereIn('status', ['pending', 'menunggu_verifikasi', 'diterima'])
+            ->latest()
+            ->first()
+        : null;
+@endphp
+
+@if($isDB)
+@php
+    $pendaftaranSaya = auth()->check()
+        ? \App\Models\PendaftaranProgram::where('user_id', auth()->id())
+            ->where('program_id', $program->id)
+            ->latest()
+            ->first()
+        : null;
+@endphp
+
+@if($pendaftaranSaya && $pendaftaranSaya->status !== 'ditolak')
+    @if($pendaftaranSaya->status === 'diterima')
+        <span class="inline-flex items-center gap-2 bg-green-100 text-green-700 border border-green-300 text-sm font-bold px-5 py-2.5 rounded-lg">
+            ✅ Sudah Terdaftar
+        </span>
+    @elseif($pendaftaranSaya->status === 'menunggu_verifikasi')
+        <span class="inline-flex items-center gap-2 bg-amber-50 text-amber-700 border border-amber-200 text-sm font-bold px-5 py-2.5 rounded-lg">
+            ⏳ Menunggu Verifikasi Pembayaran
+        </span>
+    @elseif($pendaftaranSaya->status === 'pending')
+        <span class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 border border-blue-200 text-sm font-bold px-5 py-2.5 rounded-lg">
+            🕐 Menunggu Konfirmasi Admin
+        </span>
+    @endif
+@elseif($pendaftaranSaya && $pendaftaranSaya->status === 'ditolak')
+    <div class="w-full bg-red-50 border border-red-200 rounded-xl p-3 mb-2">
+        <p class="text-sm font-bold text-red-700 mb-0.5">❌ Pendaftaran Anda ditolak</p>
+        @if($pendaftaranSaya->alasan_penolakan)
+            <p class="text-xs text-red-600 leading-relaxed">
+                <span class="font-semibold">Alasan:</span> {{ $pendaftaranSaya->alasan_penolakan }}
+            </p>
+        @else
+            <p class="text-xs text-red-500 italic">Tidak ada alasan yang diberikan.</p>
+        @endif
+        <p class="text-xs text-gray-500 mt-1.5">Anda dapat mendaftar kembali.</p>
+    </div>
+    <a href="{{ route('pelatihan.pendaftaran.create', $program->id) }}"
+       class="bg-green-500 hover:bg-green-600 text-white text-sm font-bold px-5 py-2.5 rounded-lg transition-colors">
+        🔄 Daftar Ulang
+    </a>
+@else
+    <a href="{{ route('pelatihan.pendaftaran.create', $program->id) }}"
+       class="bg-green-500 hover:bg-green-600 text-white text-sm font-bold px-5 py-2.5 rounded-lg transition-colors">
+        Daftar Program
+    </a>
+@endif
+
+@else
+{{-- program statis → WA --}}
+<a href="https://wa.me/{{ $noWa }}?text=Halo,%20saya%20ingin%20mendaftar%20program%20{{ urlencode($judul) }}"
+   target="_blank"
+   class="bg-green-500 hover:bg-green-600 text-white text-sm font-bold px-5 py-2.5 rounded-lg transition-colors">
+    Daftar via WhatsApp
+</a>
+@endif
+@else
+{{-- program statis → WA --}}
+<a href="https://wa.me/{{ $noWa }}?text=Halo,%20saya%20ingin%20mendaftar%20program%20{{ urlencode($judul) }}"
+   target="_blank"
+   class="bg-green-500 hover:bg-green-600 text-white text-sm font-bold px-5 py-2.5 rounded-lg transition-colors">
+    Daftar via WhatsApp
+</a>
+@endif
                         <a href="{{ route('pelatihan.program') }}"
                            class="border border-green-600 text-green-700 hover:bg-green-50 text-sm font-bold px-5 py-2.5 rounded-lg transition-colors">
                             ← Kembali

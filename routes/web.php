@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Trainerpelatihancontroller;
 use App\Http\Controllers\AbsensiController;
+use App\Http\Controllers\PendaftaranProgramController;
 
 // =====================
 // HALAMAN UMUM (Bebas Akses)
@@ -37,15 +38,17 @@ Route::prefix('pelatihan')->name('pelatihan.')->group(function () {
     Route::get('/event', [PelatihanController::class, 'event'])->name('event');
     Route::get('/mentor', [PelatihanController::class, 'pembimbing'])->name('pembimbing');
     Route::get('/mentor/search', [PelatihanController::class, 'searchMentor'])->name('pembimbing.search');
-    
-    Route::get('/program/{id}', [PelatihanController::class, 'detailProgram'])
-    ->name('detail');
-    Route::get('/event/{id}', [PelatihanController::class, 'detailEvent'])
-    ->name('event.detail');
-    Route::get('/mentor/{id}', [PelatihanController::class, 'detailMentor'])
-    ->name('mentor.detail');
-    Route::post('/mentor/{id}/ulasan', [PelatihanController::class, 'simpanUlasan'])
-    ->name('mentor.ulasan');
+
+    // Wajib login
+    Route::middleware('auth')->group(function () {
+        Route::get('/program/{id}', [PelatihanController::class, 'detailProgram'])->name('detail');
+        Route::get('/event/{id}', [PelatihanController::class, 'detailEvent'])->name('event.detail');
+        Route::get('/mentor/{id}', [PelatihanController::class, 'detailMentor'])->name('mentor.detail');
+        Route::post('/mentor/{id}/ulasan', [PelatihanController::class, 'simpanUlasan'])->name('mentor.ulasan');
+
+        Route::get('/program/{id}/daftar', [App\Http\Controllers\PendaftaranProgramController::class, 'create'])->name('pendaftaran.create');
+        Route::post('/program/{id}/daftar', [App\Http\Controllers\PendaftaranProgramController::class, 'store'])->name('pendaftaran.store');
+    });
 });
 
 Route::prefix('umkm')->group(function () {
@@ -91,6 +94,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profile/update-photo', [ProfileController::class, 'updatePhoto'])->name('profile.update-photo');
     Route::delete('/profile/delete-photo', [ProfileController::class, 'deletePhoto'])->name('profile.delete-photo');
     Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+
+    Route::get('/profile/riwayat-pendaftaran', [App\Http\Controllers\PendaftaranProgramController::class, 'riwayat'])->name('pendaftaran.riwayat');
 
     // Notifikasi
     Route::get('/profile/notifications', [ProfileController::class, 'notifications'])->name('profile.notifications');
@@ -205,4 +210,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/pengguna/{user}/verifikasi',         [AdminController::class, 'verifikasiPengguna'])->name('pengguna.verifikasi');
     Route::post('/pengguna/{user}/suspend',            [AdminController::class, 'suspendPengguna'])->name('pengguna.suspend');
     Route::post('/pengguna/{user}/unsuspend',          [AdminController::class, 'unsuspendPengguna'])->name('pengguna.unsuspend');
+
+    Route::get('/pendaftaran',                   [AdminController::class, 'pendaftaranIndex'])->name('pendaftaran.index');
+    Route::post('/pendaftaran/{id}/approve',     [AdminController::class, 'pendaftaranApprove'])->name('pendaftaran.approve');
+    Route::post('/pendaftaran/{id}/reject',      [AdminController::class, 'pendaftaranReject'])->name('pendaftaran.reject');
 });

@@ -72,6 +72,8 @@
     .kurikulum-ref .kr-label { font-size: 10px; color: #3b82f6; text-transform: uppercase; letter-spacing: .06em; }
     .kurikulum-ref .kr-title { font-weight: 700; color: #1d4ed8; }
 
+    .tipe-chip.active-pendaftaran { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+
     /* ===================== RESPONSIVE MOBILE ===================== */
 
     /* Tab bar: scroll horizontal jika muat */
@@ -301,22 +303,22 @@
 
 {{-- ── Tab status ── --}}
 <div class="tab-bar">
-    <button class="tab-btn {{ $status === 'pending' ? 'active' : '' }}"
-        onclick="location.href='{{ route('admin.approval.program') }}?status=pending&tipe={{ $tipe }}'">
+    <button class="tab-btn {{ $status === 'pending' && request('tab') !== 'pendaftaran' ? 'active' : '' }} {{ request('tab') === 'pendaftaran' && $statusDaftar === 'menunggu_verifikasi' ? 'active' : '' }}"
+        onclick="location.href='{{ route('admin.approval.program') }}?status=pending&tipe={{ $tipe }}&tab={{ request('tab', 'program') }}&status_daftar=menunggu_verifikasi'">
         Pending
         @if($counts['pending'] > 0)
             <span class="count-pill">{{ $counts['pending'] }}</span>
         @endif
     </button>
-    <button class="tab-btn {{ $status === 'approved' ? 'active' : '' }}"
-        onclick="location.href='{{ route('admin.approval.program') }}?status=approved&tipe={{ $tipe }}'">
+    <button class="tab-btn {{ $status === 'approved' && request('tab') !== 'pendaftaran' ? 'active' : '' }} {{ request('tab') === 'pendaftaran' && $statusDaftar === 'diterima' ? 'active' : '' }}"
+        onclick="location.href='{{ route('admin.approval.program') }}?status=approved&tipe={{ $tipe }}&tab={{ request('tab', 'program') }}&status_daftar=diterima'">
         Disetujui
         @if($counts['approved'] > 0)
             <span class="count-pill" style="background:var(--accent);">{{ $counts['approved'] }}</span>
         @endif
     </button>
-    <button class="tab-btn {{ $status === 'rejected' ? 'active' : '' }}"
-        onclick="location.href='{{ route('admin.approval.program') }}?status=rejected&tipe={{ $tipe }}'">
+    <button class="tab-btn {{ $status === 'rejected' && request('tab') !== 'pendaftaran' ? 'active' : '' }} {{ request('tab') === 'pendaftaran' && $statusDaftar === 'ditolak' ? 'active' : '' }}"
+        onclick="location.href='{{ route('admin.approval.program') }}?status=rejected&tipe={{ $tipe }}&tab={{ request('tab', 'program') }}&status_daftar=ditolak'">
         Ditolak
         @if($counts['rejected'] > 0)
             <span class="count-pill" style="background:#9ca3af;">{{ $counts['rejected'] }}</span>
@@ -338,8 +340,16 @@
        class="tipe-chip {{ $tipe === 'modul' ? 'active-modul' : '' }}">
         📝 Modul <span class="chip-count">{{ $countTipe['modul'] }}</span>
     </a>
+    <a href="{{ route('admin.approval.program') }}?status={{ $status }}&tipe=all&tab=pendaftaran&status_daftar=menunggu_verifikasi"
+       class="tipe-chip {{ request('tab') === 'pendaftaran' ? 'active-pendaftaran' : '' }}">
+        📩 Pendaftaran
+        @if($countsDaftar['menunggu_verifikasi'] > 0)
+            <span class="chip-count">{{ $countsDaftar['menunggu_verifikasi'] }}</span>
+        @endif
+        </a>
 </div>
 
+@if(request('tab') !== 'pendaftaran')
 <div class="table-card">
     <div class="table-card-header">
         <div class="table-card-title">
@@ -502,9 +512,124 @@
     </div>
     @endif
 </div>
-
+@endif {{-- end tab !== pendaftaran --}}
 
 {{-- ======================== MODAL DETAIL ======================== --}}
+{{-- ══ SECTION PENDAFTARAN (muncul jika tab=pendaftaran) ══ --}}
+@if(request('tab') === 'pendaftaran')
+
+
+<div class="table-card">
+    <div class="table-card-header">
+        <div class="table-card-title">
+            📩 Pendaftaran Program
+            <span class="table-card-subtitle">{{ $pendaftarans->total() }} pendaftaran</span>
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Pendaftar</th>
+                <th>Program</th>
+                <th>Kontak</th>
+                <th>Bukti Bayar</th>
+                <th>Tanggal</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($pendaftarans as $p)
+            <tr>
+                <td>
+                    <div class="submitter">
+                        <div class="submitter-avatar" style="background:var(--accent);">
+                            {{ strtoupper(substr($p->nama_lengkap, 0, 2)) }}
+                        </div>
+                        <div>
+                            <div class="submitter-name">{{ $p->nama_lengkap }}</div>
+                            <div class="submitter-sub">{{ $p->email }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div style="font-size:13px;font-weight:600;color:#111827;">{{ $p->program->judul ?? '-' }}</div>
+                    @if($p->program)
+                        @php
+                            $isBerbayar = !empty($p->program->biaya)
+                                && strtolower($p->program->biaya) !== 'gratis'
+                                && $p->program->biaya != 0;
+                        @endphp
+                        <span style="{{ $isBerbayar ? 'background:#fef3c7;color:#92400e;border:1px solid #fde68a;' : 'background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;' }} font-size:10px;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:2px;">
+                            {{ $isBerbayar ? '💳 Berbayar' : '✅ Gratis' }}
+                        </span>
+                    @endif
+                </td>
+                <td style="font-size:12px;color:var(--text-muted);">
+                    {{ $p->no_hp }}
+                    @if($p->alamat)<div style="font-size:11px;">{{ Str::limit($p->alamat, 30) }}</div>@endif
+                </td>
+                <td>
+                    @if($p->bukti_pembayaran)
+                        <a href="{{ asset('storage/' . $p->bukti_pembayaran) }}" target="_blank"
+                           class="btn btn-ghost btn-sm" style="font-size:11px;">🖼️ Lihat Bukti</a>
+                    @else
+                        <span style="font-size:12px;color:#9ca3af;">— Gratis —</span>
+                    @endif
+                </td>
+                <td style="font-size:12px;color:var(--text-muted);">{{ $p->created_at->format('d M Y') }}</td>
+                <td>
+                    @if($p->status === 'diterima')
+                        <span class="badge badge-approved"><span class="badge-dot"></span>Diterima</span>
+                        @elseif($p->status === 'ditolak')
+    <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
+    @if($p->alasan_penolakan)
+        <div style="font-size:10px;color:#ef4444;margin-top:3px;max-width:140px;line-height:1.4;">
+            {{ Str::limit($p->alasan_penolakan, 50) }}
+        </div>
+    @endif
+                    @else
+                        <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
+                    @endif
+                </td>
+                <td>
+                    <div class="action-group">
+                        @if($p->status !== 'diterima')
+                        <form method="POST" action="{{ route('admin.pendaftaran.approve', $p->id) }}" style="display:inline;">
+                            @csrf
+                            <button type="submit" class="btn btn-approve btn-sm">✓ Terima</button>
+                        </form>
+                        @endif
+                        @if($p->status !== 'ditolak')
+<button type="button" class="btn btn-reject btn-sm"
+    onclick="bukaTolakDaftar({{ $p->id }}, '{{ addslashes($p->nama_lengkap) }}')">
+    ✕ Tolak
+</button>
+@endif
+                    </div>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="7">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎉</div>
+                        <div class="empty-state-text">Tidak ada pendaftaran</div>
+                    </div>
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+    @if($pendaftarans->hasPages())
+    <div style="padding:14px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
+        {{ $pendaftarans->withQueryString()->links() }}
+    </div>
+    @endif
+</div>
+
+@endif
+{{-- ══ END SECTION PENDAFTARAN ══ --}}
 <div class="modal-overlay" id="modal-detail">
     <div class="modal">
         <div class="modal-header">
@@ -590,10 +715,45 @@
     </div>
 </div>
 
+{{-- ── Modal Alasan Tolak Pendaftaran ── --}}
+<div class="modal-overlay" id="modal-tolak-daftar">
+    <div class="modal" style="max-width:460px;">
+        <div class="modal-header">
+            <div class="modal-title">Tolak Pendaftaran</div>
+            <button class="modal-close" onclick="closeModal('modal-tolak-daftar')">✕</button>
+        </div>
+        <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:18px;line-height:1.6;">
+            Pendaftar: <strong id="tolak-daftar-nama"></strong>
+        </p>
+        <form id="form-tolak-daftar" method="POST">
+    @csrf
+            <div class="form-group">
+                <label class="form-label">Alasan Penolakan <span style="color:#ef4444;">*</span></label>
+                <textarea name="alasan_penolakan" class="form-textarea" rows="4" required
+                    placeholder="Contoh: Bukti pembayaran tidak valid, data tidak lengkap..."></textarea>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:6px;">
+                <button type="button" class="btn btn-ghost" style="flex:1;"
+                    onclick="closeModal('modal-tolak-daftar')">Batal</button>
+                <button type="submit" class="btn btn-reject" style="flex:1;">
+                    ✕ Konfirmasi Tolak
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
 <script>
+
+function bukaTolakDaftar(id, nama) {
+    document.getElementById('tolak-daftar-nama').textContent = nama;
+    document.getElementById('form-tolak-daftar').action = `/admin/pendaftaran/${id}/reject`;
+    document.getElementById('form-tolak-daftar').querySelector('textarea').value = '';
+    openModal('modal-tolak-daftar');
+}
 // Sertakan data program + kurikulum induk (di-load dari server)
 const programData    = @json($programs->items());
 
