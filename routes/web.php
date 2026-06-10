@@ -37,7 +37,15 @@ Route::prefix('pelatihan')->name('pelatihan.')->group(function () {
     Route::get('/event', [PelatihanController::class, 'event'])->name('event');
     Route::get('/mentor', [PelatihanController::class, 'pembimbing'])->name('pembimbing');
     Route::get('/mentor/search', [PelatihanController::class, 'searchMentor'])->name('pembimbing.search');
-
+    
+    Route::get('/program/{id}', [PelatihanController::class, 'detailProgram'])
+    ->name('detail');
+    Route::get('/event/{id}', [PelatihanController::class, 'detailEvent'])
+    ->name('event.detail');
+    Route::get('/mentor/{id}', [PelatihanController::class, 'detailMentor'])
+    ->name('mentor.detail');
+    Route::post('/mentor/{id}/ulasan', [PelatihanController::class, 'simpanUlasan'])
+    ->name('mentor.ulasan');
 });
 
 Route::prefix('umkm')->group(function () {
