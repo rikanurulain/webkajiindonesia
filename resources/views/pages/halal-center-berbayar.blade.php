@@ -132,7 +132,26 @@
         text-transform: uppercase;
         padding: 0.25rem 0.75rem;
         border-radius: 9999px;
+    }  /* ← tutup badge-popular di sini */
 
+    /* Tambahkan portfolio-tag di luar, sebagai class baru */
+    .portfolio-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.375rem 0.875rem;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 9999px;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: #15803d;
+        transition: background 0.2s, border-color 0.2s;
+    }
+    .portfolio-tag:hover {
+        background: #dcfce7;
+        border-color: #86efac;
+    }
         /* ============ MOBILE RESPONSIVE ============ */
 @media (max-width: 640px) {
 
@@ -317,7 +336,7 @@ section { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
                         ['Garansi Revisi Dokumen',      'Terbatas 1x',                 'Tidak Terbatas'],
                         ['Pendampingan Pasca-Sertifikat',false,                         true],
                         ['Perpanjangan & Pembaruan',    false,                          true],
-                        ['Konsultasi Regulasi Lanjutan','Tidak termasuk',              'Termasuk (NIB, PIRT, BPOM, SNI)'],
+                        ['Konsultasi Regulasi Lanjutan','Tidak termasuk',              'Termasuk (NIB, BPOM, SNI)'],
                         ['SLA Waktu Respons',           'Normal',                       '< 24 Jam Kerja'],
                     ];
                     @endphp
@@ -462,7 +481,7 @@ section { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
                         'Optimasi Kawasan Halal (Halal Hub)',
                         'Penyediaan tenaga Penyelia Halal tersertifikasi untuk kawasan',
                         'Advokasi & penyusunan SJPH skala korporasi',
-                        'Pendampingan regulasi penuh (NIB, PIRT, BPOM, SNI, Halal)',
+                        'Pendampingan regulasi penuh (NIB, BPOM, SNI, Halal)',
                         'Digitalisasi ekosistem halal internal',
                         'Kontrak pendampingan jangka panjang',
                     ] as $text)
@@ -541,7 +560,7 @@ section { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
                 [
                     'badge' => null,
                     'title' => 'Pendampingan Regulasi & Legalitas',
-                    'desc'  => 'Bantuan pengurusan NIB, PIRT, BPOM, SNI, dan legalitas lain yang dibutuhkan sebagai bagian dari ekosistem halal bisnis Anda.',
+                    'desc'  => 'Bantuan pengurusan NIB, BPOM, SNI, dan legalitas lain yang dibutuhkan sebagai bagian dari ekosistem halal bisnis Anda.',
                     'icon'  => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
                 ],
                 [
@@ -670,6 +689,53 @@ section { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
             <p class="text-sm text-primary">
                 <strong>Keuntungan paket berbayar:</strong> Template berkas (SJPH, SOP, IK, diagram alir produksi, dll.) <strong>disiapkan dan diisi oleh tim konsultan</strong> Anda hanya perlu menyediakan data dasar dan memberikan persetujuan.
             </p>
+        </div>
+    </div>
+</section>
+
+{{-- ── PORTOFOLIO PENDAMPINGAN ── --}}
+<section class="bg-white py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+            <p class="text-sm font-semibold text-primary uppercase tracking-widest mb-2">Pengalaman Kami</p>
+            <h2 class="font-serif text-3xl font-bold text-gray-900 sm:text-4xl">Portofolio Pendampingan</h2>
+            <p class="mt-3 text-gray-500 max-w-xl mx-auto">SYNTARA telah mendampingi berbagai jenis industri dalam proses sertifikasi halal, dari skala UMK hingga perusahaan besar.</p><br>
+        </div>
+
+        {{-- Industri Tags --}}
+        <div class="flex flex-wrap justify-center gap-2 mb-10">
+            @foreach ([
+                'Katering', 'Restoran', 'Daging Impor', 'Logistik',
+                'Barang Gunaan Rumah Tangga','Peralatan Rumah Tangga',
+                'Makanan Kaleng Impor', 'Industri Bakery','Jasa Penyimpanan', 'Bahan Kosmetik',
+                'Industri Pembuatan Selai, Saos, Kopi', 'Industri Frozen',
+            ] as $industri)
+            <span class="portfolio-tag">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                {{ $industri }}
+            </span>
+            @endforeach
+        </div>
+
+        {{-- Klien --}}
+        <div class="rounded-2xl bg-gray-50 border border-gray-100 shadow-sm p-6">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4 text-center">Sebagian Klien yang Telah Kami Dampingi</p>
+            <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm text-gray-600 font-medium">
+                @foreach ([
+                    'PT Multichemindo Abadi Sejahtera', 'Sumber Barokah Kerupuk SB', 'CV Bersama Manfaat',
+                    'Dapoer MAMA', 'ISOTOK', 'Saos RYAN JAYA', 'NIK\'S MEALS', 'BEEFLAND IDN',
+                    'FM Fresh Food', 'DAPOER NOEKI', 'Mei Kui Hwa', 'Kampoeng Semanggi Kendung Sby',
+                    'Nita Manisan', 'Alsa Food', 'Fafiyo Makmur Sejahtera', 'Surya Bakery',
+                    'Katering RATNA', 'Hj. Azizah', 'Kopi Liberika', 'Rengginang Hotimah',
+                    'Petis Ikan Cakalan Barokah', 'PT. PANGAN MITRA BERKAH', 'Katering Bu WID',
+                    'FM Roast Chicken', 'Nanjing County Xingguang Canned Food Co.Ltd',
+                    'Zhangzhou Tan Co.Ltd Fujian China', 'PT. SUN POWER CERAMICS',
+                ] as $klien)
+                <span class="border-r border-gray-200 pr-4 last:border-0 last:pr-0 py-0.5">{{ $klien }}</span>
+                @endforeach
+            </div>
         </div>
     </div>
 </section>

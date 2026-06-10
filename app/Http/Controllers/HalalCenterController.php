@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Trainer; 
 use Illuminate\View\View;
 
 class HalalCenterController extends Controller
@@ -16,12 +17,19 @@ class HalalCenterController extends Controller
 
     public function gratis(): View
     {
+        $p3hTrainers = Trainer::approved()   
+            ->halal()
+            ->whereNotNull('academic_degree')       
+        ->where('academic_degree', '!=', '')
+            ->orderBy('full_name')
+            ->get();
+
         return view('pages.halal-center-gratis', [
-            'title' => 'Layanan Gratis Halal Center',
+            'title'           => 'Layanan Gratis Halal Center',
             'metaDescription' => 'Layanan gratis Halal Center untuk pendampingan sertifikasi halal dan edukasi masyarakat.',
+            'p3hTrainers'     => $p3hTrainers,   // ← tambah ini
         ]);
     }
-
     public function berbayar(): View
     {
         return view('pages.halal-center-berbayar', [

@@ -38,13 +38,6 @@ Route::prefix('pelatihan')->name('pelatihan.')->group(function () {
     Route::get('/mentor', [PelatihanController::class, 'pembimbing'])->name('pembimbing');
     Route::get('/mentor/search', [PelatihanController::class, 'searchMentor'])->name('pembimbing.search');
 
-    // Wajib login
-    Route::middleware('auth')->group(function () {
-        Route::get('/program/{id}', [PelatihanController::class, 'detailProgram'])->name('detail');
-        Route::get('/event/{id}', [PelatihanController::class, 'detailEvent'])->name('event.detail');
-        Route::get('/mentor/{id}', [PelatihanController::class, 'detailMentor'])->name('mentor.detail');
-        Route::post('/mentor/{id}/ulasan', [PelatihanController::class, 'simpanUlasanTrainer'])->name('mentor.ulasan');
-    });
 });
 
 Route::prefix('umkm')->group(function () {
@@ -55,17 +48,22 @@ Route::prefix('umkm')->group(function () {
     Route::get('/peta-data', [UmkmController::class, 'petaData'])->name('umkm.peta-data');
     Route::get('/peta-data-mentor', [UmkmController::class, 'petaDataMentor'])->name('umkm.peta-data-mentor');
 
-    // Bebas akses — detail mentor bisa dilihat siapa saja
-    Route::get('/pembimbing/{id}', [UmkmController::class, 'showMentor'])->name('umkm.mentor.detail');
-
     // Wajib login
     Route::middleware('auth')->group(function () {
+        Route::get('/pembimbing/{id}', [UmkmController::class, 'showMentor'])->name('umkm.mentor.detail'); // ← di sini
         Route::get('/lokasi', [UmkmController::class, 'lokasi'])->name('umkm.lokasi');
         Route::post('/pembimbing/{id}/ulasan', [UmkmMentorUlasanController::class, 'store'])->name('umkm.mentor.ulasan.store');
         Route::delete('/pembimbing/{mentorId}/ulasan/{ulasanId}', [UmkmMentorUlasanController::class, 'destroy'])->name('umkm.mentor.ulasan.destroy');
     });
 });
 
+// Wajib login
+Route::middleware('auth')->group(function () {
+    Route::get('/pembimbing/{id}', [UmkmController::class, 'showMentor'])->name('umkm.mentor.detail'); // ← tambah ini
+    Route::get('/lokasi', [UmkmController::class, 'lokasi'])->name('umkm.lokasi');
+    Route::post('/pembimbing/{id}/ulasan', [UmkmMentorUlasanController::class, 'store'])->name('umkm.mentor.ulasan.store');
+    Route::delete('/pembimbing/{mentorId}/ulasan/{ulasanId}', [UmkmMentorUlasanController::class, 'destroy'])->name('umkm.mentor.ulasan.destroy');
+});
 Route::prefix('halal-center')->group(function () {
     Route::get('/', [HalalCenterController::class, 'index'])->name('halal-center');
     Route::get('/gratis', [HalalCenterController::class, 'gratis'])->name('halal-center.gratis');

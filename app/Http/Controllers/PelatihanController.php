@@ -34,7 +34,7 @@ class PelatihanController extends Controller
                 'modul'       => [
                     ['judul' => 'Pengenalan Dunia UMKM',        'isi' => 'Memahami ekosistem UMKM di Indonesia, peluang, dan tantangan yang dihadapi pelaku usaha kecil.'],
                     ['judul' => 'Menentukan Model Bisnis',       'isi' => 'Cara memilih model bisnis yang tepat sesuai potensi daerah, target pasar, dan sumber daya yang dimiliki.'],
-                    ['judul' => 'Legalitas & Perizinan Usaha',   'isi' => 'Panduan mengurus NIB, PIRT, sertifikat halal, dan izin usaha lainnya dengan mudah dan terjangkau.'],
+                    ['judul' => 'Legalitas & Perizinan Usaha',   'isi' => 'Panduan mengurus NIB, sertifikat halal, dan izin usaha lainnya dengan mudah dan terjangkau.'],
                     ['judul' => 'Manajemen Operasional Harian',  'isi' => 'Teknik mengelola stok, produksi, dan distribusi agar operasional usaha berjalan efisien setiap hari.'],
                     ['judul' => 'Membangun Tim Usaha',           'isi' => 'Cara merekrut, melatih, dan memotivasi karyawan pertama untuk membantu mengembangkan usaha Anda.'],
                     ['judul' => 'Evaluasi & Rencana Berkembang', 'isi' => 'Mengukur kinerja usaha dan menyusun rencana pengembangan jangka pendek dan jangka panjang.'],

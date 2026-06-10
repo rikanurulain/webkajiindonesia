@@ -360,7 +360,7 @@
                 ],
                 [
                     'title' => 'Pendampingan Regulasi & Legalitas',
-                    'desc'  => 'Bantuan pengurusan NIB, PIRT, dan dokumen legalitas lain yang dibutuhkan sebagai prasyarat proses sertifikasi halal.',
+                    'desc'  => 'Bantuan pengurusan NIB, dan dokumen legalitas lain yang dibutuhkan sebagai prasyarat proses sertifikasi halal.',
                     'icon'  => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
                 ],
             ] as $layanan)
@@ -379,49 +379,27 @@
 </section>
 
 
-{{-- Portofolio Industri --}}
+{{-- Portofolio Pendampingan --}}
 <section class="bg-gray-50 py-16">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-10">
             <p class="text-sm font-semibold text-primary uppercase tracking-widest mb-2">Pengalaman Kami</p>
             <h2 class="font-serif text-3xl font-bold text-gray-900 sm:text-4xl">Portofolio Pendampingan</h2>
-            <p class="mt-3 text-gray-500 max-w-xl mx-auto">SYNTARA telah mendampingi berbagai jenis industri dalam proses sertifikasi halal, dari skala UMK hingga perusahaan besar.</p><br>
+            <p class="mt-3 text-gray-500 max-w-xl mx-auto">SYNTARA telah mendampingi berbagai pelaku usaha dalam proses sertifikasi halal melalui Pendamping Proses Produk Halal (P3H) bersertifikat.</p><br>
         </div>
 
-        {{-- Industri Tags --}}
+        {{-- P3H Tags --}}
         <div class="flex flex-wrap justify-center gap-2 mb-10">
-            @foreach ([
-                'Katering', 'Restoran', 'Daging Impor', 'Logistik',
-                'Barang Gunaan Rumah Tangga','Peralatan Rumah Tangga',
-                'Makanan Kaleng Impor', 'Industri Bakery','Jasa Penyimpanan', 'Bahan Kosmetik',
-                'Industri Pembuatan Selai, Saos, Kopi', 'Industri Frozen',
-            ] as $industri)
+            @forelse ($p3hTrainers as $trainer)
             <span class="portfolio-tag">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                 </svg>
-                {{ $industri }}
+                {{ $trainer->nama_lengkap }}
             </span>
-            @endforeach
-        </div>
-
-        {{-- Klien --}}
-        <div class="rounded-2xl bg-white border border-gray-100 shadow-sm p-6">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4 text-center">Sebagian Klien yang Telah Kami Dampingi</p>
-            <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm text-gray-600 font-medium">
-                @foreach ([
-                    'PT Multichemindo Abadi Sejahtera', 'Sumber Barokah Kerupuk SB', 'CV Bersama Manfaat',
-                    'Dapoer MAMA', 'ISOTOK', 'Saos RYAN JAYA', 'NIK\'S MEALS', 'BEEFLAND IDN',
-                    'FM Fresh Food', 'DAPOER NOEKI', 'Mei Kui Hwa', 'Kampoeng Semanggi Kendung Sby',
-                    'Nita Manisan', 'Alsa Food', 'Fafiyo Makmur Sejahtera', 'Surya Bakery',
-                    'Katering RATNA', 'Hj. Azizah', 'Kopi Liberika', 'Rengginang Hotimah',
-                    'Petis Ikan Cakalan Barokah', 'PT. PANGAN MITRA BERKAH', 'Katering Bu WID',
-                    'FM Roast Chicken', 'Nanjing County Xingguang Canned Food Co.Ltd',
-                    'Zhangzhou Tan Co.Ltd Fujian China', 'PT. SUN POWER CERAMICS',
-                ] as $klien)
-                <span class="border-r border-gray-200 pr-4 last:border-0 last:pr-0 py-0.5">{{ $klien }}</span>
-                @endforeach
-            </div>
+            @empty
+            <p class="text-sm text-gray-400 italic">Belum ada pendamping terdaftar.</p>
+            @endforelse
         </div>
     </div>
 </section>

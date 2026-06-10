@@ -93,41 +93,64 @@ class Trainer extends Model
         return $this->hasMany(UlasanPembimbing::class, 'pembimbing_id');
     }
 
-    // ═══════════════════════════════════════════
-    // SCOPES
-    // ═══════════════════════════════════════════
+   // ═══════════════════════════════════════════
+// SCOPES
+// ═══════════════════════════════════════════
 
-    public function scopeApproved($query)
-    {
-        return $query->where('status', 'approved');
-    }
-
-    public function scopePending($query)
-    {
-        return $query->where('status', 'pending');
-    }
-
-    public function scopeRejected($query)
-    {
-        return $query->where('status', 'rejected');
-    }
-
-    // ═══════════════════════════════════════════
-    // HELPERS
-    // ═══════════════════════════════════════════
-
-    public function isApproved(): bool
-    {
-        return $this->status === 'approved';
-    }
-
-    public function isPending(): bool
-    {
-        return $this->status === 'pending';
-    }
-
-    public function isRejected(): bool
-    {
-        return $this->status === 'rejected';
-    }
+public function scopeApproved($query)
+{
+    return $query->where('status', 'approved');
 }
+
+public function scopePending($query)
+{
+    return $query->where('status', 'pending');
+}
+
+public function scopeRejected($query)
+{
+    return $query->where('status', 'rejected');
+}
+
+public function scopeHalal($query)
+{
+    $keywords = ['Penyelia Halal', 'P3H', 'PPH', 'Fasilitator'];
+
+    return $query->where(function ($q) use ($keywords) {
+        foreach ($keywords as $kw) {
+            $q->orWhere('keahlian', 'LIKE', "%{$kw}%");
+        }
+    });
+}
+
+// ═══════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════
+
+public function isApproved(): bool
+{
+    return $this->status === 'approved';
+}
+
+public function isPending(): bool
+{
+    return $this->status === 'pending';
+}
+
+public function isRejected(): bool
+{
+    return $this->status === 'rejected';
+}
+
+public function getKeahlianArrayAttribute(): array
+{
+    if (empty($this->keahlian)) return [];
+    return array_map('trim', explode(',', $this->keahlian));
+}
+
+public function getNamaLengkapAttribute(): string
+{
+    return $this->academic_degree ?? '';
+}
+}
+

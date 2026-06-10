@@ -1019,7 +1019,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
                 <div class="form-group">
-                    <label class="form-label">Total Jam</label>
+                    <label class="form-label">Total Jam Pelajaran</label>
                     <input class="form-input" type="number" name="total_jam" id="k-total-jam" placeholder="0" min="0" step="1">
                 </div>
                 <div class="form-group">
