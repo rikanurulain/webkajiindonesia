@@ -543,8 +543,9 @@ class PelatihanController extends Controller
             ->when($request->filled('search'), function ($q) use ($request) {
                 $q->where(function ($q2) use ($request) {
                     $q2->where('users.name', 'like', '%' . $request->search . '%')
-                       ->orWhere('trainer.lokasi', 'like', '%' . $request->search . '%')
-                       ->orWhere('trainer.keahlian', 'like', '%' . $request->search . '%');
+                       ->orWhere('trainer.academic_degree', 'like', '%' . $request->search . '%')
+                       ->orWhere('trainer.keahlian', 'like', '%' . $request->search . '%')
+                       ->orWhere('trainer.lokasi', 'like', '%' . $request->search . '%');
                 });
             })
             ->select(
@@ -552,6 +553,7 @@ class PelatihanController extends Controller
                 'trainer.keahlian',
                 'trainer.displayed_bidang',
                 'trainer.white_bg_photo',
+                'trainer.foto',   
                 'trainer.academic_degree',
                 'trainer.gmaps_location',
                 'trainer.lokasi as location',
@@ -594,8 +596,9 @@ public function detailMentor($id)
         $trainer->sosmed   = $trainerData->sosmed;
         $trainer->bio      = $trainerData->bio      ?? $trainer->bio;
         $trainer->keahlian = $trainerData->keahlian ?? null;
-        $trainer->foto = $trainerData->white_bg_photo ?? $trainerData->foto ?? null;
+        $trainer->foto = $trainerData->foto ?? $trainerData->white_bg_photo ?? null;
         $trainer->bidang_keahlian = $trainerData->keahlian ?? $trainer->bidang_keahlian ?? null;
+        $trainer->academic_degree = $trainerData->academic_degree ?? $trainer->name;
     }
 
     $ulasan = \App\Models\TrainerUlasan::with('user')
@@ -651,22 +654,22 @@ public function searchMentor(Request $request)
     $keyword = $request->get('q', '');
 
     $trainers = User::where('users.role', 'trainer')
-    ->leftJoin('trainers', 'trainers.user_id', '=', 'users.id')
-    ->where('trainers.status', 'approved')
-    ->select(
-        'users.*',
-        'trainers.keahlian',
-        'trainers.displayed_bidang',
-        'trainers.white_bg_photo',
-        'trainers.academic_degree',
-        'trainers.gmaps_location',
-        'trainers.lokasi as location',
-        'trainers.avg_rating',
-        'trainers.total_ulasan',
-    )
-    ->paginate(12);
+        ->leftJoin('trainer', 'trainer.user_id', '=', 'users.id') // ← fix
+        ->where('trainer.status', 'approved')                      // ← fix
+        ->select(
+            'users.*',
+            'trainer.keahlian',           // ← fix
+            'trainer.displayed_bidang',   // ← fix
+            'trainer.white_bg_photo',     // ← fix
+            'trainer.foto', 
+            'trainer.academic_degree',    // ← fix
+            'trainer.gmaps_location',     // ← fix
+            'trainer.lokasi as location', // ← fix
+            'trainer.avg_rating',         // ← fix
+            'trainer.total_ulasan',       // ← fix
+        )
+        ->paginate(12);
 
-    // Ambil data ulasan sekaligus (sama persis seperti di pembimbing())
     $trainerIds = $trainers->pluck('id');
     $ulasanData = \App\Models\TrainerUlasan::selectRaw('trainer_id, AVG(rating) as avg_rating, COUNT(*) as total_ulasan')
         ->whereIn('trainer_id', $trainerIds)
@@ -683,6 +686,7 @@ public function searchMentor(Request $request)
             'bidang_keahlian'   => $trainer->bidang_keahlian,
             'location'          => !empty(trim($trainer->address ?? '')) ? $trainer->address : null,
             'white_bg_photo'    => $trainer->white_bg_photo,
+            'foto'               => $trainer->foto,
             'profile_photo_path'=> $trainer->profile_photo_path,
             'avg_rating'        => $u ? round($u->avg_rating, 1) : 0,
             'total_ulasan'      => $u ? $u->total_ulasan : 0,

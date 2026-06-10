@@ -52,22 +52,26 @@
                    data-lokasi="{{ strtolower($trainer->gmaps_location ?? '') }}"
                    data-bidang="{{ strtolower($trainer->bidang_keahlian ?? '') }}">
 
-                    {{-- Foto --}}
-                    <div class="w-full h-44 bg-gray-100 flex items-center justify-center overflow-hidden">
-                        @if($trainer->white_bg_photo)
-                            <img src="{{ asset('storage/' . $trainer->white_bg_photo) }}"
-                                 alt="{{ $trainer->name }}"
-                                 class="w-full h-full object-cover">
-                        @elseif($trainer->profile_photo_path)
-                            <img src="{{ asset('storage/' . $trainer->profile_photo_path) }}"
-                                 alt="{{ $trainer->name }}"
-                                 class="w-full h-full object-cover">
-                        @else
-                            <div class="text-3xl font-bold text-emerald-700">
-                                {{ strtoupper(substr($trainer->name, 0, 2)) }}
-                            </div>
-                        @endif
-                    </div>
+                   {{-- Foto --}}
+<div class="w-full bg-gray-100 overflow-hidden" style="aspect-ratio: 3/4;">
+    @if($trainer->foto)
+        <img src="{{ asset('storage/' . $trainer->foto) }}"
+             alt="{{ $trainer->name }}"
+             class="w-full h-full object-cover object-top">
+    @elseif($trainer->white_bg_photo)
+        <img src="{{ asset('storage/' . $trainer->white_bg_photo) }}"
+             alt="{{ $trainer->name }}"
+             class="w-full h-full object-cover object-top">
+    @elseif($trainer->profile_photo_path)
+        <img src="{{ asset('storage/' . $trainer->profile_photo_path) }}"
+             alt="{{ $trainer->name }}"
+             class="w-full h-full object-cover object-top">
+    @else
+        <div class="w-full h-full flex items-center justify-center text-3xl font-bold text-emerald-700">
+            {{ strtoupper(substr($trainer->name, 0, 2)) }}
+        </div>
+    @endif
+</div>
 
                     {{-- Info --}}
                     <div class="bg-green-50 px-4 py-2 border-b">
@@ -116,22 +120,23 @@
     </section>
 
     @php
-    $trainersJson = $trainers->getCollection()->map(function($t) {
-        return [
-            'id'                 => $t->id,
-            'name'               => $t->name,
-            'academic_degree'    => $t->academic_degree ?? $t->name,
-            'bidang_keahlian'    => $t->displayed_bidang 
-                     ?? trim(explode(',', $t->keahlian ?? '')[0]) 
-                     ?: 'Trainer',
-            'location'           => $t->location ?? 'Lokasi tidak tersedia',
-            'white_bg_photo'     => $t->white_bg_photo,
-            'profile_photo_path' => $t->profile_photo_path,
-            'avg_rating'         => $t->avg_rating ?? 0,
-            'total_ulasan'       => $t->total_ulasan ?? 0,
-        ];
-    });
-    @endphp
+$trainersJson = $trainers->getCollection()->map(function($t) {
+    return [
+        'id'                 => $t->id,
+        'name'               => $t->name,
+        'academic_degree'    => $t->academic_degree ?? $t->name,
+        'bidang_keahlian'    => $t->displayed_bidang 
+                 ?? trim(explode(',', $t->keahlian ?? '')[0]) 
+                 ?: 'Trainer',
+        'location'           => $t->location ?? 'Lokasi tidak tersedia',
+        'foto'               => $t->foto,
+        'white_bg_photo'     => $t->white_bg_photo,
+        'profile_photo_path' => $t->profile_photo_path,
+        'avg_rating'         => $t->avg_rating ?? 0,
+        'total_ulasan'       => $t->total_ulasan ?? 0,
+    ];
+});
+@endphp
 
     <script>
         // Semua data trainer dilempar dari PHP ke JS (tanpa fetch)
@@ -157,10 +162,11 @@
                 if (paginationEl) paginationEl.innerHTML = '';
 
                 const filtered = allTrainers.filter(t =>
-                    t.name.toLowerCase().includes(keyword) ||
-                    (t.bidang_keahlian ?? '').toLowerCase().includes(keyword) ||
-                    (t.location ?? '').toLowerCase().includes(keyword)
-                );
+    t.name.toLowerCase().includes(keyword) ||
+    (t.academic_degree ?? '').toLowerCase().includes(keyword) ||
+    (t.bidang_keahlian ?? '').toLowerCase().includes(keyword) ||
+    (t.location ?? '').toLowerCase().includes(keyword)
+);
 
                 renderCards(filtered, keyword);
             });
@@ -181,11 +187,14 @@
                     const avg   = parseFloat(t.avg_rating ?? 0).toFixed(1);
                     const total = t.total_ulasan ?? 0;
 
-                    const foto = t.white_bg_photo
-                        ? `<img src="/storage/${t.white_bg_photo}" alt="${t.name}" class="w-full h-full object-cover">`
-                        : t.profile_photo_path
-                            ? `<img src="/storage/${t.profile_photo_path}" alt="${t.name}" class="w-full h-full object-cover">`
-                            : `<div class="text-3xl font-bold text-emerald-700">${t.name.substring(0,2).toUpperCase()}</div>`;
+                    
+    const foto = t.foto
+    ? `<img src="/storage/${t.foto}" alt="${t.name}" class="w-full h-full object-cover">`
+    : t.white_bg_photo
+        ? `<img src="/storage/${t.white_bg_photo}" alt="${t.name}" class="w-full h-full object-cover">`
+        : t.profile_photo_path
+            ? `<img src="/storage/${t.profile_photo_path}" alt="${t.name}" class="w-full h-full object-cover">`
+            : `<div class="text-3xl font-bold text-emerald-700">${t.name.substring(0,2).toUpperCase()}</div>`;
 
                     const bintang = [1,2,3,4,5].map(i =>
                         `<svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3"
@@ -196,11 +205,13 @@
                     ).join('');
 
                     return `
-                        <a href="/pelatihan/mentor/${t.id}"
-                        class="block bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition duration-300">
-                            <div class="w-full h-44 bg-gray-100 flex items-center justify-center overflow-hidden">
-                                ${foto}
-                            </div>
+    <a href="/pelatihan/mentor/${t.id}"
+    class="block bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition duration-300">
+        <div class="w-full bg-gray-100 overflow-hidden" style="aspect-ratio: 3/4;">
+            <div class="w-full h-full flex items-center justify-center overflow-hidden">
+                ${foto}
+            </div>
+        </div>
                             <div class="bg-green-50 px-4 py-2 border-b">
                                 <h3 class="font-bold text-gray-900 text-sm line-clamp-1">${t.academic_degree}</h3>
                                 <p class="text-xs text-emerald-600 font-bold uppercase">${t.bidang_keahlian}</p>

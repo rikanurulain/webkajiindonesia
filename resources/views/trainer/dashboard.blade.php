@@ -540,13 +540,14 @@ tbody td { padding: 14px 18px; font-size: 13px; }
     </div>
     <div class="sidebar-user">
         <div class="user-card" onclick="showPage('profil')">
-            <div class="user-avatar">
-                @if(auth()->user()->foto)
-                    <img src="{{ asset('storage/' . auth()->user()->foto) }}" alt="{{ auth()->user()->name }}">
-                @else
-                    {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-                @endif
-            </div>
+        <div class="user-avatar">
+        @php $fotoSidebar = $trainer?->foto ?? null; @endphp
+@if($fotoSidebar)
+    <img src="{{ asset('storage/' . $fotoSidebar) }}" alt="{{ auth()->user()->name }}">
+@else
+    {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
+@endif
+</div>
             <div>
                 <div class="user-name">{{ auth()->user()->name }}</div>
                 <div class="user-role">Trainer</div>
@@ -923,13 +924,14 @@ tbody td { padding: 14px 18px; font-size: 13px; }
     <div class="page-section" id="page-profil">
         @if(session('success'))<div class="alert alert-success">✅ {{ session('success') }}</div>@endif
         <div class="profile-hero">
-            <div class="profile-avatar-xl">
-                @if(auth()->user()->foto)
-                    <img src="{{ asset('storage/' . auth()->user()->foto) }}" alt="{{ auth()->user()->name }}">
-                @else
-                    {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-                @endif
-            </div>
+        <div class="profile-avatar-xl">
+        @php $fotoHero = $trainer?->foto ?? null; @endphp
+@if($fotoHero)
+    <img src="{{ asset('storage/' . $fotoHero) }}" alt="{{ auth()->user()->name }}">
+@else
+    {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
+@endif
+</div>
             <div class="profile-hero-info">
                 <h2>{{ auth()->user()->name }}</h2>
                 <p>Trainer · Bergabung sejak {{ \Carbon\Carbon::parse(auth()->user()->created_at)->translatedFormat('F Y') }}</p>
@@ -937,62 +939,54 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             <button class="btn" style="background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.3);margin-left:auto" onclick="openModal('modal-profil')">Edit Profil</button>
         </div>
         <div class="profile-form-card">
-            <div class="form-row">
-                <div class="form-group"><div class="form-label">Nama Lengkap</div><div class="form-static">{{ auth()->user()->name }}</div></div>
-                <div class="form-group"><div class="form-label">Email</div><div class="form-static">{{ auth()->user()->email }}</div></div>
-                <div class="form-group">
-                    <div class="form-label">No. Telepon / WhatsApp</div>
-                    <div class="form-static" style="display:flex;align-items:center;gap:8px">
-                        @if(auth()->user()->phone) <span style="color:#25d366">✓</span> {{ auth()->user()->phone }}
-                        @else <span style="color:var(--text-muted);font-style:italic">Belum diisi</span> @endif
-                    </div>
-                </div>
-                <div class="form-group">
-    <div class="form-label">Bidang Keahlian Ditampilkan</div>
-
-    @php
-        $keahlianList = array_values(array_filter(
-            array_map('trim', explode(',', $trainer->keahlian ?? ''))
-        ));
-    @endphp
-
-    @if(count($keahlianList) <= 1)
-        <div class="form-static">
-            {{ $trainer->displayed_bidang ?? ($keahlianList[0] ?? '-') }}
+        <div class="profile-form-card">
+    <div class="form-row">
+        <div class="form-group">
+            <div class="form-label">Nama Lengkap</div>
+            <div class="form-static">{{ auth()->user()->name }}</div>
         </div>
-        @if(count($keahlianList) === 1)
-            <div class="form-hint">Otomatis terisi karena hanya satu bidang keahlian.</div>
-        @endif
-    @else
-        <form method="POST" action="{{ route('trainer.profil.bidang') }}"
-              style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-            @csrf
-            <select name="displayed_bidang" class="form-select" style="flex:1;min-width:180px">
-                @foreach($keahlianList as $k)
-                    <option value="{{ $k }}"
-                        {{ ($trainer->displayed_bidang === $k) ? 'selected' : '' }}>
-                        {{ $k }}
-                    </option>
-                @endforeach
-            </select>
-            <button type="submit" class="btn btn-primary btn-sm">
-                ✓ Simpan
-            </button>
-        </form>
-        <div class="form-hint" style="margin-top:6px">
-            Bidang ini yang tampil di halaman publik Daftar Trainer.
+        <div class="form-group">
+            <div class="form-label">Nama & Gelar (Publik)</div>
+            <div class="form-static">{{ $trainer?->academic_degree ?? auth()->user()->name }}</div>
+            <div class="form-hint">Yang tampil di halaman daftar trainer</div>
         </div>
-    @endif
-</div>
+        <div class="form-group">
+            <div class="form-label">Email</div>
+            <div class="form-static">{{ auth()->user()->email }}</div>
+        </div>
+        <div class="form-group">
+            <div class="form-label">No. Telepon / WhatsApp</div>
+            <div class="form-static" style="display:flex;align-items:center;gap:8px">
+                @if(auth()->user()->phone)
+                    <span style="color:#25d366">✓</span> {{ auth()->user()->phone }}
+                @else
+                    <span style="color:var(--text-muted);font-style:italic">Belum diisi</span>
+                @endif
             </div>
-            <div class="form-group">
-                <div class="form-label">Bio / Tentang Saya</div>
-                <div class="form-static" style="min-height:80px;line-height:1.7">{{ $trainer->bio ?? 'Belum ada bio.' }}</div>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1">
+            <div class="form-label">Bidang Keahlian Ditampilkan</div>
+            @php
+                $keahlianList = array_values(array_filter(
+                    array_map('trim', explode(',', $trainer?->keahlian ?? ''))
+                ));
+            @endphp
+            <div class="form-static">
+                {{ $trainer?->displayed_bidang ?? ($keahlianList[0] ?? '-') }}
             </div>
+            <div class="form-hint">Klik "Edit Profil" untuk mengubah.</div>
         </div>
     </div>
-
+    <div class="form-group">
+        <div class="form-label">Bio / Tentang Saya</div>
+        <div class="form-static" style="min-height:80px;line-height:1.7">
+            {{ $trainer?->bio ?? 'Belum ada bio.' }}
+            </div>
 </div>
+</div> 
+</div> 
+</div>
+</div> 
 </main>
 
 {{-- ============ MODAL KURIKULUM ============ --}}
@@ -1318,26 +1312,171 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             <div class="modal-title">Edit Profil</div>
             <button class="modal-close" onclick="closeModal('modal-profil')">×</button>
         </div>
-        <form method="POST" action="{{ route('trainer.profil.update') }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('trainer.profil.update') }}" enctype="multipart/form-data" autocomplete="off">
             @csrf @method('PUT')
             <div class="form-row">
-                <div class="form-group"><label class="form-label">Nama Lengkap *</label><input class="form-input" type="text" name="name" value="{{ auth()->user()->name }}" required></div>
-                <div class="form-group"><label class="form-label">Email *</label><input class="form-input" type="email" name="email" value="{{ auth()->user()->email }}" required></div>
-                <div class="form-group"><label class="form-label">No. Telepon</label><input class="form-input" type="text" name="phone" value="{{ auth()->user()->phone ?? '' }}"></div>
-                <div class="form-group"><label class="form-label">Bidang Keahlian</label><input class="form-input" type="text" name="bidang_keahlian" value="{{ $trainer->bidang ?? '' }}"></div>
+    <div class="form-group">
+        <label class="form-label">Nama Lengkap *</label>
+        <input class="form-input" type="text" name="name" value="{{ auth()->user()->name }}" required>
+    </div>
+    <div class="form-group">
+        <label class="form-label">Nama Lengkap & Gelar Akademik</label>
+        <input class="form-input" type="text" name="academic_degree"
+               value="{{ $trainer->academic_degree ?? auth()->user()->name }}"
+               placeholder="Contoh: {{ auth()->user()->name }}, S.E., M.M.">
+        <div class="form-hint">Yang tampil di halaman publik trainer</div>
+    </div>
+    <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input class="form-input" type="email" name="email" value="{{ auth()->user()->email }}" required>
+    </div>
+    <div class="form-group">
+        <label class="form-label">No. Telepon</label>
+        <input class="form-input" type="text" name="phone" value="{{ auth()->user()->phone ?? '' }}">
+    </div>
+</div>
+
+{{-- Bidang Keahlian --}}
+<div class="form-group">
+    <label class="form-label">Bidang Keahlian</label>
+    @php
+        $presets = [
+            'Leadership & Manajemen', 'Public Speaking', 'Digital Marketing',
+            'Keuangan & Akuntansi', 'SDM & HRD', 'Kewirausahaan',
+            'Penjualan & Negosiasi', 'Komunikasi Bisnis', 'Pengembangan Diri',
+            'Produktivitas & Time Management', 'Teknologi Informasi', 'Hukum Bisnis',
+            'K3 & Safety', 'Ekspor Impor', 'Pemasaran Konten',
+        ];
+        $savedKeahlian = $trainer->keahlian ?? '';
+        $savedArr = $savedKeahlian ? array_map('trim', explode(',', $savedKeahlian)) : [];
+    @endphp
+    <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px" id="profil-chips">
+        @foreach($presets as $preset)
+            <button type="button"
+                class="profil-chip"
+                onclick="toggleProfilChip(this)"
+                style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;border:1.5px solid {{ in_array($preset, $savedArr) ? 'var(--accent)' : '#d1d5db' }};background:{{ in_array($preset, $savedArr) ? 'var(--accent)' : '#f9fafb' }};color:{{ in_array($preset, $savedArr) ? '#fff' : '#4b5563' }};cursor:pointer;font-family:inherit;transition:all .15s">
+                {{ $preset }}
+            </button>
+        @endforeach
+    </div>
+    {{-- Custom tag yang sudah tersimpan --}}
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px" id="profil-custom-tags">
+        @foreach($savedArr as $item)
+            @if(!in_array($item, $presets) && $item !== '')
+                <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;background:#ede9fe;color:#5b21b6;border:1.5px solid #c4b5fd">
+                    {{ $item }}
+                    <button type="button" onclick="removeProfilTag(this, '{{ $item }}')"
+                        style="background:none;border:none;cursor:pointer;font-size:15px;line-height:1;color:inherit;padding:0;opacity:.7">×</button>
+                </span>
+            @endif
+        @endforeach
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:6px">
+        <input type="text" id="profil-custom-input" placeholder="Tambah keahlian lain..."
+               class="form-input" style="flex:1"
+               onkeydown="if(event.key==='Enter'){event.preventDefault();addProfilCustom();}">
+        <button type="button" onclick="addProfilCustom()"
+                style="padding:9px 14px;font-size:12px;font-weight:600;color:#fff;background:var(--accent);border:none;border-radius:8px;cursor:pointer;font-family:inherit;white-space:nowrap">
+            + Tambah
+        </button>
+    </div>
+    <input type="hidden" name="bidang_keahlian" id="profil-keahlian-value" value="{{ $savedKeahlian }}">
+<div style="font-size:11px;color:var(--text-muted)" id="profil-keahlian-counter">
+    <span id="profil-keahlian-count">{{ count($savedArr) }}</span> bidang dipilih
+</div>
+
+{{-- Dropdown bidang yang ditampilkan --}}
+{{-- DENGAN ini: --}}
+<div class="form-group" style="margin-top:14px;margin-bottom:0">
+    <label class="form-label">Bidang yang Ditampilkan di Publik</label>
+    <select name="displayed_bidang" id="profil-displayed-bidang" class="form-select">
+        @foreach($savedArr as $item)
+            <option value="{{ $item }}"
+                {{ ($trainer->displayed_bidang === $item) ? 'selected' : '' }}>
+                {{ $item }}
+            </option>
+        @endforeach
+    </select>
+    <div class="form-hint">Bidang ini yang muncul di kartu trainer halaman publik.</div>
+</div>
+</div>
+
+<div class="form-group">
+    <label class="form-label">Bio</label>
+    <textarea class="form-textarea" name="bio">{{ $trainer->bio ?? '' }}</textarea>
+</div>
+<div class="form-group">
+    <label class="form-label">Foto Profil</label>
+    <label class="upload-area" for="profil-foto" id="profil-foto-area"
+           style="position:relative;overflow:hidden;min-height:110px">
+
+        {{-- Preview foto existing --}}
+        @php $fotoAktif = $trainer?->foto ?? null; @endphp
+        @if($fotoAktif)
+            <img id="profil-foto-preview"
+                 src="{{ asset('storage/' . $fotoAktif) }}"
+                 alt="Foto Profil"
+                 style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;z-index:1">
+            <div id="profil-foto-overlay"
+                 style="position:absolute;inset:0;background:rgba(0,0,0,.45);border-radius:12px;z-index:2;
+                        display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+                <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2">
+                    <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                </svg>
+                <span style="font-size:12px;font-weight:600;color:#fff">Ganti Foto</span>
+                <div class="upload-fname" id="profil-foto-name" style="color:#fff;z-index:3"></div>
             </div>
-            <div class="form-group"><label class="form-label">Bio</label><textarea class="form-textarea" name="bio">{{ $trainer->bio ?? '' }}</textarea></div>
-            <div class="form-group">
-                <label class="form-label">Foto Profil</label>
-                <label class="upload-area" for="profil-foto">
-                    <div class="upload-icon">📷</div>
-                    <div class="upload-text">Klik untuk upload foto baru atau <span>drag & drop</span></div>
-                    <div class="upload-fname" id="profil-foto-name"></div>
-                </label>
-                <input type="file" id="profil-foto" name="foto" accept="image/*" style="display:none" onchange="showFileName(this, 'profil-foto-name')">
+        @else
+            <div id="profil-foto-preview" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;z-index:1"></div>
+            <div id="profil-foto-overlay" style="display:none"></div>
+            <div id="profil-foto-placeholder" style="display:flex;flex-direction:column;align-items:center;gap:8px">
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">Klik untuk upload foto atau <span>drag & drop</span></div>
             </div>
+            <div class="upload-fname" id="profil-foto-name"></div>
+        @endif
+
+    </label>
+    <input type="file" id="profil-foto" name="foto" accept="image/*"
+           style="display:none" onchange="onProfilFotoChange(this)">
+    <div style="font-size:11px;color:var(--text-muted);margin-top:5px">JPG, PNG · Maks 2 MB</div>
+</div>
             <hr class="form-divider">
-            <div class="form-group"><label class="form-label">Password Baru (kosongkan jika tidak diubah)</label><input class="form-input" type="password" name="password" placeholder="Min. 8 karakter"></div>
+            <div class="form-group">
+    <label class="form-label">Password Baru <span style="color:var(--text-muted);font-weight:400;text-transform:none;letter-spacing:0">(kosongkan jika tidak diubah)</span></label>
+    <div style="position:relative">
+    <input class="form-input" type="password" name="password" id="input-password-baru"
+           placeholder="Min. 8 karakter" style="padding-right:44px"
+           autocomplete="new-password">
+        <button type="button" onclick="togglePassword('input-password-baru', 'eye-baru')"
+                style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;display:flex;align-items:center">
+            <svg id="eye-baru" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+        </button>
+    </div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:5px">Min. 8 karakter, kombinasi huruf dan angka disarankan</div>
+</div>
+
+<div class="form-group">
+    <label class="form-label">Konfirmasi Password Baru</label>
+    <div style="position:relative">
+    <input class="form-input" type="password" name="password_confirmation" id="input-password-confirm"
+               placeholder="Ulangi password baru" style="padding-right:44px"
+               autocomplete="new-password">
+        <button type="button" onclick="togglePassword('input-password-confirm', 'eye-confirm')"
+                style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;display:flex;align-items:center">
+            <svg id="eye-confirm" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+        </button>
+    </div>
+    <div id="password-match-hint" style="font-size:11px;margin-top:5px;display:none"></div>
+</div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-ghost" onclick="closeModal('modal-profil')">Batal</button>
                 <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
@@ -1855,6 +1994,177 @@ document.addEventListener('DOMContentLoaded', function() {
         @endif
     }
 });
+
+/* ================================================================
+   PROFIL CHIPS — BIDANG KEAHLIAN
+================================================================ */
+function getProfilKeahlianArray() {
+    const val = document.getElementById('profil-keahlian-value').value;
+    return val ? val.split(',').map(s => s.trim()).filter(Boolean) : [];
+}
+function toggleProfilChip(btn) {
+    const label = btn.textContent.trim();
+    let arr = getProfilKeahlianArray();
+    if (btn.style.background.includes('var(--accent)') || btn.style.background === 'var(--accent)') {
+        btn.style.background = '#f9fafb';
+        btn.style.borderColor = '#d1d5db';
+        btn.style.color = '#4b5563';
+        arr = arr.filter(v => v !== label);
+    } else {
+        btn.style.background = 'var(--accent)';
+        btn.style.borderColor = 'var(--accent)';
+        btn.style.color = '#fff';
+        if (!arr.includes(label)) arr.push(label);
+    }
+    setProfilKeahlianValue(arr);
+}
+function addProfilCustom() {
+    const input = document.getElementById('profil-custom-input');
+    const label = input.value.trim();
+    if (!label) return;
+    let arr = getProfilKeahlianArray();
+    if (arr.includes(label)) { input.value = ''; return; }
+    arr.push(label);
+    setProfilKeahlianValue(arr); // ← ini sudah update dropdown
+
+    const container = document.getElementById('profil-custom-tags');
+    const tag       = document.createElement('span');
+    tag.style.cssText = 'display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;background:#ede9fe;color:#5b21b6;border:1.5px solid #c4b5fd';
+    tag.dataset.value = label;
+    tag.innerHTML = label + ` <button type="button" onclick="removeProfilTag(this,'${label.replace(/'/g,"\\'")}') " style="background:none;border:none;cursor:pointer;font-size:15px;line-height:1;color:inherit;padding:0;opacity:.7">×</button>`;
+    container.appendChild(tag);
+
+    // ← Auto-pilih keahlian baru di dropdown displayed_bidang
+    const select = document.getElementById('profil-displayed-bidang');
+    if (select) select.value = label;
+
+    input.value = '';
+    input.focus();
+}
+function removeProfilTag(btn, label) {
+    btn.closest('span').remove();
+    let arr = getProfilKeahlianArray();
+    arr = arr.filter(v => v !== label);
+    setProfilKeahlianValue(arr);
+}
+
+function setProfilKeahlianValue(arr) {
+    document.getElementById('profil-keahlian-value').value = arr.join(',');
+    const counter = document.getElementById('profil-keahlian-count');
+    if (counter) counter.textContent = arr.length;
+
+    const select   = document.getElementById('profil-displayed-bidang');
+    if (!select) return;
+    const currentVal = select.value; // simpan pilihan sebelumnya
+    select.innerHTML = '';
+    arr.forEach(item => {
+        const opt      = document.createElement('option');
+        opt.value      = item;
+        opt.textContent = item;
+        // ← pertahankan pilihan sebelumnya, atau otomatis pilih item terakhir ditambah
+        if (item === currentVal) opt.selected = true;
+        select.appendChild(opt);
+    });
+
+    // Kalau pilihan sebelumnya sudah tidak ada di arr, pilih item pertama
+    if (arr.length > 0 && !arr.includes(currentVal)) {
+        select.value = arr[0];
+    }
+}
+
+/* ================================================================
+   TOGGLE PASSWORD VISIBILITY
+================================================================ */
+function togglePassword(inputId, eyeId) {
+    const input = document.getElementById(inputId);
+    const eye   = document.getElementById(eyeId);
+    const isHidden = input.type === 'password';
+    input.type = isHidden ? 'text' : 'password';
+    eye.innerHTML = isHidden
+        ? `<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+           <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+           <line x1="1" y1="1" x2="23" y2="23"/>`
+        : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+           <circle cx="12" cy="12" r="3"/>`;
+}
+
+/* ================================================================
+   PASSWORD MATCH CHECKER
+================================================================ */
+document.addEventListener('DOMContentLoaded', function () {
+    const pw1  = document.getElementById('input-password-baru');
+    const pw2  = document.getElementById('input-password-confirm');
+    const hint = document.getElementById('password-match-hint');
+    if (!pw1 || !pw2 || !hint) return;
+
+    function checkMatch() {
+        if (!pw2.value) { hint.style.display = 'none'; return; }
+        hint.style.display = 'block';
+        if (pw1.value === pw2.value) {
+            hint.textContent = '✓ Password cocok';
+            hint.style.color = 'var(--accent)';
+            pw2.style.borderColor = 'var(--accent)';
+        } else {
+            hint.textContent = '✗ Password tidak cocok';
+            hint.style.color = 'var(--accent2)';
+            pw2.style.borderColor = 'var(--accent2)';
+        }
+    }
+    pw1.addEventListener('input', checkMatch);
+    pw2.addEventListener('input', checkMatch);
+});
+
+/* ================================================================
+   PROFIL FOTO PREVIEW
+================================================================ */
+function onProfilFotoChange(input) {
+    if (!input.files || !input.files[0]) return;
+    const file   = input.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+        const src         = e.target.result;
+        const preview     = document.getElementById('profil-foto-preview');
+        const overlay     = document.getElementById('profil-foto-overlay');
+        const placeholder = document.getElementById('profil-foto-placeholder');
+        const nameEl      = document.getElementById('profil-foto-name');
+
+        // Tampilkan preview
+        if (preview.tagName === 'IMG') {
+            preview.src = src;
+        } else {
+            // Kalau sebelumnya tidak ada foto, ganti div jadi img
+            const img = document.createElement('img');
+            img.id = 'profil-foto-preview';
+            img.src = src;
+            img.alt = 'Preview';
+            img.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;z-index:1';
+            preview.replaceWith(img);
+        }
+
+        // Tampilkan overlay
+        if (overlay) {
+            overlay.style.display = 'flex';
+            overlay.style.flexDirection = 'column';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            overlay.style.gap = '6px';
+            overlay.innerHTML = `
+                <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2">
+                    <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                </svg>
+                <span style="font-size:12px;font-weight:600;color:#fff">✓ ${file.name}</span>
+            `;
+        }
+
+        // Sembunyikan placeholder kalau ada
+        if (placeholder) placeholder.style.display = 'none';
+        if (nameEl) nameEl.textContent = '';
+    };
+
+    reader.readAsDataURL(file);
+}
 </script>
 </body>
 </html>

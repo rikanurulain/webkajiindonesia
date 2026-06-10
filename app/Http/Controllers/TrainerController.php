@@ -65,126 +65,133 @@ class TrainerController extends Controller
     // ═══════════════════════════════════════════════════════════════
 
     public function storeProgram(Request $request)
-    {
-        $request->validate([
-            'judul'             => 'required|string|max:255',
-            // FIX: nilai enum DB adalah kurikulum / materi
-            'tipe'              => 'required|in:kurikulum,materi',
-            'deskripsi'         => 'required|string|max:500',
-            'deskripsi_panjang' => 'nullable|string',
-            'konten_kurikulum'  => 'nullable|string',
-            'konten_materi'     => 'nullable|string',
-            'target'            => 'nullable|string|max:255',
-            'metode'            => 'nullable|in:online,offline,hybrid',
-            'tingkat'           => 'nullable|in:pemula,menengah,lanjut',
-            'bahasa'            => 'nullable|string|max:100',
-            'tanggal'           => 'nullable|date',
-            'gambar'            => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
-            'absensi_aktif'    => 'nullable|boolean',
-            'absensi_mulai'    => 'nullable|date',
-            'absensi_selesai'  => 'nullable|date|after:absensi_mulai',
-            'absensi_url'      => 'nullable|url|max:255',
-        ]);
-
-        $gambar = null;
-        if ($request->hasFile('gambar')) {
-            $gambar = $request->file('gambar')->store('program', 'public');
-        }
-
-        Program::create([
-            'trainer_id'        => Auth::id(),
-            'judul'             => $request->judul,
-            'tipe'              => $request->tipe,
-            'deskripsi'         => $request->deskripsi,
-            'deskripsi_panjang' => $this->sanitize($request->deskripsi_panjang),
-            'konten_kurikulum'  => $request->tipe === 'kurikulum'
-                                    ? $this->sanitize($request->konten_kurikulum) : null,
-            'konten_materi'     => $request->tipe === 'materi'
-                                    ? $this->sanitize($request->konten_materi) : null,
-            'target'            => $request->target,
-            'metode'            => $request->metode,
-            'tingkat'           => $request->tingkat,
-            'bahasa'            => $request->bahasa,
-            'tanggal'           => $request->tanggal,
-            'gambar'            => $gambar,
-            'status'            => 'pending',
-            'absensi_aktif'   => $request->boolean('absensi_aktif'),
-            'absensi_mulai'   => $request->absensi_aktif ? $request->absensi_mulai   : null,
-            'absensi_selesai' => $request->absensi_aktif ? $request->absensi_selesai : null,
-            'absensi_url'     => $request->absensi_aktif ? $request->absensi_url     : null,
+{
+    $request->validate([
+        'judul'          => 'required|string|max:255',
+        'tipe'           => 'required|in:kurikulum,materi',
+        'deskripsi'      => 'nullable|string|max:500',
+        'metode'         => 'nullable|in:online,offline,hybrid',
+        'tingkat'        => 'nullable|in:pemula,menengah,lanjut',
+        'bahasa'         => 'nullable|string|max:100',
+        'total_jam'      => 'nullable|integer|min:0',
+        'jumlah_sesi'    => 'nullable|integer|min:0',
+        'sertifikat'     => 'nullable|boolean',
+        'phone'          => 'nullable|string|max:20',
+        'biaya'          => 'nullable|string|max:100',
+        'alamat'         => 'nullable|string|max:500',
+        'gambar'         => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+        'absensi_aktif'  => 'nullable|boolean',
+        'absensi_mulai'  => 'nullable|date',
+        'absensi_selesai'=> 'nullable|date|after:absensi_mulai',
+        'absensi_url'    => 'nullable|url|max:255',
     ]);
-        
 
-        return redirect()->route('trainer.dashboard')
-            ->with('success', 'Program berhasil dikirim dan menunggu persetujuan admin.')
-            ->with('active_page', 'program');
+    $gambar = null;
+    if ($request->hasFile('gambar')) {
+        $gambar = $request->file('gambar')->store('program', 'public');
     }
 
+    Program::create([
+        'trainer_id'     => Auth::id(),
+        'judul'          => $request->judul,
+        'tipe'           => $request->tipe,
+        'deskripsi'      => $request->deskripsi,
+        'metode'         => $request->metode,
+        'tingkat'        => $request->tingkat,
+        'bahasa'         => $request->bahasa,
+        'total_jam'      => $request->total_jam,
+        'jumlah_sesi'    => $request->jumlah_sesi,
+        'sertifikat'     => $request->boolean('sertifikat'),
+        'phone'          => $request->phone ?? Auth::user()->phone,
+        'biaya'          => $request->biaya,
+        'alamat'         => $request->alamat,
+        'gambar'         => $gambar,
+        'status'         => 'pending',
+        'absensi_aktif'  => $request->boolean('absensi_aktif'),
+        'absensi_mulai'  => $request->absensi_aktif ? $request->absensi_mulai   : null,
+        'absensi_selesai'=> $request->absensi_aktif ? $request->absensi_selesai : null,
+        'absensi_url'    => $request->absensi_aktif ? $request->absensi_url     : null,
+    ]);
+
+    return redirect()->route('trainer.dashboard')
+        ->with('success', 'Kurikulum berhasil dikirim dan menunggu persetujuan admin.')
+        ->with('active_page', 'program');
+}
     // ═══════════════════════════════════════════════════════════════
     // PROGRAM — UPDATE
     // ═══════════════════════════════════════════════════════════════
 
     public function updateProgram(Request $request, $id)
-    {
-        $program = Program::where('id', $id)
-            ->where('trainer_id', Auth::id())
-            ->firstOrFail();
+{
+    $program = Program::where('id', $id)
+        ->where('trainer_id', Auth::id())
+        ->firstOrFail();
 
-        if ($program->status === 'approved') {
-            return back()->with('error', 'Program yang sudah disetujui tidak dapat diedit. Hubungi admin.');
-        }
-
-        $request->validate([
-            'judul'             => 'required|string|max:255',
-            'tipe'              => 'required|in:kurikulum,materi',
-            'deskripsi'         => 'required|string|max:500',
-            'deskripsi_panjang' => 'nullable|string',
-            'konten_kurikulum'  => 'nullable|string',
-            'konten_materi'     => 'nullable|string',
-            'target'            => 'nullable|string|max:255',
-            'metode'            => 'nullable|in:online,offline,hybrid',
-            'tingkat'           => 'nullable|in:pemula,menengah,lanjut',
-            'bahasa'            => 'nullable|string|max:100',
-            'tanggal'           => 'nullable|date',
-            'gambar'            => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
-            'absensi_aktif'   => 'nullable|boolean',
-            'absensi_mulai'   => 'nullable|date',
-            'absensi_selesai' => 'nullable|date|after:absensi_mulai',
-            'absensi_url'     => 'nullable|url|max:255',
-        ]);
-
-        if ($request->hasFile('gambar')) {
-            if ($program->gambar) Storage::disk('public')->delete($program->gambar);
-            $program->gambar = $request->file('gambar')->store('program', 'public');
-        }
-
+    // FIX 3: approved boleh edit HANYA field absensi
+    if ($program->status === 'approved') {
         $program->update([
-            'judul'             => $request->judul,
-            'tipe'              => $request->tipe,
-            'deskripsi'         => $request->deskripsi,
-            'deskripsi_panjang' => $this->sanitize($request->deskripsi_panjang),
-            'konten_kurikulum'  => $request->tipe === 'kurikulum'
-                                    ? $this->sanitize($request->konten_kurikulum) : null,
-            'konten_materi'     => $request->tipe === 'materi'
-                                    ? $this->sanitize($request->konten_materi) : null,
-            'target'            => $request->target,
-            'metode'            => $request->metode,
-            'tingkat'           => $request->tingkat,
-            'bahasa'            => $request->bahasa,
-            'tanggal'           => $request->tanggal,
-            'gambar'            => $program->gambar,
-            'status'            => 'pending', // reset ke pending untuk review ulang
-            'catatan_admin'     => null,
-            'absensi_aktif'   => $request->boolean('absensi_aktif'),
-            'absensi_mulai'   => $request->absensi_aktif ? $request->absensi_mulai   : null,
-            'absensi_selesai' => $request->absensi_aktif ? $request->absensi_selesai : null,
-            'absensi_url'     => $request->absensi_aktif ? $request->absensi_url     : null,
+            'absensi_aktif'  => $request->boolean('absensi_aktif'),
+            'absensi_mulai'  => $request->absensi_aktif ? $request->absensi_mulai   : null,
+            'absensi_selesai'=> $request->absensi_aktif ? $request->absensi_selesai : null,
+            'absensi_url'    => $request->absensi_aktif ? $request->absensi_url     : null,
+            'phone'          => $request->phone ?? Auth::user()->phone,
         ]);
-
         return redirect()->route('trainer.dashboard')
-            ->with('success', 'Program diperbarui dan dikirim ulang untuk disetujui.')
+            ->with('success', 'Jadwal absensi berhasil diperbarui.')
             ->with('active_page', 'program');
     }
+
+    $request->validate([
+        'judul'          => 'required|string|max:255',
+        'tipe'           => 'required|in:kurikulum,materi',
+        'deskripsi'      => 'nullable|string|max:500',
+        'metode'         => 'nullable|in:online,offline,hybrid',
+        'tingkat'        => 'nullable|in:pemula,menengah,lanjut',
+        'bahasa'         => 'nullable|string|max:100',
+        'total_jam'      => 'nullable|integer|min:0',
+        'jumlah_sesi'    => 'nullable|integer|min:0',
+        'sertifikat'     => 'nullable|boolean',
+        'phone'          => 'nullable|string|max:20',
+        'biaya'          => 'nullable|string|max:100',
+        'alamat'         => 'nullable|string|max:500',
+        'gambar'         => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+        'absensi_aktif'  => 'nullable|boolean',
+        'absensi_mulai'  => 'nullable|date',
+        'absensi_selesai'=> 'nullable|date|after:absensi_mulai',
+        'absensi_url'    => 'nullable|url|max:255',
+    ]);
+
+    if ($request->hasFile('gambar')) {
+        if ($program->gambar) Storage::disk('public')->delete($program->gambar);
+        $program->gambar = $request->file('gambar')->store('program', 'public');
+    }
+
+    $program->update([
+        'judul'          => $request->judul,
+        'tipe'           => $request->tipe,
+        'deskripsi'      => $request->deskripsi,
+        'metode'         => $request->metode,
+        'tingkat'        => $request->tingkat,
+        'bahasa'         => $request->bahasa,
+        'total_jam'      => $request->total_jam,
+        'jumlah_sesi'    => $request->jumlah_sesi,
+        'sertifikat'     => $request->boolean('sertifikat'),
+        'phone'          => $request->phone ?? Auth::user()->phone,
+        'biaya'          => $request->biaya,
+        'alamat'         => $request->alamat,
+        'gambar'         => $program->gambar,
+        'status'         => 'pending',
+        'catatan_admin'  => null,
+        'absensi_aktif'  => $request->boolean('absensi_aktif'),
+        'absensi_mulai'  => $request->absensi_aktif ? $request->absensi_mulai   : null,
+        'absensi_selesai'=> $request->absensi_aktif ? $request->absensi_selesai : null,
+        'absensi_url'    => $request->absensi_aktif ? $request->absensi_url     : null,
+    ]);
+
+    return redirect()->route('trainer.dashboard')
+        ->with('success', 'Kurikulum diperbarui dan dikirim ulang untuk disetujui.')
+        ->with('active_page', 'program');
+}
 
     // ═══════════════════════════════════════════════════════════════
     // PROGRAM — DESTROY
@@ -245,6 +252,7 @@ class TrainerController extends Controller
             'deskripsi'     => $request->deskripsi,
             'gambar'        => $gambar,
             'status'        => 'pending',
+            'phone'         => $request->phone ?? Auth::user()->phone,
         ]);
     
         return redirect()->route('trainer.dashboard')
@@ -338,6 +346,8 @@ class TrainerController extends Controller
     return back()->with('success', 'Bidang keahlian berhasil diperbarui!');
 }
 
+
+
     // ═══════════════════════════════════════════════════════════════
     // PROFIL — UPDATE
     // FIX: handle semua field dari form: name, email, no_hp,
@@ -348,49 +358,74 @@ class TrainerController extends Controller
 {
     $user = Auth::user();
 
+    \Log::info('=== UPDATE PROFIL ===');
+    \Log::info('Request data:', $request->all());
+    \Log::info('User ID:', [$user->id]);
+
     $request->validate([
-        'name'            => 'required|string|max:255',
-        'email'           => 'required|email|max:255|unique:users,email,' . $user->id,
-        'phone'           => 'nullable|string|max:20',
-        'bidang_keahlian' => 'nullable|string|max:255',
-        'bio'             => 'nullable|string|max:1000',
-        'linkedin'        => 'nullable|url|max:255',
-        'foto'            => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        'password'        => 'nullable|string|min:8',
+        'name'                  => 'required|string|max:255',
+        'email'                 => 'required|email|max:255|unique:users,email,' . $user->id,
+        'phone'                 => 'nullable|string|max:20',
+        'academic_degree'       => 'nullable|string|max:255',
+        'bidang_keahlian'       => 'nullable|string|max:1000',
+        'displayed_bidang'      => 'nullable|string|max:255',
+        'bio'                   => 'nullable|string|max:1000',
+        'foto'                  => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        'password' => [
+            'nullable',
+            'string',
+            'min:8',
+            function ($attribute, $value, $fail) use ($request) {
+                if ($value && $value !== $request->password_confirmation) {
+                    $fail('Konfirmasi password tidak cocok.');
+                }
+            },
+        ],
+        'password_confirmation' => 'nullable|string',
     ]);
 
-    // ── Data untuk tabel USERS ──────────────────────────
+    // ── Update tabel users ──────────────────────────────────────
     $userData = $request->only(['name', 'email', 'phone']);
-
     if ($request->filled('password')) {
         $userData['password'] = Hash::make($request->password);
     }
-
     $user->update($userData);
 
-    // ── Data untuk tabel TRAINER ────────────────────────
-    $trainer = \App\Models\Trainer::where('user_id', $user->id)->first();
+    // ── Update tabel trainer ────────────────────────────────────
+    $trainer = \App\Models\Trainer::firstOrNew(['user_id' => $user->id]);
 
-    if ($trainer) {
-        $trainerData = [
-            'bio'    => $request->bio,
-            'bidang' => $request->bidang_keahlian,
-        ];
+    \Log::info('Trainer exists:', [$trainer->exists]);
+    \Log::info('Trainer ID:', [$trainer->id ?? 'NULL - record baru']);
 
-        // Ganti foto jika ada upload baru
-        if ($request->hasFile('foto')) {
-            if ($trainer->foto) Storage::disk('public')->delete($trainer->foto);
-            $trainerData['foto'] = $request->file('foto')->store('profil', 'public');
-        }
+    $trainer->fill([
+        'bio'              => $request->bio,
+        'keahlian'         => $request->bidang_keahlian,
+        'academic_degree'  => $request->academic_degree,
+        'displayed_bidang' => $request->displayed_bidang,
+        'nama'             => $request->name,
+    ]);
 
-        $trainer->update($trainerData);
+    if ($request->hasFile('foto')) {
+        if ($trainer->foto) Storage::disk('public')->delete($trainer->foto);
+        $trainer->foto = $request->file('foto')->store('profil', 'public');
+        $trainer->white_bg_photo = null;
     }
+
+    if (!$trainer->exists) {
+        $trainer->user_id = $user->id;
+        $trainer->status  = 'pending';
+    }
+
+    \Log::info('Trainer dirty (akan disimpan):', $trainer->getDirty());
+
+    $trainer->save();
+
+    \Log::info('Trainer setelah save:', $trainer->toArray());
 
     return back()
         ->with('success', 'Profil berhasil diperbarui.')
         ->with('active_page', 'profil');
 }
-
     // ═══════════════════════════════════════════════════════════════
     // HELPER PRIVATE
     // ═══════════════════════════════════════════════════════════════

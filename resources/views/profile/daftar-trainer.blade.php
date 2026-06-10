@@ -76,12 +76,12 @@
                 <div class="tf-card__header">Data Diri</div>
 
                 <div class="tf-field">
-                    <label class="tf-label">Nama Lengkap & Gelar Akademik <span class="tf-req">*</span></label>
-                    <input
-                        type="text"
-                        name="academic_degree"
-                        value="{{ old('academic_degree', $trainer?->academic_degree) }}"
-                        placeholder="Contoh: Martin Louis, S.E., M.M."
+                <label class="tf-label">Nama Lengkap & Gelar Akademik <span class="tf-req">*</span></label>
+<input
+    type="text"
+    name="academic_degree"
+    value="{{ old('academic_degree', $trainer?->academic_degree ?? $user->name) }}"
+    placeholder="Contoh: {{ $user->name }}, S.E., M.M."
                         class="tf-input"
                         required
                         @if ($trainer?->status === 'pending') readonly @endif

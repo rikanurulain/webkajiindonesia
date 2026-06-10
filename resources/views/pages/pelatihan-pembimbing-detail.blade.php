@@ -65,7 +65,9 @@
 </div>
 @endif
 
-                    <h2 class="text-xl font-bold text-gray-900 mb-1">{{ $trainer->name }}</h2>
+<h2 class="text-xl font-bold text-gray-900 mb-1">
+    {{ $trainer->academic_degree ?? $trainer->name }}
+</h2>
                     <p class="text-sm text-gray-400 mb-3">Trainer Profesional · KAJI INDONESIA</p>
 
                     {{-- Rating ringkasan --}}

@@ -22,17 +22,18 @@ class Trainerpelatihancontroller extends Controller
             'total_jam'       => 'nullable|numeric|min:0',
             'jumlah_sesi'     => 'nullable|integer|min:0',
             'sertifikat'      => 'nullable|in:0,1',
+            'phone'           => 'nullable|string|max:20',
+            'biaya'           => 'nullable|string|max:100',
+            'alamat'          => 'nullable|string|max:500', // ← tambah ini
             'gambar'          => 'nullable|image|max:5120',
             'absensi_aktif'   => 'nullable',
             'absensi_mulai'   => 'nullable|date',
             'absensi_selesai' => 'nullable|date|after:absensi_mulai',
             'absensi_url'     => 'nullable|url|max:500',
-            
         ]);
-
-        // ✅ BENAR: gunakan variabel $absensiAktif secara konsisten
+    
         $absensiAktif = $request->input('absensi_aktif') == '1';
-
+    
         $data = [
             'trainer_id'      => Auth::id(),
             'tipe'            => 'kurikulum',
@@ -44,23 +45,23 @@ class Trainerpelatihancontroller extends Controller
             'jumlah_materi'   => $request->jumlah_materi,
             'total_jam'       => $request->total_jam,
             'jumlah_sesi'     => $request->jumlah_sesi,
-            'phone'           => $request->phone,
+            'phone'           => $request->phone ?? Auth::user()->phone,
             'sertifikat'      => $request->sertifikat ?? 0,
+            'biaya'           => $request->biaya,
+            'alamat'          => $request->alamat, // ← tambah ini
             'status'          => 'pending',
-            // ✅ TAMBAHAN: absensi_aktif wajib ikut disimpan
             'absensi_aktif'   => $absensiAktif,
             'absensi_mulai'   => $absensiAktif ? $request->absensi_mulai   : null,
             'absensi_selesai' => $absensiAktif ? $request->absensi_selesai : null,
             'absensi_url'     => $absensiAktif ? $request->absensi_url     : null,
-            'biaya' => $request->biaya,
         ];
-
+    
         if ($request->hasFile('gambar')) {
             $data['gambar'] = $request->file('gambar')->store('programs', 'public');
         }
-
+    
         Program::create($data);
-
+    
         return redirect()->back()
             ->with('success', 'Kurikulum berhasil diajukan.')
             ->with('active_page', 'program');
