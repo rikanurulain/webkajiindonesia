@@ -8,6 +8,17 @@
 <title>Dashboard Trainer – KAJI Indonesia</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
 <style>
+
+.form-input:invalid:not(:placeholder-shown),
+.form-textarea:invalid:not(:placeholder-shown),
+.form-select:invalid {
+    border-color: var(--accent2);
+    background: #fff8f7;
+}
+.form-input:valid:not(:placeholder-shown),
+.form-textarea:valid:not(:placeholder-shown) {
+    border-color: #a7d7c5;
+}
 :root {
     --bg: #f8f4ef;
     --surface: #ffffff;
@@ -226,6 +237,77 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 .btn-resubmit { animation: pulse-orange 2s infinite; }
 @keyframes pulse-orange { 0%, 100% { box-shadow: 0 0 0 0 rgba(231,111,81,.3); } 50% { box-shadow: 0 0 0 4px rgba(231,111,81,0); } }
 
+/* Upload area portrait 9:16 */
+.upload-area-portrait {
+    position: relative;
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+    border: 2px dashed #2d6a4f66;
+    border-radius: 14px;
+    background: #faf8f5;
+    cursor: pointer;
+    transition: all .2s;
+    overflow: hidden;
+}
+.upload-area-portrait::before {
+    content: '';
+    display: block;
+    padding-top: 177.78%; /* 9:16 = 100/(9/16) */
+}
+.upload-area-portrait:hover { background: #eef8f1; border-color: var(--accent); }
+.upload-area-portrait-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    text-align: center;
+}
+.upload-area-portrait img.portrait-preview {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    z-index: 1;
+}
+.upload-area-portrait .portrait-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    border-radius: 12px;
+    z-index: 2;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.upload-area-portrait-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+.upload-area-portrait-label span {
+    background: var(--accent-light);
+    color: var(--accent);
+    border: 1px solid #a7d7c566;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+}
+.upload-error { font-size: 11px; color: var(--accent2); margin-top: 5px; display: none; }
 /* ============ ALAMAT GROUP ============ */
 /* Selalu tampil, tidak disembunyikan agar selalu terkirim */
 #k-alamat-group { display: block; }
@@ -673,9 +755,8 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             @php
                 $modulDalamK = $modulList->where('kurikulum_id', $k->id)->sortBy('urutan');
                 $absensiAktif   = !empty($k->absensi_mulai) && !empty($k->absensi_selesai) && $k->absensi_aktif;
-                $absensiMulai   = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_mulai, config('app.timezone')) : null;
-                $absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, config('app.timezone')) : null;
-                $absensiUrl     = $k->absensi_url ?? '#';
+                $absensiMulai   = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_mulai, 'Asia/Jakarta') : null;
+$absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, 'Asia/Jakarta') : null;                $absensiUrl     = $k->absensi_url ?? '#';
                 $now            = \Carbon\Carbon::now();
                 $statusAbsensi  = null;
                 if ($absensiAktif) {
@@ -739,7 +820,8 @@ tbody td { padding: 14px 18px; font-size: 13px; }
                             data-absensi-mulai="{{ $k->absensi_mulai ?? '' }}"
                             data-absensi-selesai="{{ $k->absensi_selesai ?? '' }}"
                             data-absensi-url="{{ $k->absensi_url ?? '' }}"
-                            data-alamat="{{ json_encode($k->alamat ?? '') }}"
+                        data-alamat="{{ json_encode($k->alamat ?? '') }}"
+                        data-gambar-url="{{ $k->gambar ? asset('storage/'.$k->gambar) : '' }}"
                             title="Edit Kurikulum">
                             <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         </button>
@@ -1011,7 +1093,7 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             </div>
             <div class="form-group">
                 <label class="form-label">Deskripsi</label>
-                <textarea class="form-textarea" name="deskripsi" id="k-deskripsi" rows="3" placeholder="Jelaskan tujuan dan isi kurikulum ini..." maxlength="500"></textarea>
+                <textarea class="form-textarea" name="deskripsi" id="k-deskripsi" rows="3" placeholder="Jelaskan tujuan dan isi kurikulum ini..." maxlength="500" required></textarea>
             </div>
 
             <hr class="form-divider">
@@ -1019,12 +1101,12 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
                 <div class="form-group">
-                    <label class="form-label">Total Jam Pelajaran</label>
-                    <input class="form-input" type="number" name="total_jam" id="k-total-jam" placeholder="0" min="0" step="1">
+                    <label class="form-label">Total Jam Pelajaran <span style="color:var(--accent2)">*</span></label>
+                    <input class="form-input" type="number" name="total_jam" id="k-total-jam" placeholder="Contoh: 20" min="1" step="1" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Jumlah Sesi</label>
-                    <input class="form-input" type="number" name="jumlah_sesi" id="k-jumlah-sesi" placeholder="0" min="0">
+                    <label class="form-label">Jumlah Sesi <span style="color:var(--accent2)">*</span></label>
+                    <input class="form-input" type="number" name="jumlah_sesi" id="k-jumlah-sesi" placeholder="Contoh: 5" min="1" required>
                 </div>
             </div>
 
@@ -1040,19 +1122,19 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             <div class="form-section-title">Informasi Tambahan</div>
 
             <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Metode</label>
-                    <select class="form-select" name="metode" id="k-metode" onchange="toggleAlamat(this.value)">
-                        <option value="">-- Pilih --</option>
+            <div class="form-group">
+                    <label class="form-label">Metode <span style="color:var(--accent2)">*</span></label>
+                    <select class="form-select" name="metode" id="k-metode" onchange="toggleAlamat(this.value)" required>
+                        <option value="" disabled selected>-- Pilih --</option>
                         <option value="online">Online</option>
                         <option value="offline">Offline</option>
                         <option value="hybrid">Online & Offline / Hybrid</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Tingkat</label>
-                    <select class="form-select" name="tingkat" id="k-tingkat">
-                        <option value="">-- Pilih --</option>
+                    <label class="form-label">Tingkat <span style="color:var(--accent2)">*</span></label>
+                    <select class="form-select" name="tingkat" id="k-tingkat" required>
+                        <option value="" disabled selected>-- Pilih --</option>
                         <option value="pemula">Pemula</option>
                         <option value="menengah">Menengah</option>
                         <option value="lanjut">Lanjut</option>
@@ -1072,34 +1154,82 @@ tbody td { padding: 14px 18px; font-size: 13px; }
             </div>
 
             <div class="form-group">
-                <label class="form-label">No. WhatsApp untuk Pendaftaran</label>
-                <input class="form-input" type="text" name="phone" id="k-phone" value="{{ auth()->user()->phone ?? '' }}" placeholder="Contoh: 6281234567890">
+                <label class="form-label">No. WhatsApp untuk Pendaftaran <span style="color:var(--accent2)">*</span></label>
+                <input class="form-input" type="text" name="phone" id="k-phone"
+                       value="{{ auth()->user()->phone ?? '' }}"
+                       placeholder="Contoh: 6281234567890"
+                       pattern="^[0-9]{9,15}$"
+                       title="Masukkan nomor WhatsApp valid (9–15 digit angka)"
+                       required>
                 <div class="form-hint">Otomatis diisi dari profil. Ubah jika ingin nomor berbeda untuk kurikulum ini.</div>
             </div>
 
             <div class="form-row">
     <div class="form-group">
-        <label class="form-label">Bahasa</label>
-        <input class="form-input" type="text" name="bahasa" id="k-bahasa" value="Bahasa Indonesia">
+        <label class="form-label">Bahasa <span style="color:var(--accent2)">*</span></label>
+        <input class="form-input" type="text" name="bahasa" id="k-bahasa"
+               value="Bahasa Indonesia" placeholder="Contoh: Bahasa Indonesia" required>
     </div>
     <div class="form-group">
-        <label class="form-label">Biaya</label>
-        <select class="form-select" name="biaya" id="k-biaya">
-            <option value="">-- Pilih --</option>
+        <label class="form-label">Biaya <span style="color:var(--accent2)">*</span></label>
+        <select class="form-select" name="biaya" id="k-biaya" required>
+            <option value="" disabled selected>-- Pilih --</option>
             <option value="Gratis">Gratis</option>
             <option value="Berbayar">Berbayar</option>
         </select>
     </div>
 </div>
 
-            <div class="form-group">
-                <label class="form-label">Gambar Kurikulum</label>
-                <label class="upload-area" for="k-gambar">
-                    <div class="upload-icon">📁</div>
-                    <div class="upload-text">Klik untuk upload atau <span>drag & drop</span><br>PNG, JPG hingga 5MB</div>
-                    <div class="upload-fname" id="k-gambar-name"></div>
-                </label>
-                <input type="file" id="k-gambar" name="gambar" accept="image/*" style="display:none" onchange="showFileName(this, 'k-gambar-name')">
+<div class="form-group">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                    <div class="form-label" style="margin-bottom:0">Poster Kurikulum <span style="color:var(--accent2)">*</span></div>
+                    <span style="background:var(--accent-light);color:var(--accent);border:1px solid #a7d7c566;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.5px">📐 9 : 16 PORTRAIT</span>
+                </div>
+                <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
+                    {{-- Preview area portrait --}}
+                    <label for="k-gambar" id="k-gambar-area"
+                           style="position:relative;width:120px;flex-shrink:0;border:2px dashed #2d6a4f66;border-radius:14px;background:#faf8f5;cursor:pointer;transition:all .2s;overflow:hidden;display:block"
+                           onmouseover="this.style.borderColor='var(--accent)';this.style.background='#eef8f1'"
+                           onmouseout="this.style.borderColor='#2d6a4f66';this.style.background='#faf8f5'">
+                        {{-- padding-top 177.78% = rasio 9:16 --}}
+                        <div style="padding-top:177.78%"></div>
+                        {{-- Placeholder --}}
+                        <div id="k-gambar-placeholder"
+                             style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px;text-align:center">
+                            <div style="font-size:28px">🖼️</div>
+                            <div style="font-size:11px;color:var(--text-muted);line-height:1.5">Upload<br><span style="color:var(--accent);font-weight:700">PNG / JPG</span></div>
+                        </div>
+                        {{-- Preview gambar --}}
+                        <img id="k-gambar-preview" src="" alt="preview"
+                             style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;z-index:1">
+                        {{-- Overlay ganti --}}
+                        <div id="k-gambar-overlay"
+                             style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:12px;z-index:2;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+                            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2">
+                                <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                                <circle cx="12" cy="13" r="4"/>
+                            </svg>
+                            <span style="font-size:10px;font-weight:700;color:#fff">Ganti</span>
+                        </div>
+                    </label>
+                    {{-- Info & feedback --}}
+                    <div style="flex:1;min-width:150px">
+                        <div style="background:#fffbea;border:1px solid #fcd34d66;border-radius:10px;padding:11px 13px;font-size:12px;color:#92400e;line-height:1.8;margin-bottom:8px">
+                            <strong>📐 Wajib rasio 9:16 (portrait)</strong><br>
+                            Ukuran yang disarankan:<br>
+                            • <strong>1080 × 1920</strong> px (Full HD)<br>
+                            • <strong>720 × 1280</strong> px<br>
+                            • <strong>540 × 960</strong> px
+                        </div>
+                        <div class="upload-fname" id="k-gambar-name" style="font-size:12px;word-break:break-word"></div>
+                        <div id="k-gambar-error"
+                             style="display:none;font-size:11px;color:var(--accent2);background:#fff0ed;border:1px solid #e76f5166;border-radius:8px;padding:8px 10px;margin-top:6px;line-height:1.5">
+                            ⚠️ Gambar harus portrait <strong>9:16</strong>.<br>Contoh ukuran: 1080×1920 px.
+                        </div>
+                    </div>
+                </div>
+                <input type="file" id="k-gambar" name="gambar" accept="image/*" style="display:none"
+                       onchange="onKurikulumGambarChange(this)">
             </div>
 
             <hr class="form-divider">
@@ -1535,6 +1665,83 @@ tbody td { padding: 14px 18px; font-size: 13px; }
 <form id="form-hapus-event" method="POST" style="display:none">@csrf @method('DELETE')</form>
 
 <script>
+
+/* ================================================================
+   KURIKULUM GAMBAR — VALIDASI PORTRAIT 9:16
+================================================================ */
+function onKurikulumGambarChange(input) {
+    const errorEl  = document.getElementById('k-gambar-error');
+    const nameEl   = document.getElementById('k-gambar-name');
+    const preview  = document.getElementById('k-gambar-preview');
+    const overlay  = document.getElementById('k-gambar-overlay');
+    const pholder  = document.getElementById('k-gambar-placeholder');
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+
+    // Validasi ukuran maks 5MB
+    if (file.size > 5 * 1024 * 1024) {
+        errorEl.innerHTML  = '⚠️ Ukuran file terlalu besar. Maks <strong>5 MB</strong>.';
+        errorEl.style.display = 'block';
+        nameEl.textContent = '';
+        preview.style.display = 'none';
+        overlay.style.display = 'none';
+        pholder.style.display = 'flex';
+        input.value = '';
+        return;
+    }
+
+    const imgCheck = new Image();
+    const url = URL.createObjectURL(file);
+    imgCheck.onload = function () {
+        URL.revokeObjectURL(url);
+        const w = imgCheck.naturalWidth, h = imgCheck.naturalHeight;
+        const ratio       = w / h;
+        const targetRatio = 9 / 16;   // 0.5625
+        const tolerance   = 0.06;     // toleransi ±6%
+        const valid       = (h > w) && (Math.abs(ratio - targetRatio) / targetRatio <= tolerance);
+
+        if (!valid) {
+            errorEl.innerHTML  = '⚠️ Gambar harus <strong>portrait 9:16</strong>.<br>'
+                + 'Ukuran Anda: ' + w + '×' + h + ' px. '
+                + 'Contoh yang benar: 1080×1920 px.';
+            errorEl.style.display = 'block';
+            nameEl.textContent    = '';
+            preview.style.display = 'none';
+            overlay.style.display = 'none';
+            pholder.style.display = 'flex';
+            input.value = '';
+            return;
+        }
+
+        // Gambar valid — tampilkan preview
+        errorEl.style.display = 'none';
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src           = e.target.result;
+            preview.style.display = 'block';
+            overlay.style.display = 'flex';
+            pholder.style.display = 'none';
+            nameEl.innerHTML = '✅ <strong>' + file.name + '</strong><br>'
+                + '<span style="color:var(--text-muted)">' + w + '×' + h + ' px · '
+                + (file.size / 1024).toFixed(0) + ' KB</span>';
+        };
+        reader.readAsDataURL(file);
+    };
+    imgCheck.src = url;
+}
+
+function resetKurikulumGambarPreview() {
+    const preview = document.getElementById('k-gambar-preview');
+    const overlay = document.getElementById('k-gambar-overlay');
+    const pholder = document.getElementById('k-gambar-placeholder');
+    const nameEl  = document.getElementById('k-gambar-name');
+    const errorEl = document.getElementById('k-gambar-error');
+    if (preview) { preview.src = ''; preview.style.display = 'none'; }
+    if (overlay) overlay.style.display = 'none';
+    if (pholder) pholder.style.display = 'flex';
+    if (nameEl)  nameEl.textContent = '';
+    if (errorEl) errorEl.style.display = 'none';
+}
 /* ================================================================
    toggleAlamat — pisah antara "show/hide saja" vs "reset nilai"
 ================================================================ */
@@ -1768,6 +1975,22 @@ document.addEventListener('click', function(e) {
         el.value = document.querySelector('meta[name="csrf-token"]').content;
     });
 
+    // Preview gambar existing saat edit
+    const gambarUrl = d.gambarUrl || '';
+    if (gambarUrl) {
+        const preview = document.getElementById('k-gambar-preview');
+        const overlay = document.getElementById('k-gambar-overlay');
+        const pholder = document.getElementById('k-gambar-placeholder');
+        const nameEl  = document.getElementById('k-gambar-name');
+        preview.src           = gambarUrl;
+        preview.style.display = 'block';
+        overlay.style.display = 'flex';
+        pholder.style.display = 'none';
+        nameEl.innerHTML      = '✅ <strong>Gambar tersimpan</strong> — klik area poster untuk mengganti';
+    } else {
+        resetKurikulumGambarPreview();
+    }
+
     openModal('modal-kurikulum');
 });
 
@@ -1855,7 +2078,7 @@ function resetKurikulumModal() {
     document.getElementById('kurikulum-method').value = 'POST';
     document.getElementById('form-kurikulum').action  = '{{ route("trainer.kurikulum.store") }}';
     document.getElementById('form-kurikulum').reset();
-    document.getElementById('k-gambar-name').textContent = '';
+    resetKurikulumGambarPreview();
     document.getElementById('sertifikat-tidak').checked  = true;
     document.getElementById('k-phone').value = '{{ auth()->user()->phone ?? "" }}';
     document.getElementById('k-absensi-aktif').checked = false;
