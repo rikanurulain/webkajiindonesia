@@ -302,51 +302,69 @@
 @section('content')
 
 {{-- ── Tab status ── --}}
+@php
+    $activeTab = request('tab', 'program');
+    $statusDaftarMap = ['pending' => 'menunggu_verifikasi', 'approved' => 'diterima', 'rejected' => 'ditolak'];
+@endphp
 <div class="tab-bar">
-    <button class="tab-btn {{ $status === 'pending' && request('tab') !== 'pendaftaran' ? 'active' : '' }} {{ request('tab') === 'pendaftaran' && $statusDaftar === 'menunggu_verifikasi' ? 'active' : '' }}"
-        onclick="location.href='{{ route('admin.approval.program') }}?status=pending&tipe={{ $tipe }}&tab={{ request('tab', 'program') }}&status_daftar=menunggu_verifikasi'">
+    <button class="tab-btn {{ $status === 'pending' ? 'active' : '' }}"
+        onclick="navigateTo({ status: 'pending' })">
         Pending
         @if($counts['pending'] > 0)
-            <span class="count-pill">{{ $counts['pending'] }}</span>
+            <span class="count-pill" data-count="pending">{{ $counts['pending'] }}</span>
+        @else
+            <span class="count-pill" data-count="pending" style="display:none;">0</span>
         @endif
     </button>
-    <button class="tab-btn {{ $status === 'approved' && request('tab') !== 'pendaftaran' ? 'active' : '' }} {{ request('tab') === 'pendaftaran' && $statusDaftar === 'diterima' ? 'active' : '' }}"
-        onclick="location.href='{{ route('admin.approval.program') }}?status=approved&tipe={{ $tipe }}&tab={{ request('tab', 'program') }}&status_daftar=diterima'">
+    <button class="tab-btn {{ $status === 'approved' ? 'active' : '' }}"
+        onclick="navigateTo({ status: 'approved' })">
         Disetujui
         @if($counts['approved'] > 0)
-            <span class="count-pill" style="background:var(--accent);">{{ $counts['approved'] }}</span>
+            <span class="count-pill" data-count="approved" style="background:var(--accent);">{{ $counts['approved'] }}</span>
+        @else
+            <span class="count-pill" data-count="approved" style="background:var(--accent);display:none;">0</span>
         @endif
     </button>
-    <button class="tab-btn {{ $status === 'rejected' && request('tab') !== 'pendaftaran' ? 'active' : '' }} {{ request('tab') === 'pendaftaran' && $statusDaftar === 'ditolak' ? 'active' : '' }}"
-        onclick="location.href='{{ route('admin.approval.program') }}?status=rejected&tipe={{ $tipe }}&tab={{ request('tab', 'program') }}&status_daftar=ditolak'">
+    <button class="tab-btn {{ $status === 'rejected' ? 'active' : '' }}"
+        onclick="navigateTo({ status: 'rejected' })">
         Ditolak
         @if($counts['rejected'] > 0)
-            <span class="count-pill" style="background:#9ca3af;">{{ $counts['rejected'] }}</span>
+            <span class="count-pill" data-count="rejected" style="background:#9ca3af;">{{ $counts['rejected'] }}</span>
+        @else
+            <span class="count-pill" data-count="rejected" style="background:#9ca3af;display:none;">0</span>
         @endif
     </button>
 </div>
 
 {{-- ── Filter tipe chips ── --}}
 <div class="tipe-filter">
-    <a href="{{ route('admin.approval.program') }}?status={{ $status }}&tipe=all"
-       class="tipe-chip {{ $tipe === 'all' ? 'active-all' : '' }}">
-        📋 Semua <span class="chip-count">{{ $countTipe['all'] }}</span>
+    <a href="javascript:void(0)"
+       onclick="navigateTo({ tipe: 'all', tab: 'program' })"
+       class="tipe-chip {{ $activeTab === 'program' && $tipe === 'all' ? 'active-all' : '' }}">
+        📋 Semua
+        <span class="chip-count" data-chip="all">{{ $countTipe['all'] }}</span>
     </a>
-    <a href="{{ route('admin.approval.program') }}?status={{ $status }}&tipe=kurikulum"
-       class="tipe-chip {{ $tipe === 'kurikulum' ? 'active-kurikulum' : '' }}">
-        📚 Kurikulum <span class="chip-count">{{ $countTipe['kurikulum'] }}</span>
+    <a href="javascript:void(0)"
+       onclick="navigateTo({ tipe: 'kurikulum', tab: 'program' })"
+       class="tipe-chip {{ $activeTab === 'program' && $tipe === 'kurikulum' ? 'active-kurikulum' : '' }}">
+        📚 Kurikulum
+        <span class="chip-count" data-chip="kurikulum">{{ $countTipe['kurikulum'] }}</span>
     </a>
-    <a href="{{ route('admin.approval.program') }}?status={{ $status }}&tipe=modul"
-       class="tipe-chip {{ $tipe === 'modul' ? 'active-modul' : '' }}">
-        📝 Modul <span class="chip-count">{{ $countTipe['modul'] }}</span>
+    <a href="javascript:void(0)"
+       onclick="navigateTo({ tipe: 'modul', tab: 'program' })"
+       class="tipe-chip {{ $activeTab === 'program' && $tipe === 'modul' ? 'active-modul' : '' }}">
+        📝 Modul
+        <span class="chip-count" data-chip="modul">{{ $countTipe['modul'] }}</span>
     </a>
-    <a href="{{ route('admin.approval.program') }}?status={{ $status }}&tipe=all&tab=pendaftaran&status_daftar=menunggu_verifikasi"
-       class="tipe-chip {{ request('tab') === 'pendaftaran' ? 'active-pendaftaran' : '' }}">
+    <a href="javascript:void(0)"
+       onclick="navigateTo({ tab: 'pendaftaran' })"
+       class="tipe-chip {{ $activeTab === 'pendaftaran' ? 'active-pendaftaran' : '' }}">
         📩 Pendaftaran
-        @if($countsDaftar['menunggu_verifikasi'] > 0)
-            <span class="chip-count">{{ $countsDaftar['menunggu_verifikasi'] }}</span>
-        @endif
-        </a>
+        <span class="chip-count" data-chip="pendaftaran"
+            style="{{ $countsDaftar['menunggu_verifikasi'] > 0 ? '' : 'display:none;' }}">
+            {{ $countsDaftar['menunggu_verifikasi'] }}
+        </span>
+    </a>
 </div>
 
 @if(request('tab') !== 'pendaftaran')
@@ -647,7 +665,7 @@
                     <div class="ig-label">Jumlah Materi</div>
                 </div>
                 <div class="info-grid-item">
-                    <dAiv class="ig-val" id="d-total-jam">-</dAiv>
+                    <div class="ig-val" id="d-total-jam">-</div>
                     <div class="ig-label">Total Jam</div>
                 </div>
                 <div class="info-grid-item">
@@ -748,14 +766,91 @@
 @push('scripts')
 <script>
 
-function bukaTolakDaftar(id, nama) {
-    document.getElementById('tolak-daftar-nama').textContent = nama;
-    document.getElementById('form-tolak-daftar').action = `/admin/pendaftaran/${id}/reject`;
-    document.getElementById('form-tolak-daftar').querySelector('textarea').value = '';
-    openModal('modal-tolak-daftar');
+const _state = {
+    status:        '{{ $status }}',
+    tipe:          '{{ $tipe }}',
+    tab:           '{{ request("tab", "program") }}',
+    status_daftar: '{{ $statusDaftar }}',
+};
+
+const _statusDaftarMap = {
+    pending:  'menunggu_verifikasi',
+    approved: 'diterima',
+    rejected: 'ditolak',
+};
+
+// ─── Navigasi terpusat ────────────────────────────────────────────────────────
+function navigateTo(overrides) {
+    const next = { ..._state, ...overrides };
+
+    // Jika buka tab pendaftaran: sesuaikan status_daftar dengan tab aktif
+    if (next.tab === 'pendaftaran') {
+        next.status_daftar = _statusDaftarMap[next.status] ?? 'menunggu_verifikasi';
+        // tipe tidak relevan untuk pendaftaran, reset ke all
+        next.tipe = 'all';
+    }
+
+    // Jika balik ke tab program: pastikan tipe ada
+    if (next.tab === 'program') {
+        next.tipe = next.tipe ?? 'all';
+    }
+
+    const params = new URLSearchParams({
+        status:        next.status,
+        tipe:          next.tipe,
+        tab:           next.tab,
+        status_daftar: next.status_daftar,
+    });
+
+    window.location.href = '{{ route("admin.approval.program") }}?' + params.toString();
 }
-// Sertakan data program + kurikulum induk (di-load dari server)
-const programData    = @json($programs->items());
+
+// ─── Data program untuk modal detail ─────────────────────────────────────────
+const programData = @json($programs->items());
+
+// ─── Polling counts real-time (setiap 30 detik) ───────────────────────────────
+const _countsUrl = '{{ route("admin.approval.program.counts") }}?status={{ $status }}';
+
+function refreshCounts() {
+    fetch(_countsUrl)
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+            if (!data) return;
+
+            // Tab pills
+            setPill('[data-count="pending"]',  data.counts.pending);
+            setPill('[data-count="approved"]', data.counts.approved);
+            setPill('[data-count="rejected"]', data.counts.rejected);
+
+            // Chips tipe (hanya relevan di tab program)
+            if (_state.tab === 'program') {
+                setChip('[data-chip="all"]',       data.countTipe.all);
+                setChip('[data-chip="kurikulum"]',  data.countTipe.kurikulum);
+                setChip('[data-chip="modul"]',      data.countTipe.modul);
+            }
+
+            // Chip pendaftaran: selalu tampilkan menunggu_verifikasi
+            setChip('[data-chip="pendaftaran"]', data.countsDaftar.menunggu_verifikasi);
+        })
+        .catch(() => {}); // silent fail — tidak ganggu UX
+}
+
+function setPill(selector, count) {
+    const el = document.querySelector(selector);
+    if (!el) return;
+    el.textContent = count;
+    el.style.display = count > 0 ? '' : 'none';
+}
+
+function setChip(selector, count) {
+    const el = document.querySelector(selector);
+    if (!el) return;
+    el.textContent = count;
+    el.style.display = count > 0 ? '' : 'none';
+}
+
+// Mulai polling
+setInterval(refreshCounts, 30_000);
 
 // ─── SweetAlert2 ──────────────────────────────────────────────────────────────
 const swalApprove = Swal.mixin({
@@ -770,28 +865,28 @@ const swalReject = Swal.mixin({
 function confirmApprove(id, name) {
     swalApprove.fire({
         title: 'Setujui Program?',
-        html:  '<span style="font-size:14px;color:#6b7280;">Program <strong>' + name + '</strong> akan dipublikasikan.</span>',
-        icon:  'question', iconColor: '#10b981',
+        html:  `<span style="font-size:14px;color:#6b7280;">Program <strong>${name}</strong> akan dipublikasikan.</span>`,
+        icon: 'question', iconColor: '#10b981',
         showCancelButton: true,
         confirmButtonText: '✓ Ya, Setujui',
-        cancelButtonText:  'Batal',
+        cancelButtonText: 'Batal',
         reverseButtons: true, focusCancel: true,
-    }).then(function(result) {
-        if (result.isConfirmed) document.getElementById('form-approve-' + id).submit();
+    }).then(r => {
+        if (r.isConfirmed) document.getElementById('form-approve-' + id).submit();
     });
 }
 
 function confirmReject(id, name) {
     swalReject.fire({
         title: 'Tolak Program?',
-        html:  '<span style="font-size:14px;color:#6b7280;">Kamu akan menolak <strong>' + name + '</strong>.</span>',
-        icon:  'warning', iconColor: '#ef4444',
+        html:  `<span style="font-size:14px;color:#6b7280;">Kamu akan menolak <strong>${name}</strong>.</span>`,
+        icon: 'warning', iconColor: '#ef4444',
         showCancelButton: true,
         confirmButtonText: '→ Lanjut Isi Alasan',
-        cancelButtonText:  'Batal',
+        cancelButtonText: 'Batal',
         reverseButtons: true, focusCancel: true,
-    }).then(function(result) {
-        if (result.isConfirmed) openRejectModal(id, name);
+    }).then(r => {
+        if (r.isConfirmed) openRejectModal(id, name);
     });
 }
 
@@ -800,11 +895,9 @@ function openDetailModal(id) {
     const p = programData.find(x => x.id === id);
     if (!p) return;
 
-    // Judul modal
     document.getElementById('detail-modal-title').textContent =
         p.tipe === 'modul' ? 'Detail Modul' : 'Detail Kurikulum';
 
-    // Gambar / icon
     const imgEl = document.getElementById('detail-img');
     if (p.gambar) {
         imgEl.innerHTML = `<img src="/storage/${p.gambar}" alt="${p.judul}" style="width:100%;height:100%;object-fit:cover;">`;
@@ -812,7 +905,6 @@ function openDetailModal(id) {
         imgEl.textContent = p.tipe === 'modul' ? '📝' : '📚';
     }
 
-    // ── Kurikulum: info box (sesi, jam, sertifikat) ──
     const kurikulumInfo = document.getElementById('detail-kurikulum-info');
     const modulInduk    = document.getElementById('detail-modul-induk');
 
@@ -822,17 +914,12 @@ function openDetailModal(id) {
         document.getElementById('d-jumlah-materi').textContent = p.jumlah_materi ?? '-';
         document.getElementById('d-total-jam').textContent     = p.total_jam ? p.total_jam + ' jam' : '-';
         document.getElementById('d-jumlah-sesi').textContent   = p.jumlah_sesi ?? '-';
-
         const sertWrap = document.getElementById('d-sertifikat-wrap');
-        if (p.sertifikat) {
-            sertWrap.innerHTML = '<span class="sertifikat-badge">🏆 Ada sertifikat kelulusan</span>';
-        } else {
-            sertWrap.innerHTML = '';
-        }
+        sertWrap.innerHTML = p.sertifikat
+            ? '<span class="sertifikat-badge">🏆 Ada sertifikat kelulusan</span>' : '';
     } else if (p.tipe === 'modul') {
         kurikulumInfo.style.display = 'none';
         modulInduk.style.display    = 'flex';
-        // Cari kurikulum induk dari programData atau tampilkan ID
         const induk = programData.find(x => x.id === p.kurikulum_id);
         document.getElementById('d-induk-judul').textContent  = induk ? induk.judul : 'Kurikulum #' + (p.kurikulum_id ?? '?');
         document.getElementById('d-induk-urutan').textContent = p.urutan ? 'Urutan #' + p.urutan : '';
@@ -841,7 +928,6 @@ function openDetailModal(id) {
         modulInduk.style.display    = 'none';
     }
 
-    // ── Grid info umum ──
     const isModul = p.tipe === 'modul';
     document.getElementById('detail-grid').innerHTML = `
         <div class="detail-item">
@@ -881,7 +967,6 @@ function openDetailModal(id) {
         </div>
     `;
 
-    // Alasan penolakan
     const rejectWrap = document.getElementById('d-reject-wrap');
     if (p.status === 'rejected' && p.catatan_admin) {
         rejectWrap.style.display = 'block';
@@ -890,7 +975,6 @@ function openDetailModal(id) {
         rejectWrap.style.display = 'none';
     }
 
-    // Tombol aksi
     const btnApprove = document.getElementById('btn-detail-approve');
     const btnReject  = document.getElementById('btn-detail-reject');
     btnApprove.style.display = p.status !== 'approved' ? 'inline-flex' : 'none';
@@ -901,18 +985,23 @@ function openDetailModal(id) {
     openModal('modal-detail');
 }
 
+function bukaTolakDaftar(id, nama) {
+    document.getElementById('tolak-daftar-nama').textContent = nama;
+    document.getElementById('form-tolak-daftar').action = `/admin/pendaftaran/${id}/reject`;
+    document.getElementById('form-tolak-daftar').querySelector('textarea').value = '';
+    openModal('modal-tolak-daftar');
+}
+
 // ─── Modal Reject ──────────────────────────────────────────────────────────────
 function openRejectModal(id, name) {
     document.getElementById('reject-name').textContent = name;
     document.getElementById('form-reject').action = `/admin/approval/program/${id}/reject`;
+    document.getElementById('form-reject').querySelector('textarea').value = '';  // ← tambah ini
     openModal('modal-reject');
 }
 
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-document.querySelectorAll('.modal-overlay').forEach(function(el) {
-    el.addEventListener('click', function(e) { if (e.target === el) closeModal(el.id); });
-});
 </script>
 @endpush

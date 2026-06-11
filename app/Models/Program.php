@@ -38,6 +38,11 @@ class Program extends Model
         'absensi_url',
         'alamat',
         'biaya',
+        'materi_type',
+    'materi_youtube',
+    'materi_pdf',
+    'akses_mulai',
+    'akses_selesai',
     ];
 
     protected $casts = [

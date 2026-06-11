@@ -288,19 +288,166 @@
                 <p class="text-sm text-gray-400 italic">Belum ada modul yang ditambahkan.</p>
                 @else
                 <div class="flex flex-col gap-3">
-                    @foreach($modulsDB as $index => $modul)
-                    <div class="flex items-start gap-3 bg-gray-50 rounded-xl border border-gray-100 p-3">
-                        <div class="w-7 h-7 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-0.5">
-                            {{ $modul->urutan ?? ($index + 1) }}
-                        </div>
-                        <div>
-                            <div class="font-bold text-green-900 text-sm mb-1">{{ $modul->judul }}</div>
-                            @if($modul->deskripsi)
-                            <div class="text-xs text-gray-500 leading-relaxed">{{ $modul->deskripsi }}</div>
-                            @endif
-                        </div>
+                @foreach($modulsDB as $index => $modul)
+                @php
+    $now           = \Carbon\Carbon::now('Asia/Jakarta');
+    $belumBuka     = !empty($modul->akses_mulai)   && $now->lt(\Carbon\Carbon::parse($modul->akses_mulai,   'Asia/Jakarta'));
+    $sudahTutup    = !empty($modul->akses_selesai) && $now->gt(\Carbon\Carbon::parse($modul->akses_selesai, 'Asia/Jakarta'));
+    $modulTerkunci = $belumBuka || $sudahTutup;
+@endphp
+
+<div class="flex items-start gap-3 bg-gray-50 rounded-xl border border-gray-100 p-3">
+    <div class="w-7 h-7 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-0.5">
+        {{ $modul->urutan ?? ($index + 1) }}
+    </div>
+    <div class="w-full">
+    <div class="font-bold text-green-900 text-sm mb-1">{{ $modul->judul }}</div>
+        @if($modul->deskripsi)
+        <div class="text-xs text-gray-500 leading-relaxed">{{ $modul->deskripsi }}</div>
+        @endif
+
+        {{-- Status akses modul --}}
+        @if($belumBuka)
+        <div style="margin-top:10px;background:#fffbea;border:1px solid #fcd34d66;border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"
+             id="modul-bar-{{ $modul->id }}"
+             data-mulai="{{ \Carbon\Carbon::parse($modul->akses_mulai, 'Asia/Jakarta')->timestamp }}"
+             data-selesai="{{ \Carbon\Carbon::parse($modul->akses_selesai, 'Asia/Jakarta')->timestamp ?? 0 }}"
+             data-status="upcoming">
+            <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:18px">⏰</span>
+                <div>
+                    <div style="font-size:12px;font-weight:700;color:#92400e">Modul Belum Dibuka</div>
+                    <div style="font-size:11px;color:#b45309;margin-top:2px">
+                        Dibuka pada {{ \Carbon\Carbon::parse($modul->akses_mulai, 'Asia/Jakarta')->translatedFormat('d M Y, H:i') }} WIB
                     </div>
-                    @endforeach
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+                <span style="font-size:11px;color:#b45309;font-weight:600">Dibuka dalam</span>
+                <span id="timer-modul-{{ $modul->id }}"
+                      style="font-family:'Courier New',monospace;font-size:13px;font-weight:800;
+                             letter-spacing:1px;color:#92400e;background:#fef3c7;
+                             padding:4px 10px;border-radius:6px;border:1px solid #fcd34d">
+                    --:--:--
+                </span>
+            </div>
+        </div>
+
+        @elseif($sudahTutup)
+        <div style="margin-top:10px;background:#f3f4f6;border:1px solid #d1d5db;border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:18px">🔒</span>
+            <div>
+                <div style="font-size:12px;font-weight:700;color:#6b7280">Akses Modul Telah Berakhir</div>
+                <div style="font-size:11px;color:#9ca3af;margin-top:2px">
+                    Ditutup sejak {{ \Carbon\Carbon::parse($modul->akses_selesai, 'Asia/Jakarta')->translatedFormat('d M Y, H:i') }} WIB
+                </div>
+            </div>
+        </div>
+
+        @else
+        {{-- Cek apakah user sudah terdaftar dan diterima --}}
+        @php
+            $sudahDiterima = auth()->check()
+                ? \App\Models\PendaftaranProgram::where('user_id', auth()->id())
+                    ->where('program_id', $program->id)
+                    ->where('status', 'diterima')
+                    ->exists()
+                : false;
+        @endphp
+
+        @if(!$sudahDiterima)
+        {{-- Belum terdaftar / belum diterima --}}
+        <div style="margin-top:10px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:18px">🔐</span>
+            <div style="flex:1">
+                <div style="font-size:12px;font-weight:700;color:#0369a1">Materi Khusus Peserta Terdaftar</div>
+                <div style="font-size:11px;color:#0284c7;margin-top:2px">
+                    @if(!auth()->check())
+                        <a href="{{ route('login') }}" style="color:#0369a1;font-weight:700;text-decoration:underline">Login</a>
+                        dan daftar program ini untuk mengakses materi.
+                    @elseif($pendaftaranSaya && $pendaftaranSaya->status === 'menunggu_verifikasi')
+                        Pembayaran Anda sedang diverifikasi. Materi akan terbuka setelah diterima.
+                    @elseif($pendaftaranSaya && $pendaftaranSaya->status === 'pending')
+                        Pendaftaran Anda sedang menunggu konfirmasi admin.
+                    @else
+                        <a href="{{ route('pelatihan.pendaftaran.create', $program->id) }}" style="color:#0369a1;font-weight:700;text-decoration:underline">Daftar program ini</a>
+                        untuk mengakses materi modul.
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        @else
+        {{-- Sudah diterima — tampilkan countdown berakhir jika ada akses_selesai --}}
+        @if(!empty($modul->akses_selesai))
+        <div style="margin-top:10px;background:#e8f5e9;border:1px solid #a7d7c566;border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"
+             id="modul-bar-{{ $modul->id }}"
+             data-mulai="0"
+             data-selesai="{{ \Carbon\Carbon::parse($modul->akses_selesai, 'Asia/Jakarta')->timestamp }}"
+             data-status="active">
+            <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:18px">✅</span>
+                <div>
+                    <div style="font-size:12px;font-weight:700;color:#2d6a4f">Modul Sedang Aktif</div>
+                    <div style="font-size:11px;color:#52b788;margin-top:2px">
+                        Berakhir pada {{ \Carbon\Carbon::parse($modul->akses_selesai, 'Asia/Jakarta')->translatedFormat('d M Y, H:i') }} WIB
+                    </div>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+                <span style="font-size:11px;color:#2d6a4f;font-weight:600">Berakhir dalam</span>
+                <span id="timer-modul-{{ $modul->id }}"
+                      style="font-family:'Courier New',monospace;font-size:13px;font-weight:800;
+                             letter-spacing:1px;color:#2d6a4f;background:#d1fae5;
+                             padding:4px 10px;border-radius:6px;border:1px solid #a7d7c5">
+                    --:--:--
+                </span>
+            </div>
+        </div>
+        @endif
+
+        {{-- Materi hanya tampil jika sudah diterima --}}
+        @if($modul->materi_type === 'youtube' && $modul->materi_youtube)
+            @php
+                preg_match('/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/', $modul->materi_youtube, $ytMatch);
+                $ytId = $ytMatch[1] ?? null;
+            @endphp
+            @if($ytId)
+            <div style="margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
+                <iframe
+                    src="https://www.youtube.com/embed/{{ $ytId }}"
+                    width="100%" height="340"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    style="display:block">
+                </iframe>
+            </div>
+            @endif
+        @elseif($modul->materi_type === 'pdf' && $modul->materi_pdf)
+            <div style="margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
+                <iframe
+                    src="{{ asset('storage/' . $modul->materi_pdf) }}#toolbar=1&navpanes=0"
+                    width="100%" height="500"
+                    style="display:block;border:none">
+                </iframe>
+            </div>
+            <a href="{{ asset('storage/' . $modul->materi_pdf) }}" target="_blank" download
+               style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;
+                      padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;
+                      background:#ecfdf5;color:#15803d;
+                      border:1px solid #a7d7c566;text-decoration:none">
+                ⬇️ Unduh PDF
+            </a>
+        @endif
+
+        @endif {{-- end if sudahDiterima --}}
+
+        @endif {{-- end else (modul tidak terkunci) --}}
+
+</div>
+</div>
+@endforeach
                 </div>
                 @endif
             </div>
@@ -374,5 +521,64 @@ if ($biayaProgram)        $infoRows[] = ['Biaya', $biayaProgram];
 
         </div>
     </section>
+    <script>
+(function() {
+    function padNum(n) { return String(n).padStart(2, '0'); }
 
+    function formatSisa(ms) {
+        if (ms <= 0) return '00:00:00';
+        const totalSec = Math.floor(ms / 1000);
+        const h  = Math.floor(totalSec / 3600);
+        const m  = Math.floor((totalSec % 3600) / 60);
+        const s  = totalSec % 60;
+        return h > 0
+            ? padNum(h) + ':' + padNum(m) + ':' + padNum(s)
+            : padNum(m) + ':' + padNum(s);
+    }
+
+    document.querySelectorAll('[id^="modul-bar-"]').forEach(function(bar) {
+        const modulId  = bar.id.replace('modul-bar-', '');
+        const timerEl  = document.getElementById('timer-modul-' + modulId);
+        const status   = bar.dataset.status;
+        const tsMulai  = parseInt(bar.dataset.mulai,   10) * 1000;
+        const tsSelesai= parseInt(bar.dataset.selesai, 10) * 1000;
+
+        if (!timerEl) return;
+
+        var interval;
+
+        function tick() {
+            var now = Date.now();
+
+            if (status === 'upcoming') {
+                var sisa = tsMulai - now;
+                if (sisa <= 0) {
+                    clearInterval(interval);
+                    location.reload(); // reload saat modul terbuka
+                    return;
+                }
+                timerEl.textContent = formatSisa(sisa);
+
+            } else if (status === 'active') {
+                var sisa = tsSelesai - now;
+                if (sisa <= 0) {
+                    clearInterval(interval);
+                    location.reload(); // reload saat modul berakhir
+                    return;
+                }
+                // Warna berubah merah jika sisa < 10 menit
+                if (sisa < 600000) {
+                    timerEl.style.color      = '#dc2626';
+                    timerEl.style.background = '#fee2e2';
+                    timerEl.style.borderColor= '#fca5a5';
+                }
+                timerEl.textContent = formatSisa(sisa);
+            }
+        }
+
+        tick();
+        interval = setInterval(tick, 1000);
+    });
+})();
+</script>
 @endsection

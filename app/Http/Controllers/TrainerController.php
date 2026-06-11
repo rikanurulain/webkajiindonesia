@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Program;
 use App\Models\Event;
+use Illuminate\Support\Str; 
+use App\Models\PendaftaranProgram;
 
 
 
@@ -84,6 +86,9 @@ class TrainerController extends Controller
         'absensi_mulai'  => 'nullable|date',
         'absensi_selesai'=> 'nullable|date|after:absensi_mulai',
         'absensi_url'    => 'nullable|url|max:255',
+        'materi_type'    => 'nullable|in:pdf,youtube',
+        'materi_pdf'     => 'nullable|file|mimes:pdf|max:20480',
+        'materi_youtube' => 'nullable|url|max:255',
     ]);
 
     $gambar = null;
@@ -91,6 +96,10 @@ class TrainerController extends Controller
         $gambar = $request->file('gambar')->store('program', 'public');
     }
 
+    $materiPdf = null;
+if ($request->materi_type === 'pdf' && $request->hasFile('materi_pdf')) {
+    $materiPdf = $request->file('materi_pdf')->store('materi', 'public');
+}
     Program::create([
         'trainer_id'     => Auth::id(),
         'judul'          => $request->judul,
@@ -111,6 +120,9 @@ class TrainerController extends Controller
         'absensi_mulai'  => $request->absensi_aktif ? $request->absensi_mulai   : null,
         'absensi_selesai'=> $request->absensi_aktif ? $request->absensi_selesai : null,
         'absensi_url'    => $request->absensi_aktif ? $request->absensi_url     : null,
+        'materi_type'    => $request->materi_type,
+        'materi_pdf'     => $materiPdf,
+        'materi_youtube' => $request->materi_type === 'youtube' ? $request->materi_youtube : null,
     ]);
 
     return redirect()->route('trainer.dashboard')
@@ -159,12 +171,25 @@ class TrainerController extends Controller
         'absensi_mulai'  => 'nullable|date',
         'absensi_selesai'=> 'nullable|date|after:absensi_mulai',
         'absensi_url'    => 'nullable|url|max:255',
+        'materi_type'    => 'nullable|in:pdf,youtube',
+        'materi_pdf'     => 'nullable|file|mimes:pdf|max:20480',
+        'materi_youtube' => 'nullable|url|max:255',
     ]);
 
     if ($request->hasFile('gambar')) {
         if ($program->gambar) Storage::disk('public')->delete($program->gambar);
         $program->gambar = $request->file('gambar')->store('program', 'public');
     }
+
+    $materiPdf = null;
+if ($request->materi_type === 'pdf' && $request->hasFile('materi_pdf')) {
+    if ($program->materi_pdf) {
+        Storage::disk('public')->delete($program->materi_pdf);
+    }
+    $materiPdf = $request->file('materi_pdf')->store('materi', 'public');
+} elseif (isset($program)) {
+    $materiPdf = $program->materi_pdf;
+}
 
     $program->update([
         'judul'          => $request->judul,
@@ -186,6 +211,9 @@ class TrainerController extends Controller
         'absensi_mulai'  => $request->absensi_aktif ? $request->absensi_mulai   : null,
         'absensi_selesai'=> $request->absensi_aktif ? $request->absensi_selesai : null,
         'absensi_url'    => $request->absensi_aktif ? $request->absensi_url     : null,
+        'materi_type'    => $request->materi_type,
+    'materi_pdf'     => $materiPdf,
+    'materi_youtube' => $request->materi_type === 'youtube' ? $request->materi_youtube : null,
     ]);
 
     return redirect()->route('trainer.dashboard')
@@ -346,6 +374,73 @@ class TrainerController extends Controller
     return back()->with('success', 'Bidang keahlian berhasil diperbarui!');
 }
 
+public function getPeserta($id)
+{
+    $program = Program::where('id', $id)
+        ->where('trainer_id', auth()->id())
+        ->firstOrFail();
+
+    $peserta = PendaftaranProgram::where('program_id', $id) // ← fix
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->map(function ($p, $i) {
+            return [
+                'no'               => $i + 1,
+                'nama'             => $p->nama_lengkap,
+                'email'            => $p->email,
+                'no_hp'            => $p->no_hp,
+                'alamat'           => $p->alamat,
+                'bukti_pembayaran' => $p->bukti_pembayaran
+                    ? asset('storage/' . $p->bukti_pembayaran)
+                    : null,
+                'tanggal_daftar'   => $p->created_at->translatedFormat('d M Y, H:i'),
+                'status'           => $p->status,
+            ];
+        });
+
+    return response()->json([
+        'success' => true,
+        'total'   => $peserta->count(),
+        'peserta' => $peserta,
+    ]);
+}
+
+public function exportPesertaCsv($id)
+{
+    $program = Program::where('id', $id)
+        ->where('trainer_id', auth()->id())
+        ->firstOrFail();
+
+    $peserta = PendaftaranProgram::where('program_id', $id) // ← fix
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    $filename = 'peserta-' . Str::slug($program->judul) . '-' . date('Ymd') . '.csv';
+
+    $headers = [
+        'Content-Type'        => 'text/csv',
+        'Content-Disposition' => "attachment; filename=\"$filename\"",
+    ];
+
+    $callback = function () use ($peserta) {
+        $file = fopen('php://output', 'w');
+        fputcsv($file, ['No', 'Nama', 'Email', 'No HP', 'Alamat', 'Status', 'Tanggal Daftar']);
+        foreach ($peserta as $i => $p) {
+            fputcsv($file, [
+                $i + 1,
+                $p->nama_lengkap,
+                $p->email,
+                $p->no_hp,
+                $p->alamat,
+                $p->status,
+                $p->created_at->format('d/m/Y H:i'),
+            ]);
+        }
+        fclose($file);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
 
 
     // ═══════════════════════════════════════════════════════════════

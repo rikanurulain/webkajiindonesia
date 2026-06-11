@@ -174,10 +174,10 @@ $request->get('tab') === 'pendaftaran'
     }
     public function rejectProgram(Request $request, Program $program)
     {
-        $request->validate(['alasan' => 'required|string|max:1000']);
+        $request->validate(['catatan' => 'required|string|max:1000']); // ← ganti 'alasan' → 'catatan'
         $program->update([
             'status'        => 'rejected',
-            'catatan_admin' => $request->alasan,
+            'catatan_admin' => $request->catatan,
             'rejected_at'   => now(),
             'rejected_by'   => Auth::id(),
             'approved_at'   => null,
@@ -187,6 +187,32 @@ $request->get('tab') === 'pendaftaran'
             return response()->json(['message' => 'Program berhasil ditolak.']);
         }
         return back()->with('success', "Program \"{$program->judul}\" telah ditolak.");
+    }
+    
+    // Tambah method baru untuk polling counts
+    public function approvalProgramCounts(Request $request)
+    {
+        $status = $request->get('status', 'pending');
+    
+        $tipeBase = Program::where('status', $status);
+    
+        return response()->json([
+            'counts' => [
+                'pending'  => Program::where('status', 'pending')->count(),
+                'approved' => Program::where('status', 'approved')->count(),
+                'rejected' => Program::where('status', 'rejected')->count(),
+            ],
+            'countTipe' => [
+                'all'       => (clone $tipeBase)->count(),
+                'kurikulum' => (clone $tipeBase)->where('tipe', 'kurikulum')->count(),
+                'modul'     => (clone $tipeBase)->where('tipe', 'modul')->count(),
+            ],
+            'countsDaftar' => [
+                'menunggu_verifikasi' => \App\Models\PendaftaranProgram::where('status', 'menunggu_verifikasi')->count(),
+                'diterima'            => \App\Models\PendaftaranProgram::where('status', 'diterima')->count(),
+                'ditolak'             => \App\Models\PendaftaranProgram::where('status', 'ditolak')->count(),
+            ],
+        ]);
     }
 
     // ═════════════════════════════════════════════════════════════════════

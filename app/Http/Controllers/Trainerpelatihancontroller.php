@@ -30,6 +30,8 @@ class Trainerpelatihancontroller extends Controller
             'absensi_mulai'   => 'nullable|date',
             'absensi_selesai' => 'nullable|date|after:absensi_mulai',
             'absensi_url'     => 'nullable|url|max:500',
+            'akses_mulai'    => 'nullable|date',
+            'akses_selesai'  => 'nullable|date|after:akses_mulai',
         ]);
     
         $absensiAktif = $request->input('absensi_aktif') == '1';
@@ -142,21 +144,41 @@ class Trainerpelatihancontroller extends Controller
             ->where('trainer_id', Auth::id())
             ->where('tipe', 'modul')
             ->firstOrFail();
-
+    
         $request->validate([
-            'kurikulum_id' => 'required|exists:programs,id',
-            'judul'        => 'required|string|max:255',
-            'deskripsi'    => 'nullable|string|max:500',
-            'urutan'       => 'nullable|integer|min:1',
+            'kurikulum_id'   => 'required|exists:programs,id',
+            'judul'          => 'required|string|max:255',
+            'deskripsi'      => 'nullable|string|max:500',
+            'urutan'         => 'nullable|integer|min:1',
+            'materi_type'    => 'nullable|in:pdf,youtube',
+            'materi_pdf'     => 'nullable|file|mimes:pdf|max:20480',
+            'materi_youtube' => 'nullable|url|max:255',
+            'akses_mulai'    => 'nullable|date',
+            'akses_selesai'  => 'nullable|date|after:akses_mulai',
         ]);
-
+    
+        $materiPdf = $modul->materi_pdf; // pertahankan PDF lama by default
+        if ($request->materi_type === 'pdf' && $request->hasFile('materi_pdf')) {
+            if ($modul->materi_pdf) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($modul->materi_pdf);
+            }
+            $materiPdf = $request->file('materi_pdf')->store('materi', 'public');
+        } elseif ($request->materi_type !== 'pdf') {
+            $materiPdf = null; // hapus referensi PDF jika ganti ke youtube/none
+        }
+    
         $modul->update([
-            'judul'        => $request->judul,
-            'deskripsi'    => $request->deskripsi,
-            'urutan'       => $request->urutan,
-            'kurikulum_id' => $request->kurikulum_id,
+            'judul'          => $request->judul,
+            'deskripsi'      => $request->deskripsi,
+            'urutan'         => $request->urutan,
+            'kurikulum_id'   => $request->kurikulum_id,
+            'materi_type'    => $request->materi_type,
+            'materi_pdf'     => $materiPdf,
+            'materi_youtube' => $request->materi_type === 'youtube' ? $request->materi_youtube : null,
+            'akses_mulai'    => $request->akses_mulai  ?: null,
+            'akses_selesai'  => $request->akses_selesai ?: null,
         ]);
-
+    
         return redirect()->back()
             ->with('success', 'Modul berhasil diperbarui.')
             ->with('active_page', 'program');
@@ -165,28 +187,41 @@ class Trainerpelatihancontroller extends Controller
     public function storeModul(Request $request)
     {
         $request->validate([
-            'kurikulum_id' => 'required|exists:programs,id',
-            'judul'        => 'required|string|max:255',
-            'deskripsi'    => 'nullable|string|max:500',
-            'urutan'       => 'nullable|integer|min:1',
+            'kurikulum_id'   => 'required|exists:programs,id',
+            'judul'          => 'required|string|max:255',
+            'deskripsi'      => 'nullable|string|max:500',
+            'urutan'         => 'nullable|integer|min:1',
+            'materi_type'    => 'nullable|in:pdf,youtube',
+            'materi_pdf'     => 'nullable|file|mimes:pdf|max:20480',
+            'materi_youtube' => 'nullable|url|max:255',
         ]);
-
+    
         Program::where('id', $request->kurikulum_id)
             ->where('trainer_id', Auth::id())
             ->where('tipe', 'kurikulum')
             ->firstOrFail();
-
+    
+        $materiPdf = null;
+        if ($request->materi_type === 'pdf' && $request->hasFile('materi_pdf')) {
+            $materiPdf = $request->file('materi_pdf')->store('materi', 'public');
+        }
+    
         Program::create([
-            'trainer_id'   => Auth::id(),
-            'tipe'         => 'modul',
-            'judul'        => $request->judul,
-            'deskripsi'    => $request->deskripsi,
-            'urutan'       => $request->urutan,
-            'kurikulum_id' => $request->kurikulum_id,
-            'bahasa'       => 'Bahasa Indonesia',
-            'status'       => 'pending',
+            'trainer_id'     => Auth::id(),
+            'tipe'           => 'modul',
+            'judul'          => $request->judul,
+            'deskripsi'      => $request->deskripsi,
+            'urutan'         => $request->urutan,
+            'kurikulum_id'   => $request->kurikulum_id,
+            'bahasa'         => 'Bahasa Indonesia',
+            'status'         => 'pending',
+            'materi_type'    => $request->materi_type,
+            'materi_pdf'     => $materiPdf,
+            'materi_youtube' => $request->materi_type === 'youtube' ? $request->materi_youtube : null,
+            'akses_mulai'    => $request->akses_mulai  ?: null,
+            'akses_selesai'  => $request->akses_selesai ?: null,
         ]);
-
+    
         return redirect()->back()
             ->with('success', 'Modul berhasil ditambahkan.')
             ->with('active_page', 'program');

@@ -136,6 +136,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/trainer/kurikulum/{pelatihan}/absensi/export', [AbsensiController::class, 'exportCsv'])
         ->name('trainer.absensi.export');
 
+        Route::get('/trainer/program/{id}/peserta', [App\Http\Controllers\TrainerController::class, 'getPeserta'])
+        ->name('trainer.peserta.index');
+    Route::get('/trainer/program/{id}/peserta/export', [App\Http\Controllers\TrainerController::class, 'exportPesertaCsv'])
+        ->name('trainer.peserta.export');
+
     // Trainer Program
     Route::post('/trainer/pelatihan/store', [App\Http\Controllers\TrainerController::class, 'storeProgram'])
         ->name('trainer.pelatihan.store');
@@ -178,9 +183,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/', [AdminController::class, 'index'])->name('dashboard');
 
     // ── Approval Program ─────────────────────────────────────────────
-    Route::get('/approval/program', [AdminController::class, 'approvalProgram'])->name('approval.program');
-    Route::post('/approval/program/{program}/approve', [AdminController::class, 'approveProgram'])->name('approval.program.approve');
-    Route::post('/approval/program/{program}/reject',  [AdminController::class, 'rejectProgram'])->name('approval.program.reject');
+Route::get('/approval/program/counts',             [AdminController::class, 'approvalProgramCounts'])->name('approval.program.counts'); // ← TAMBAH INI PALING ATAS
+Route::get('/approval/program',                    [AdminController::class, 'approvalProgram'])->name('approval.program');
+Route::post('/approval/program/{program}/approve', [AdminController::class, 'approveProgram'])->name('approval.program.approve');
+Route::post('/approval/program/{program}/reject',  [AdminController::class, 'rejectProgram'])->name('approval.program.reject');
 
     // ── Approval Produk ──────────────────────────────────────────────
     Route::get('/approval/produk',                     [AdminController::class, 'approvalProduk'])->name('approval.produk');

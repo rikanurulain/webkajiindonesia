@@ -9,6 +9,30 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
 <style>
 
+.materi-type-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 8px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface2);
+    color: var(--text-muted);
+    transition: all .2s;
+    text-align: center;
+    user-select: none;
+}
+.materi-type-card:hover {
+    border-color: var(--accent3);
+    background: #e3f0fa;
+}
+.materi-type-card.active {
+    border-color: var(--accent);
+    background: var(--accent-light);
+    color: var(--accent);
+}
+
 .form-input:invalid:not(:placeholder-shown),
 .form-textarea:invalid:not(:placeholder-shown),
 .form-select:invalid {
@@ -766,6 +790,7 @@ $absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, 'As
                 }
                 $jumlahAbsensi = \App\Models\AbsensiPeserta::where('pelatihan_id', $k->id)->count();
             @endphp
+   
             <div class="kurikulum-block">
                 <div class="kurikulum-block-header">
                     <div style="width:42px;height:42px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden;">
@@ -794,6 +819,20 @@ $absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, 'As
                             <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
                         @endif
 
+                        @php
+                        $jumlahPendaftar = \App\Models\PendaftaranProgram::where('program_id', $k->id)->count();
+                    @endphp
+                        <button class="btn btn-sm"
+                        style="background:#e8f0fe;color:#1d4ed8;border:1.5px solid #93c5fd;font-weight:700;gap:6px;flex-shrink:0"
+                            onclick="bukaDaftarPeserta({{ $k->id }}, '{{ addslashes($k->judul) }}')">
+                            🎓 Peserta
+                            @if($jumlahPendaftar > 0)
+                                <span style="background:#1d4ed8;color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;margin-left:2px">
+                        {{ $jumlahPendaftar }}
+                        </span>
+                        @endif
+                        </button>
+
                         <button class="btn btn-sm" style="background:#e8f5e9;color:#2d6a4f;border:1.5px solid #a7d7c5;font-weight:700;gap:6px;flex-shrink:0"
                             onclick="bukaDaftarAbsensi({{ $k->id }}, '{{ addslashes($k->judul) }}')">
                             👥 Absensi
@@ -801,6 +840,8 @@ $absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, 'As
                                 <span style="background:#2d6a4f;color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;margin-left:2px">{{ $jumlahAbsensi }}</span>
                             @endif
                         </button>
+
+                        
 
                         <button class="btn btn-sm btn-outline" onclick="openModalModulDenganKurikulum({{ $k->id }}, '{{ addslashes($k->judul) }}')">+ Modul</button>
 
@@ -864,6 +905,7 @@ $absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, 'As
                     @endif
                 </div>
                 @endif
+            
 
                 @if($modulDalamK->count() > 0)
                 <div class="modul-list">
@@ -882,9 +924,22 @@ $absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, 'As
                             @else
                                 <span class="badge badge-pending" style="font-size:10px;padding:3px 8px"><span class="badge-dot"></span>Menunggu</span>
                             @endif
-                            <button class="btn-icon" onclick="editModul({{ $m->id }}, {{ $m->kurikulum_id ?? 'null' }}, '{{ addslashes($m->judul) }}', '{{ addslashes($m->deskripsi ?? '') }}', '{{ $m->urutan ?? $loop->iteration }}')" title="Edit Modul">
-                                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                            </button>
+                            <button class="btn-icon" onclick="editModul(
+    {{ $m->id }},
+    {{ $m->kurikulum_id ?? 'null' }},
+    '{{ addslashes($m->judul) }}',
+    '{{ addslashes($m->deskripsi ?? '') }}',
+    '{{ $m->urutan ?? $loop->iteration }}',
+    '{{ $m->materi_type ?? '' }}',
+    '{{ $m->materi_youtube ?? '' }}',
+    '{{ $m->materi_pdf ? asset('storage/'.$m->materi_pdf) : '' }}',
+    '{{ $m->materi_pdf ?? '' }}',
+'{{ $m->akses_mulai ?? '' }}',
+'{{ $m->akses_selesai ?? '' }}'
+    
+)" title="Edit Modul">
+    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+</button>
                             <button class="btn-icon btn-icon-danger" onclick="hapusItem({{ $m->id }}, 'modul')" title="Hapus">
                                 <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
                             </button>
@@ -1092,8 +1147,8 @@ $absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, 'As
                 <input class="form-input" type="text" name="judul" id="k-judul" placeholder="Contoh: Kursus Digital Marketing Terapan..." required>
             </div>
             <div class="form-group">
-                <label class="form-label">Deskripsi</label>
-                <textarea class="form-textarea" name="deskripsi" id="k-deskripsi" rows="3" placeholder="Jelaskan tujuan dan isi kurikulum ini..." maxlength="500" required></textarea>
+            <label class="form-label">Deskripsi <span style="color:var(--accent2)">*</span></label>
+<textarea class="form-textarea" name="deskripsi" id="k-deskripsi" rows="3" placeholder="Jelaskan tujuan dan isi kurikulum ini..." maxlength="500" required></textarea>
             </div>
 
             <hr class="form-divider">
@@ -1295,66 +1350,276 @@ $absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, 'As
 
 {{-- ============ MODAL MODUL ============ --}}
 <div class="modal-overlay" id="modal-modul">
-    <div class="modal" style="width:520px">
+    <div class="modal" style="width:560px">
         <div class="modal-header">
             <div class="modal-title">
                 <span id="modal-modul-title-text">Tambah Modul Pembelajaran</span>
-                <small id="modal-modul-subtitle">Modul akan tampil sebagai daftar bernomor di halaman kurikulum</small>
+                <small id="modal-modul-subtitle">Modul tampil sebagai daftar bernomor di halaman kurikulum</small>
             </div>
             <button class="modal-close" onclick="resetModulModal(); closeModal('modal-modul')">×</button>
         </div>
+
         @php $adaKurikulum = isset($pelatihanList) && $pelatihanList->where('tipe','kurikulum')->count() > 0; @endphp
         @if(!$adaKurikulum)
         <div class="notice-box">
             <div style="font-size:22px;flex-shrink:0">⚠️</div>
             <div class="notice-text">
-                <strong>Belum ada kurikulum.</strong> Buat kurikulum terlebih dahulu sebelum menambahkan modul.
-                <br><a href="#" onclick="closeModal('modal-modul'); openModal('modal-kurikulum')" style="color:var(--accent);font-weight:700">Buat kurikulum sekarang →</a>
+                <strong>Belum ada kurikulum.</strong> Buat kurikulum terlebih dahulu.
+                <br><a href="#" onclick="closeModal('modal-modul'); openModal('modal-kurikulum')"
+                    style="color:var(--accent);font-weight:700">Buat kurikulum sekarang →</a>
             </div>
         </div>
         @endif
-        <form id="form-modul" method="POST" action="{{ route('trainer.modul.store') }}">
+
+        <form id="form-modul" method="POST" enctype="multipart/form-data"
+              action="{{ route('trainer.modul.store') }}">
             @csrf
-            <input type="hidden" name="_method" id="modul-method" value="POST">
+            <input type="hidden" name="_method"      id="modul-method"   value="POST">
             <input type="hidden" name="modul_edit_id" id="modul-edit-id">
-            <div class="form-group">
-                <label class="form-label">Masukkan ke Kurikulum <span style="color:var(--accent2)">*</span></label>
-                <select class="form-select" name="kurikulum_id" id="m-kurikulum-id" required {{ !$adaKurikulum ? 'disabled' : '' }}>
-                    <option value="">-- Pilih kurikulum --</option>
-                    @if(isset($pelatihanList))
-                        @foreach($pelatihanList->where('tipe','kurikulum') as $k)
-                            <option value="{{ $k->id }}">{{ $k->judul }}</option>
-                        @endforeach
-                    @endif
-                </select>
+            <input type="hidden" name="tipe"          value="modul">
+            {{-- field ini diisi JS saat edit agar PDF lama dipertahankan --}}
+            <input type="hidden" name="materi_pdf_existing" id="m-materi-pdf-existing">
+
+            {{-- Kurikulum & Urutan --}}
+            <div style="display:grid;grid-template-columns:1fr 120px;gap:14px">
+                <div class="form-group">
+                    <label class="form-label">Kurikulum <span style="color:var(--accent2)">*</span></label>
+                    <select class="form-select" name="kurikulum_id" id="m-kurikulum-id"
+                            required {{ !$adaKurikulum ? 'disabled' : '' }}>
+                        <option value="">-- Pilih kurikulum --</option>
+                        @if(isset($pelatihanList))
+                            @foreach($pelatihanList->where('tipe','kurikulum') as $k)
+                                <option value="{{ $k->id }}">{{ $k->judul }}</option>
+                            @endforeach
+                        @endif
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Urutan <span style="color:var(--accent2)">*</span></label>
+                    <input class="form-input" type="number" name="urutan" id="m-urutan"
+                           placeholder="1" min="1" required {{ !$adaKurikulum ? 'disabled' : '' }}>
+                </div>
             </div>
-            <div class="form-group">
-                <label class="form-label">Nomor Urutan <span style="color:var(--accent2)">*</span></label>
-                <input class="form-input" type="number" name="urutan" id="m-urutan" placeholder="1, 2, 3..." min="1" required {{ !$adaKurikulum ? 'disabled' : '' }}>
-            </div>
+
+            {{-- Judul --}}
             <div class="form-group">
                 <label class="form-label">Judul Modul <span style="color:var(--accent2)">*</span></label>
-                <input class="form-input" type="text" name="judul" id="m-judul" placeholder="Contoh: Pengenalan Dunia UMKM" required {{ !$adaKurikulum ? 'disabled' : '' }}>
+                <input class="form-input" type="text" name="judul" id="m-judul"
+                       placeholder="Contoh: Pengenalan Dunia UMKM"
+                       required {{ !$adaKurikulum ? 'disabled' : '' }}>
             </div>
+
+            {{-- Deskripsi --}}
             <div class="form-group">
-                <label class="form-label">Deskripsi Singkat</label>
-                <textarea class="form-textarea" name="deskripsi" id="m-deskripsi" rows="3" placeholder="Deskripsi singkat isi modul..." maxlength="300" {{ !$adaKurikulum ? 'disabled' : '' }}></textarea>
+            <label class="form-label">Deskripsi Singkat <span style="color:var(--accent2)">*</span></label>
+<textarea class="form-textarea" name="deskripsi" id="m-deskripsi"
+          rows="2" maxlength="300"
+          placeholder="Ringkasan isi modul..."
+          required
+          {{ !$adaKurikulum ? 'disabled' : '' }}></textarea>
             </div>
+
+            {{-- ═══ JADWAL AKSES ═══ --}}
+            <hr class="form-divider">
+            <div class="form-section-title">⏰ Jadwal Akses Modul</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                <div class="form-group">
+                    <label class="form-label">Akses Dibuka</label>
+                    <input class="form-input" type="datetime-local" name="akses_mulai" id="m-akses-mulai"
+                           {{ !$adaKurikulum ? 'disabled' : '' }}>
+                    <div class="form-hint">Kosongkan = langsung bisa diakses</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Akses Ditutup</label>
+                    <input class="form-input" type="datetime-local" name="akses_selesai" id="m-akses-selesai"
+                           {{ !$adaKurikulum ? 'disabled' : '' }}>
+                    <div class="form-hint">Kosongkan = tidak ada batas waktu</div>
+                </div>
+            </div>
+
+            {{-- ═══ MATERI ═══ --}}
+            <hr class="form-divider">
+            <div class="form-section-title" style="display:flex;align-items:center;gap:8px">
+                📎 Materi Modul
+                <span style="font-size:11px;font-weight:400;color:var(--text-muted)">
+                    — opsional, ditampilkan saat peserta membuka kelas
+                </span>
+            </div>
+
+            {{-- Pilih tipe --}}
+            <div class="form-group">
+                <label class="form-label">Jenis Materi</label>
+                <div style="display:flex;gap:10px">
+                    {{-- Tidak ada --}}
+                    <label style="flex:1;cursor:pointer">
+                        <input type="radio" name="materi_type" value=""
+                               id="m-materi-none" checked
+                               onchange="switchMateriType('')"
+                               style="display:none">
+                        <div class="materi-type-card" id="card-none">
+                            <span style="font-size:20px">🚫</span>
+                            <div style="font-size:12px;font-weight:600;margin-top:4px">Tidak ada</div>
+                        </div>
+                    </label>
+                    {{-- PDF --}}
+                    <label style="flex:1;cursor:pointer">
+                        <input type="radio" name="materi_type" value="pdf"
+                               id="m-materi-pdf-radio"
+                               onchange="switchMateriType('pdf')"
+                               style="display:none">
+                        <div class="materi-type-card" id="card-pdf">
+                            <span style="font-size:20px">📄</span>
+                            <div style="font-size:12px;font-weight:600;margin-top:4px">Upload PDF</div>
+                        </div>
+                    </label>
+                    {{-- YouTube --}}
+                    <label style="flex:1;cursor:pointer">
+                        <input type="radio" name="materi_type" value="youtube"
+                               id="m-materi-yt-radio"
+                               onchange="switchMateriType('youtube')"
+                               style="display:none">
+                        <div class="materi-type-card" id="card-youtube">
+                            <span style="font-size:20px">▶️</span>
+                            <div style="font-size:12px;font-weight:600;margin-top:4px">Video YouTube</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            {{-- Panel PDF --}}
+            <div id="panel-pdf" style="display:none">
+                <div class="form-group" style="margin-bottom:0">
+                    <label class="form-label">File PDF <span style="color:var(--accent2)">*</span></label>
+                    <label id="pdf-upload-area"
+                           style="display:flex;align-items:center;gap:14px;padding:16px;
+                                  border:2px dashed #2d6a4f66;border-radius:12px;
+                                  background:#fafbff;cursor:pointer;transition:all .2s"
+                           onmouseover="this.style.borderColor='var(--accent)';this.style.background='#f0f9f4'"
+                           onmouseout="this.style.borderColor='#2d6a4f66';this.style.background='#fafbff'"
+                           for="m-materi-pdf-file">
+                        <div style="width:44px;height:44px;border-radius:10px;background:#fee2e2;
+                                    display:flex;align-items:center;justify-content:center;
+                                    font-size:22px;flex-shrink:0">📄</div>
+                        <div style="flex:1;min-width:0">
+                            <div id="pdf-upload-label"
+                                 style="font-size:13px;font-weight:600;color:var(--text)">
+                                Klik untuk memilih file PDF
+                            </div>
+                            <div id="pdf-upload-sub"
+                                 style="font-size:11px;color:var(--text-muted);margin-top:2px">
+                                Maks. 20 MB · Format .pdf
+                            </div>
+                        </div>
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24"
+                             stroke="var(--accent)" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                    </label>
+                    <input type="file" id="m-materi-pdf-file" name="materi_pdf"
+                           accept=".pdf" style="display:none"
+                           onchange="onPdfChange(this)">
+                    {{-- Preview PDF existing (saat edit) --}}
+                    <div id="pdf-existing-info" style="display:none;margin-top:8px;
+                         padding:10px 14px;background:var(--accent-light);
+                         border:1px solid #a7d7c566;border-radius:10px;
+                         display:none;align-items:center;gap:10px">
+                        <span style="font-size:18px">📄</span>
+                        <div style="flex:1;font-size:12px">
+                            <div style="font-weight:600;color:var(--accent)">PDF tersimpan</div>
+                            <div style="color:var(--text-muted)">Upload file baru untuk mengganti</div>
+                        </div>
+                        <a id="pdf-existing-link" href="#" target="_blank"
+                           style="font-size:12px;font-weight:600;color:var(--accent3);text-decoration:none">
+                            Buka ↗
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Panel YouTube --}}
+            <div id="panel-youtube" style="display:none">
+                <div class="form-group" style="margin-bottom:0">
+                    <label class="form-label">URL Video YouTube <span style="color:var(--accent2)">*</span></label>
+                    <input class="form-input" type="url" name="materi_youtube" id="m-materi-youtube"
+                           placeholder="https://www.youtube.com/watch?v=..."
+                           oninput="updateYoutubePreview(this.value)">
+                    <div class="form-hint">Paste URL video YouTube (bisa video publik maupun unlisted)</div>
+                    {{-- Preview thumbnail --}}
+                    <div id="yt-preview-wrap"
+                         style="display:none;margin-top:10px;border-radius:12px;overflow:hidden;
+                                border:1px solid var(--border);position:relative">
+                        <div style="position:relative;padding-top:56.25%;background:#000">
+                            <img id="yt-thumbnail" src="" alt="thumbnail"
+                                 style="position:absolute;inset:0;width:100%;height:100%;
+                                        object-fit:cover;opacity:.85">
+                            <div style="position:absolute;inset:0;display:flex;
+                                        align-items:center;justify-content:center">
+                                <div style="width:52px;height:52px;border-radius:50%;
+                                            background:rgba(255,0,0,.9);
+                                            display:flex;align-items:center;justify-content:center">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                                        <polygon points="5,3 19,12 5,21"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="yt-video-title"
+                             style="padding:8px 12px;font-size:12px;font-weight:600;
+                                    background:var(--surface2);color:var(--text)">
+                            Video terdeteksi ✓
+                        </div>
+                    </div>
+                    <div id="yt-error"
+                         style="display:none;margin-top:6px;font-size:11px;
+                                color:var(--accent2);background:#fff0ed;
+                                border:1px solid #e76f5166;border-radius:8px;padding:8px 12px">
+                        ⚠️ URL tidak valid. Gunakan format: https://www.youtube.com/watch?v=XXXX
+                    </div>
+                </div>
+            </div>
+
+            {{-- Preview modul --}}
             @if($adaKurikulum)
-            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:18px">
-                <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Preview tampilan publik</div>
-                <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px">
-                    <div style="width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px" id="preview-num">1</div>
-                    <div>
-                        <div style="font-size:13px;font-weight:700;color:var(--accent)" id="preview-judul">Judul modul...</div>
-                        <div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.5" id="preview-desc">Deskripsi modul...</div>
+            <div style="background:var(--surface2);border:1px solid var(--border);
+                        border-radius:12px;padding:14px 16px;margin-top:18px">
+                <div style="font-size:11px;font-weight:700;color:var(--text-muted);
+                            text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">
+                    Preview tampilan
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 14px;
+                            background:var(--surface);border:1px solid var(--border);border-radius:10px">
+                    <div id="preview-num"
+                         style="width:28px;height:28px;border-radius:50%;background:var(--accent);
+                                color:#fff;font-size:12px;font-weight:700;
+                                display:flex;align-items:center;justify-content:center;
+                                flex-shrink:0;margin-top:2px">1</div>
+                    <div style="flex:1;min-width:0">
+                        <div style="font-size:13px;font-weight:700;color:var(--accent)"
+                             id="preview-judul">Judul modul...</div>
+                        <div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.5"
+                             id="preview-desc">Deskripsi modul...</div>
+                        <div id="preview-materi-badge" style="display:none;margin-top:6px">
+                            <span id="preview-materi-tag"
+                                  style="display:inline-flex;align-items:center;gap:5px;
+                                         padding:3px 10px;border-radius:20px;font-size:11px;
+                                         font-weight:600;background:#e3f0fa;color:var(--accent3);
+                                         border:1px solid #bdd5ea">
+                                📎 Materi tersedia
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
             @endif
+
             <div class="modal-footer">
-                <button type="button" class="btn btn-ghost" onclick="resetModulModal(); closeModal('modal-modul')">Batal</button>
-                <button type="submit" class="btn btn-primary" id="modul-submit-btn" {{ !$adaKurikulum ? 'disabled' : '' }} style="{{ !$adaKurikulum ? 'opacity:.5;cursor:not-allowed' : '' }}">
+                <button type="button" class="btn btn-ghost"
+                        onclick="resetModulModal(); closeModal('modal-modul')">Batal</button>
+                <button type="submit" class="btn btn-primary" id="modul-submit-btn"
+                        {{ !$adaKurikulum ? 'disabled' : '' }}
+                        style="{{ !$adaKurikulum ? 'opacity:.5;cursor:not-allowed' : '' }}">
                     <span id="modul-submit-text">Simpan Modul</span>
                 </button>
             </div>
@@ -1661,11 +1926,262 @@ $absensiSelesai = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_selesai, 'As
     </div>
 </div>
 
+{{-- ============ MODAL DAFTAR PESERTA ============ --}}
+<div class="modal-overlay" id="modal-peserta-daftar">
+    <div class="modal" style="width:700px;max-width:95vw">
+        <div class="modal-header">
+            <div class="modal-title">
+                🎓 Daftar Peserta
+                <small id="modal-peserta-subtitle" style="display:block;margin-top:3px">–</small>
+            </div>
+            <button class="modal-close" onclick="closeModal('modal-peserta-daftar')">×</button>
+        </div>
+
+        {{-- Summary badge --}}
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <span style="font-size:13px;color:var(--text-muted)">Total:</span>
+                <span id="peserta-total-badge"
+                    style="background:#1d4ed8;color:#fff;font-size:12px;font-weight:700;padding:3px 12px;border-radius:20px">–</span>
+                <span id="peserta-diterima-badge"
+                    style="background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:3px 12px;border-radius:20px">–</span>
+                <span id="peserta-pending-badge"
+                    style="background:#f59e0b;color:#fff;font-size:12px;font-weight:700;padding:3px 12px;border-radius:20px">–</span>
+            </div>
+            <div style="display:flex;gap:8px">
+                <button class="btn btn-sm btn-ghost" onclick="exportPesertaCsv()" style="gap:6px">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Export CSV
+                </button>
+                <button class="btn btn-sm btn-ghost" onclick="refreshPeserta()" style="gap:6px">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 4 23 10 17 10"/>
+                        <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+                    </svg>
+                    Refresh
+                </button>
+            </div>
+        </div>
+
+        {{-- Filter tab --}}
+        <div style="display:flex;gap:6px;margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:10px">
+            <button onclick="filterPeserta('semua')" id="tab-peserta-semua"
+                style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid #1d4ed8;background:#1d4ed8;color:#fff;cursor:pointer;font-family:inherit;transition:all .15s">
+                Semua
+            </button>
+            <button onclick="filterPeserta('diterima')" id="tab-peserta-diterima"
+                style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:#f9fafb;color:#6b7280;cursor:pointer;font-family:inherit;transition:all .15s">
+                ✅ Diterima
+            </button>
+            <button onclick="filterPeserta('menunggu')" id="tab-peserta-menunggu"
+                style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:#f9fafb;color:#6b7280;cursor:pointer;font-family:inherit;transition:all .15s">
+                ⏳ Menunggu
+            </button>
+            <button onclick="filterPeserta('ditolak')" id="tab-peserta-ditolak"
+                style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:#f9fafb;color:#6b7280;cursor:pointer;font-family:inherit;transition:all .15s">
+                ✕ Ditolak
+            </button>
+        </div>
+
+        <div id="peserta-loading" style="text-align:center;padding:44px;color:var(--text-muted);font-size:13px">
+            ⏳ Memuat data...
+        </div>
+
+        <div id="peserta-table-wrap" style="display:none">
+            <div class="table-wrap" style="margin-bottom:0;max-height:400px;overflow-y:auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:40px">#</th>
+                            <th>Nama</th>
+                            <th>Kontak</th>
+                            <th>Bukti Bayar</th>
+                            <th>Tanggal Daftar</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="peserta-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="peserta-empty"
+            style="display:none;text-align:center;padding:50px 20px;color:var(--text-muted)">
+            <div style="font-size:42px;margin-bottom:12px">📭</div>
+            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px">Belum ada peserta</div>
+            <div style="font-size:13px">Peserta yang mendaftar akan muncul di sini</div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('modal-peserta-daftar')">Tutup</button>
+        </div>
+    </div>
+</div>
+
 <form id="form-hapus" method="POST" style="display:none">@csrf @method('DELETE')</form>
 <form id="form-hapus-event" method="POST" style="display:none">@csrf @method('DELETE')</form>
 
 <script>
+/* ================================================================
+   DAFTAR PESERTA PENDAFTARAN
+================================================================ */
+var _pesertaProgramId  = null;
+var _pesertaAllData    = [];
+var _pesertaFilterAktif = 'semua';
 
+function bukaDaftarPeserta(programId, judul) {
+    _pesertaProgramId = programId;
+    document.getElementById('modal-peserta-subtitle').textContent = judul;
+    document.getElementById('peserta-total-badge').textContent    = '–';
+    document.getElementById('peserta-diterima-badge').textContent = '– diterima';
+    document.getElementById('peserta-pending-badge').textContent  = '– menunggu';
+    document.getElementById('peserta-loading').style.display      = 'block';
+    document.getElementById('peserta-table-wrap').style.display   = 'none';
+    document.getElementById('peserta-empty').style.display        = 'none';
+    _pesertaFilterAktif = 'semua';
+    _setTabPeserta('semua');
+    openModal('modal-peserta-daftar');
+    _muatPeserta(programId);
+}
+
+function refreshPeserta() {
+    if (_pesertaProgramId) _muatPeserta(_pesertaProgramId);
+}
+
+function _muatPeserta(programId) {
+    document.getElementById('peserta-loading').style.display    = 'block';
+    document.getElementById('peserta-table-wrap').style.display = 'none';
+    document.getElementById('peserta-empty').style.display      = 'none';
+
+    fetch('/trainer/program/' + programId + '/peserta', {
+        headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(r => r.json())
+    .then(res => {
+        document.getElementById('peserta-loading').style.display = 'none';
+        if (!res.success) { alert('Gagal: ' + res.message); return; }
+
+        _pesertaAllData = res.peserta;
+
+        // Update badge summary
+        const total    = res.peserta.length;
+        const diterima = res.peserta.filter(p => p.status === 'diterima').length;
+        const menunggu = res.peserta.filter(p => p.status === 'menunggu_verifikasi').length;
+
+        document.getElementById('peserta-total-badge').textContent    = total + ' total';
+        document.getElementById('peserta-diterima-badge').textContent = diterima + ' diterima';
+        document.getElementById('peserta-pending-badge').textContent  = menunggu + ' menunggu';
+
+        _renderPeserta(_pesertaFilterAktif);
+    })
+    .catch(() => {
+        document.getElementById('peserta-loading').style.display = 'none';
+        alert('Gagal terhubung ke server.');
+    });
+}
+
+function filterPeserta(filter) {
+    _pesertaFilterAktif = filter;
+    _setTabPeserta(filter);
+    _renderPeserta(filter);
+}
+
+function _setTabPeserta(aktif) {
+    const tabs = {
+        semua:    { bg: '#1d4ed8', border: '#1d4ed8', color: '#fff' },
+        diterima: { bg: 'var(--accent)', border: 'var(--accent)', color: '#fff' },
+        menunggu: { bg: '#f59e0b', border: '#f59e0b', color: '#fff' },
+        ditolak:  { bg: '#ef4444', border: '#ef4444', color: '#fff' },
+    };
+    const defaultStyle = 'background:#f9fafb;border-color:var(--border);color:#6b7280';
+
+    ['semua', 'diterima', 'menunggu', 'ditolak'].forEach(key => {
+        const btn = document.getElementById('tab-peserta-' + key);
+        if (!btn) return;
+        if (key === aktif) {
+            const s = tabs[key];
+            btn.style.cssText = `padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;
+                border:1.5px solid ${s.border};background:${s.bg};color:${s.color};
+                cursor:pointer;font-family:inherit;transition:all .15s`;
+        } else {
+            btn.style.cssText = `padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;
+                border:1.5px solid var(--border);background:#f9fafb;color:#6b7280;
+                cursor:pointer;font-family:inherit;transition:all .15s`;
+        }
+    });
+}
+
+function _renderPeserta(filter) {
+    let data = _pesertaAllData;
+    if (filter === 'diterima') data = data.filter(p => p.status === 'diterima');
+    else if (filter === 'menunggu') data = data.filter(p => p.status === 'menunggu_verifikasi');
+    else if (filter === 'ditolak') data = data.filter(p => p.status === 'ditolak');
+
+    if (data.length === 0) {
+        document.getElementById('peserta-table-wrap').style.display = 'none';
+        document.getElementById('peserta-empty').style.display      = 'block';
+        return;
+    }
+
+    const tbody = document.getElementById('peserta-tbody');
+    tbody.innerHTML = '';
+
+    data.forEach((p, i) => {
+        const statusBadge = p.status === 'diterima'
+            ? `<span style="display:inline-flex;align-items:center;gap:4px;background:#e8f5e9;color:#2d6a4f;border:1px solid #a7d7c566;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600">
+                    <span style="width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block"></span>Diterima
+               </span>`
+            : p.status === 'ditolak'
+            ? `<span style="display:inline-flex;align-items:center;gap:4px;background:#fff0ed;color:#e76f51;border:1px solid #e76f5166;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600">
+                    <span style="width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block"></span>Ditolak
+               </span>`
+            : `<span style="display:inline-flex;align-items:center;gap:4px;background:#fffbea;color:#f59e0b;border:1px solid #fcd34d66;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600">
+                    <span style="width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block"></span>Menunggu
+               </span>`;
+
+        const buktiBayar = p.bukti_pembayaran
+            ? `<a href="${p.bukti_pembayaran}" target="_blank"
+                  style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;
+                         font-size:11px;font-weight:600;background:var(--surface2);border:1px solid var(--border);
+                         color:var(--text);text-decoration:none">
+                   🖼️ Lihat
+               </a>`
+            : `<span style="font-size:12px;color:#9ca3af">— Gratis —</span>`;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="font-weight:600;color:var(--text-muted);width:40px">${i + 1}</td>
+            <td>
+                <div style="font-weight:600;font-size:13px">${_esc(p.nama)}</div>
+                <div style="font-size:11px;color:var(--text-muted)">${_esc(p.email)}</div>
+            </td>
+            <td style="font-size:12px;color:var(--text-muted)">
+                ${_esc(p.no_hp)}
+                ${p.alamat ? `<div style="font-size:11px">${_esc(p.alamat)}</div>` : ''}
+            </td>
+            <td>${buktiBayar}</td>
+            <td style="font-size:12px;color:var(--text-muted)">${_esc(p.tanggal_daftar)}</td>
+            <td>${statusBadge}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById('peserta-table-wrap').style.display = 'block';
+    document.getElementById('peserta-empty').style.display      = 'none';
+}
+
+function exportPesertaCsv() {
+    if (_pesertaProgramId) {
+        window.location.href = '/trainer/program/' + _pesertaProgramId + '/peserta/export';
+    }
+}
 /* ================================================================
    KURIKULUM GAMBAR — VALIDASI PORTRAIT 9:16
 ================================================================ */
@@ -1994,23 +2510,7 @@ document.addEventListener('click', function(e) {
     openModal('modal-kurikulum');
 });
 
-/* ================================================================
-   EDIT MODUL
-================================================================ */
-function editModul(id, kurikulumId, judul, deskripsi, urutan) {
-    document.getElementById('modal-modul-title-text').textContent = 'Edit Modul';
-    document.getElementById('modal-modul-subtitle').textContent   = 'Perubahan langsung tersimpan tanpa perlu persetujuan ulang';
-    document.getElementById('modul-submit-text').textContent      = 'Simpan Perubahan';
-    document.getElementById('modul-edit-id').value  = id;
-    document.getElementById('m-kurikulum-id').value = kurikulumId;
-    document.getElementById('m-judul').value        = judul;
-    document.getElementById('m-deskripsi').value    = deskripsi;
-    document.getElementById('m-urutan').value       = urutan;
-    document.getElementById('modul-method').value   = 'PUT';
-    document.getElementById('form-modul').action    = '/modul/' + id;
-    updatePreview();
-    openModal('modal-modul');
-}
+
 
 /* ================================================================
    EDIT EVENT
@@ -2088,20 +2588,7 @@ function resetKurikulumModal() {
     toggleAbsensiSection(false);
 }
 
-function resetModulModal() {
-    document.getElementById('modal-modul-title-text').textContent = 'Tambah Modul Pembelajaran';
-    document.getElementById('modal-modul-subtitle').textContent   = 'Modul akan tampil sebagai daftar bernomor di halaman kurikulum';
-    document.getElementById('modul-submit-text').textContent      = 'Simpan Modul';
-    document.getElementById('modul-method').value = 'POST';
-    document.getElementById('form-modul').action  = '{{ route("trainer.modul.store") }}';
-    document.getElementById('form-modul').reset();
-    const pNum   = document.getElementById('preview-num');
-    const pJudul = document.getElementById('preview-judul');
-    const pDesc  = document.getElementById('preview-desc');
-    if (pNum)   pNum.textContent   = '1';
-    if (pJudul) pJudul.textContent = 'Judul modul...';
-    if (pDesc)  pDesc.textContent  = 'Deskripsi modul...';
-}
+
 
 /* ================================================================
    HAPUS
@@ -2120,7 +2607,179 @@ function hapusEvent(id) {
 }
 
 /* ================================================================
-   PREVIEW MODUL
+   MATERI TYPE SWITCHER
+================================================================ */
+function switchMateriType(type) {
+    // Reset semua card
+    ['none','pdf','youtube'].forEach(t => {
+        const card = document.getElementById('card-' + t);
+        if (card) card.classList.remove('active');
+    });
+    // Activate pilihan
+    const activeId = type === '' ? 'none' : type;
+    const activeCard = document.getElementById('card-' + activeId);
+    if (activeCard) activeCard.classList.add('active');
+    // Sembunyikan semua panel
+    document.getElementById('panel-pdf').style.display     = 'none';
+    document.getElementById('panel-youtube').style.display = 'none';
+    // Tampilkan panel yang dipilih
+    if (type === 'pdf')     document.getElementById('panel-pdf').style.display     = 'block';
+    if (type === 'youtube') document.getElementById('panel-youtube').style.display = 'block';
+    // Update preview badge
+    updatePreviewMateriBadge(type);
+}
+
+function onPdfChange(input) {
+    const label = document.getElementById('pdf-upload-label');
+    const sub   = document.getElementById('pdf-upload-sub');
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        if (file.size > 20 * 1024 * 1024) {
+            alert('File PDF terlalu besar. Maks 20 MB.');
+            input.value = '';
+            return;
+        }
+        label.innerHTML = '✅ <strong>' + file.name + '</strong>';
+        sub.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB · siap diupload';
+    }
+}
+
+function updateYoutubePreview(url) {
+    const wrap  = document.getElementById('yt-preview-wrap');
+    const thumb = document.getElementById('yt-thumbnail');
+    const err   = document.getElementById('yt-error');
+    const videoId = extractYoutubeId(url);
+    if (videoId) {
+        thumb.src = 'https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg';
+        wrap.style.display = 'block';
+        err.style.display  = 'none';
+        updatePreviewMateriBadge('youtube');
+    } else if (url.length > 10) {
+        wrap.style.display = 'none';
+        err.style.display  = 'block';
+    } else {
+        wrap.style.display = 'none';
+        err.style.display  = 'none';
+    }
+}
+
+function extractYoutubeId(url) {
+    if (!url) return null;
+    const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/,
+    ];
+    for (const p of patterns) {
+        const m = url.match(p);
+        if (m) return m[1];
+    }
+    return null;
+}
+
+function updatePreviewMateriBadge(type) {
+    const badge = document.getElementById('preview-materi-badge');
+    const tag   = document.getElementById('preview-materi-tag');
+    if (!badge) return;
+    if (!type || type === '') {
+        badge.style.display = 'none';
+    } else if (type === 'pdf') {
+        badge.style.display = 'block';
+        tag.innerHTML = '📄 Materi PDF tersedia';
+        tag.style.background = '#fee2e2';
+        tag.style.color = '#dc2626';
+        tag.style.borderColor = '#fca5a5';
+    } else if (type === 'youtube') {
+        badge.style.display = 'block';
+        tag.innerHTML = '▶️ Video YouTube tersedia';
+        tag.style.background = '#fee2e2';
+        tag.style.color = '#dc2626';
+        tag.style.borderColor = '#fca5a5';
+    }
+}
+
+/* ================================================================
+   EDIT MODUL (GANTI YANG LAMA)
+================================================================ */
+function editModul(id, kurikulumId, judul, deskripsi, urutan, materiType, materiYoutube, materiPdfUrl, materiPdfPath, aksesMulai, aksesSelesai) {
+    document.getElementById('modal-modul-title-text').textContent = 'Edit Modul';
+    document.getElementById('modal-modul-subtitle').textContent   = 'Perubahan langsung tersimpan';
+    document.getElementById('modul-submit-text').textContent      = 'Simpan Perubahan';
+    document.getElementById('modul-edit-id').value                = id;
+    document.getElementById('m-kurikulum-id').value               = kurikulumId;
+    document.getElementById('m-judul').value                      = judul;
+    document.getElementById('m-deskripsi').value                  = deskripsi;
+    document.getElementById('m-urutan').value                     = urutan;
+    document.getElementById('modul-method').value                 = 'PUT';
+    document.getElementById('form-modul').action                  = '/modul/' + id;
+    document.getElementById('m-materi-pdf-existing').value        = materiPdfPath || '';
+    document.getElementById('m-akses-mulai').value   = aksesMulai   ? aksesMulai.substring(0, 16)   : '';
+    document.getElementById('m-akses-selesai').value = aksesSelesai ? aksesSelesai.substring(0, 16) : '';
+
+    // Set tipe materi
+    const safeType = materiType || '';
+    const radioNone = document.getElementById('m-materi-none');
+    const radioPdf  = document.getElementById('m-materi-pdf-radio');
+    const radioYt   = document.getElementById('m-materi-yt-radio');
+    radioNone.checked = safeType === '';
+    radioPdf.checked  = safeType === 'pdf';
+    radioYt.checked   = safeType === 'youtube';
+    switchMateriType(safeType);
+
+    // PDF existing info
+    const pdfInfo = document.getElementById('pdf-existing-info');
+    const pdfLink = document.getElementById('pdf-existing-link');
+    if (safeType === 'pdf' && materiPdfUrl) {
+        pdfInfo.style.display = 'flex';
+        pdfLink.href = materiPdfUrl;
+        document.getElementById('pdf-upload-label').textContent = 'Upload PDF baru untuk mengganti';
+        document.getElementById('pdf-upload-sub').textContent   = 'File lama akan tetap digunakan jika tidak diubah';
+    } else {
+        pdfInfo.style.display = 'none';
+    }
+
+    // YouTube
+    if (safeType === 'youtube') {
+        document.getElementById('m-materi-youtube').value = materiYoutube || '';
+        updateYoutubePreview(materiYoutube || '');
+    }
+
+    updatePreview();
+    openModal('modal-modul');
+}
+
+/* ================================================================
+   RESET MODAL MODUL (GANTI YANG LAMA)
+================================================================ */
+function resetModulModal() {
+    document.getElementById('modal-modul-title-text').textContent = 'Tambah Modul Pembelajaran';
+    document.getElementById('modal-modul-subtitle').textContent   = 'Modul tampil sebagai daftar bernomor di halaman kurikulum';
+    document.getElementById('modul-submit-text').textContent      = 'Simpan Modul';
+    document.getElementById('modul-method').value                 = 'POST';
+    document.getElementById('form-modul').action                  = '{{ route("trainer.modul.store") }}';
+    document.getElementById('form-modul').reset();
+    document.getElementById('m-materi-pdf-existing').value        = '';
+    // Reset materi
+    document.getElementById('m-materi-none').checked              = true;
+    switchMateriType('');
+    document.getElementById('pdf-existing-info').style.display    = 'none';
+    document.getElementById('pdf-upload-label').textContent       = 'Klik untuk memilih file PDF';
+    document.getElementById('pdf-upload-sub').textContent         = 'Maks. 20 MB · Format .pdf';
+    document.getElementById('yt-preview-wrap').style.display      = 'none';
+    document.getElementById('yt-error').style.display             = 'none';
+    document.getElementById('m-akses-mulai').value   = '';
+    document.getElementById('m-akses-selesai').value = '';
+    // Reset preview
+    const pNum   = document.getElementById('preview-num');
+    const pJudul = document.getElementById('preview-judul');
+    const pDesc  = document.getElementById('preview-desc');
+    if (pNum)   pNum.textContent   = '1';
+    if (pJudul) pJudul.textContent = 'Judul modul...';
+    if (pDesc)  pDesc.textContent  = 'Deskripsi modul...';
+    const badge = document.getElementById('preview-materi-badge');
+    if (badge) badge.style.display = 'none';
+}
+
+/* ================================================================
+   UPDATE PREVIEW (GANTI YANG LAMA)
 ================================================================ */
 function updatePreview() {
     const judul  = document.getElementById('m-judul');
