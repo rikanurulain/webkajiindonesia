@@ -462,18 +462,29 @@ class PelatihanController extends Controller
     // HALAMAN UTAMA PROGRAM
     // =========================================================
     public function program(Request $request)
-    {
-        $search = $request->input('search');
-    
-        $programsDB = Program::with('trainer')
-            ->where('status', 'approved')
-            ->where('tipe', 'kurikulum')
-            ->when($search, fn($q) => $q->where('judul', 'like', '%' . $search . '%'))
-            ->latest()
-            ->paginate(12);
-    
-        return view('pages.pelatihan-program', compact('programsDB'));
-    }
+{
+    $search = $request->input('search');
+
+    $programsDB = Program::with('trainer')
+        ->where('status', 'approved')
+        ->where('tipe', 'kurikulum')
+        ->when($search, fn($q) => $q->where('judul', 'like', '%' . $search . '%'))
+        ->latest()
+        ->paginate(12);
+
+    $trainerIds = $programsDB->pluck('trainer_id')->filter()->unique();
+    $trainerAcademicDegrees = \App\Models\Trainer::whereIn('user_id', $trainerIds)
+        ->pluck('academic_degree', 'user_id');
+
+    $programsDB->getCollection()->transform(function ($program) use ($trainerAcademicDegrees) {
+        $program->trainer_academic_degree = $trainerAcademicDegrees->get($program->trainer_id)
+            ?? $program->trainer?->name
+            ?? '';
+        return $program;
+    });
+
+    return view('pages.pelatihan-program', compact('programsDB'));
+}
 
     // =========================================================
     // DETAIL PROGRAM — handle DB dan statis

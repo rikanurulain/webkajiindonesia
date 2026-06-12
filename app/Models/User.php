@@ -148,7 +148,10 @@ class User extends Authenticatable
     }
 
     // ====================== RELATIONSHIPS ======================
-
+    public function trainerProfile()
+{
+    return $this->hasOne(\App\Models\Trainer::class, 'user_id', 'id');
+}
     /**
      * Relasi Banyak-ke-Banyak (BelongsToMany) ke program pelatihan yang diikuti oleh UMKM
      */

@@ -56,7 +56,7 @@
                 data-judul="{{ $program->judul }}"
                 data-deskripsi="{{ $program->deskripsi ?? '' }}"
                 data-gambar="{{ $program->gambar ? asset('storage/' . $program->gambar) : '' }}"
-                data-trainer="{{ $program->trainer ? ($program->trainer->academic_degree ?? $program->trainer->name) : '' }}"
+                data-trainer="{{ $program->trainer_academic_degree }}"
                 data-phone="{{ !empty($program->phone) ? $program->phone : (!empty($program->trainer->phone) ? $program->trainer->phone : '6281234567890') }}"
                 data-detail-url="{{ route('pelatihan.detail', $program->id) }}"
             ></div>

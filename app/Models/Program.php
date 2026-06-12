@@ -103,6 +103,18 @@ class Program extends Model
     }
     
 
+    public function trainerDetail()
+{
+    return $this->hasOneThrough(
+        Trainer::class,  // pastikan: use App\Models\Trainer; di atas
+        User::class,
+        'id',        // FK di users → dari programs.trainer_id
+        'user_id',   // FK di trainer → mengarah ke users.id
+        'trainer_id', // local key di programs
+        'id'          // local key di users
+    );
+}
+
     // ── Scopes (untuk query yang sering dipakai) ──────────────────────────
     // Contoh: Program::published()->get()
     public function scopePublished($query)
