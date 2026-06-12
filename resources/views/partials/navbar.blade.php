@@ -505,13 +505,15 @@
                             @endif
                         </div>
                         <span class="text-[9px] font-black uppercase tracking-[0.15em] text-gray-400 group-hover:text-primary transition-colors">
-                            {{ match(Auth::user()->role) {
-                                'trainer' => 'TRAINER',
-                                'mentor'  => 'MENTOR',
-                                'umkm'    => 'UMKM',
-                                'admin'   => 'ADMIN',
-                                default   => 'MEMBER',
-                            } }}
+                        {{-- Sesudahnya --}}
+{{ match(Auth::user()->role) {
+    'trainer' => 'TRAINER',
+    'mentor'  => 'MENTOR',
+    'umkm'    => 'UMKM',
+    'admin'   => 'ADMIN',
+    'umum'    => 'MEMBER',
+    default   => strtoupper(Auth::user()->role),
+} }}
                         </span>
                     </a>
                     <div class="h-8 w-[1px] bg-gray-200"></div>

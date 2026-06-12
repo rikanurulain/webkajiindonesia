@@ -99,6 +99,69 @@
             </div>
             @endif
 
+            {{-- ── Sosmed ── --}}
+@php
+    $sosmedData = [];
+    if (!empty($mentor->sosmed)) {
+        $decoded = is_array($mentor->sosmed) ? $mentor->sosmed : json_decode($mentor->sosmed, true);
+        $sosmedData = is_array($decoded) ? $decoded : [];
+    }
+
+    $sosmedLinks = [
+        'instagram' => [
+            'icon'   => 'M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4 4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z',
+            'color'  => 'text-pink-500',
+            'label'  => 'Instagram',
+            'prefix' => 'https://instagram.com/',
+        ],
+        'twitter' => [
+            'icon'   => 'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z',
+            'color'  => 'text-gray-800',
+            'label'  => 'X / Twitter',
+            'prefix' => 'https://x.com/',
+        ],
+        'linkedin' => [
+            'icon'   => 'M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z',
+            'color'  => 'text-blue-700',
+            'label'  => 'LinkedIn',
+            'prefix' => 'https://linkedin.com/in/',
+        ],
+        'youtube' => [
+            'icon'   => 'M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z',
+            'color'  => 'text-red-600',
+            'label'  => 'YouTube',
+            'prefix' => 'https://youtube.com/@',
+        ],
+    ];
+
+    $hasSosmed = collect(array_keys($sosmedLinks))->first(fn($k) => !empty($sosmedData[$k]));
+@endphp
+
+@if($hasSosmed)
+<div class="mt-3 pt-3 border-t border-gray-100">
+    <p class="text-xs text-gray-400 font-medium mb-2">Media Sosial</p>
+    <div class="flex flex-wrap gap-2">
+        @foreach($sosmedLinks as $key => $cfg)
+            @if(!empty($sosmedData[$key]))
+                @php
+                    $val = $sosmedData[$key];
+                    $url = str_starts_with($val, 'http')
+                        ? $val
+                        : ($cfg['prefix'] . ltrim($val, '/'));
+                @endphp
+                <a href="{{ $url }}" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-100 hover:border-gray-300 hover:bg-gray-100 transition text-xs font-medium text-gray-600 hover:text-gray-900">
+                    <svg class="w-3.5 h-3.5 {{ $cfg['color'] }} flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="{{ $cfg['icon'] }}"/>
+                    </svg>
+                    {{ $cfg['label'] }}
+                </a>
+            @endif
+        @endforeach
+    </div>
+</div>
+@endif
+
             {{-- Tombol WhatsApp --}}
             @if($mentor->phone)
             <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $mentor->phone) }}"
@@ -130,16 +193,13 @@
                             <button class="w-full bg-gray-200 text-gray-500 text-sm font-semibold py-2.5 px-4 rounded-lg cursor-not-allowed text-center" disabled>
                                 Sudah Memiliki Mentor Lain
                             </button>
-                        @else
-                            <form action="{{ route('umkm.pilih-mentor', $mentor->id) }}" method="POST">
-                                @csrf
-                                <button type="submit"
-                                        class="w-full bg-orange-400 hover:bg-orange-500 text-white text-sm font-semibold py-2.5 px-4 rounded-lg transition duration-200 shadow-sm text-center"
-                                        onclick="return confirm('Apakah Anda yakin ingin terhubung dengan mentor ini?')">
-                                    Hubungkan dengan Mentor
-                                </button>
-                            </form>
-                        @endif
+                            @else
+    <button type="button"
+            onclick="document.getElementById('modalHubungMentor').classList.remove('hidden')"
+            class="w-full bg-orange-400 hover:bg-orange-500 text-white text-sm font-semibold py-2.5 px-4 rounded-lg transition duration-200 shadow-sm text-center">
+        Hubungkan dengan Mentor
+    </button>
+@endif
                     </div>
                 @endif
             @endauth
@@ -152,9 +212,32 @@
             <p class="text-sm font-semibold text-gray-500">Hai, Saya</p>
             <h3 class="text-xl font-bold text-gray-900 mb-1">{{ $mentor->full_name ?? $mentor->nama }}</h3>
 
-            <div class="inline-block bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full uppercase mb-4">
-                {{ $mentor->role ?? 'Mentor' }}
-            </div>
+            @php
+    $spesPublik = [];
+    $rawSpes = $mentor->spesialisasi;
+    if (is_array($rawSpes)) {
+        $spesPublik = array_values(array_filter(array_map('trim', $rawSpes)));
+    } elseif (is_string($rawSpes) && $rawSpes) {
+        $decoded = json_decode($rawSpes, true);
+        $spesPublik = is_array($decoded)
+            ? array_values(array_filter(array_map('trim', $decoded)))
+            : array_values(array_filter(array_map('trim', explode(',', $rawSpes))));
+    }
+@endphp
+
+@if(count($spesPublik) > 0)
+    <div class="flex flex-wrap gap-2 mb-4">
+        @foreach($spesPublik as $spes)
+        <span class="inline-block bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full uppercase">
+            {{ $spes }}
+        </span>
+        @endforeach
+    </div>
+@else
+    <div class="inline-block bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full uppercase mb-4">
+        Mentor
+    </div>
+@endif
 
             <p class="text-sm text-gray-600 leading-relaxed">
                 {{ $mentor->bio ?? $mentor->deskripsi ?? 'Belum ada deskripsi.' }}
@@ -389,6 +472,42 @@
 
         </div>
     </div>
+    @auth
+<div id="modalHubungMentor"
+     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+     onclick="if(event.target===this) this.classList.add('hidden')">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center"
+         onclick="event.stopPropagation()">
+
+        <div class="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+        </div>
+
+        <h3 class="text-base font-bold text-gray-900 mb-1">Hubungkan dengan Mentor?</h3>
+        <p class="text-sm text-gray-500 mb-6 leading-relaxed">
+            Anda hanya dapat memiliki satu mentor aktif. Apakah Anda yakin ingin terhubung dengan mentor ini?
+        </p>
+
+        <div class="flex gap-3">
+            <button type="button"
+                    onclick="document.getElementById('modalHubungMentor').classList.add('hidden')"
+                    class="flex-1 py-2.5 rounded-lg border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition">
+                Batal
+            </button>
+            <form action="{{ route('umkm.pilih-mentor', $mentor->id) }}" method="POST" class="flex-1">
+                @csrf
+                <button type="submit"
+                        class="w-full py-2.5 rounded-lg bg-orange-400 hover:bg-orange-500 text-white text-sm font-semibold transition">
+                    Ya, Hubungkan
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+@endauth
+
 </section>
 
 {{-- ══ Script Interaksi Bintang ══ --}}

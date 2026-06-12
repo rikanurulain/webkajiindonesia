@@ -563,6 +563,10 @@ class ProfileController extends Controller
                     $request->kabupaten,
                     $request->provinsi,
                 ]));
+
+                $spesialisasiArr = array_values(array_filter(
+                    array_map('trim', explode(',', $request->input('bidang_spesialisasi', '')))
+                ));
  
                 // ── Data utama ────────────────────────────────────────
                 $data = [
@@ -583,10 +587,9 @@ class ProfileController extends Controller
                     'role'                  => 'Pembimbing',
                     'lat'                   => $request->lat,
                     'lng'                   => $request->lng,
-                    'status'                => 'pending',
-                    'sosmed'                => $sosmed,
-                    'spesialisasi'          => $request->input('bidang_spesialisasi'),
-                    'displayed_spesialisasi'=> collect(explode(',', $request->input('bidang_spesialisasi')))->first(),
+                    'status'         => 'pending',
+                    'sosmed'         => $sosmed,
+                    'spesialisasi'   => $spesialisasiArr,
                 ];
  
                 // ── Upload file (ganti jika ada file baru) ────────────
@@ -606,10 +609,15 @@ class ProfileController extends Controller
                 }
  
                 // ── Insert atau update ────────────────────────────────
-                \App\Models\Mentor::updateOrCreate(
+                $mentor = \App\Models\Mentor::updateOrCreate(
                     ['user_id' => $user->id],
                     $data
                 );
+
+                // Force simpan spesialisasi secara eksplisit
+                $mentor->sosmed       = $sosmed;                
+$mentor->spesialisasi = $spesialisasiArr;
+$mentor->save();
  
                 // ── Activity log ──────────────────────────────────────
                 \App\Models\ActivityLog::create([

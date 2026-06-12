@@ -45,6 +45,7 @@ class Mentor extends Model
         'reviewed_at' => 'datetime',
         'agree_terms' => 'boolean',
         'sosmed' => 'array',
+        'spesialisasi' => 'array',
     ];
 
     /**
@@ -85,6 +86,18 @@ class Mentor extends Model
     {
         return $this->hasMany(Produk::class, 'mentor_id');
     }
+
+    // GANTI nama accessor ini:
+public function getDisplayedSpesialisasiAttribute(): ?string
+{
+    // Sekarang: baca dari kolom DB dulu, fallback ke random
+    if (!empty($this->attributes['displayed_spesialisasi'])) {
+        return $this->attributes['displayed_spesialisasi'];
+    }
+    if (empty($this->spesialisasi)) return null;
+    $list = is_array($this->spesialisasi) ? $this->spesialisasi : [];
+    return count($list) > 0 ? $list[0] : null;
+}
 
     /**
      * Semua ulasan untuk mentor ini

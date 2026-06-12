@@ -233,6 +233,24 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 </head>
 <body>
 
+{{-- ============ HELPER: parse spesialisasi ============ --}}
+{{-- Dipakai di beberapa tempat, definisikan sekali di sini --}}
+@php
+$spesArr = [];
+if ($mentor && !empty($mentor->spesialisasi)) {
+    $raw = $mentor->spesialisasi;
+    if (is_array($raw)) {
+        $spesArr = array_values(array_filter(array_map('trim', $raw)));
+    } elseif (is_string($raw)) {
+        $decoded = json_decode($raw, true);
+        $spesArr = is_array($decoded)
+            ? array_values(array_filter(array_map('trim', $decoded)))
+            : array_values(array_filter(array_map('trim', explode(',', $raw))));
+    }
+}
+@endphp
+
+
 {{-- ============ SIDEBAR ============ --}}
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
@@ -661,15 +679,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
                 </div>
             </div>
 
+            {{-- ===== SPESIALISASI (tampilan) – menggunakan $spesArr yang sudah di-parse di atas ===== --}}
             <div class="form-group">
                 <div class="form-label">Spesialisasi</div>
-                @php
-                    $spesArr = $mentor?->spesialisasi
-                        ? array_map('trim', explode(',', $mentor->spesialisasi))
-                        : [];
-                @endphp
                 <div class="form-static">
-                    @if(count($spesArr))
+                    @if(count($spesArr) > 0)
                         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:2px">
                             @foreach($spesArr as $spes)
                             <span style="padding:3px 12px;border-radius:20px;font-size:12px;font-weight:600;background:var(--accent-light);color:var(--accent);border:1px solid #a7d7c566">{{ $spes }}</span>
@@ -737,27 +751,42 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
                 <input class="form-input" type="text" name="lokasi" value="{{ $mentor?->lokasi ?? '' }}" placeholder="Contoh: Surabaya, Jawa Timur">
             </div>
 
-            {{-- Spesialisasi --}}
+            {{-- ===== SPESIALISASI (form) – menggunakan $spesArr yang sudah di-parse di atas ===== --}}
             <div class="form-group">
                 <label class="form-label">Spesialisasi</label>
+
                 @php
-                    $spesPresets = [
-                        'Pemasaran Digital', 'Manajemen Keuangan', 'Pengembangan Produk',
-                        'Strategi Bisnis', 'SDM & Organisasi', 'Ekspor & Impor',
-                        'Sertifikasi Halal', 'Branding & Desain', 'E-Commerce',
-                        'Produksi & Operasional', 'Legalitas Usaha', 'Akses Permodalan',
-                    ];
-                    $savedSpes = $mentor?->spesialisasi ?? '';
-                    $savedSpesList = $savedSpes ? array_map('trim', explode(',', $savedSpes)) : [];
+                $spesPresets = [
+                    'Pemasaran Digital', 'Manajemen Keuangan', 'Pengembangan Produk',
+                    'Strategi Bisnis', 'SDM & Organisasi', 'Ekspor & Impor',
+                    'Sertifikasi Halal', 'Branding & Desain', 'E-Commerce',
+                    'Produksi & Operasional', 'Legalitas Usaha', 'Akses Permodalan',
+                ];
+                // $spesArr sudah tersedia dari @php di atas (parseSpesialisasi)
+                $savedSpesStr = implode(',', $spesArr);
+                // Item custom = yang ada di DB tapi bukan preset
+                $spesCustom = array_values(array_filter($spesArr, fn($v) => !in_array($v, $spesPresets)));
                 @endphp
+
+                {{-- Preset chips --}}
                 <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px" id="spes-chips">
                     @foreach($spesPresets as $preset)
-                    <button type="button" class="spes-chip" onclick="toggleSpesChip(this)"
-                        style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;border:1.5px solid {{ in_array($preset, $savedSpesList) ? 'var(--accent)' : '#d1d5db' }};background:{{ in_array($preset, $savedSpesList) ? 'var(--accent)' : '#f9fafb' }};color:{{ in_array($preset, $savedSpesList) ? '#fff' : '#4b5563' }};cursor:pointer;font-family:inherit;transition:all .15s">
+                    @php $isActive = in_array($preset, $spesArr); @endphp
+                    <button type="button"
+                        class="spes-chip"
+                        onclick="toggleSpesChip(this)"
+                        data-active="{{ $isActive ? '1' : '0' }}"
+                        style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;
+                               border:1.5px solid {{ $isActive ? 'var(--accent)' : '#d1d5db' }};
+                               background:{{ $isActive ? 'var(--accent)' : '#f9fafb' }};
+                               color:{{ $isActive ? '#fff' : '#4b5563' }};
+                               cursor:pointer;font-family:inherit;transition:all .15s">
                         {{ $preset }}
                     </button>
                     @endforeach
                 </div>
+
+                {{-- Input custom --}}
                 <div style="display:flex;gap:8px;margin-bottom:6px">
                     <input type="text" id="spes-custom-input" placeholder="Tambah spesialisasi lain..." class="form-input" style="flex:1"
                            onkeydown="if(event.key==='Enter'){event.preventDefault();addSpesCustom();}">
@@ -766,29 +795,35 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
                         + Tambah
                     </button>
                 </div>
+
+                {{-- Custom tags dari DB --}}
                 <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px" id="spes-custom-tags">
-                    @foreach($savedSpesList as $item)
-                        @if(!in_array($item, $spesPresets) && $item !== '')
-                        <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;background:#ede9fe;color:#5b21b6;border:1.5px solid #c4b5fd">
-                            {{ $item }}
-                            <button type="button" onclick="removeSpesTag(this,'{{ $item }}')"
-                                style="background:none;border:none;cursor:pointer;font-size:15px;line-height:1;color:inherit;padding:0;opacity:.7">×</button>
-                        </span>
-                        @endif
+                    @foreach($spesCustom as $item)
+                    <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;background:#ede9fe;color:#5b21b6;border:1.5px solid #c4b5fd">
+                        {{ $item }}
+                        <button type="button" onclick="removeSpesTag(this,'{{ $item }}')"
+                            style="background:none;border:none;cursor:pointer;font-size:15px;line-height:1;color:inherit;padding:0;opacity:.7">×</button>
+                    </span>
                     @endforeach
                 </div>
-                <input type="hidden" name="spesialisasi" id="spes-value" value="{{ $savedSpes }}">
+
+                {{-- Hidden input yang dikirim ke server --}}
+                <input type="hidden" name="spesialisasi" id="spes-value" value="{{ $savedSpesStr }}">
                 <div style="font-size:11px;color:var(--text-muted)">
-                    <span id="spes-count">{{ count($savedSpesList) }}</span> spesialisasi dipilih
+                    <span id="spes-count">{{ count($spesArr) }}</span> spesialisasi dipilih
                 </div>
 
-                {{-- Spesialisasi yang ditampilkan --}}
+                {{-- Dropdown "yang ditampilkan di publik" --}}
                 <div style="margin-top:14px">
                     <label class="form-label">Yang Ditampilkan di Publik</label>
                     <select name="displayed_spesialisasi" id="spes-displayed" class="form-select">
-                        @foreach($savedSpesList as $item)
+                        @foreach($spesArr as $item)
                         <option value="{{ $item }}" {{ ($mentor?->displayed_spesialisasi === $item) ? 'selected' : '' }}>{{ $item }}</option>
                         @endforeach
+                        {{-- Fallback bila $spesArr kosong --}}
+                        @if(count($spesArr) === 0)
+                        <option value="" disabled selected>— pilih spesialisasi dulu —</option>
+                        @endif
                     </select>
                     <div class="form-hint">Spesialisasi utama yang tampil di kartu mentor publik.</div>
                 </div>
@@ -887,61 +922,101 @@ function filterUmkm(q) {
 }
 
 /* ================================================================
-   SPESIALISASI CHIPS
+   SPESIALISASI – state helpers
 ================================================================ */
 function getSpesArr() {
     const v = document.getElementById('spes-value').value;
     return v ? v.split(',').map(s => s.trim()).filter(Boolean) : [];
 }
+
 function setSpesValue(arr) {
+    // Deduplicate
+    arr = [...new Set(arr.filter(Boolean))];
+
     document.getElementById('spes-value').value = arr.join(',');
+
     const count = document.getElementById('spes-count');
     if (count) count.textContent = arr.length;
+
+    // Sync dropdown "displayed_spesialisasi"
     const select = document.getElementById('spes-displayed');
     if (!select) return;
     const prev = select.value;
     select.innerHTML = '';
+    if (arr.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = ''; opt.textContent = '— pilih spesialisasi dulu —';
+        opt.disabled = true; opt.selected = true;
+        select.appendChild(opt);
+        return;
+    }
     arr.forEach(item => {
         const opt = document.createElement('option');
         opt.value = item; opt.textContent = item;
         if (item === prev) opt.selected = true;
         select.appendChild(opt);
     });
-    if (arr.length > 0 && !arr.includes(prev)) select.value = arr[0];
+    // Jika nilai sebelumnya tidak ada lagi, pakai item pertama
+    if (!arr.includes(prev)) select.value = arr[0];
 }
+
+/* ================================================================
+   SPESIALISASI – toggle preset chip
+================================================================ */
 function toggleSpesChip(btn) {
     const label = btn.textContent.trim();
     let arr = getSpesArr();
-    const active = btn.style.background.includes('var(--accent)') || btn.style.background === 'var(--accent)';
-    if (active) {
-        btn.style.background = '#f9fafb'; btn.style.borderColor = '#d1d5db'; btn.style.color = '#4b5563';
+    const isActive = btn.dataset.active === '1';
+    if (isActive) {
+        btn.dataset.active = '0';
+        btn.style.background  = '#f9fafb';
+        btn.style.borderColor = '#d1d5db';
+        btn.style.color       = '#4b5563';
         arr = arr.filter(v => v !== label);
     } else {
-        btn.style.background = 'var(--accent)'; btn.style.borderColor = 'var(--accent)'; btn.style.color = '#fff';
+        btn.dataset.active = '1';
+        btn.style.background  = 'var(--accent)';
+        btn.style.borderColor = 'var(--accent)';
+        btn.style.color       = '#fff';
         if (!arr.includes(label)) arr.push(label);
     }
     setSpesValue(arr);
 }
+
+/* ================================================================
+   SPESIALISASI – tambah custom tag
+================================================================ */
 function addSpesCustom() {
     const input = document.getElementById('spes-custom-input');
     const label = input.value.trim();
     if (!label) return;
+
     let arr = getSpesArr();
-    if (arr.includes(label)) { input.value = ''; return; }
+    if (arr.includes(label)) { input.value = ''; return; } // sudah ada, skip
+
     arr.push(label);
     setSpesValue(arr);
+
+    // Render tag visual
     const container = document.getElementById('spes-custom-tags');
-    const tag = document.createElement('span');
-    tag.style.cssText = 'display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;background:#ede9fe;color:#5b21b6;border:1.5px solid #c4b5fd';
-    tag.dataset.value = label;
-    tag.innerHTML = label + `<button type="button" onclick="removeSpesTag(this,'${label.replace(/'/g,"\\'")}') " style="background:none;border:none;cursor:pointer;font-size:15px;line-height:1;color:inherit;padding:0;opacity:.7">×</button>`;
-    container.appendChild(tag);
-    input.value = ''; input.focus();
+    const span = document.createElement('span');
+    span.style.cssText = 'display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;background:#ede9fe;color:#5b21b6;border:1.5px solid #c4b5fd';
+    // Simpan label di data-attribute agar removeSpesTag tidak bergantung pada teks
+    span.dataset.label = label;
+    span.innerHTML = label + ' <button type="button" onclick="removeSpesTag(this)" style="background:none;border:none;cursor:pointer;font-size:15px;line-height:1;color:inherit;padding:0;opacity:.7">×</button>';
+    container.appendChild(span);
+
+    input.value = '';
 }
-function removeSpesTag(btn, label) {
-    btn.closest('span').remove();
-    let arr = getSpesArr();
-    arr = arr.filter(v => v !== label);
+
+/* ================================================================
+   SPESIALISASI – hapus custom tag
+================================================================ */
+function removeSpesTag(btn) {
+    const span  = btn.closest('span');
+    const label = span.dataset.label || span.textContent.replace('×', '').trim();
+    span.remove();
+    const arr = getSpesArr().filter(v => v !== label);
     setSpesValue(arr);
 }
 
@@ -955,7 +1030,8 @@ function onMentorFotoChange(input) {
     reader.onload = function(e) {
         const area    = document.getElementById('mentor-foto-area');
         const preview = document.getElementById('mentor-foto-preview');
-        const overlay = document.getElementById('mentor-foto-overlay');
+        let   overlay = document.getElementById('mentor-foto-overlay');
+
         if (preview) {
             preview.src = e.target.result;
         } else {
@@ -965,14 +1041,19 @@ function onMentorFotoChange(input) {
             img.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;z-index:1';
             area.appendChild(img);
         }
-        if (overlay) {
-            overlay.style.display = 'flex';
-            overlay.innerHTML = `<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg><span style="font-size:12px;font-weight:600;color:#fff">✓ ${file.name}</span>`;
+
+        // Buat / update overlay
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'mentor-foto-overlay';
+            overlay.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,.45);border-radius:12px;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px';
+            area.appendChild(overlay);
         }
-        const name = document.getElementById('mentor-foto-name');
-        if (name) name.textContent = '';
+        overlay.style.display = 'flex';
+        overlay.innerHTML = `<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg><span style="font-size:12px;font-weight:600;color:#fff">✓ ${file.name}</span>`;
+
         // Sembunyikan placeholder
-        area.querySelectorAll('.upload-icon,.upload-text').forEach(el => el.style.display = 'none');
+        area.querySelectorAll('.upload-icon,.upload-text,.upload-fname').forEach(el => el.style.display = 'none');
     };
     reader.readAsDataURL(file);
 }
@@ -981,11 +1062,28 @@ function onMentorFotoChange(input) {
    INIT
 ================================================================ */
 document.addEventListener('DOMContentLoaded', function() {
+    // ---- Routing hash / session ----
     const hash = window.location.hash.replace('#', '');
-    if (['beranda', 'umkm', 'ulasan', 'profil'].includes(hash)) showPage(hash);
+    if (['beranda', 'umkm', 'ulasan', 'profil'].includes(hash)) {
+        showPage(hash);
+    }
     @if(session('active_page'))
         showPage('{{ session("active_page") }}');
     @endif
+
+    // ---- Pastikan visual chip sesuai data-active dari server ----
+    // (Blade sudah set inline style, tapi ini sebagai safety-net)
+    document.querySelectorAll('.spes-chip').forEach(btn => {
+        if (btn.dataset.active === '1') {
+            btn.style.background  = 'var(--accent)';
+            btn.style.borderColor = 'var(--accent)';
+            btn.style.color       = '#fff';
+        } else {
+            btn.style.background  = '#f9fafb';
+            btn.style.borderColor = '#d1d5db';
+            btn.style.color       = '#4b5563';
+        }
+    });
 });
 </script>
 </body>

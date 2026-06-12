@@ -286,36 +286,52 @@ public function unsuspendPengguna(Request $request, User $user)
         return response()->json($produk->load('umkm'));
     }
     public function approveProduk(Request $request, Produk $produk)
-    {
-        $request->validate(['catatan' => 'nullable|string|max:1000']);
-        $produk->update([
-            'status'        => 'approved',
-            'catatan_admin' => $request->catatan,
-            'approved_at'   => now(),
-            'approved_by'   => Auth::id(),
-        ]);
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Produk berhasil disetujui.', 'produk' => $produk]);
-        }
-        return redirect()->route('admin.approval.produk', ['tab' => 'approved'])
-            ->with('success', 'Produk berhasil disetujui.');
+{
+    $request->validate(['catatan' => 'nullable|string|max:1000']);
+    
+    $produk->update([
+        'status'        => 'approved',
+        'catatan_admin' => $request->catatan,
+        'approved_at'   => now(),
+        'approved_by'   => Auth::id(),
+    ]);
+
+    // ← Tambahkan ini: update role user menjadi umkm
+    if ($produk->user_id) {
+        \App\Models\User::where('id', $produk->user_id)
+            ->update(['role' => 'umkm']);
     }
-    public function rejectProduk(Request $request, Produk $produk)
-    {
-        $request->validate(['alasan' => 'required|string|max:1000']);
-        $produk->update([
-            'status'        => 'rejected',
-            'catatan_admin' => $request->alasan,
-            'rejection_reason' => $request->alasan,
-            'rejected_at'   => now(),
-            'rejected_by'   => Auth::id(),
-        ]);
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Produk berhasil ditolak.']);
-        }
-        return redirect()->route('admin.approval.produk', ['tab' => 'rejected'])
-            ->with('success', 'Produk telah ditolak.');
+
+    if ($request->expectsJson()) {
+        return response()->json(['message' => 'Produk berhasil disetujui.', 'produk' => $produk]);
     }
+    return redirect()->route('admin.approval.produk', ['tab' => 'approved'])
+        ->with('success', 'Produk berhasil disetujui.');
+}
+public function rejectProduk(Request $request, Produk $produk)
+{
+    $request->validate(['alasan' => 'required|string|max:1000']);
+    
+    $produk->update([
+        'status'           => 'rejected',
+        'catatan_admin'    => $request->alasan,
+        'rejection_reason' => $request->alasan,
+        'rejected_at'      => now(),
+        'rejected_by'      => Auth::id(),
+    ]);
+
+    // ← Opsional: kembalikan role ke umum jika ditolak
+    if ($produk->user_id) {
+        \App\Models\User::where('id', $produk->user_id)
+            ->update(['role' => 'umum']);
+    }
+
+    if ($request->expectsJson()) {
+        return response()->json(['message' => 'Produk berhasil ditolak.']);
+    }
+    return redirect()->route('admin.approval.produk', ['tab' => 'rejected'])
+        ->with('success', 'Produk telah ditolak.');
+}
     // ── BARU: Hapus produk (approved / rejected) ──────────────────────
     public function destroyProduk(Produk $produk)
     {

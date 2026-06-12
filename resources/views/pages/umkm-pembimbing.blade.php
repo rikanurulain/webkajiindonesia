@@ -53,11 +53,19 @@
                         @endif
                     </div>
 
-                    {{-- Info --}}
-                    <div class="bg-green-50 px-4 py-2 border-b">
-                        <h3 class="font-bold text-gray-900 text-sm line-clamp-1">{{ $m->full_name ?? $m->nama }}</h3>
-                        <p class="text-xs text-emerald-600 font-bold uppercase">{{ $m->role ?? 'Mentor' }}</p>
-                    </div>
+                   {{-- Info --}}
+<div class="bg-green-50 px-4 py-2 border-b">
+    <h3 class="font-bold text-gray-900 text-sm line-clamp-1">{{ $m->full_name ?? $m->nama }}</h3>
+    @php
+        $spesDisplay = $m->displayed_spesialisasi;
+        if (is_array($spesDisplay)) {
+            $spesDisplay = count($spesDisplay) > 0 ? $spesDisplay[array_rand($spesDisplay)] : null;
+        }
+    @endphp
+    <p class="text-xs text-emerald-600 font-bold uppercase line-clamp-1">
+        {{ $spesDisplay ?? 'Mentor' }}
+    </p>
+</div>
 
                     <div class="px-4 py-3 text-gray-600">
                         <p class="text-xs mb-2">{{ $m->alamat_tampil ?? 'Lokasi tidak tersedia' }}</p>
