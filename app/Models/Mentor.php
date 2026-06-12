@@ -34,6 +34,9 @@ class Mentor extends Model
         'status',
         'rejection_reason',
         'reviewed_at',
+        'sosmed',
+'spesialisasi',
+'displayed_spesialisasi',
     ];
 
     protected $casts = [
@@ -41,6 +44,7 @@ class Mentor extends Model
         'updated_at'  => 'datetime',
         'reviewed_at' => 'datetime',
         'agree_terms' => 'boolean',
+        'sosmed' => 'array',
     ];
 
     /**

@@ -291,12 +291,18 @@
                                 </a>
                             @elseif($mentor->status == 'pending')
                                 <p class="text-xs text-amber-100">Dokumen sedang dalam peninjauan Admin.</p>
-                            @else
-                                <p class="text-xs text-emerald-100">Akun telah diverifikasi sebagai Mentor.</p>
-                            @endif
-                            <div class="py-1 px-3 bg-black/10 rounded border border-white/20 text-center mt-2">
-                                <span class="text-[10px] uppercase font-black">Status: {{ strtoupper($mentor->status) }}</span>
-                            </div>
+                                @else
+    <p class="text-xs text-emerald-100 mb-3 hidden lg:block">Akun telah diverifikasi sebagai Mentor.</p>
+    <a href="{{ route('mentor.dashboard') }}"
+       class="block w-full bg-white text-emerald-800 py-2 rounded-lg font-bold text-xs lg:text-sm text-center hover:bg-gray-100 transition">
+        Dashboard Mentor →
+    </a>
+@endif
+@if($mentor->status !== 'approved')
+<div class="py-1 px-3 bg-black/10 rounded border border-white/20 text-center mt-2">
+    <span class="text-[10px] uppercase font-black">Status: {{ strtoupper($mentor->status) }}</span>
+</div>
+@endif
                         </div>
                         @endif
 

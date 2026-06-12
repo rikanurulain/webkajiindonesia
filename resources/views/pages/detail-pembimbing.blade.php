@@ -237,88 +237,84 @@
                 </div>
             </div>
 
-            {{-- ── Form Tulis Ulasan (hanya untuk UMKM yang terhubung & belum ulasan) ── --}}
-            @auth
-                @if($bisaMemberiUlasan && !$sudahUlasan)
-                <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-5 mb-8">
-                    <h4 class="font-semibold text-emerald-800 mb-4 flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                        </svg>
-                        Tulis Ulasan Anda
-                    </h4>
-
-                    <form action="{{ route('umkm.mentor.ulasan.store', $mentor->id) }}" method="POST" id="formUlasan">
-                        @csrf
-
-                        {{-- Pilih Bintang --}}
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Rating <span class="text-red-500">*</span></label>
-                            <div class="flex gap-1" id="starContainer">
-                                @for ($i = 1; $i <= 5; $i++)
-                                    <button type="button"
-                                            class="star-btn w-9 h-9 text-gray-300 hover:text-amber-400 transition-colors duration-150 focus:outline-none"
-                                            data-value="{{ $i }}"
-                                            title="{{ $i }} bintang">
-                                        <svg fill="currentColor" viewBox="0 0 24 24" class="w-full h-full">
-                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                                        </svg>
-                                    </button>
-                                @endfor
-                            </div>
-                            <input type="hidden" name="rating" id="ratingInput" value="">
-                            @error('rating')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        {{-- Komentar --}}
-                        <div class="mb-4">
-                            <label for="komentar" class="block text-sm font-medium text-gray-700 mb-2">
-                                Komentar <span class="text-gray-400 font-normal">(opsional)</span>
-                            </label>
-                            <textarea id="komentar"
-                                      name="komentar"
-                                      rows="3"
-                                      maxlength="1000"
-                                      placeholder="Bagikan pengalaman Anda bersama mentor ini..."
-                                      class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent resize-none">{{ old('komentar') }}</textarea>
-                            <p class="text-xs text-gray-400 mt-1 text-right" id="charCount">0 / 1000 karakter</p>
-                            @error('komentar')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <button type="submit"
-                                id="btnKirimUlasan"
-                                class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-                                disabled>
-                            Kirim Ulasan
-                        </button>
-                    </form>
-                </div>
-
-                @elseif($bisaMemberiUlasan && $sudahUlasan)
-                {{-- Sudah memberikan ulasan — hanya tampil jika tidak ada flash success --}}
-                @if(!session('success'))
-                <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <p class="text-sm text-blue-700">Anda sudah memberikan ulasan untuk mentor ini. Terima kasih!</p>
-                </div>
-                @endif
-                @endif
-
-            @else
-            {{-- Belum login --}}
-            <div class="bg-gray-50 border border-dashed border-gray-200 rounded-xl p-5 mb-6 text-center">
-                <p class="text-sm text-gray-500 mb-3">Masuk terlebih dahulu sebagai UMKM untuk memberikan ulasan.</p>
-                <a href="{{ route('login') }}" class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-5 py-2 rounded-lg transition">
-                    Masuk Sekarang
-                </a>
+            {{-- ── Form Tulis Ulasan ── --}}
+@auth
+    @if($bisaMemberiUlasan && !$sudahUlasan)
+        <div class="bg-white rounded-xl border border-emerald-200 p-5 mb-8" id="formUlasan">
+            <div class="flex items-center gap-2 mb-5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+                <h4 class="font-semibold text-gray-900">Tulis Ulasan Anda</h4>
             </div>
-            @endauth
+
+            <form action="{{ route('umkm.mentor.ulasan.store', $mentor->id) }}" method="POST">
+                @csrf
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Rating <span class="text-red-500">*</span></label>
+                    <div class="flex gap-1" id="starContainer">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <button type="button"
+                                    class="star-btn w-9 h-9 text-gray-300 hover:text-amber-400 transition-colors duration-150 focus:outline-none"
+                                    data-value="{{ $i }}"
+                                    title="{{ $i }} bintang">
+                                <svg fill="currentColor" viewBox="0 0 24 24" class="w-full h-full">
+                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                </svg>
+                            </button>
+                        @endfor
+                    </div>
+                    <input type="hidden" name="rating" id="ratingInput" value="">
+                    @error('rating')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label for="komentar" class="block text-sm font-medium text-gray-700 mb-2">
+                        Komentar <span class="text-gray-400 font-normal">(opsional)</span>
+                    </label>
+                    <textarea id="komentar"
+                              name="komentar"
+                              rows="3"
+                              maxlength="1000"
+                              placeholder="Bagikan pengalaman Anda bersama mentor ini..."
+                              class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent resize-none">{{ old('komentar') }}</textarea>
+                    <p class="text-xs text-gray-400 mt-1 text-right" id="charCount">0 / 1000 karakter</p>
+                    @error('komentar')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <button type="submit"
+                        id="btnKirimUlasan"
+                        class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled>
+                    Kirim Ulasan
+                </button>
+            </form>
+        </div>
+
+    @elseif($bisaMemberiUlasan && $sudahUlasan)
+        @if(!session('success'))
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p class="text-sm text-blue-700">Anda sudah memberikan ulasan untuk mentor ini. Terima kasih!</p>
+        </div>
+        @endif
+    @endif
+
+@else
+    <div class="bg-gray-50 border border-dashed border-gray-200 rounded-xl p-5 mb-6 text-center">
+        <p class="text-sm text-gray-500 mb-3">Masuk terlebih dahulu sebagai UMKM untuk memberikan ulasan.</p>
+        <a href="{{ route('login') }}" class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-5 py-2 rounded-lg transition">
+            Masuk Sekarang
+        </a>
+    </div>
+@endauth
 
             {{-- ── Daftar Ulasan ─────────────────────────── --}}
             @if($ulasan->isEmpty())

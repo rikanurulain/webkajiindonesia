@@ -454,111 +454,180 @@ class ProfileController extends Controller
     // =====================
 
     public function showDaftarMentor()
-    {
-        $user = Auth::user();
-        if (!$user->profile_photo_path) {
-            return redirect()->route('profile')->with('error', 'Upload foto profil dulu sebelum mendaftar sebagai Mentor.');
-        }
-        return view('profile.daftar-mentor', compact('user'));
+{
+    $user = Auth::user();
+
+    if (!$user->profile_photo_path) {          // ← cek dulu
+        return redirect()->route('profile')->with('error', 'Upload foto profil dulu sebelum mendaftar sebagai Mentor.');
     }
 
+    $mentor     = \App\Models\Mentor::where('user_id', $user->id)->latest()->first();
+    $sosmedData = $mentor?->sosmed ?? [];
+
+    return view('profile.daftar-mentor', compact('user', 'mentor', 'sosmedData'));
+}
+ 
     public function simpanMentor(Request $request)
     {
-        $user = Auth::user();
-
+        $user     = Auth::user();
+        $existing = \App\Models\Mentor::where('user_id', $user->id)->latest()->first();
+ 
         if (!$user->profile_photo_path) {
             return back()->with('error', 'Anda harus mengupload foto profil terlebih dahulu sebelum mendaftar sebagai Mentor.');
         }
-
+ 
+        // Cegah submit ulang jika sedang pending
+        if ($existing && $existing->status === 'pending') {
+            return back()->with('error', 'Pendaftaran kamu sedang dalam proses review admin.');
+        }
+ 
         $request->validate([
-            'full_name'      => 'required|string|max:255',
-            'phone'          => 'required|string|max:20',
-            'email'          => 'required|email|max:255',
-            'gmaps_location' => 'required|string|max:500',
-            'provinsi'       => 'required|string|max:255',
-            'kabupaten'      => 'required|string|max:255',
-            'kecamatan'      => 'required|string|max:255',
-            'kelurahan'      => 'required|string|max:255',
-            'bio'            => 'required|string',
-            'white_bg_photo' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-            'ktp_scan'       => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'bukti_transfer' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'agree_terms'    => 'required|accepted',
-            'lat'            => 'required|numeric|between:-11,6',
-            'lng'            => 'required|numeric|between:95,141',
+            'full_name'          => 'required|string|max:255',
+            'phone'              => 'required|string|max:20',
+            'email'              => 'required|email|max:255',
+            'gmaps_location'     => 'required|string|max:500',
+            'provinsi'           => 'required|string|max:255',
+            'kabupaten'          => 'required|string|max:255',
+            'kecamatan'          => 'required|string|max:255',
+            'kelurahan'          => 'required|string|max:255',
+            'bio'                => 'required|string',
+            'bidang_spesialisasi'=> 'required|string',
+            // Sosmed — dicek manual (minimal 1)
+            'sosmed_instagram'   => 'nullable|string|max:100',
+            'sosmed_twitter'     => 'nullable|string|max:100',
+            'sosmed_linkedin'    => 'nullable|url|max:255',
+            'sosmed_youtube'     => 'nullable|url|max:255',
+            'sosmed_facebook'    => 'nullable|url|max:255',
+            // File — wajib hanya jika belum pernah diupload
+            'white_bg_photo'     => ($existing?->white_bg_photo ? 'nullable' : 'required') . '|image|mimes:jpg,jpeg,png|max:2048',
+            'ktp_scan'           => ($existing?->ktp_scan       ? 'nullable' : 'required') . '|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'bukti_transfer'     => ($existing?->bukti_transfer  ? 'nullable' : 'required') . '|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'agree_terms'        => 'required|accepted',
+            'lat'                => 'required|numeric|between:-11,6',
+            'lng'                => 'required|numeric|between:95,141',
         ], [
-            'full_name.required'      => 'Nama lengkap wajib diisi.',
-            'phone.required'          => 'Nomor WhatsApp wajib diisi.',
-            'email.required'          => 'Email aktif wajib diisi.',
-            'email.email'             => 'Format email tidak valid.',
-            'gmaps_location.required' => 'Lokasi tinggal wajib diisi.',
-            'provinsi.required'       => 'Provinsi wajib dipilih.',
-            'kabupaten.required'      => 'Kabupaten/Kota wajib dipilih.',
-            'kecamatan.required'      => 'Kecamatan wajib dipilih.',
-            'kelurahan.required'      => 'Desa/Kelurahan wajib dipilih.',
-            'bio.required'            => 'Tentang diri Anda wajib diisi.',
-            'white_bg_photo.required' => 'Pas foto background putih wajib diunggah.',
-            'white_bg_photo.image'    => 'Pas foto harus berupa gambar (JPG/PNG).',
-            'white_bg_photo.max'      => 'Ukuran pas foto maksimal 2 MB.',
-            'ktp_scan.required'       => 'Scan KTP wajib diunggah.',
-            'ktp_scan.mimes'          => 'Scan KTP harus berformat JPG, PNG, atau PDF.',
-            'ktp_scan.max'            => 'Ukuran scan KTP maksimal 2 MB.',
-            'bukti_transfer.required' => 'Bukti transfer wajib diunggah.',
-            'bukti_transfer.mimes'    => 'Bukti transfer harus berformat JPG, PNG, atau PDF.',
-            'bukti_transfer.max'      => 'Ukuran bukti transfer maksimal 2 MB.',
-            'agree_terms.required'    => 'Anda wajib menyetujui Syarat dan Ketentuan.',
-            'agree_terms.accepted'    => 'Anda wajib menyetujui Syarat dan Ketentuan.',
-            'lat.required'            => 'Titik lokasi di peta wajib dipilih.',
-            'lng.required'            => 'Titik lokasi di peta wajib dipilih.',
-            'lat.between'             => 'Koordinat tidak valid, pastikan lokasi di wilayah Indonesia.',
-            'lng.between'             => 'Koordinat tidak valid, pastikan lokasi di wilayah Indonesia.',
+            'full_name.required'          => 'Nama lengkap wajib diisi.',
+            'phone.required'              => 'Nomor WhatsApp wajib diisi.',
+            'email.required'              => 'Email aktif wajib diisi.',
+            'email.email'                 => 'Format email tidak valid.',
+            'gmaps_location.required'     => 'Lokasi tinggal wajib diisi.',
+            'provinsi.required'           => 'Provinsi wajib dipilih.',
+            'kabupaten.required'          => 'Kabupaten/Kota wajib dipilih.',
+            'kecamatan.required'          => 'Kecamatan wajib dipilih.',
+            'kelurahan.required'          => 'Desa/Kelurahan wajib dipilih.',
+            'bio.required'                => 'Tentang diri Anda wajib diisi.',
+            'bidang_spesialisasi.required'=> 'Pilih minimal 1 bidang spesialisasi.',
+            'white_bg_photo.required'     => 'Pas foto background putih wajib diunggah.',
+            'white_bg_photo.image'        => 'Pas foto harus berupa gambar (JPG/PNG).',
+            'white_bg_photo.max'          => 'Ukuran pas foto maksimal 2 MB.',
+            'ktp_scan.required'           => 'Scan KTP wajib diunggah.',
+            'ktp_scan.mimes'              => 'Scan KTP harus berformat JPG, PNG, atau PDF.',
+            'ktp_scan.max'                => 'Ukuran scan KTP maksimal 2 MB.',
+            'bukti_transfer.required'     => 'Bukti transfer wajib diunggah.',
+            'bukti_transfer.mimes'        => 'Bukti transfer harus berformat JPG, PNG, atau PDF.',
+            'bukti_transfer.max'          => 'Ukuran bukti transfer maksimal 2 MB.',
+            'agree_terms.required'        => 'Anda wajib menyetujui Syarat dan Ketentuan.',
+            'agree_terms.accepted'        => 'Anda wajib menyetujui Syarat dan Ketentuan.',
+            'lat.required'                => 'Titik lokasi di peta wajib dipilih.',
+            'lng.required'                => 'Titik lokasi di peta wajib dipilih.',
+            'lat.between'                 => 'Koordinat tidak valid, pastikan lokasi di wilayah Indonesia.',
+            'lng.between'                 => 'Koordinat tidak valid, pastikan lokasi di wilayah Indonesia.',
         ]);
-
-        $fotoPath     = $request->file('white_bg_photo')->store('mentor/foto', 'public');
-        $ktpPath      = $request->file('ktp_scan')->store('mentor/ktp', 'public');
-        $transferPath = $request->file('bukti_transfer')->store('mentor/transfer', 'public');
-
-        $lokasi = implode(', ', array_filter([
-            $request->kelurahan,
-            $request->kecamatan,
-            $request->kabupaten,
-            $request->provinsi,
-        ]));
-
-        Mentor::create([
-            'user_id'        => auth()->id(),
-            'full_name'      => $request->full_name,
-            'nama'           => $request->full_name,
-            'phone'          => $request->phone,
-            'email'          => $request->email,
-            'gmaps_location' => $request->gmaps_location,
-            'provinsi'       => $request->provinsi,
-            'kabupaten'      => $request->kabupaten,
-            'kecamatan'      => $request->kecamatan,
-            'kelurahan'      => $request->kelurahan,
-            'lokasi'         => $lokasi,
-            'bio'            => $request->bio,
-            'deskripsi'      => $request->bio,
-            'white_bg_photo' => $fotoPath,
-            'ktp_scan'       => $ktpPath,
-            'bukti_transfer' => $transferPath,
-            'agree_terms'    => true,
-            'role'           => 'Pembimbing',
-            'lat'            => $request->lat,
-            'lng'            => $request->lng,
-            'status'         => 'pending',
-        ]);
-
-        ActivityLog::create([
-            'user_id'     => auth()->id(),
-            'type'        => 'profile',
-            'label'       => 'Pendaftaran Mentor',
-            'description' => 'User mengajukan diri menjadi Mentor: ' . $request->full_name,
-            'ip_address'  => $request->ip(),
-            'user_agent'  => $request->userAgent(),
-            'is_success'  => true,
-        ]);
-
-        return redirect()->route('profile')->with('success', 'Pendaftaran mentor berhasil dikirim, menunggu review admin.');
+ 
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($request, $user, $existing) {
+ 
+                // ── Cek minimal 1 sosmed diisi ────────────────────────
+                $sosmedFilled = collect([
+                    'sosmed_instagram', 'sosmed_twitter', 'sosmed_linkedin',
+                    'sosmed_youtube',   'sosmed_facebook',
+                ])->some(fn($f) => !empty($request->input($f)));
+ 
+                if (!$sosmedFilled) {
+                    throw new \Exception('Isi minimal satu akun sosial media.');
+                }
+ 
+                // ── Bangun array sosmed → disimpan sebagai JSON ────────
+                $sosmed = array_filter([
+                    'instagram' => $request->input('sosmed_instagram'),
+                    'twitter'   => $request->input('sosmed_twitter'),
+                    'linkedin'  => $request->input('sosmed_linkedin'),
+                    'youtube'   => $request->input('sosmed_youtube'),
+                    'facebook'  => $request->input('sosmed_facebook'),
+                ]);
+ 
+                // ── Lokasi gabungan ───────────────────────────────────
+                $lokasi = implode(', ', array_filter([
+                    $request->kelurahan,
+                    $request->kecamatan,
+                    $request->kabupaten,
+                    $request->provinsi,
+                ]));
+ 
+                // ── Data utama ────────────────────────────────────────
+                $data = [
+                    'user_id'               => $user->id,
+                    'full_name'             => $request->full_name,
+                    'nama'                  => $request->full_name,
+                    'phone'                 => $request->phone,
+                    'email'                 => $request->email,
+                    'gmaps_location'        => $request->gmaps_location,
+                    'provinsi'              => $request->provinsi,
+                    'kabupaten'             => $request->kabupaten,
+                    'kecamatan'             => $request->kecamatan,
+                    'kelurahan'             => $request->kelurahan,
+                    'lokasi'                => $lokasi,
+                    'bio'                   => $request->bio,
+                    'deskripsi'             => $request->bio,
+                    'agree_terms'           => true,
+                    'role'                  => 'Pembimbing',
+                    'lat'                   => $request->lat,
+                    'lng'                   => $request->lng,
+                    'status'                => 'pending',
+                    'sosmed'                => $sosmed,
+                    'spesialisasi'          => $request->input('bidang_spesialisasi'),
+                    'displayed_spesialisasi'=> collect(explode(',', $request->input('bidang_spesialisasi')))->first(),
+                ];
+ 
+                // ── Upload file (ganti jika ada file baru) ────────────
+                $fileMap = [
+                    'white_bg_photo' => 'mentor/foto',
+                    'ktp_scan'       => 'mentor/ktp',
+                    'bukti_transfer' => 'mentor/transfer',
+                ];
+ 
+                foreach ($fileMap as $field => $folder) {
+                    if ($request->hasFile($field)) {
+                        if ($existing?->$field) {
+                            \Storage::disk('public')->delete($existing->$field);
+                        }
+                        $data[$field] = $request->file($field)->store($folder, 'public');
+                    }
+                }
+ 
+                // ── Insert atau update ────────────────────────────────
+                \App\Models\Mentor::updateOrCreate(
+                    ['user_id' => $user->id],
+                    $data
+                );
+ 
+                // ── Activity log ──────────────────────────────────────
+                \App\Models\ActivityLog::create([
+                    'user_id'     => $user->id,
+                    'type'        => 'profile',
+                    'label'       => 'Pendaftaran Mentor',
+                    'description' => 'User mengajukan diri menjadi Mentor: ' . $request->full_name,
+                    'ip_address'  => request()->ip(),
+                    'user_agent'  => request()->userAgent(),
+                    'is_success'  => true,
+                ]);
+            });
+ 
+        } catch (\Exception $e) {
+            return back()->withErrors(['sosmed' => $e->getMessage()])->withInput();
+        }
+ 
+        return redirect()->route('profile')
+            ->with('success', 'Pendaftaran mentor berhasil dikirim, menunggu review admin.');
     }
 }

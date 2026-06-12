@@ -131,6 +131,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/trainer/dashboard', [App\Http\Controllers\TrainerController::class, 'index'])
          ->name('trainer.dashboard')
          ->middleware('trainer');
+        
+     // Dashboard Mentor
+         Route::get('/mentor/dashboard', [App\Http\Controllers\MentorController::class, 'index'])
+         ->name('mentor.dashboard')
+         ->middleware('mentor');
+
+    Route::put('/mentor/profil/update', [App\Http\Controllers\MentorController::class, 'updateProfil'])
+         ->name('mentor.profil.update');
 
     // Absensi
     Route::post('/absensi/{pelatihan}/submit', [AbsensiController::class, 'submit'])
