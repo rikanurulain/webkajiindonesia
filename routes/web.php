@@ -48,6 +48,10 @@ Route::prefix('pelatihan')->name('pelatihan.')->group(function () {
 
         Route::get('/program/{id}/daftar', [App\Http\Controllers\PendaftaranProgramController::class, 'create'])->name('pendaftaran.create');
         Route::post('/program/{id}/daftar', [App\Http\Controllers\PendaftaranProgramController::class, 'store'])->name('pendaftaran.store');
+
+        Route::post('/modul/{modul}/selesai', [PelatihanController::class, 'tandaiModulSelesai'])->name('modul.selesai');
+        Route::get('/program/{program}/sertifikat', [PelatihanController::class, 'sertifikat'])->name('sertifikat');
+        Route::get('/program/{program}/sertifikat/download', [PelatihanController::class, 'downloadSertifikat'])->name('sertifikat.download');
     });
 });
 

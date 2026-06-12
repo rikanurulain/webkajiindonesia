@@ -61,6 +61,16 @@ $trainerGelar = $isDB
         ->where('status', 'diterima')
         ->exists()
     : false;
+
+    $progressModulIds = $sudahDiterima
+        ? \App\Models\ModulProgress::where('user_id', auth()->id())
+            ->where('program_id', $program->id)
+            ->pluck('modul_id')
+            ->toArray()
+        : [];
+    $totalModulCount   = $isDB ? $modulsDB->count() : 0;
+    $selesaiModulCount = count($progressModulIds);
+    $semuaModulSelesai = $totalModulCount > 0 && $selesaiModulCount >= $totalModulCount;
 @endphp
 
 @section('title', $judul . ' - KAJI INDONESIA')
@@ -382,75 +392,186 @@ $trainerGelar = $isDB
                 </div>
             </div>
 
-        @else
-            {{-- Sudah diterima + modul aktif: tampilkan countdown berakhir (jika ada) + materi --}}
-            @if(!empty($modul->akses_selesai))
-            <div style="margin-top:10px;background:#e8f5e9;border:1px solid #a7d7c566;border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"
-                 id="modul-bar-{{ $modul->id }}"
-                 data-mulai="0"
-                 data-selesai="{{ \Carbon\Carbon::parse($modul->akses_selesai, 'Asia/Jakarta')->timestamp }}"
-                 data-status="active">
-                <div style="display:flex;align-items:center;gap:10px">
-                    <span style="font-size:18px">✅</span>
-                    <div>
-                        <div style="font-size:12px;font-weight:700;color:#2d6a4f">Modul Sedang Aktif</div>
-                        <div style="font-size:11px;color:#52b788;margin-top:2px">
-                            Berakhir pada {{ \Carbon\Carbon::parse($modul->akses_selesai, 'Asia/Jakarta')->translatedFormat('d M Y, H:i') }} WIB
-                        </div>
-                    </div>
-                </div>
-                <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
-                    <span style="font-size:11px;color:#2d6a4f;font-weight:600">Berakhir dalam</span>
-                    <span id="timer-modul-{{ $modul->id }}"
-                          style="font-family:'Courier New',monospace;font-size:13px;font-weight:800;
-                                 letter-spacing:1px;color:#2d6a4f;background:#d1fae5;
-                                 padding:4px 10px;border-radius:6px;border:1px solid #a7d7c5">
-                        --:--:--
-                    </span>
+            @else
+    {{-- Sudah diterima + modul aktif --}}
+    @php $modulSelesai = in_array($modul->id, $progressModulIds); @endphp
+
+    {{-- Countdown berakhir --}}
+    @if(!empty($modul->akses_selesai))
+    <div style="margin-top:10px;background:#e8f5e9;border:1px solid #a7d7c566;border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"
+         id="modul-bar-{{ $modul->id }}"
+         data-mulai="0"
+         data-selesai="{{ \Carbon\Carbon::parse($modul->akses_selesai,'Asia/Jakarta')->timestamp }}"
+         data-status="active">
+        <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:18px">✅</span>
+            <div>
+                <div style="font-size:12px;font-weight:700;color:#2d6a4f">Modul Sedang Aktif</div>
+                <div style="font-size:11px;color:#52b788;margin-top:2px">
+                    Berakhir {{ \Carbon\Carbon::parse($modul->akses_selesai,'Asia/Jakarta')->translatedFormat('d M Y, H:i') }} WIB
                 </div>
             </div>
-            @endif
-
-            {{-- Materi --}}
-            @if($modul->materi_type === 'youtube' && $modul->materi_youtube)
-                @php
-                    preg_match('/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/', $modul->materi_youtube, $ytMatch);
-                    $ytId = $ytMatch[1] ?? null;
-                @endphp
-                @if($ytId)
-                <div style="margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
-                    <iframe
-                        src="https://www.youtube.com/embed/{{ $ytId }}"
-                        width="100%" height="340"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen
-                        style="display:block">
-                    </iframe>
-                </div>
-                @endif
-            @elseif($modul->materi_type === 'pdf' && $modul->materi_pdf)
-                <div style="margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
-                    <iframe
-                        src="{{ asset('storage/' . $modul->materi_pdf) }}#toolbar=1&navpanes=0"
-                        width="100%" height="500"
-                        style="display:block;border:none">
-                    </iframe>
-                </div>
-                <a href="{{ asset('storage/' . $modul->materi_pdf) }}" target="_blank" download
-                   style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;
-                          padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;
-                          background:#ecfdf5;color:#15803d;
-                          border:1px solid #a7d7c566;text-decoration:none">
-                    ⬇️ Unduh PDF
-                </a>
-            @endif
-        @endif {{-- end gate --}}
-
+        </div>
+        <span id="timer-modul-{{ $modul->id }}"
+              style="font-family:'Courier New',monospace;font-size:13px;font-weight:800;
+                     color:#2d6a4f;background:#d1fae5;padding:4px 10px;
+                     border-radius:6px;border:1px solid #a7d7c5">--:--:--</span>
     </div>
+    @endif
+
+    {{-- Badge sudah selesai --}}
+    @if($modulSelesai)
+    <div style="margin-top:10px;display:inline-flex;align-items:center;gap:6px;
+                background:#dcfce7;border:1px solid #86efac;border-radius:8px;
+                padding:5px 12px;font-size:12px;font-weight:700;color:#15803d">
+        ✅ Modul Selesai
+    </div>
+    @endif
+
+    {{-- ── MATERI YOUTUBE ── --}}
+    @if($modul->materi_type === 'youtube' && $modul->materi_youtube)
+        @php
+            preg_match('/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/', $modul->materi_youtube, $ytMatch);
+            $ytId = $ytMatch[1] ?? null;
+        @endphp
+        @if($ytId)
+        <div style="margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;position:relative"
+             id="yt-wrap-{{ $modul->id }}">
+            {{-- Overlay anti-skip --}}
+            @if(!$modulSelesai)
+            <div id="yt-overlay-{{ $modul->id }}"
+                 style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.6);
+                        z-index:10;align-items:center;justify-content:center;
+                        flex-direction:column;gap:8px;color:#fff;font-weight:700;font-size:13px;
+                        border-radius:12px;text-align:center;padding:20px">
+                ⏩ Tidak bisa fast-forward<br>
+                <span style="font-size:11px;font-weight:400;opacity:.8">Tonton video dari awal sampai selesai</span>
+            </div>
+            @endif
+            <div id="yt-player-{{ $modul->id }}"
+                 data-video-id="{{ $ytId }}"
+                 data-modul-id="{{ $modul->id }}"
+                 data-program-id="{{ $program->id }}"
+                 data-selesai="{{ $modulSelesai ? '1' : '0' }}"
+                 data-csrf="{{ csrf_token() }}"
+                 style="width:100%;aspect-ratio:16/9;background:#000">
+            </div>
+        </div>
+        @if(!$modulSelesai)
+        <div id="yt-progress-bar-{{ $modul->id }}"
+             style="margin-top:6px;height:4px;background:#e5e7eb;border-radius:4px;overflow:hidden">
+            <div id="yt-progress-fill-{{ $modul->id }}"
+                 style="height:100%;width:0%;background:#2d6a4f;transition:width .5s"></div>
+        </div>
+        <div style="margin-top:4px;font-size:11px;color:#9ca3af;text-align:right"
+             id="yt-progress-label-{{ $modul->id }}">0% ditonton</div>
+        @endif
+        @endif
+
+    {{-- ── MATERI PDF ── --}}
+    @elseif($modul->materi_type === 'pdf' && $modul->materi_pdf)
+        <div style="margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;position:relative">
+            <iframe
+                id="pdf-frame-{{ $modul->id }}"
+                src="{{ asset('storage/' . $modul->materi_pdf) }}#toolbar=1&navpanes=0"
+                width="100%" height="500"
+                style="display:block;border:none">
+            </iframe>
+        </div>
+        @if(!$modulSelesai)
+        <div style="margin-top:8px;background:#fffbea;border:1px solid #fcd34d66;border-radius:8px;
+                    padding:8px 12px;font-size:11px;color:#92400e;display:flex;align-items:center;gap:6px">
+            📜 Scroll PDF sampai halaman terakhir untuk menyelesaikan modul
+        </div>
+        <div style="margin-top:6px;height:4px;background:#e5e7eb;border-radius:4px;overflow:hidden">
+            <div id="pdf-progress-fill-{{ $modul->id }}"
+                 style="height:100%;width:0%;background:#2d6a4f;transition:width .5s"></div>
+        </div>
+        <div style="margin-top:4px;font-size:11px;color:#9ca3af;text-align:right"
+             id="pdf-progress-label-{{ $modul->id }}">0% di-scroll</div>
+        @endif
+        <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
+            <a href="{{ asset('storage/' . $modul->materi_pdf) }}" target="_blank" download
+               style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;
+                      border-radius:8px;font-size:12px;font-weight:600;
+                      background:#ecfdf5;color:#15803d;border:1px solid #a7d7c566;text-decoration:none">
+                ⬇️ Unduh PDF
+            </a>
+            @if(!$modulSelesai)
+            {{-- Tombol manual fallback jika iframe PDF tidak bisa di-track --}}
+            <button onclick="markModulSelesaiManual({{ $modul->id }}, {{ $program->id }}, this)"
+                    id="btn-pdf-selesai-{{ $modul->id }}"
+                    style="display:none;padding:7px 14px;border-radius:8px;font-size:12px;
+                           font-weight:700;background:#2d6a4f;color:#fff;border:none;cursor:pointer">
+                ✅ Tandai Selesai
+            </button>
+            @endif
+        </div>
+        {{-- Hidden data untuk JS PDF tracker --}}
+        @if(!$modulSelesai)
+        <div id="pdf-tracker-{{ $modul->id }}"
+             data-modul-id="{{ $modul->id }}"
+             data-program-id="{{ $program->id }}"
+             data-csrf="{{ csrf_token() }}"
+             style="display:none"></div>
+        @endif
+    @endif
+
+    @endif {{-- end gate --}}
+
+</div>
 </div>
 @endforeach
-                </div>
+</div>
+
+{{-- ── Tombol Sertifikat ── --}}
+@if($sudahDiterima)
+<div id="sertifikat-section"
+     style="margin-top:20px;padding:20px;background:{{ $semuaModulSelesai ? 'linear-gradient(135deg,#dcfce7,#bbf7d0)' : '#f9fafb' }};
+            border:2px solid {{ $semuaModulSelesai ? '#86efac' : '#e5e7eb' }};
+            border-radius:14px;text-align:center;transition:all .3s">
+    @if($semuaModulSelesai)
+        <div style="font-size:32px;margin-bottom:8px">🏆</div>
+        <div style="font-size:16px;font-weight:700;color:#15803d;margin-bottom:4px">
+            Selamat! Anda telah menyelesaikan semua modul
+        </div>
+        <div style="font-size:13px;color:#166534;margin-bottom:16px">
+            Sertifikat kelulusan Anda sudah siap
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+            <a href="{{ route('pelatihan.sertifikat', $program->id) }}"
+               style="padding:10px 24px;background:#15803d;color:#fff;border-radius:10px;
+                      font-size:13px;font-weight:700;text-decoration:none">
+                🎓 Lihat Sertifikat
+            </a>
+            <a href="{{ route('pelatihan.sertifikat.download', $program->id) }}"
+               style="padding:10px 24px;background:#fff;color:#15803d;border:2px solid #86efac;
+                      border-radius:10px;font-size:13px;font-weight:700;text-decoration:none">
+                ⬇️ Download PDF
+            </a>
+        </div>
+    @else
+        <div style="font-size:24px;margin-bottom:8px">📋</div>
+        <div style="font-size:14px;font-weight:600;color:#6b7280;margin-bottom:4px">
+            Progress Anda
+        </div>
+        <div style="font-size:13px;color:#9ca3af;margin-bottom:12px">
+            {{ $selesaiModulCount }} / {{ $totalModulCount }} modul selesai
+        </div>
+        <div style="height:8px;background:#e5e7eb;border-radius:8px;overflow:hidden;max-width:300px;margin:0 auto">
+            <div style="height:100%;width:{{ $totalModulCount > 0 ? round($selesaiModulCount/$totalModulCount*100) : 0 }}%;
+                        background:linear-gradient(90deg,#2d6a4f,#52b788);border-radius:8px;transition:width .5s"
+                 id="overall-progress-bar"></div>
+        </div>
+        <div style="font-size:12px;color:#9ca3af;margin-top:6px">
+            {{ $totalModulCount > 0 ? round($selesaiModulCount/$totalModulCount*100) : 0 }}% selesai
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:#d1d5db">
+            Sertifikat tersedia setelah semua modul selesai
+        </div>
+    @endif
+</div>
+@endif
                 @endif
             </div>
             @endif
@@ -525,62 +646,234 @@ if ($biayaProgram)        $infoRows[] = ['Biaya', $biayaProgram];
     </section>
     <script>
 (function() {
-    function padNum(n) { return String(n).padStart(2, '0'); }
 
-    function formatSisa(ms) {
-        if (ms <= 0) return '00:00:00';
-        const totalSec = Math.floor(ms / 1000);
-        const h  = Math.floor(totalSec / 3600);
-        const m  = Math.floor((totalSec % 3600) / 60);
-        const s  = totalSec % 60;
-        return h > 0
-            ? padNum(h) + ':' + padNum(m) + ':' + padNum(s)
-            : padNum(m) + ':' + padNum(s);
-    }
+/* ── Countdown timer modul ── */
+function padNum(n) { return String(n).padStart(2, '0'); }
+function formatSisa(ms) {
+    if (ms <= 0) return '00:00:00';
+    const s = Math.floor(ms/1000), h = Math.floor(s/3600), m = Math.floor((s%3600)/60), ss = s%60;
+    return h > 0 ? padNum(h)+':'+padNum(m)+':'+padNum(ss) : padNum(m)+':'+padNum(ss);
+}
+document.querySelectorAll('[id^="modul-bar-"]').forEach(function(bar) {
+    const id = bar.id.replace('modul-bar-','');
+    const el = document.getElementById('timer-modul-'+id);
+    const st = bar.dataset.status;
+    const ts0 = parseInt(bar.dataset.mulai,10)*1000;
+    const ts1 = parseInt(bar.dataset.selesai,10)*1000;
+    if (!el) return;
+    var iv = setInterval(function(){
+        var now = Date.now();
+        if (st==='upcoming') {
+            var s = ts0-now; if(s<=0){clearInterval(iv);location.reload();return;}
+            el.textContent=formatSisa(s);
+        } else {
+            var s = ts1-now; if(s<=0){clearInterval(iv);location.reload();return;}
+            if(s<600000){el.style.color='#dc2626';el.style.background='#fee2e2';}
+            el.textContent=formatSisa(s);
+        }
+    }, 1000);
+});
 
-    document.querySelectorAll('[id^="modul-bar-"]').forEach(function(bar) {
-        const modulId  = bar.id.replace('modul-bar-', '');
-        const timerEl  = document.getElementById('timer-modul-' + modulId);
-        const status   = bar.dataset.status;
-        const tsMulai  = parseInt(bar.dataset.mulai,   10) * 1000;
-        const tsSelesai= parseInt(bar.dataset.selesai, 10) * 1000;
-
-        if (!timerEl) return;
-
-        var interval;
-
-        function tick() {
-            var now = Date.now();
-
-            if (status === 'upcoming') {
-                var sisa = tsMulai - now;
-                if (sisa <= 0) {
-                    clearInterval(interval);
-                    location.reload(); // reload saat modul terbuka
-                    return;
-                }
-                timerEl.textContent = formatSisa(sisa);
-
-            } else if (status === 'active') {
-                var sisa = tsSelesai - now;
-                if (sisa <= 0) {
-                    clearInterval(interval);
-                    location.reload(); // reload saat modul berakhir
-                    return;
-                }
-                // Warna berubah merah jika sisa < 10 menit
-                if (sisa < 600000) {
-                    timerEl.style.color      = '#dc2626';
-                    timerEl.style.background = '#fee2e2';
-                    timerEl.style.borderColor= '#fca5a5';
-                }
-                timerEl.textContent = formatSisa(sisa);
+/* ── Mark modul selesai via AJAX ── */
+function markModulSelesai(modulId, programId, csrf, callback) {
+    fetch('/pelatihan/modul/' + modulId + '/selesai', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrf,
+            'Accept': 'application/json',
+        },
+        body: JSON.stringify({ program_id: programId })
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.success) {
+            // Update badge modul
+            var existing = document.querySelector('#modul-selesai-badge-' + modulId);
+            if (!existing) {
+                var badge = document.createElement('div');
+                badge.id = 'modul-selesai-badge-' + modulId;
+                badge.style.cssText = 'margin-top:10px;display:inline-flex;align-items:center;gap:6px;background:#dcfce7;border:1px solid #86efac;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;color:#15803d';
+                badge.textContent = '✅ Modul Selesai';
+                var wrap = document.getElementById('yt-wrap-' + modulId) || document.getElementById('pdf-tracker-' + modulId);
+                if (wrap && wrap.parentNode) wrap.parentNode.insertBefore(badge, wrap.nextSibling);
+            }
+            if (callback) callback(res);
+            if (res.semua_selesai) {
+                // Reload untuk tampilkan tombol sertifikat
+                setTimeout(function(){ location.reload(); }, 1500);
             }
         }
+    })
+    .catch(function(e){ console.error('Progress error:', e); });
+}
 
-        tick();
-        interval = setInterval(tick, 1000);
+/* ── Manual mark (fallback PDF) ── */
+window.markModulSelesaiManual = function(modulId, programId, btn) {
+    btn.disabled = true;
+    btn.textContent = 'Menyimpan...';
+    var csrf = btn.closest('[data-csrf]') 
+        ? btn.closest('[data-csrf]').dataset.csrf 
+        : document.querySelector('meta[name="csrf-token"]').content;
+    markModulSelesai(modulId, programId, csrf, function(res) {
+        btn.style.display = 'none';
     });
+};
+
+/* ════════════════════════════════════════
+   YOUTUBE PLAYER — YouTube IFrame API
+════════════════════════════════════════ */
+var ytPlayers   = {};
+var ytDurations = {};
+var ytIntervals = {};
+var ytDone      = {};
+
+// Load YouTube IFrame API sekali
+if (!window._ytApiLoaded) {
+    window._ytApiLoaded = true;
+    var tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+}
+
+window.onYouTubeIframeAPIReady = function() {
+    document.querySelectorAll('[id^="yt-player-"]').forEach(function(el) {
+        var modulId   = el.dataset.modulId;
+        var videoId   = el.dataset.videoId;
+        var programId = el.dataset.programId;
+        var csrf      = el.dataset.csrf;
+        var sudahSelesai = el.dataset.selesai === '1';
+
+        if (sudahSelesai) {
+            // Tampilkan iframe biasa tanpa tracking
+            var iframe = document.createElement('iframe');
+            iframe.src = 'https://www.youtube.com/embed/' + videoId;
+            iframe.style.cssText = 'width:100%;aspect-ratio:16/9;border:none;display:block';
+            iframe.allowFullscreen = true;
+            el.replaceWith(iframe);
+            return;
+        }
+
+        ytDone[modulId] = false;
+
+        var player = new YT.Player('yt-player-' + modulId, {
+            videoId: videoId,
+            playerVars: {
+                controls: 1,
+                disablekb: 0,
+                rel: 0,
+                modestbranding: 1,
+            },
+            events: {
+                onReady: function(e) {
+                    ytDurations[modulId] = e.target.getDuration();
+                },
+                onStateChange: function(e) {
+                    var pId = modulId, pCsrf = csrf, pProgId = programId;
+
+                    // Cegah fast-forward: pantau currentTime tiap 500ms
+                    if (e.data === YT.PlayerState.PLAYING) {
+                        var lastTime = e.target.getCurrentTime();
+                        clearInterval(ytIntervals[pId]);
+                        ytIntervals[pId] = setInterval(function() {
+                            if (!ytPlayers[pId]) return;
+                            var cur  = ytPlayers[pId].getCurrentTime();
+                            var dur  = ytDurations[pId] || ytPlayers[pId].getDuration();
+                            var diff = cur - lastTime;
+
+                            // Jika lompat > 3 detik → kembalikan
+                            if (diff > 3.5) {
+                                ytPlayers[pId].seekTo(lastTime, true);
+                                // Tampilkan overlay sebentar
+                                var overlay = document.getElementById('yt-overlay-' + pId);
+                                if (overlay) {
+                                    overlay.style.display = 'flex';
+                                    setTimeout(function(){
+                                        if (overlay) overlay.style.display = 'none';
+                                    }, 2000);
+                                }
+                            } else {
+                                lastTime = cur;
+                            }
+
+                            // Update progress bar
+                            if (dur > 0) {
+                                var pct = Math.min(100, Math.round(cur/dur*100));
+                                var fill  = document.getElementById('yt-progress-fill-'  + pId);
+                                var label = document.getElementById('yt-progress-label-' + pId);
+                                if (fill)  fill.style.width  = pct + '%';
+                                if (label) label.textContent = pct + '% ditonton';
+                            }
+                        }, 500);
+
+                    } else {
+                        clearInterval(ytIntervals[pId]);
+                    }
+
+                    // Video selesai
+                    if (e.data === YT.PlayerState.ENDED && !ytDone[pId]) {
+                        ytDone[pId] = true;
+                        clearInterval(ytIntervals[pId]);
+                        var fill  = document.getElementById('yt-progress-fill-'  + pId);
+                        var label = document.getElementById('yt-progress-label-' + pId);
+                        if (fill)  fill.style.width  = '100%';
+                        if (label) label.textContent = '100% ditonton';
+                        markModulSelesai(pId, pProgId, pCsrf, null);
+                    }
+                }
+            }
+        });
+        ytPlayers[modulId] = player;
+    });
+};
+
+/* ════════════════════════════════════════
+   PDF SCROLL TRACKER
+════════════════════════════════════════ */
+document.querySelectorAll('[id^="pdf-tracker-"]').forEach(function(tracker) {
+    var modulId   = tracker.dataset.modulId;
+    var programId = tracker.dataset.programId;
+    var csrf      = tracker.dataset.csrf;
+    var iframe    = document.getElementById('pdf-frame-' + modulId);
+    var btnSelesai = document.getElementById('btn-pdf-selesai-' + modulId);
+
+    if (!iframe) return;
+
+    // Karena iframe PDF cross-origin tidak bisa di-scroll track langsung,
+    // kita pakai pendekatan: user harus klik tombol "Tandai Selesai" 
+    // yang muncul setelah 30 detik membuka PDF (waktu minimum baca)
+    var minReadSeconds = 30;
+    var elapsed = 0;
+    var fill  = document.getElementById('pdf-progress-fill-'  + modulId);
+    var label = document.getElementById('pdf-progress-label-' + modulId);
+
+    var pdfTimer = setInterval(function() {
+        // Hanya hitung jika tab aktif
+        if (document.hidden) return;
+        elapsed++;
+        var pct = Math.min(100, Math.round(elapsed / minReadSeconds * 100));
+        if (fill)  fill.style.width  = pct + '%';
+        if (label) label.textContent = pct + '% di-baca';
+
+        if (elapsed >= minReadSeconds) {
+            clearInterval(pdfTimer);
+            if (fill)  fill.style.width  = '100%';
+            if (label) label.textContent = '100% — Klik "Tandai Selesai"';
+            // Tampilkan tombol
+            if (btnSelesai) btnSelesai.style.display = 'inline-flex';
+            // Auto mark selesai
+            markModulSelesai(modulId, programId, csrf, null);
+        }
+    }, 1000);
+
+    // Pause timer saat tab tidak aktif
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            clearInterval(pdfTimer);
+        }
+    });
+});
+
 })();
 </script>
 @endsection

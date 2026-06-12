@@ -660,6 +660,134 @@ public function simpanUlasanTrainer(Request $request, $id)
     return back()->with('success', 'Ulasan berhasil dikirim. Terima kasih!');
 }
 
+// =========================================================
+// TANDAI MODUL SELESAI
+// =========================================================
+public function tandaiModulSelesai(Request $request, $modulId)
+{
+    $modul = \App\Models\Program::where('tipe', 'modul')
+        ->where('status', 'approved')
+        ->findOrFail($modulId);
+
+    // Pastikan user sudah diterima di program ini
+    $diterima = \App\Models\PendaftaranProgram::where('user_id', auth()->id())
+        ->where('program_id', $modul->kurikulum_id)
+        ->where('status', 'diterima')
+        ->exists();
+
+    if (!$diterima) {
+        return response()->json(['success' => false, 'message' => 'Akses ditolak.'], 403);
+    }
+
+    // Upsert progress
+    \App\Models\ModulProgress::updateOrCreate(
+        ['user_id' => auth()->id(), 'modul_id' => $modulId],
+        [
+            'program_id' => $modul->kurikulum_id,
+            'status'     => 'selesai',
+            'selesai_at' => now(),
+        ]
+    );
+
+    // Cek apakah semua modul sudah selesai
+    $totalModul = \App\Models\Program::where('kurikulum_id', $modul->kurikulum_id)
+        ->where('tipe', 'modul')
+        ->where('status', 'approved')
+        ->count();
+
+    $selesaiCount = \App\Models\ModulProgress::where('user_id', auth()->id())
+        ->where('program_id', $modul->kurikulum_id)
+        ->count();
+
+    $semuaSelesai = $totalModul > 0 && $selesaiCount >= $totalModul;
+
+    return response()->json([
+        'success'      => true,
+        'semua_selesai' => $semuaSelesai,
+        'program_id'   => $modul->kurikulum_id,
+    ]);
+}
+
+// =========================================================
+// HALAMAN SERTIFIKAT
+// =========================================================
+public function sertifikat($programId)
+{
+    $program = \App\Models\Program::where('status', 'approved')->findOrFail($programId);
+
+    // Pastikan user sudah diterima
+    $pendaftaran = \App\Models\PendaftaranProgram::where('user_id', auth()->id())
+        ->where('program_id', $programId)
+        ->where('status', 'diterima')
+        ->firstOrFail();
+
+    // Pastikan semua modul sudah selesai
+    $totalModul = \App\Models\Program::where('kurikulum_id', $programId)
+        ->where('tipe', 'modul')
+        ->where('status', 'approved')
+        ->count();
+
+    $selesaiCount = \App\Models\ModulProgress::where('user_id', auth()->id())
+        ->where('program_id', $programId)
+        ->count();
+
+    if ($totalModul > 0 && $selesaiCount < $totalModul) {
+        abort(403, 'Selesaikan semua modul terlebih dahulu.');
+    }
+
+    $user          = auth()->user();
+    $trainerGelar  = \App\Models\Trainer::where('user_id', $program->trainer_id)
+                        ->value('academic_degree') ?? $program->trainer?->name ?? 'KAJI Indonesia';
+    $tanggalSelesai = \App\Models\ModulProgress::where('user_id', auth()->id())
+                        ->where('program_id', $programId)
+                        ->max('selesai_at');
+
+    return view('pages.sertifikat', compact(
+        'program', 'user', 'trainerGelar', 'tanggalSelesai', 'pendaftaran'
+    ));
+}
+
+// =========================================================
+// DOWNLOAD SERTIFIKAT PDF
+// =========================================================
+public function downloadSertifikat($programId)
+{
+    $program = \App\Models\Program::where('status', 'approved')->findOrFail($programId);
+
+    $pendaftaran = \App\Models\PendaftaranProgram::where('user_id', auth()->id())
+        ->where('program_id', $programId)
+        ->where('status', 'diterima')
+        ->firstOrFail();
+
+    $totalModul = \App\Models\Program::where('kurikulum_id', $programId)
+        ->where('tipe', 'modul')->where('status', 'approved')->count();
+
+    $selesaiCount = \App\Models\ModulProgress::where('user_id', auth()->id())
+        ->where('program_id', $programId)->count();
+
+    if ($totalModul > 0 && $selesaiCount < $totalModul) {
+        abort(403, 'Selesaikan semua modul terlebih dahulu.');
+    }
+
+    $user          = auth()->user();
+    $trainerGelar  = \App\Models\Trainer::where('user_id', $program->trainer_id)
+                        ->value('academic_degree') ?? $program->trainer?->name ?? 'KAJI Indonesia';
+    $tanggalSelesai = \App\Models\ModulProgress::where('user_id', auth()->id())
+                        ->where('program_id', $programId)->max('selesai_at');
+
+    $html = view('pages.sertifikat-pdf', compact(
+        'program', 'user', 'trainerGelar', 'tanggalSelesai'
+    ))->render();
+
+    // Gunakan DomPDF (pastikan sudah install: composer require barryvdh/laravel-dompdf)
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html)
+        ->setPaper('a4', 'landscape');
+
+    $filename = 'Sertifikat-' . \Illuminate\Support\Str::slug($program->judul) . '-' . auth()->id() . '.pdf';
+
+    return $pdf->download($filename);
+}
+
 public function searchMentor(Request $request)
 {
     $keyword = $request->get('q', '');
