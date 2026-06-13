@@ -41,16 +41,27 @@
                     data-lokasi="<?php echo e(strtolower($m->alamat_tampil ?? '')); ?>">
                     
                     
-                    <div class="w-full h-44 bg-gray-100 flex items-center justify-center overflow-hidden">
-                        <?php if($m->white_bg_photo): ?>
-                            <img src="<?php echo e(asset('storage/' . $m->white_bg_photo)); ?>" alt="<?php echo e($m->full_name ?? $m->nama); ?>" class="w-full h-full object-cover">
-                        <?php else: ?>
-                            <div class="text-3xl font-bold text-emerald-700">
-                                <?php echo e(strtoupper(substr($m->full_name ?? $m->nama ?? 'M', 0, 2))); ?>
+                    
+<div class="w-full bg-gray-100 overflow-hidden" style="aspect-ratio: 3/4;">
+    <?php if($m->foto): ?>
+        <img src="<?php echo e(asset('storage/' . $m->foto)); ?>"
+             alt="<?php echo e($m->full_name ?? $m->nama); ?>"
+             class="w-full h-full object-cover object-top">
+    <?php elseif($m->white_bg_photo): ?>
+        <img src="<?php echo e(asset('storage/' . $m->white_bg_photo)); ?>"
+             alt="<?php echo e($m->full_name ?? $m->nama); ?>"
+             class="w-full h-full object-cover object-top">
+    <?php elseif($m->user?->profile_photo_path): ?>
+        <img src="<?php echo e(asset('storage/' . $m->user->profile_photo_path)); ?>"
+             alt="<?php echo e($m->full_name ?? $m->nama); ?>"
+             class="w-full h-full object-cover object-top">
+    <?php else: ?>
+        <div class="w-full h-full flex items-center justify-center text-3xl font-bold text-emerald-700">
+            <?php echo e(strtoupper(substr($m->full_name ?? $m->nama ?? 'M', 0, 2))); ?>
 
-                            </div>
-                        <?php endif; ?>
-                    </div>
+        </div>
+    <?php endif; ?>
+</div>
 
                    
 <div class="bg-green-50 px-4 py-2 border-b">

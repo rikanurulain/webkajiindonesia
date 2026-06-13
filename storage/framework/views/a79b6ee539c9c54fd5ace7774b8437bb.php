@@ -255,11 +255,11 @@ if ($mentor && !empty($mentor->spesialisasi)) {
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
         <div class="brand-box">
-            <div class="brand-icon">
-                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                </svg>
-            </div>
+        <div class="brand-icon">
+    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+    </svg>
+</div>
             <div>
                 <div class="brand-name">KAJI Indonesia</div>
                 <div class="brand-role">Mentor</div>

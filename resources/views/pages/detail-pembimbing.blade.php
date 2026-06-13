@@ -41,19 +41,25 @@
         <div class="bg-white p-6 rounded-xl shadow-sm">
             <h3 class="text-center font-semibold mb-4">Pembimbing</h3>
 
-            @if($mentor->white_bg_photo)
-                <img src="{{ asset('storage/' . $mentor->white_bg_photo) }}"
-                     alt="{{ $mentor->full_name ?? $mentor->nama }}"
-                     class="rounded-lg w-full object-cover">
-            @elseif($mentor->foto)
-                <img src="{{ asset('storage/pembimbing/' . $mentor->foto) }}"
-                     alt="{{ $mentor->full_name ?? $mentor->nama }}"
-                     class="rounded-lg w-full object-cover">
-            @else
-                <div class="h-64 bg-emerald-50 rounded-lg flex items-center justify-center text-5xl font-bold text-emerald-700">
-                    {{ strtoupper(substr($mentor->full_name ?? $mentor->nama ?? 'M', 0, 2)) }}
-                </div>
-            @endif
+            <div class="w-full bg-gray-100 rounded-lg overflow-hidden" style="aspect-ratio: 3/4;">
+    @if($mentor->foto)
+        <img src="{{ asset('storage/' . $mentor->foto) }}"
+             alt="{{ $mentor->full_name ?? $mentor->nama }}"
+             class="w-full h-full object-cover object-top">
+    @elseif($mentor->white_bg_photo)
+        <img src="{{ asset('storage/' . $mentor->white_bg_photo) }}"
+             alt="{{ $mentor->full_name ?? $mentor->nama }}"
+             class="w-full h-full object-cover object-top">
+    @elseif($mentor->user?->profile_photo_path)
+        <img src="{{ asset('storage/' . $mentor->user->profile_photo_path) }}"
+             alt="{{ $mentor->full_name ?? $mentor->nama }}"
+             class="w-full h-full object-cover object-top">
+    @else
+        <div class="w-full h-full flex items-center justify-center text-3xl font-bold text-emerald-700">
+            {{ strtoupper(substr($mentor->full_name ?? $mentor->nama ?? 'M', 0, 2)) }}
+        </div>
+    @endif
+</div>
 
             {{-- Bintang Rata-rata --}}
             <div class="flex items-center gap-1 mt-4">
