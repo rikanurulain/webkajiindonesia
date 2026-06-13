@@ -46,7 +46,9 @@ class TrainerController extends Controller
         )
         ->sortByDesc('created_at')
         ->take(5);
-    
+
+        $totalUlasan = \App\Models\TrainerUlasan::where('trainer_id', $user->id)->count();
+
         return view('trainer.dashboard', compact(
             'user',
             'totalKurikulum',  
@@ -58,7 +60,8 @@ class TrainerController extends Controller
             'pelatihanList',
             'eventList',
             'recentSubmissions',
-            'trainer'
+            'trainer',
+            'totalUlasan'  
         ));
     }
 
@@ -453,23 +456,24 @@ public function exportPesertaCsv($id)
 {
     $user = Auth::user();
 
-    \Log::info('=== UPDATE PROFIL ===');
-    \Log::info('Request data:', $request->all());
-    \Log::info('User ID:', [$user->id]);
-
     $request->validate([
-        'name'                  => 'required|string|max:255',
-        'email'                 => 'required|email|max:255|unique:users,email,' . $user->id,
-        'phone'                 => 'nullable|string|max:20',
-        'academic_degree'       => 'nullable|string|max:255',
-        'bidang_keahlian'       => 'nullable|string|max:1000',
-        'displayed_bidang'      => 'nullable|string|max:255',
-        'bio'                   => 'nullable|string|max:1000',
-        'foto'                  => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        'name'             => 'required|string|max:255',
+        'email'            => 'required|email|max:255|unique:users,email,' . $user->id,
+        'phone'            => 'nullable|string|max:20',
+        'academic_degree'  => 'nullable|string|max:255',
+        'bidang_keahlian'  => 'nullable|string|max:1000',
+        'displayed_bidang' => 'nullable|string|max:255',
+        'bio'              => 'nullable|string|max:1000',
+        'lokasi'           => 'nullable|string|max:500',
+        'sosmed'           => 'nullable|array',
+        'sosmed.instagram' => 'nullable|string|max:100',
+'sosmed.linkedin'  => 'nullable|string|max:500', // ← naikan dari 100 ke 255
+'sosmed.twitter'   => 'nullable|string|max:100',
+'sosmed.youtube'   => 'nullable|string|max:500', // ← URL bisa panjang
+'sosmed.facebook'  => 'nullable|string|max:500',
+        'foto'             => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         'password' => [
-            'nullable',
-            'string',
-            'min:8',
+            'nullable', 'string', 'min:8',
             function ($attribute, $value, $fail) use ($request) {
                 if ($value && $value !== $request->password_confirmation) {
                     $fail('Konfirmasi password tidak cocok.');
@@ -479,21 +483,35 @@ public function exportPesertaCsv($id)
         'password_confirmation' => 'nullable|string',
     ]);
 
-    // ── Update tabel users ──────────────────────────────────────
+    // Update users table
     $userData = $request->only(['name', 'email', 'phone']);
     if ($request->filled('password')) {
         $userData['password'] = Hash::make($request->password);
     }
     $user->update($userData);
 
-    // ── Update tabel trainer ────────────────────────────────────
+    // Update trainer table
     $trainer = \App\Models\Trainer::firstOrNew(['user_id' => $user->id]);
 
-    \Log::info('Trainer exists:', [$trainer->exists]);
-    \Log::info('Trainer ID:', [$trainer->id ?? 'NULL - record baru']);
+    $sosmedInput = $request->input('sosmed', []);
+
+// Ambil sosmed lama dari DB
+$sosmedLama = $trainer->sosmed ?? [];
+
+// Merge: update semua key yang dikirim, pertahankan key lain
+$sosmed = array_merge($sosmedLama, [
+    'instagram' => trim($sosmedInput['instagram'] ?? ''),
+    'linkedin'  => trim($sosmedInput['linkedin']  ?? ''),
+    'twitter'   => trim($sosmedInput['twitter']   ?? ''),
+    'youtube'   => trim($sosmedInput['youtube']   ?? ''),
+    'facebook'  => trim($sosmedInput['facebook']  ?? ''),
+]);
+
+$trainer->sosmed = $sosmed;
 
     $trainer->fill([
         'bio'              => $request->bio,
+        'lokasi'           => $request->lokasi,
         'keahlian'         => $request->bidang_keahlian,
         'academic_degree'  => $request->academic_degree,
         'displayed_bidang' => $request->displayed_bidang,
@@ -511,11 +529,8 @@ public function exportPesertaCsv($id)
         $trainer->status  = 'pending';
     }
 
-    \Log::info('Trainer dirty (akan disimpan):', $trainer->getDirty());
-
     $trainer->save();
 
-    \Log::info('Trainer setelah save:', $trainer->toArray());
 
     return back()
         ->with('success', 'Profil berhasil diperbarui.')

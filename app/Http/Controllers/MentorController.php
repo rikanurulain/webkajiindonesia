@@ -54,8 +54,18 @@ class MentorController extends Controller
         if ($mentor->foto) Storage::disk('public')->delete($mentor->foto);
         $fotoPath = $request->file('foto')->store('mentor/foto', 'public');
     }
-
-    // Update pakai DB::table untuk bypass masalah dirty/accessor
+    
+    // Simpan sosmed
+    $sosmed = null;
+    if ($request->has('sosmed')) {
+        $filtered = array_filter(
+            $request->input('sosmed', []),
+            fn($v) => trim($v) !== ''
+        );
+        $sosmed = empty($filtered) ? null : json_encode($filtered);
+    }
+    
+    // Update pakai DB::table
     DB::table('mentor')
         ->where('id', $mentor->id)
         ->update([
@@ -67,6 +77,7 @@ class MentorController extends Controller
             'spesialisasi'           => json_encode(
                 array_values(array_filter(array_map('trim', explode(',', $request->spesialisasi ?? ''))))
             ),
+            'sosmed'                 => $sosmed,  // <-- tambah di sini
             'foto'                   => $fotoPath,
             'updated_at'             => now(),
         ]);

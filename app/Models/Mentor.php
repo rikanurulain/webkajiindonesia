@@ -103,9 +103,9 @@ public function getDisplayedSpesialisasiAttribute(): ?string
      * Semua ulasan untuk mentor ini
      */
     public function ulasanList()
-    {
-        return $this->hasMany(MentorUlasan::class, 'mentor_id');
-    }
+{
+    return $this->hasMany(\App\Models\MentorUlasan::class, 'mentor_id');
+}
 
     /**
      * Rata-rata rating dari ulasan

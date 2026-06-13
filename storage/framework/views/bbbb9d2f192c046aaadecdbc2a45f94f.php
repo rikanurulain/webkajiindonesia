@@ -1,10 +1,10 @@
-    {{-- resources/views/trainer/dashboard.blade.php --}}
+    
     <!DOCTYPE html>
     <html lang="id">
     <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title>Dashboard Trainer – KAJI Indonesia</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
     <style>
@@ -596,7 +596,7 @@
     </head>
     <body>
 
-    {{-- ============ SIDEBAR ============ --}}
+    
     <aside class="sidebar">
         <div class="sidebar-brand">
             <div class="brand-box">
@@ -620,25 +620,25 @@
             <div class="nav-item" onclick="showPage('program')">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                 Program / Pelatihan
-                @if(isset($pendingPelatihanCount) && $pendingPelatihanCount > 0)
-                    <span class="nav-badge">{{ $pendingPelatihanCount }}</span>
-                @endif
+                <?php if(isset($pendingPelatihanCount) && $pendingPelatihanCount > 0): ?>
+                    <span class="nav-badge"><?php echo e($pendingPelatihanCount); ?></span>
+                <?php endif; ?>
             </div>
             <div class="nav-item" onclick="showPage('event')">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 Event
-                @if(isset($pendingEventCount) && $pendingEventCount > 0)
-                    <span class="nav-badge">{{ $pendingEventCount }}</span>
-                @endif
+                <?php if(isset($pendingEventCount) && $pendingEventCount > 0): ?>
+                    <span class="nav-badge"><?php echo e($pendingEventCount); ?></span>
+                <?php endif; ?>
             </div>
             <div class="nav-item" onclick="showPage('ulasan')">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                 Ulasan
-                @if(isset($totalUlasan) && $totalUlasan > 0)
-                    <span class="nav-badge">{{ $totalUlasan }}</span>
-                @endif
+                <?php if(isset($totalUlasan) && $totalUlasan > 0): ?>
+                    <span class="nav-badge"><?php echo e($totalUlasan); ?></span>
+                <?php endif; ?>
             </div>
-        </div>{{-- tutup nav-section Menu Utama --}}
+        </div>
 
         <div class="nav-section">
             <div class="nav-label">Akun</div>
@@ -646,24 +646,25 @@
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 Profil Saya
             </div>
-            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="nav-item">
+            <a href="<?php echo e(route('logout')); ?>" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="nav-item">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                 Keluar
             </a>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display:none">@csrf</form>
+            <form id="logout-form" action="<?php echo e(route('logout')); ?>" method="POST" style="display:none"><?php echo csrf_field(); ?></form>
         </div>
         <div class="sidebar-user">
             <div class="user-card" onclick="showPage('profil')">
             <div class="user-avatar">
-            @php $fotoSidebar = $trainer?->foto ?? null; @endphp
-    @if($fotoSidebar)
-        <img src="{{ asset('storage/' . $fotoSidebar) }}" alt="{{ auth()->user()->name }}">
-    @else
-        {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-    @endif
+            <?php $fotoSidebar = $trainer?->foto ?? null; ?>
+    <?php if($fotoSidebar): ?>
+        <img src="<?php echo e(asset('storage/' . $fotoSidebar)); ?>" alt="<?php echo e(auth()->user()->name); ?>">
+    <?php else: ?>
+        <?php echo e(strtoupper(substr(auth()->user()->name, 0, 2))); ?>
+
+    <?php endif; ?>
     </div>
                 <div>
-                    <div class="user-name">{{ auth()->user()->name }}</div>
+                    <div class="user-name"><?php echo e(auth()->user()->name); ?></div>
                     <div class="user-role">Trainer</div>
                 </div>
             </div>
@@ -672,7 +673,7 @@
 
     <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 
-    {{-- ============ MAIN ============ --}}
+    
     <main class="main">
     <header class="topbar">
         <button class="hamburger" onclick="toggleSidebar()" aria-label="Toggle Menu">
@@ -682,8 +683,8 @@
         </button>
         <div class="topbar-title" id="page-title">Dashboard Trainer</div>
         <div style="display:flex;gap:10px;align-items:center">
-            <span style="font-size:13px;color:var(--text-muted)">Halo, {{ auth()->user()->name }} 👋</span>
-            <a href="{{ url('/') }}" target="_blank" class="btn btn-ghost" style="font-size:13px;padding:8px 16px">
+            <span style="font-size:13px;color:var(--text-muted)">Halo, <?php echo e(auth()->user()->name); ?> 👋</span>
+            <a href="<?php echo e(url('/')); ?>" target="_blank" class="btn btn-ghost" style="font-size:13px;padding:8px 16px">
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/>
                     <path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/>
@@ -695,34 +696,34 @@
 
     <div class="content">
 
-        {{-- ============ BERANDA ============ --}}
+        
         <div class="page-section active" id="page-beranda">
-            @if(session('success'))<div class="alert alert-success">✅ {{ session('success') }}</div>@endif
-            @if(session('error'))<div class="alert alert-error">⚠️ {{ session('error') }}</div>@endif
+            <?php if(session('success')): ?><div class="alert alert-success">✅ <?php echo e(session('success')); ?></div><?php endif; ?>
+            <?php if(session('error')): ?><div class="alert alert-error">⚠️ <?php echo e(session('error')); ?></div><?php endif; ?>
 
             <div class="stats-grid">
                 <div class="stat-card green">
                     <div class="stat-icon">📚</div>
                     <div class="stat-label">Total Kurikulum</div>
-                    <div class="stat-value">{{ $totalKurikulum ?? 0 }}</div>
+                    <div class="stat-value"><?php echo e($totalKurikulum ?? 0); ?></div>
                     <div class="stat-sub">Kurikulum yang diajukan</div>
                 </div>
                 <div class="stat-card teal">
                     <div class="stat-icon">📝</div>
                     <div class="stat-label">Total Modul</div>
-                    <div class="stat-value">{{ $totalModul ?? 0 }}</div>
+                    <div class="stat-value"><?php echo e($totalModul ?? 0); ?></div>
                     <div class="stat-sub">Modul dalam kurikulum</div>
                 </div>
                 <div class="stat-card blue">
                     <div class="stat-icon">📅</div>
                     <div class="stat-label">Total Event</div>
-                    <div class="stat-value">{{ $totalEvent ?? 0 }}</div>
+                    <div class="stat-value"><?php echo e($totalEvent ?? 0); ?></div>
                     <div class="stat-sub">Event yang diajukan</div>
                 </div>
                 <div class="stat-card orange">
                     <div class="stat-icon">⏳</div>
                     <div class="stat-label">Menunggu Persetujuan</div>
-                    <div class="stat-value">{{ $pendingTotal ?? 0 }}</div>
+                    <div class="stat-value"><?php echo e($pendingTotal ?? 0); ?></div>
                     <div class="stat-sub">Perlu tindakan admin</div>
                 </div>
             </div>
@@ -734,36 +735,36 @@
                 <table>
                     <thead><tr><th>Nama</th><th>Tipe</th><th>Tanggal</th><th>Status</th></tr></thead>
                     <tbody>
-                        @forelse($recentSubmissions ?? [] as $item)
+                        <?php $__empty_1 = true; $__currentLoopData = $recentSubmissions ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <tr>
-                            <td style="font-weight:500">{{ $item->judul ?? $item->nama }}</td>
-                            <td><span class="chip chip-{{ $item->tipe ?? 'kurikulum' }}">{{ ucfirst($item->tipe ?? '-') }}</span></td>
-                            <td>{{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('d M Y') }}</td>
+                            <td style="font-weight:500"><?php echo e($item->judul ?? $item->nama); ?></td>
+                            <td><span class="chip chip-<?php echo e($item->tipe ?? 'kurikulum'); ?>"><?php echo e(ucfirst($item->tipe ?? '-')); ?></span></td>
+                            <td><?php echo e(\Carbon\Carbon::parse($item->created_at)->translatedFormat('d M Y')); ?></td>
                             <td>
-                                @if(($item->status ?? '') === 'approved')
+                                <?php if(($item->status ?? '') === 'approved'): ?>
                                     <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
-                                @elseif(($item->status ?? '') === 'rejected')
+                                <?php elseif(($item->status ?? '') === 'rejected'): ?>
                                     <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
-                                @else
+                                <?php else: ?>
                                     <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
-                                @endif
+                                <?php endif; ?>
                             </td>
                         </tr>
-                        @empty
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text-muted)">Belum ada program atau event yang diajukan.</td></tr>
-                        @endforelse
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        {{-- ============ PROGRAM ============ --}}
+        
         <div class="page-section" id="page-program">
-            @if(session('success'))<div class="alert alert-success">✅ {{ session('success') }}</div>@endif
-            @if(session('error'))<div class="alert alert-error">⚠️ {{ session('error') }}</div>@endif
+            <?php if(session('success')): ?><div class="alert alert-success">✅ <?php echo e(session('success')); ?></div><?php endif; ?>
+            <?php if(session('error')): ?><div class="alert alert-error">⚠️ <?php echo e(session('error')); ?></div><?php endif; ?>
 
             <div class="section-header">
-                <div class="section-title">Program / Pelatihan <span>{{ ($totalKurikulum ?? 0) + ($totalModul ?? 0) }} total</span></div>
+                <div class="section-title">Program / Pelatihan <span><?php echo e(($totalKurikulum ?? 0) + ($totalModul ?? 0)); ?> total</span></div>
                 <div class="section-actions">
                     <button class="btn btn-secondary" onclick="openModalModul()">
                         <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
@@ -776,15 +777,15 @@
                 </div>
             </div>
 
-            @php
+            <?php
                 $kurikulumList   = isset($pelatihanList) ? $pelatihanList->where('tipe', 'kurikulum') : collect();
                 $modulList       = isset($pelatihanList) ? $pelatihanList->where('tipe', 'modul')     : collect();
                 $adaKurikulumVar = $kurikulumList->count() > 0;
-            @endphp
+            ?>
 
-            @if($adaKurikulumVar)
-                @foreach($kurikulumList as $k)
-                @php
+            <?php if($adaKurikulumVar): ?>
+                <?php $__currentLoopData = $kurikulumList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $k): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php
                     $modulDalamK = $modulList->where('kurikulum_id', $k->id)->sortBy('urutan');
                     $absensiAktif   = !empty($k->absensi_mulai) && !empty($k->absensi_selesai) && $k->absensi_aktif;
                     $absensiMulai   = $absensiAktif ? \Carbon\Carbon::parse($k->absensi_mulai, 'Asia/Jakarta') : null;
@@ -797,181 +798,183 @@
                         else                                                   $statusAbsensi = 'ended';
                     }
                     $jumlahAbsensi = \App\Models\AbsensiPeserta::where('pelatihan_id', $k->id)->count();
-                @endphp
+                ?>
     
                 <div class="kurikulum-block">
                     <div class="kurikulum-block-header">
                         <div style="width:42px;height:42px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden;">
-                            @if($k->gambar)
-                                <img src="{{ asset('storage/'.$k->gambar) }}" style="width:100%;height:100%;object-fit:cover;">
-                            @else 📚 @endif
+                            <?php if($k->gambar): ?>
+                                <img src="<?php echo e(asset('storage/'.$k->gambar)); ?>" style="width:100%;height:100%;object-fit:cover;">
+                            <?php else: ?> 📚 <?php endif; ?>
                         </div>
                         <div style="flex:1">
-                            <div class="k-title">{{ $k->judul }}</div>
+                            <div class="k-title"><?php echo e($k->judul); ?></div>
                             <div class="k-meta">
-                                <span>{{ $modulDalamK->count() }} materi</span>
-                                @if($k->total_jam) <span>⏱ {{ (int) $k->total_jam }} jam</span> @endif
-                                @if($k->jumlah_sesi) <span>📅 {{ $k->jumlah_sesi }} sesi</span> @endif
-                                @if($k->sertifikat) <span>🏆 Sertifikat</span> @endif
-                                @if($k->tingkat) <span>{{ ucfirst($k->tingkat) }}</span> @endif
-                                @if($k->metode) <span>{{ ucfirst($k->metode) }}</span> @endif
-                                @if($k->alamat) <span>📍 {{ Str::limit($k->alamat, 30) }}</span> @endif
+                                <span><?php echo e($modulDalamK->count()); ?> materi</span>
+                                <?php if($k->total_jam): ?> <span>⏱ <?php echo e((int) $k->total_jam); ?> jam</span> <?php endif; ?>
+                                <?php if($k->jumlah_sesi): ?> <span>📅 <?php echo e($k->jumlah_sesi); ?> sesi</span> <?php endif; ?>
+                                <?php if($k->sertifikat): ?> <span>🏆 Sertifikat</span> <?php endif; ?>
+                                <?php if($k->tingkat): ?> <span><?php echo e(ucfirst($k->tingkat)); ?></span> <?php endif; ?>
+                                <?php if($k->metode): ?> <span><?php echo e(ucfirst($k->metode)); ?></span> <?php endif; ?>
+                                <?php if($k->alamat): ?> <span>📍 <?php echo e(Str::limit($k->alamat, 30)); ?></span> <?php endif; ?>
                             </div>
                         </div>
                         <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
-                            @if(($k->status ?? '') === 'approved')
+                            <?php if(($k->status ?? '') === 'approved'): ?>
                                 <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
-                            @elseif(($k->status ?? '') === 'rejected')
+                            <?php elseif(($k->status ?? '') === 'rejected'): ?>
                                 <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
-                            @else
+                            <?php else: ?>
                                 <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
-                            @endif
+                            <?php endif; ?>
 
-                            @php
+                            <?php
                             $jumlahPendaftar = \App\Models\PendaftaranProgram::where('program_id', $k->id)->count();
-                        @endphp
+                        ?>
                             <button class="btn btn-sm"
                             style="background:#e8f0fe;color:#1d4ed8;border:1.5px solid #93c5fd;font-weight:700;gap:6px;flex-shrink:0"
-                                onclick="bukaDaftarPeserta({{ $k->id }}, '{{ addslashes($k->judul) }}')">
+                                onclick="bukaDaftarPeserta(<?php echo e($k->id); ?>, '<?php echo e(addslashes($k->judul)); ?>')">
                                 🎓 Peserta
-                                @if($jumlahPendaftar > 0)
+                                <?php if($jumlahPendaftar > 0): ?>
                                     <span style="background:#1d4ed8;color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;margin-left:2px">
-                            {{ $jumlahPendaftar }}
+                            <?php echo e($jumlahPendaftar); ?>
+
                             </span>
-                            @endif
+                            <?php endif; ?>
                             </button>
 
                             <button class="btn btn-sm" style="background:#e8f5e9;color:#2d6a4f;border:1.5px solid #a7d7c5;font-weight:700;gap:6px;flex-shrink:0"
-                                onclick="bukaDaftarAbsensi({{ $k->id }}, '{{ addslashes($k->judul) }}')">
+                                onclick="bukaDaftarAbsensi(<?php echo e($k->id); ?>, '<?php echo e(addslashes($k->judul)); ?>')">
                                 👥 Absensi
-                                @if($jumlahAbsensi > 0)
-                                    <span style="background:#2d6a4f;color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;margin-left:2px">{{ $jumlahAbsensi }}</span>
-                                @endif
+                                <?php if($jumlahAbsensi > 0): ?>
+                                    <span style="background:#2d6a4f;color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;margin-left:2px"><?php echo e($jumlahAbsensi); ?></span>
+                                <?php endif; ?>
                             </button>
 
                             
 
-                            <button class="btn btn-sm btn-outline" onclick="openModalModulDenganKurikulum({{ $k->id }}, '{{ addslashes($k->judul) }}')">+ Modul</button>
+                            <button class="btn btn-sm btn-outline" onclick="openModalModulDenganKurikulum(<?php echo e($k->id); ?>, '<?php echo e(addslashes($k->judul)); ?>')">+ Modul</button>
 
                             <button class="btn-icon btn-edit-kurikulum"
-                                data-id="{{ $k->id }}"
-                                data-judul="{{ $k->judul }}"
-                                data-deskripsi="{{ $k->deskripsi ?? '' }}"
-                                data-metode="{{ $k->metode ?? '' }}"
-                                data-tingkat="{{ $k->tingkat ?? '' }}"
-                                data-bahasa="{{ $k->bahasa ?? 'Bahasa Indonesia' }}"
-                                data-total-jam="{{ $k->total_jam ?? '' }}"
-                                data-jumlah-sesi="{{ $k->jumlah_sesi ?? '' }}"
-                                data-sertifikat="{{ $k->sertifikat ? 1 : 0 }}"
-                                data-phone="{{ $k->phone ?? auth()->user()->phone ?? '' }}"
-                                data-biaya="{{ $k->biaya ?? '' }}"
-                                data-absensi-aktif="{{ !empty($k->absensi_mulai) ? 1 : 0 }}"
-                                data-absensi-mulai="{{ $k->absensi_mulai ?? '' }}"
-                                data-absensi-selesai="{{ $k->absensi_selesai ?? '' }}"
-                                data-absensi-url="{{ $k->absensi_url ?? '' }}"
-                            data-alamat="{{ json_encode($k->alamat ?? '') }}"
-                            data-gambar-url="{{ $k->gambar ? asset('storage/'.$k->gambar) : '' }}"
+                                data-id="<?php echo e($k->id); ?>"
+                                data-judul="<?php echo e($k->judul); ?>"
+                                data-deskripsi="<?php echo e($k->deskripsi ?? ''); ?>"
+                                data-metode="<?php echo e($k->metode ?? ''); ?>"
+                                data-tingkat="<?php echo e($k->tingkat ?? ''); ?>"
+                                data-bahasa="<?php echo e($k->bahasa ?? 'Bahasa Indonesia'); ?>"
+                                data-total-jam="<?php echo e($k->total_jam ?? ''); ?>"
+                                data-jumlah-sesi="<?php echo e($k->jumlah_sesi ?? ''); ?>"
+                                data-sertifikat="<?php echo e($k->sertifikat ? 1 : 0); ?>"
+                                data-phone="<?php echo e($k->phone ?? auth()->user()->phone ?? ''); ?>"
+                                data-biaya="<?php echo e($k->biaya ?? ''); ?>"
+                                data-absensi-aktif="<?php echo e(!empty($k->absensi_mulai) ? 1 : 0); ?>"
+                                data-absensi-mulai="<?php echo e($k->absensi_mulai ?? ''); ?>"
+                                data-absensi-selesai="<?php echo e($k->absensi_selesai ?? ''); ?>"
+                                data-absensi-url="<?php echo e($k->absensi_url ?? ''); ?>"
+                            data-alamat="<?php echo e(json_encode($k->alamat ?? '')); ?>"
+                            data-gambar-url="<?php echo e($k->gambar ? asset('storage/'.$k->gambar) : ''); ?>"
                                 title="Edit Kurikulum">
                                 <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                             </button>
 
-                            <button class="btn-icon btn-icon-danger" onclick="hapusItem({{ $k->id }}, 'kurikulum')" title="Hapus">
+                            <button class="btn-icon btn-icon-danger" onclick="hapusItem(<?php echo e($k->id); ?>, 'kurikulum')" title="Hapus">
                                 <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
                             </button>
                         </div>
                     </div>
 
-                    @if($absensiAktif)
-                    <div class="absensi-bar absensi-{{ $statusAbsensi }}"
-                        id="absensi-bar-{{ $k->id }}"
-                        data-mulai="{{ $absensiMulai ? $absensiMulai->timestamp : 0 }}"
-                        data-selesai="{{ $absensiSelesai ? $absensiSelesai->timestamp : 0 }}"
-                        data-url="{{ $absensiUrl }}">
-                        @if($statusAbsensi === 'active')
+                    <?php if($absensiAktif): ?>
+                    <div class="absensi-bar absensi-<?php echo e($statusAbsensi); ?>"
+                        id="absensi-bar-<?php echo e($k->id); ?>"
+                        data-mulai="<?php echo e($absensiMulai ? $absensiMulai->timestamp : 0); ?>"
+                        data-selesai="<?php echo e($absensiSelesai ? $absensiSelesai->timestamp : 0); ?>"
+                        data-url="<?php echo e($absensiUrl); ?>">
+                        <?php if($statusAbsensi === 'active'): ?>
                             <div class="absensi-label"><span class="absensi-dot"></span>Absensi Sedang Berlangsung</div>
-                            <a href="{{ $absensiUrl }}" target="_blank" class="btn-absensi-live">✅ Buka Link Absensi</a>
+                            <a href="<?php echo e($absensiUrl); ?>" target="_blank" class="btn-absensi-live">✅ Buka Link Absensi</a>
                             <div class="absensi-countdown">
                                 <span style="color:var(--text-muted);font-size:11px">Berakhir dalam</span>
-                                <span class="countdown-timer" id="timer-{{ $k->id }}">--:--:--</span>
+                                <span class="countdown-timer" id="timer-<?php echo e($k->id); ?>">--:--:--</span>
                             </div>
-                        @elseif($statusAbsensi === 'upcoming')
+                        <?php elseif($statusAbsensi === 'upcoming'): ?>
                             <div style="font-size:20px">⏰</div>
                             <div>
                                 <div class="absensi-label" style="color:#92400e">Absensi Akan Dibuka</div>
-                                <div class="absensi-schedule-info">{{ $absensiMulai->translatedFormat('d M Y, H:i') }} – {{ $absensiSelesai->format('H:i') }} WIB</div>
+                                <div class="absensi-schedule-info"><?php echo e($absensiMulai->translatedFormat('d M Y, H:i')); ?> – <?php echo e($absensiSelesai->format('H:i')); ?> WIB</div>
                             </div>
                             <div class="absensi-countdown" style="margin-left:auto">
                                 <span style="color:var(--text-muted);font-size:11px">Dibuka dalam</span>
-                                <span class="countdown-timer upcoming" id="timer-{{ $k->id }}">--:--:--</span>
+                                <span class="countdown-timer upcoming" id="timer-<?php echo e($k->id); ?>">--:--:--</span>
                             </div>
-                        @else
+                        <?php else: ?>
                             <div style="font-size:18px">🔒</div>
                             <div>
                                 <div class="absensi-label" style="color:var(--text-muted)">Absensi Telah Ditutup</div>
-                                <div class="absensi-schedule-info">Selesai {{ $absensiSelesai->translatedFormat('d M Y, H:i') }} WIB</div>
+                                <div class="absensi-schedule-info">Selesai <?php echo e($absensiSelesai->translatedFormat('d M Y, H:i')); ?> WIB</div>
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
-                    @endif
+                    <?php endif; ?>
                 
 
-                    @if($modulDalamK->count() > 0)
+                    <?php if($modulDalamK->count() > 0): ?>
                     <div class="modul-list">
-                        @foreach($modulDalamK as $m)
+                        <?php $__currentLoopData = $modulDalamK; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $m): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="modul-row">
-                            <div style="width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ $m->urutan ?? $loop->iteration }}</div>
+                            <div style="width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><?php echo e($m->urutan ?? $loop->iteration); ?></div>
                             <div class="modul-info">
-                                <div class="modul-title">{{ $m->judul }}</div>
-                                @if($m->deskripsi)<div class="modul-meta">{{ $m->deskripsi }}</div>@endif
+                                <div class="modul-title"><?php echo e($m->judul); ?></div>
+                                <?php if($m->deskripsi): ?><div class="modul-meta"><?php echo e($m->deskripsi); ?></div><?php endif; ?>
                             </div>
                             <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-                                @if(($m->status ?? '') === 'approved')
+                                <?php if(($m->status ?? '') === 'approved'): ?>
                                     <span class="badge badge-approved" style="font-size:10px;padding:3px 8px"><span class="badge-dot"></span>Disetujui</span>
-                                @elseif(($m->status ?? '') === 'rejected')
+                                <?php elseif(($m->status ?? '') === 'rejected'): ?>
                                     <span class="badge badge-rejected" style="font-size:10px;padding:3px 8px"><span class="badge-dot"></span>Ditolak</span>
-                                @else
+                                <?php else: ?>
                                     <span class="badge badge-pending" style="font-size:10px;padding:3px 8px"><span class="badge-dot"></span>Menunggu</span>
-                                @endif
+                                <?php endif; ?>
                                 <button class="btn-icon" onclick="editModul(
-        {{ $m->id }},
-        {{ $m->kurikulum_id ?? 'null' }},
-        '{{ addslashes($m->judul) }}',
-        '{{ addslashes($m->deskripsi ?? '') }}',
-        '{{ $m->urutan ?? $loop->iteration }}',
-        '{{ $m->materi_type ?? '' }}',
-        '{{ $m->materi_youtube ?? '' }}',
-        '{{ $m->materi_pdf ? asset('storage/'.$m->materi_pdf) : '' }}',
-        '{{ $m->materi_pdf ?? '' }}',
-    '{{ $m->akses_mulai ?? '' }}',
-    '{{ $m->akses_selesai ?? '' }}'
+        <?php echo e($m->id); ?>,
+        <?php echo e($m->kurikulum_id ?? 'null'); ?>,
+        '<?php echo e(addslashes($m->judul)); ?>',
+        '<?php echo e(addslashes($m->deskripsi ?? '')); ?>',
+        '<?php echo e($m->urutan ?? $loop->iteration); ?>',
+        '<?php echo e($m->materi_type ?? ''); ?>',
+        '<?php echo e($m->materi_youtube ?? ''); ?>',
+        '<?php echo e($m->materi_pdf ? asset('storage/'.$m->materi_pdf) : ''); ?>',
+        '<?php echo e($m->materi_pdf ?? ''); ?>',
+    '<?php echo e($m->akses_mulai ?? ''); ?>',
+    '<?php echo e($m->akses_selesai ?? ''); ?>'
         
     )" title="Edit Modul">
         <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
     </button>
-                                <button class="btn-icon btn-icon-danger" onclick="hapusItem({{ $m->id }}, 'modul')" title="Hapus">
+                                <button class="btn-icon btn-icon-danger" onclick="hapusItem(<?php echo e($m->id); ?>, 'modul')" title="Hapus">
                                     <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
                                 </button>
                             </div>
                         </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
-                    @else
+                    <?php else: ?>
                     <div class="modul-list">
                         <div style="padding:20px 24px;font-size:13px;color:var(--text-muted);display:flex;align-items:center;gap:10px">
                             <span>📭</span> Belum ada modul.
-                            <button class="btn btn-sm btn-outline" style="margin-left:4px" onclick="openModalModulDenganKurikulum({{ $k->id }}, '{{ addslashes($k->judul) }}')">Tambah sekarang</button>
+                            <button class="btn btn-sm btn-outline" style="margin-left:4px" onclick="openModalModulDenganKurikulum(<?php echo e($k->id); ?>, '<?php echo e(addslashes($k->judul)); ?>')">Tambah sekarang</button>
                         </div>
                     </div>
-                    @endif
+                    <?php endif; ?>
 
-                    @if(($k->status ?? '') === 'rejected' && $k->catatan_admin)
+                    <?php if(($k->status ?? '') === 'rejected' && $k->catatan_admin): ?>
                     <div style="padding:10px 16px;background:#fff0ed;border:1px solid #e76f5166;border-top:none;border-radius:0 0 var(--radius) var(--radius);font-size:12px;color:var(--accent2)">
-                        <strong>Catatan Admin:</strong> {{ $k->catatan_admin }}
+                        <strong>Catatan Admin:</strong> <?php echo e($k->catatan_admin); ?>
+
                     </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
-                @endforeach
-            @else
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            <?php else: ?>
                 <div class="table-wrap">
                     <div class="empty-state">
                         <div class="empty-icon">📚</div>
@@ -979,82 +982,82 @@
                         <p>Mulai dengan membuat kurikulum, lalu tambahkan modul ke dalamnya.</p>
                     </div>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
 
-        {{-- ============ EVENT ============ --}}
+        
         <div class="page-section" id="page-event">
-            @if(session('success'))<div class="alert alert-success">✅ {{ session('success') }}</div>@endif
+            <?php if(session('success')): ?><div class="alert alert-success">✅ <?php echo e(session('success')); ?></div><?php endif; ?>
             <div class="section-header">
-                <div class="section-title">Event <span>{{ $totalEvent ?? 0 }} total</span></div>
+                <div class="section-title">Event <span><?php echo e($totalEvent ?? 0); ?> total</span></div>
                 <button class="btn btn-primary" onclick="openModal('modal-event')">
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                     Tambah Event
                 </button>
             </div>
-            @if(isset($eventList) && $eventList->count() > 0)
+            <?php if(isset($eventList) && $eventList->count() > 0): ?>
                 <div class="table-wrap">
                     <table>
                         <thead><tr><th>Nama Event</th><th>Lokasi</th><th>Tanggal</th><th>Kapasitas</th><th>Status</th><th>Aksi</th></tr></thead>
                         <tbody>
-                        @foreach($eventList as $event)
-                            @php
+                        <?php $__currentLoopData = $eventList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $event): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php
                                 $eTanggal      = \Carbon\Carbon::parse($event->tanggal)->format('Y-m-d');
                                 $eWaktuMulai   = $event->waktu_mulai   ? \Carbon\Carbon::parse($event->waktu_mulai)->format('H:i')   : '';
                                 $eWaktuSelesai = $event->waktu_selesai ? \Carbon\Carbon::parse($event->waktu_selesai)->format('H:i') : '';
                                 $eGambar       = $event->gambar        ? asset('storage/' . $event->gambar) : '';
-                            @endphp
+                            ?>
                             <tr>
                                 <td>
                                     <div style="display:flex;align-items:flex-start;gap:10px;">
                                         <div style="width:42px;height:42px;border-radius:8px;overflow:hidden;background:#f0f0f0;flex-shrink:0;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;">
-                                            @if($event->gambar)
-                                                <img src="{{ asset('storage/' . $event->gambar) }}" alt="{{ $event->judul }}" style="width:100%;height:100%;object-fit:cover;">
-                                            @else 🎪 @endif
+                                            <?php if($event->gambar): ?>
+                                                <img src="<?php echo e(asset('storage/' . $event->gambar)); ?>" alt="<?php echo e($event->judul); ?>" style="width:100%;height:100%;object-fit:cover;">
+                                            <?php else: ?> 🎪 <?php endif; ?>
                                         </div>
                                         <div style="flex:1;min-width:0;">
-                                            <div style="font-weight:600;font-size:13px;">{{ $event->judul ?? $event->nama }}</div>
-                                            @if($event->status === 'rejected' && $event->catatan_admin)
+                                            <div style="font-weight:600;font-size:13px;"><?php echo e($event->judul ?? $event->nama); ?></div>
+                                            <?php if($event->status === 'rejected' && $event->catatan_admin): ?>
                                                 <div style="margin-top:5px;background:#fff0ed;border:1px solid #e76f5166;border-radius:8px;padding:6px 10px;">
                                                     <div style="font-size:10px;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">📋 Catatan Admin</div>
-                                                    <div style="font-size:12px;color:#b45309;line-height:1.5;">{{ $event->catatan_admin }}</div>
+                                                    <div style="font-size:12px;color:#b45309;line-height:1.5;"><?php echo e($event->catatan_admin); ?></div>
                                                 </div>
-                                            @endif
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </td>
-                                <td style="font-size:13px;">{{ $event->lokasi ?? '-' }}</td>
-                                <td style="font-size:13px;">{{ \Carbon\Carbon::parse($event->tanggal)->translatedFormat('d M Y') }}</td>
-                                <td style="font-size:13px;">{{ $event->kapasitas ?? '-' }}</td>
+                                <td style="font-size:13px;"><?php echo e($event->lokasi ?? '-'); ?></td>
+                                <td style="font-size:13px;"><?php echo e(\Carbon\Carbon::parse($event->tanggal)->translatedFormat('d M Y')); ?></td>
+                                <td style="font-size:13px;"><?php echo e($event->kapasitas ?? '-'); ?></td>
                                 <td>
-                                    @if($event->status === 'approved') <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
-                                    @elseif($event->status === 'rejected') <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
-                                    @else <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
-                                    @endif
+                                    <?php if($event->status === 'approved'): ?> <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
+                                    <?php elseif($event->status === 'rejected'): ?> <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
+                                    <?php else: ?> <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <div style="display:flex;gap:6px;align-items:center;">
-                                        <button class="btn-icon {{ $event->status === 'rejected' ? 'btn-resubmit' : '' }}"
-                                            style="{{ $event->status === 'rejected' ? 'background:#fff0ed;border-color:#e76f51;color:#e76f51;' : '' }}"
-                                            onclick="editEvent({{ $event->id }},'{{ addslashes($event->judul ?? $event->nama) }}','{{ $eTanggal }}','{{ $eWaktuMulai }}','{{ $eWaktuSelesai }}','{{ addslashes($event->lokasi ?? '') }}','{{ $event->kapasitas ?? '' }}','{{ addslashes($event->biaya ?? '') }}','{{ addslashes($event->deskripsi ?? '') }}','{{ $eGambar }}','{{ $event->phone ?? auth()->user()->phone ?? '' }}')"
-                                            title="{{ $event->status === 'rejected' ? 'Edit & Kirim Ulang' : 'Edit' }}">
-                                            @if($event->status === 'rejected')
+                                        <button class="btn-icon <?php echo e($event->status === 'rejected' ? 'btn-resubmit' : ''); ?>"
+                                            style="<?php echo e($event->status === 'rejected' ? 'background:#fff0ed;border-color:#e76f51;color:#e76f51;' : ''); ?>"
+                                            onclick="editEvent(<?php echo e($event->id); ?>,'<?php echo e(addslashes($event->judul ?? $event->nama)); ?>','<?php echo e($eTanggal); ?>','<?php echo e($eWaktuMulai); ?>','<?php echo e($eWaktuSelesai); ?>','<?php echo e(addslashes($event->lokasi ?? '')); ?>','<?php echo e($event->kapasitas ?? ''); ?>','<?php echo e(addslashes($event->biaya ?? '')); ?>','<?php echo e(addslashes($event->deskripsi ?? '')); ?>','<?php echo e($eGambar); ?>','<?php echo e($event->phone ?? auth()->user()->phone ?? ''); ?>')"
+                                            title="<?php echo e($event->status === 'rejected' ? 'Edit & Kirim Ulang' : 'Edit'); ?>">
+                                            <?php if($event->status === 'rejected'): ?>
                                                 <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
-                                            @else
+                                            <?php else: ?>
                                                 <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                                            @endif
+                                            <?php endif; ?>
                                         </button>
-                                        <button class="btn-icon btn-icon-danger" onclick="hapusEvent({{ $event->id }})" title="Hapus">
+                                        <button class="btn-icon btn-icon-danger" onclick="hapusEvent(<?php echo e($event->id); ?>)" title="Hapus">
                                             <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tbody>
                     </table>
                 </div>
-            @else
+            <?php else: ?>
                 <div class="table-wrap">
                     <div class="empty-state">
                         <div class="empty-icon">📅</div>
@@ -1062,22 +1065,22 @@
                         <p>Klik "Tambah Event" untuk mengajukan event baru.</p>
                     </div>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
 
-        {{-- ============ ULASAN ============ --}}
+        
     <div class="page-section" id="page-ulasan">
         <div class="section-header">
-            <div class="section-title">Ulasan dari Peserta <span>{{ $totalUlasan ?? 0 }} ulasan</span></div>
+            <div class="section-title">Ulasan dari Peserta <span><?php echo e($totalUlasan ?? 0); ?> ulasan</span></div>
         </div>
 
-        @php
+        <?php
             $ulasanTrainer = isset($trainer) ? \App\Models\TrainerUlasan::where('trainer_id', $trainer->user_id ?? auth()->id())
                 ->with('user')->latest()->get() : collect();
             $avgRatingTrainer = $ulasanTrainer->count() ? round($ulasanTrainer->avg('rating'), 1) : 0;
-        @endphp
+        ?>
 
-        @if($ulasanTrainer->isEmpty())
+        <?php if($ulasanTrainer->isEmpty()): ?>
             <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)">
                 <div class="empty-state">
                     <div class="empty-icon">💬</div>
@@ -1085,101 +1088,104 @@
                     <p>Ulasan dari peserta pelatihan Anda akan tampil di sini setelah mereka memberikan penilaian.</p>
                 </div>
             </div>
-        @else
-            {{-- Rating Summary --}}
+        <?php else: ?>
+            
             <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px;box-shadow:var(--shadow);display:flex;align-items:center;gap:32px;flex-wrap:wrap">
                 <div style="text-align:center;flex-shrink:0">
-                    <div style="font-size:52px;font-weight:800;color:var(--text);line-height:1">{{ number_format($avgRatingTrainer, 1) }}</div>
+                    <div style="font-size:52px;font-weight:800;color:var(--text);line-height:1"><?php echo e(number_format($avgRatingTrainer, 1)); ?></div>
                     <div style="color:#f59e0b;font-size:22px;margin:6px 0">
-                        @for($i = 1; $i <= 5; $i++)
-                            {{ $i <= round($avgRatingTrainer) ? '★' : '☆' }}
-                        @endfor
+                        <?php for($i = 1; $i <= 5; $i++): ?>
+                            <?php echo e($i <= round($avgRatingTrainer) ? '★' : '☆'); ?>
+
+                        <?php endfor; ?>
                     </div>
-                    <div style="font-size:12px;color:var(--text-muted)">{{ $ulasanTrainer->count() }} ulasan</div>
+                    <div style="font-size:12px;color:var(--text-muted)"><?php echo e($ulasanTrainer->count()); ?> ulasan</div>
                 </div>
                 <div style="flex:1;min-width:200px">
-                    @for($star = 5; $star >= 1; $star--)
-                    @php
+                    <?php for($star = 5; $star >= 1; $star--): ?>
+                    <?php
                         $count = $ulasanTrainer->where('rating', $star)->count();
                         $pct   = $ulasanTrainer->count() ? round($count / $ulasanTrainer->count() * 100) : 0;
-                    @endphp
+                    ?>
                     <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-                        <span style="font-size:12px;color:var(--text-muted);width:14px;text-align:right">{{ $star }}</span>
+                        <span style="font-size:12px;color:var(--text-muted);width:14px;text-align:right"><?php echo e($star); ?></span>
                         <span style="color:#f59e0b;font-size:13px">★</span>
                         <div style="flex:1;height:8px;background:var(--surface2);border-radius:20px;overflow:hidden">
-                            <div style="height:100%;width:{{ $pct }}%;background:#f59e0b;border-radius:20px;transition:width .5s"></div>
+                            <div style="height:100%;width:<?php echo e($pct); ?>%;background:#f59e0b;border-radius:20px;transition:width .5s"></div>
                         </div>
-                        <span style="font-size:11px;color:var(--text-muted);width:28px">{{ $count }}</span>
+                        <span style="font-size:11px;color:var(--text-muted);width:28px"><?php echo e($count); ?></span>
                     </div>
-                    @endfor
+                    <?php endfor; ?>
                 </div>
             </div>
 
-            {{-- Ulasan List --}}
+            
             <div style="display:flex;flex-direction:column;gap:12px">
-                @foreach($ulasanTrainer as $ulasan)
+                <?php $__currentLoopData = $ulasanTrainer; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ulasan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow)">
                     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px">
                         <div style="display:flex;align-items:center;gap:10px">
                             <div style="width:36px;height:36px;border-radius:10px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--accent);flex-shrink:0">
-                                {{ strtoupper(substr($ulasan->user?->name ?? 'A', 0, 2)) }}
+                                <?php echo e(strtoupper(substr($ulasan->user?->name ?? 'A', 0, 2))); ?>
+
                             </div>
                             <div>
-                                <div style="font-size:13px;font-weight:600;color:var(--text)">{{ $ulasan->user?->name ?? 'Anonim' }}</div>
-                                <div style="font-size:11px;color:var(--text-muted)">{{ \Carbon\Carbon::parse($ulasan->created_at)->translatedFormat('d M Y') }}</div>
+                                <div style="font-size:13px;font-weight:600;color:var(--text)"><?php echo e($ulasan->user?->name ?? 'Anonim'); ?></div>
+                                <div style="font-size:11px;color:var(--text-muted)"><?php echo e(\Carbon\Carbon::parse($ulasan->created_at)->translatedFormat('d M Y')); ?></div>
                             </div>
                         </div>
                         <div style="background:var(--surface2);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;color:#f59e0b;border:1px solid #fcd34d66;flex-shrink:0">
-                            ★ {{ $ulasan->rating }}.0
+                            ★ <?php echo e($ulasan->rating); ?>.0
                         </div>
                     </div>
 
                     <div style="color:#f59e0b;font-size:14px;letter-spacing:1px;margin-bottom:8px">
-                        @for($i = 1; $i <= 5; $i++){{ $i <= $ulasan->rating ? '★' : '☆' }}@endfor
+                        <?php for($i = 1; $i <= 5; $i++): ?><?php echo e($i <= $ulasan->rating ? '★' : '☆'); ?><?php endfor; ?>
                     </div>
 
                     <div style="background:var(--surface2);border-radius:10px;padding:12px 14px;border-left:3px solid var(--accent)">
-                        @if($ulasan->komentar && trim($ulasan->komentar) !== '')
+                        <?php if($ulasan->komentar && trim($ulasan->komentar) !== ''): ?>
                             <div style="font-size:13px;color:var(--text);line-height:1.7;font-style:italic">
-                                "{{ $ulasan->komentar }}"
+                                "<?php echo e($ulasan->komentar); ?>"
                             </div>
-                        @else
+                        <?php else: ?>
                             <div style="font-size:12px;color:var(--text-muted);font-style:italic;display:flex;align-items:center;gap:6px">
                                 <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                                 Tidak ada komentar tertulis dari peserta ini.
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
-        @endif
+        <?php endif; ?>
     </div>
 
-    @if($errors->any())
+    <?php if($errors->any()): ?>
         <div class="alert alert-error">
             <ul style="margin:0;padding-left:16px">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
+                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <li><?php echo e($error); ?></li>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </ul>
         </div>
-    @endif
-        {{-- ============ PROFIL ============ --}}
+    <?php endif; ?>
+        
         <div class="page-section" id="page-profil">
-            @if(session('success'))<div class="alert alert-success">✅ {{ session('success') }}</div>@endif
+            <?php if(session('success')): ?><div class="alert alert-success">✅ <?php echo e(session('success')); ?></div><?php endif; ?>
             <div class="profile-hero">
             <div class="profile-avatar-xl">
-            @php $fotoHero = $trainer?->foto ?? null; @endphp
-    @if($fotoHero)
-        <img src="{{ asset('storage/' . $fotoHero) }}" alt="{{ auth()->user()->name }}">
-    @else
-        {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-    @endif
+            <?php $fotoHero = $trainer?->foto ?? null; ?>
+    <?php if($fotoHero): ?>
+        <img src="<?php echo e(asset('storage/' . $fotoHero)); ?>" alt="<?php echo e(auth()->user()->name); ?>">
+    <?php else: ?>
+        <?php echo e(strtoupper(substr(auth()->user()->name, 0, 2))); ?>
+
+    <?php endif; ?>
     </div>
                 <div class="profile-hero-info">
-                    <h2>{{ auth()->user()->name }}</h2>
-                    <p>Trainer · Bergabung sejak {{ \Carbon\Carbon::parse(auth()->user()->created_at)->translatedFormat('F Y') }}</p>
+                    <h2><?php echo e(auth()->user()->name); ?></h2>
+                    <p>Trainer · Bergabung sejak <?php echo e(\Carbon\Carbon::parse(auth()->user()->created_at)->translatedFormat('F Y')); ?></p>
                 </div>
                 <button class="btn" style="background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.3);margin-left:auto" onclick="openModal('modal-profil')">Edit Profil</button>
             </div>
@@ -1188,36 +1194,38 @@
         <div class="form-row">
             <div class="form-group">
                 <div class="form-label">Nama Lengkap</div>
-                <div class="form-static">{{ auth()->user()->name }}</div>
+                <div class="form-static"><?php echo e(auth()->user()->name); ?></div>
             </div>
             <div class="form-group">
                 <div class="form-label">Nama & Gelar (Publik)</div>
-                <div class="form-static">{{ $trainer?->academic_degree ?? auth()->user()->name }}</div>
+                <div class="form-static"><?php echo e($trainer?->academic_degree ?? auth()->user()->name); ?></div>
                 <div class="form-hint">Yang tampil di halaman daftar trainer</div>
             </div>
             <div class="form-group">
                 <div class="form-label">Email</div>
-                <div class="form-static">{{ auth()->user()->email }}</div>
+                <div class="form-static"><?php echo e(auth()->user()->email); ?></div>
             </div>
             <div class="form-group">
                 <div class="form-label">No. Telepon / WhatsApp</div>
                 <div class="form-static" style="display:flex;align-items:center;gap:8px">
-                    @if(auth()->user()->phone)
-                        <span style="color:#25d366">✓</span> {{ auth()->user()->phone }}
-                    @else
+                    <?php if(auth()->user()->phone): ?>
+                        <span style="color:#25d366">✓</span> <?php echo e(auth()->user()->phone); ?>
+
+                    <?php else: ?>
                         <span style="color:var(--text-muted);font-style:italic">Belum diisi</span>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="form-group" style="grid-column: 1 / -1">
                 <div class="form-label">Bidang Keahlian Ditampilkan</div>
-                @php
+                <?php
                     $keahlianList = array_values(array_filter(
                         array_map('trim', explode(',', $trainer?->keahlian ?? ''))
                     ));
-                @endphp
+                ?>
                 <div class="form-static">
-                    {{ $trainer?->displayed_bidang ?? ($keahlianList[0] ?? '-') }}
+                    <?php echo e($trainer?->displayed_bidang ?? ($keahlianList[0] ?? '-')); ?>
+
                 </div>
                 <div class="form-hint">Klik "Edit Profil" untuk mengubah.</div>
             </div>
@@ -1225,7 +1233,8 @@
         <div class="form-group">
         <div class="form-label">Bio / Tentang Saya</div>
         <div class="form-static" style="min-height:80px;line-height:1.7">
-            {{ $trainer?->bio ?? 'Belum ada bio.' }}
+            <?php echo e($trainer?->bio ?? 'Belum ada bio.'); ?>
+
         </div>
     </div>
 
@@ -1236,13 +1245,13 @@
         <div class="form-label">Alamat / Lokasi</div>
         <div class="form-static" style="display:flex;align-items:flex-start;gap:10px">
             <span style="font-size:16px;flex-shrink:0;margin-top:1px">📍</span>
-            <span>{{ $trainer?->lokasi ?? '-' }}</span>
+            <span><?php echo e($trainer?->lokasi ?? '-'); ?></span>
         </div>
     </div>
                
     
-    {{-- ============ SOSMED VIEW PROFIL ============ --}}
-@php
+    
+<?php
 $sosmedIcons = [
     'instagram' => '<svg viewBox="0 0 24 24" width="20" height="20"><defs><radialGradient id="ig2" cx="30%" cy="107%" r="150%"><stop offset="0%" stop-color="#ffd879"/><stop offset="40%" stop-color="#fd1d1d"/><stop offset="100%" stop-color="#833ab4"/></radialGradient></defs><rect x="2" y="2" width="20" height="20" rx="6" fill="url(#ig2)"/><circle cx="12" cy="12" r="4.5" stroke="white" stroke-width="1.5" fill="none"/><circle cx="17" cy="7" r="1.2" fill="white"/></svg>',
     'linkedin'  => '<svg viewBox="0 0 24 24" width="20" height="20"><rect width="24" height="24" rx="5" fill="#0077B5"/><path d="M7.5 9.5H5v9h2.5v-9zm-1.25-4a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm3.75 4h2.4v1.24h.04c.33-.63 1.15-1.29 2.37-1.29 2.53 0 3 1.67 3 3.84v4.21H15.3v-3.73c0-.89-.02-2.03-1.24-2.03-1.24 0-1.43.97-1.43 1.97v3.79H10V9.5z" fill="white"/></svg>',
@@ -1271,49 +1280,52 @@ $sosmedCfg2 = [
     'facebook'  => ['label'=>'Facebook',  'color'=>'#1877F2', 'bg'=>'#e8f0fe', 'border'=>'#93c5fd',
         'href'=>fn($v)=>$v, 'display'=>fn($v)=>preg_match('/facebook\.com\/([^\/\?]+)/i',$v,$mx)?$mx[1]:'Facebook Page'],
 ];
-@endphp
+?>
 
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:18px">
-    @foreach($sosmedCfg2 as $key => $cfg)
-        @php $val = $sosmedData2[$key] ?? null; @endphp
+    <?php $__currentLoopData = $sosmedCfg2; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $cfg): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <?php $val = $sosmedData2[$key] ?? null; ?>
         <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;
-                    border:1.5px solid {{ $val ? $cfg['border'] : 'var(--border)' }};
-                    background:{{ $val ? $cfg['bg'] : 'var(--surface2)' }}">
+                    border:1.5px solid <?php echo e($val ? $cfg['border'] : 'var(--border)'); ?>;
+                    background:<?php echo e($val ? $cfg['bg'] : 'var(--surface2)'); ?>">
             <div style="width:36px;height:36px;border-radius:10px;flex-shrink:0;display:flex;
                         align-items:center;justify-content:center;
-                        background:{{ $val ? '#fff' : 'var(--border)' }};
-                        border:1px solid {{ $val ? $cfg['border'] : 'transparent' }}">
-                {!! $sosmedIcons[$key] !!}
+                        background:<?php echo e($val ? '#fff' : 'var(--border)'); ?>;
+                        border:1px solid <?php echo e($val ? $cfg['border'] : 'transparent'); ?>">
+                <?php echo $sosmedIcons[$key]; ?>
+
             </div>
             <div style="min-width:0;flex:1">
                 <div style="font-size:10px;font-weight:700;color:var(--text-muted);
                             text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">
-                    {{ $cfg['label'] }}
+                    <?php echo e($cfg['label']); ?>
+
                 </div>
-                @if($val)
-                    <a href="{{ $cfg['href']($val) }}" target="_blank"
-                       style="font-size:13px;font-weight:600;color:{{ $cfg['color'] }};
+                <?php if($val): ?>
+                    <a href="<?php echo e($cfg['href']($val)); ?>" target="_blank"
+                       style="font-size:13px;font-weight:600;color:<?php echo e($cfg['color']); ?>;
                               text-decoration:none;display:block;white-space:nowrap;
                               overflow:hidden;text-overflow:ellipsis"
-                       title="{{ $cfg['display']($val) }}">
-                        {{ $cfg['display']($val) }}
+                       title="<?php echo e($cfg['display']($val)); ?>">
+                        <?php echo e($cfg['display']($val)); ?>
+
                     </a>
-                @else
+                <?php else: ?>
                     <span style="font-size:12px;color:#bbb;font-style:italic">Belum diisi</span>
-                @endif
+                <?php endif; ?>
             </div>
-            @if($val)
-                <a href="{{ $cfg['href']($val) }}" target="_blank"
-                   style="flex-shrink:0;color:{{ $cfg['color'] }};opacity:.6;text-decoration:none">
+            <?php if($val): ?>
+                <a href="<?php echo e($cfg['href']($val)); ?>" target="_blank"
+                   style="flex-shrink:0;color:<?php echo e($cfg['color']); ?>;opacity:.6;text-decoration:none">
                     <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
                         <polyline points="15 3 21 3 21 9"/>
                         <line x1="10" y1="14" x2="21" y2="3"/>
                     </svg>
                 </a>
-            @endif
+            <?php endif; ?>
         </div>
-    @endforeach
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 </div>
     </div>
     </div> 
@@ -1322,7 +1334,7 @@ $sosmedCfg2 = [
     </div>
     </main>
 
-    {{-- ============ MODAL KURIKULUM ============ --}}
+    
     <div class="modal-overlay" id="modal-kurikulum">
         <div class="modal">
             <div class="modal-header">
@@ -1332,8 +1344,8 @@ $sosmedCfg2 = [
                 </div>
                 <button class="modal-close" onclick="resetKurikulumModal(); closeModal('modal-kurikulum')">×</button>
             </div>
-            <form id="form-kurikulum" method="POST" enctype="multipart/form-data" action="{{ route('trainer.kurikulum.store') }}">
-                @csrf
+            <form id="form-kurikulum" method="POST" enctype="multipart/form-data" action="<?php echo e(route('trainer.kurikulum.store')); ?>">
+                <?php echo csrf_field(); ?>
                 <input type="hidden" name="tipe" value="kurikulum">
                 <input type="hidden" name="_method" id="kurikulum-method" value="POST">
                 <input type="hidden" name="kurikulum_edit_id" id="kurikulum-edit-id">
@@ -1393,10 +1405,7 @@ $sosmedCfg2 = [
                     </div>
                 </div>
 
-                {{-- 
-                    PENTING: Field alamat SELALU ada di DOM dan SELALU terkirim.
-                    Visibilitas dikontrol via CSS class, bukan display:none pada elemen berisi name=
-                --}}
+                
                 <div class="form-group" id="k-alamat-group">
                     <label class="form-label">Alamat Lokasi</label>
                     <textarea class="form-textarea" name="alamat" id="k-alamat" rows="2"
@@ -1407,7 +1416,7 @@ $sosmedCfg2 = [
                 <div class="form-group">
                     <label class="form-label">No. WhatsApp untuk Pendaftaran <span style="color:var(--accent2)">*</span></label>
                     <input class="form-input" type="text" name="phone" id="k-phone"
-                        value="{{ auth()->user()->phone ?? '' }}"
+                        value="<?php echo e(auth()->user()->phone ?? ''); ?>"
                         placeholder="Contoh: 6281234567890"
                         pattern="^[0-9]{9,15}$"
                         title="Masukkan nomor WhatsApp valid (9–15 digit angka)"
@@ -1437,23 +1446,23 @@ $sosmedCfg2 = [
                         <span style="background:var(--accent-light);color:var(--accent);border:1px solid #a7d7c566;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.5px">📐 9 : 16 PORTRAIT</span>
                     </div>
                     <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
-                        {{-- Preview area portrait --}}
+                        
                         <label for="k-gambar" id="k-gambar-area"
                             style="position:relative;width:120px;flex-shrink:0;border:2px dashed #2d6a4f66;border-radius:14px;background:#faf8f5;cursor:pointer;transition:all .2s;overflow:hidden;display:block"
                             onmouseover="this.style.borderColor='var(--accent)';this.style.background='#eef8f1'"
                             onmouseout="this.style.borderColor='#2d6a4f66';this.style.background='#faf8f5'">
-                            {{-- padding-top 177.78% = rasio 9:16 --}}
+                            
                             <div style="padding-top:177.78%"></div>
-                            {{-- Placeholder --}}
+                            
                             <div id="k-gambar-placeholder"
                                 style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px;text-align:center">
                                 <div style="font-size:28px">🖼️</div>
                                 <div style="font-size:11px;color:var(--text-muted);line-height:1.5">Upload<br><span style="color:var(--accent);font-weight:700">PNG / JPG</span></div>
                             </div>
-                            {{-- Preview gambar --}}
+                            
                             <img id="k-gambar-preview" src="" alt="preview"
                                 style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;z-index:1">
-                            {{-- Overlay ganti --}}
+                            
                             <div id="k-gambar-overlay"
                                 style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:12px;z-index:2;flex-direction:column;align-items:center;justify-content:center;gap:4px">
                                 <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2">
@@ -1463,7 +1472,7 @@ $sosmedCfg2 = [
                                 <span style="font-size:10px;font-weight:700;color:#fff">Ganti</span>
                             </div>
                         </label>
-                        {{-- Info & feedback --}}
+                        
                         <div style="flex:1;min-width:150px">
                             <div style="background:#fffbea;border:1px solid #fcd34d66;border-radius:10px;padding:11px 13px;font-size:12px;color:#92400e;line-height:1.8;margin-bottom:8px">
                                 <strong>📐 Wajib rasio 9:16 (portrait)</strong><br>
@@ -1544,7 +1553,7 @@ $sosmedCfg2 = [
         </div>
     </div>
 
-    {{-- ============ MODAL MODUL ============ --}}
+    
     <div class="modal-overlay" id="modal-modul">
         <div class="modal" style="width:560px">
             <div class="modal-header">
@@ -1555,8 +1564,8 @@ $sosmedCfg2 = [
                 <button class="modal-close" onclick="resetModulModal(); closeModal('modal-modul')">×</button>
             </div>
 
-            @php $adaKurikulum = isset($pelatihanList) && $pelatihanList->where('tipe','kurikulum')->count() > 0; @endphp
-            @if(!$adaKurikulum)
+            <?php $adaKurikulum = isset($pelatihanList) && $pelatihanList->where('tipe','kurikulum')->count() > 0; ?>
+            <?php if(!$adaKurikulum): ?>
             <div class="notice-box">
                 <div style="font-size:22px;flex-shrink:0">⚠️</div>
                 <div class="notice-text">
@@ -1565,75 +1574,75 @@ $sosmedCfg2 = [
                         style="color:var(--accent);font-weight:700">Buat kurikulum sekarang →</a>
                 </div>
             </div>
-            @endif
+            <?php endif; ?>
 
             <form id="form-modul" method="POST" enctype="multipart/form-data"
-                action="{{ route('trainer.modul.store') }}">
-                @csrf
+                action="<?php echo e(route('trainer.modul.store')); ?>">
+                <?php echo csrf_field(); ?>
                 <input type="hidden" name="_method"      id="modul-method"   value="POST">
                 <input type="hidden" name="modul_edit_id" id="modul-edit-id">
                 <input type="hidden" name="tipe"          value="modul">
-                {{-- field ini diisi JS saat edit agar PDF lama dipertahankan --}}
+                
                 <input type="hidden" name="materi_pdf_existing" id="m-materi-pdf-existing">
 
-                {{-- Kurikulum & Urutan --}}
+                
                 <div style="display:grid;grid-template-columns:1fr 120px;gap:14px">
                     <div class="form-group">
                         <label class="form-label">Kurikulum <span style="color:var(--accent2)">*</span></label>
                         <select class="form-select" name="kurikulum_id" id="m-kurikulum-id"
-                                required {{ !$adaKurikulum ? 'disabled' : '' }}>
+                                required <?php echo e(!$adaKurikulum ? 'disabled' : ''); ?>>
                             <option value="">-- Pilih kurikulum --</option>
-                            @if(isset($pelatihanList))
-                                @foreach($pelatihanList->where('tipe','kurikulum') as $k)
-                                    <option value="{{ $k->id }}">{{ $k->judul }}</option>
-                                @endforeach
-                            @endif
+                            <?php if(isset($pelatihanList)): ?>
+                                <?php $__currentLoopData = $pelatihanList->where('tipe','kurikulum'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $k): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($k->id); ?>"><?php echo e($k->judul); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            <?php endif; ?>
                         </select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Urutan <span style="color:var(--accent2)">*</span></label>
                         <input class="form-input" type="number" name="urutan" id="m-urutan"
-                            placeholder="1" min="1" required {{ !$adaKurikulum ? 'disabled' : '' }}>
+                            placeholder="1" min="1" required <?php echo e(!$adaKurikulum ? 'disabled' : ''); ?>>
                     </div>
                 </div>
 
-                {{-- Judul --}}
+                
                 <div class="form-group">
                     <label class="form-label">Judul Modul <span style="color:var(--accent2)">*</span></label>
                     <input class="form-input" type="text" name="judul" id="m-judul"
                         placeholder="Contoh: Pengenalan Dunia UMKM"
-                        required {{ !$adaKurikulum ? 'disabled' : '' }}>
+                        required <?php echo e(!$adaKurikulum ? 'disabled' : ''); ?>>
                 </div>
 
-                {{-- Deskripsi --}}
+                
                 <div class="form-group">
                 <label class="form-label">Deskripsi Singkat <span style="color:var(--accent2)">*</span></label>
     <textarea class="form-textarea" name="deskripsi" id="m-deskripsi"
             rows="2" maxlength="300"
             placeholder="Ringkasan isi modul..."
             required
-            {{ !$adaKurikulum ? 'disabled' : '' }}></textarea>
+            <?php echo e(!$adaKurikulum ? 'disabled' : ''); ?>></textarea>
                 </div>
 
-                {{-- ═══ JADWAL AKSES ═══ --}}
+                
                 <hr class="form-divider">
                 <div class="form-section-title">⏰ Jadwal Akses Modul</div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
                     <div class="form-group">
                         <label class="form-label">Akses Dibuka</label>
                         <input class="form-input" type="datetime-local" name="akses_mulai" id="m-akses-mulai"
-                            {{ !$adaKurikulum ? 'disabled' : '' }}>
+                            <?php echo e(!$adaKurikulum ? 'disabled' : ''); ?>>
                         <div class="form-hint">Kosongkan = langsung bisa diakses</div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Akses Ditutup</label>
                         <input class="form-input" type="datetime-local" name="akses_selesai" id="m-akses-selesai"
-                            {{ !$adaKurikulum ? 'disabled' : '' }}>
+                            <?php echo e(!$adaKurikulum ? 'disabled' : ''); ?>>
                         <div class="form-hint">Kosongkan = tidak ada batas waktu</div>
                     </div>
                 </div>
 
-                {{-- ═══ MATERI ═══ --}}
+                
                 <hr class="form-divider">
                 <div class="form-section-title" style="display:flex;align-items:center;gap:8px">
                     📎 Materi Modul
@@ -1642,11 +1651,11 @@ $sosmedCfg2 = [
                     </span>
                 </div>
 
-                {{-- Pilih tipe --}}
+                
                 <div class="form-group">
                     <label class="form-label">Jenis Materi</label>
                     <div style="display:flex;gap:10px">
-                        {{-- Tidak ada --}}
+                        
                         <label style="flex:1;cursor:pointer">
                             <input type="radio" name="materi_type" value=""
                                 id="m-materi-none" checked
@@ -1657,7 +1666,7 @@ $sosmedCfg2 = [
                                 <div style="font-size:12px;font-weight:600;margin-top:4px">Tidak ada</div>
                             </div>
                         </label>
-                        {{-- PDF --}}
+                        
                         <label style="flex:1;cursor:pointer">
                             <input type="radio" name="materi_type" value="pdf"
                                 id="m-materi-pdf-radio"
@@ -1668,7 +1677,7 @@ $sosmedCfg2 = [
                                 <div style="font-size:12px;font-weight:600;margin-top:4px">Upload PDF</div>
                             </div>
                         </label>
-                        {{-- YouTube --}}
+                        
                         <label style="flex:1;cursor:pointer">
                             <input type="radio" name="materi_type" value="youtube"
                                 id="m-materi-yt-radio"
@@ -1682,7 +1691,7 @@ $sosmedCfg2 = [
                     </div>
                 </div>
 
-                {{-- Panel PDF --}}
+                
                 <div id="panel-pdf" style="display:none">
                     <div class="form-group" style="margin-bottom:0">
                         <label class="form-label">File PDF <span style="color:var(--accent2)">*</span></label>
@@ -1716,7 +1725,7 @@ $sosmedCfg2 = [
                         <input type="file" id="m-materi-pdf-file" name="materi_pdf"
                             accept=".pdf" style="display:none"
                             onchange="onPdfChange(this)">
-                        {{-- Preview PDF existing (saat edit) --}}
+                        
                         <div id="pdf-existing-info" style="display:none;margin-top:8px;
                             padding:10px 14px;background:var(--accent-light);
                             border:1px solid #a7d7c566;border-radius:10px;
@@ -1734,7 +1743,7 @@ $sosmedCfg2 = [
                     </div>
                 </div>
 
-                {{-- Panel YouTube --}}
+                
                 <div id="panel-youtube" style="display:none">
                     <div class="form-group" style="margin-bottom:0">
                         <label class="form-label">URL Video YouTube <span style="color:var(--accent2)">*</span></label>
@@ -1742,7 +1751,7 @@ $sosmedCfg2 = [
                             placeholder="https://www.youtube.com/watch?v=..."
                             oninput="updateYoutubePreview(this.value)">
                         <div class="form-hint">Paste URL video YouTube (bisa video publik maupun unlisted)</div>
-                        {{-- Preview thumbnail --}}
+                        
                         <div id="yt-preview-wrap"
                             style="display:none;margin-top:10px;border-radius:12px;overflow:hidden;
                                     border:1px solid var(--border);position:relative">
@@ -1776,8 +1785,8 @@ $sosmedCfg2 = [
                     </div>
                 </div>
 
-                {{-- Preview modul --}}
-                @if($adaKurikulum)
+                
+                <?php if($adaKurikulum): ?>
                 <div style="background:var(--surface2);border:1px solid var(--border);
                             border-radius:12px;padding:14px 16px;margin-top:18px">
                     <div style="font-size:11px;font-weight:700;color:var(--text-muted);
@@ -1808,14 +1817,15 @@ $sosmedCfg2 = [
                         </div>
                     </div>
                 </div>
-                @endif
+                <?php endif; ?>
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-ghost"
                             onclick="resetModulModal(); closeModal('modal-modul')">Batal</button>
                     <button type="submit" class="btn btn-primary" id="modul-submit-btn"
-                            {{ !$adaKurikulum ? 'disabled' : '' }}
-                            style="{{ !$adaKurikulum ? 'opacity:.5;cursor:not-allowed' : '' }}">
+                            <?php echo e(!$adaKurikulum ? 'disabled' : ''); ?>
+
+                            style="<?php echo e(!$adaKurikulum ? 'opacity:.5;cursor:not-allowed' : ''); ?>">
                         <span id="modul-submit-text">Simpan Modul</span>
                     </button>
                 </div>
@@ -1823,15 +1833,15 @@ $sosmedCfg2 = [
         </div>
     </div>
 
-    {{-- ============ MODAL EVENT ============ --}}
+    
     <div class="modal-overlay" id="modal-event">
         <div class="modal">
             <div class="modal-header">
                 <div class="modal-title" id="modal-event-title">Tambah Event</div>
                 <button class="modal-close" onclick="resetEventModal(); closeModal('modal-event')">×</button>
             </div>
-            <form id="form-event" method="POST" enctype="multipart/form-data" action="{{ route('trainer.event.store') }}">
-                @csrf
+            <form id="form-event" method="POST" enctype="multipart/form-data" action="<?php echo e(route('trainer.event.store')); ?>">
+                <?php echo csrf_field(); ?>
                 <input type="hidden" name="_method" id="event-method" value="POST">
                 <input type="hidden" name="event_id" id="event-id">
                 <div class="form-group">
@@ -1871,7 +1881,7 @@ $sosmedCfg2 = [
                 </div>
                 <div class="form-group">
                     <label class="form-label">No. WhatsApp</label>
-                    <input class="form-input" type="text" name="phone" id="event-phone" value="{{ auth()->user()->phone ?? '' }}" placeholder="Contoh: 6281234567890">
+                    <input class="form-input" type="text" name="phone" id="event-phone" value="<?php echo e(auth()->user()->phone ?? ''); ?>" placeholder="Contoh: 6281234567890">
                     <div class="form-hint">Otomatis diisi dari profil. Ubah jika ingin nomor berbeda untuk event ini.</div>
                 </div>
                 <div class="form-group">
@@ -1896,41 +1906,41 @@ $sosmedCfg2 = [
         </div>
     </div>
 
-    {{-- ============ MODAL PROFIL ============ --}}
+    
     <div class="modal-overlay" id="modal-profil">
         <div class="modal">
             <div class="modal-header">
                 <div class="modal-title">Edit Profil</div>
                 <button class="modal-close" onclick="closeModal('modal-profil')">×</button>
             </div>
-            <form method="POST" action="{{ route('trainer.profil.update') }}" enctype="multipart/form-data" autocomplete="off">
-                @csrf @method('PUT')
+            <form method="POST" action="<?php echo e(route('trainer.profil.update')); ?>" enctype="multipart/form-data" autocomplete="off">
+                <?php echo csrf_field(); ?> <?php echo method_field('PUT'); ?>
                 <div class="form-row">
         <div class="form-group">
             <label class="form-label">Nama Lengkap *</label>
-            <input class="form-input" type="text" name="name" value="{{ auth()->user()->name }}" required>
+            <input class="form-input" type="text" name="name" value="<?php echo e(auth()->user()->name); ?>" required>
         </div>
         <div class="form-group">
             <label class="form-label">Nama Lengkap & Gelar Akademik</label>
             <input class="form-input" type="text" name="academic_degree"
-                value="{{ $trainer->academic_degree ?? auth()->user()->name }}"
-                placeholder="Contoh: {{ auth()->user()->name }}, S.E., M.M.">
+                value="<?php echo e($trainer->academic_degree ?? auth()->user()->name); ?>"
+                placeholder="Contoh: <?php echo e(auth()->user()->name); ?>, S.E., M.M.">
             <div class="form-hint">Yang tampil di halaman publik trainer</div>
         </div>
         <div class="form-group">
             <label class="form-label">Email *</label>
-            <input class="form-input" type="email" name="email" value="{{ auth()->user()->email }}" required>
+            <input class="form-input" type="email" name="email" value="<?php echo e(auth()->user()->email); ?>" required>
         </div>
         <div class="form-group">
             <label class="form-label">No. Telepon</label>
-            <input class="form-input" type="text" name="phone" value="{{ auth()->user()->phone ?? '' }}">
+            <input class="form-input" type="text" name="phone" value="<?php echo e(auth()->user()->phone ?? ''); ?>">
         </div>
     </div>
 
-    {{-- Bidang Keahlian --}}
+    
     <div class="form-group">
         <label class="form-label">Bidang Keahlian</label>
-        @php
+        <?php
             $presets = [
                 'Leadership & Manajemen', 'Public Speaking', 'Digital Marketing',
                 'Keuangan & Akuntansi', 'SDM & HRD', 'Kewirausahaan',
@@ -1940,28 +1950,30 @@ $sosmedCfg2 = [
             ];
             $savedKeahlian = $trainer->keahlian ?? '';
             $savedArr = $savedKeahlian ? array_map('trim', explode(',', $savedKeahlian)) : [];
-        @endphp
+        ?>
         <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px" id="profil-chips">
-            @foreach($presets as $preset)
+            <?php $__currentLoopData = $presets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $preset): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <button type="button"
                     class="profil-chip"
                     onclick="toggleProfilChip(this)"
-                    style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;border:1.5px solid {{ in_array($preset, $savedArr) ? 'var(--accent)' : '#d1d5db' }};background:{{ in_array($preset, $savedArr) ? 'var(--accent)' : '#f9fafb' }};color:{{ in_array($preset, $savedArr) ? '#fff' : '#4b5563' }};cursor:pointer;font-family:inherit;transition:all .15s">
-                    {{ $preset }}
+                    style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;border:1.5px solid <?php echo e(in_array($preset, $savedArr) ? 'var(--accent)' : '#d1d5db'); ?>;background:<?php echo e(in_array($preset, $savedArr) ? 'var(--accent)' : '#f9fafb'); ?>;color:<?php echo e(in_array($preset, $savedArr) ? '#fff' : '#4b5563'); ?>;cursor:pointer;font-family:inherit;transition:all .15s">
+                    <?php echo e($preset); ?>
+
                 </button>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
-        {{-- Custom tag yang sudah tersimpan --}}
+        
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px" id="profil-custom-tags">
-            @foreach($savedArr as $item)
-                @if(!in_array($item, $presets) && $item !== '')
+            <?php $__currentLoopData = $savedArr; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php if(!in_array($item, $presets) && $item !== ''): ?>
                     <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;background:#ede9fe;color:#5b21b6;border:1.5px solid #c4b5fd">
-                        {{ $item }}
-                        <button type="button" onclick="removeProfilTag(this, '{{ $item }}')"
+                        <?php echo e($item); ?>
+
+                        <button type="button" onclick="removeProfilTag(this, '<?php echo e($item); ?>')"
                             style="background:none;border:none;cursor:pointer;font-size:15px;line-height:1;color:inherit;padding:0;opacity:.7">×</button>
                     </span>
-                @endif
-            @endforeach
+                <?php endif; ?>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
         <div style="display:flex;gap:8px;margin-bottom:6px">
             <input type="text" id="profil-custom-input" placeholder="Tambah keahlian lain..."
@@ -1972,22 +1984,23 @@ $sosmedCfg2 = [
                 + Tambah
             </button>
         </div>
-        <input type="hidden" name="bidang_keahlian" id="profil-keahlian-value" value="{{ $savedKeahlian }}">
+        <input type="hidden" name="bidang_keahlian" id="profil-keahlian-value" value="<?php echo e($savedKeahlian); ?>">
     <div style="font-size:11px;color:var(--text-muted)" id="profil-keahlian-counter">
-        <span id="profil-keahlian-count">{{ count($savedArr) }}</span> bidang dipilih
+        <span id="profil-keahlian-count"><?php echo e(count($savedArr)); ?></span> bidang dipilih
     </div>
 
-    {{-- Dropdown bidang yang ditampilkan --}}
-    {{-- DENGAN ini: --}}
+    
+    
     <div class="form-group" style="margin-top:14px;margin-bottom:0">
         <label class="form-label">Bidang yang Ditampilkan di Publik</label>
         <select name="displayed_bidang" id="profil-displayed-bidang" class="form-select">
-            @foreach($savedArr as $item)
-                <option value="{{ $item }}"
-                    {{ ($trainer->displayed_bidang === $item) ? 'selected' : '' }}>
-                    {{ $item }}
+            <?php $__currentLoopData = $savedArr; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <option value="<?php echo e($item); ?>"
+                    <?php echo e(($trainer->displayed_bidang === $item) ? 'selected' : ''); ?>>
+                    <?php echo e($item); ?>
+
                 </option>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </select>
         <div class="form-hint">Bidang ini yang muncul di kartu trainer halaman publik.</div>
     </div>
@@ -1995,21 +2008,21 @@ $sosmedCfg2 = [
 
     <div class="form-group">
         <label class="form-label">Bio</label>
-        <textarea class="form-textarea" name="bio">{{ $trainer->bio ?? '' }}</textarea>
+        <textarea class="form-textarea" name="bio"><?php echo e($trainer->bio ?? ''); ?></textarea>
     </div>
 
     <hr class="form-divider">
 <div class="form-section-title">Lokasi & Media Sosial</div>
 
-{{-- Alamat --}}
+
 <div class="form-group">
     <label class="form-label">Alamat / Lokasi</label>
     <input class="form-input" type="text" name="lokasi"
-        value="{{ $trainer?->lokasi ?? '' }}"
+        value="<?php echo e($trainer?->lokasi ?? ''); ?>"
         placeholder="Contoh: Surabaya, Jawa Timur">
 </div>
 
-@php 
+<?php 
     $sosmedData = [];
     if ($trainer && $trainer->sosmed) {
         $raw = $trainer->getRawOriginal('sosmed');
@@ -2071,10 +2084,10 @@ $sosmedCfg2 = [
             'display' => fn($v) => preg_match('/facebook\.com\/([^\/\?]+)/i', $v, $m) ? $m[1] : 'Facebook Page',
         ],
     ];
-@endphp
+?>
 
-{{-- ============ SOSMED INPUTS di modal edit ============ --}}
-@php
+
+<?php
 $sosmedFields = [
     'instagram' => [
         'label'       => 'Instagram',
@@ -2114,47 +2127,49 @@ if ($trainer && $trainer->sosmed) {
     $decoded = is_string($raw) ? json_decode($raw, true) : $raw;
     $sosmedData = is_array($decoded) ? $decoded : [];
 }
-@endphp
+?>
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
-    @foreach($sosmedFields as $key => $field)
-    @php $val = $sosmedData[$key] ?? ''; @endphp
+    <?php $__currentLoopData = $sosmedFields; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $field): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+    <?php $val = $sosmedData[$key] ?? ''; ?>
     <div class="form-group" style="margin-bottom:0">
         <label class="form-label" style="display:flex;align-items:center;gap:8px">
-            {!! $sosmedIcons[$key] !!}
-            {{ $field['label'] }}
+            <?php echo $sosmedIcons[$key]; ?>
+
+            <?php echo e($field['label']); ?>
+
         </label>
         <div style="position:relative">
-            @if($field['prefix'])
+            <?php if($field['prefix']): ?>
                 <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);
                              font-size:13px;font-weight:600;color:var(--text-muted);
-                             pointer-events:none;z-index:1">{{ $field['prefix'] }}</span>
+                             pointer-events:none;z-index:1"><?php echo e($field['prefix']); ?></span>
                 <input class="form-input" type="text"
-                    name="sosmed[{{ $key }}]"
-                    value="{{ $val }}"
-                    placeholder="{{ $field['placeholder'] }}"
+                    name="sosmed[<?php echo e($key); ?>]"
+                    value="<?php echo e($val); ?>"
+                    placeholder="<?php echo e($field['placeholder']); ?>"
                     style="padding-left:28px">
-            @else
+            <?php else: ?>
                 <input class="form-input" type="text"
-                    name="sosmed[{{ $key }}]"
-                    value="{{ $val }}"
-                    placeholder="{{ $field['placeholder'] }}">
-            @endif
+                    name="sosmed[<?php echo e($key); ?>]"
+                    value="<?php echo e($val); ?>"
+                    placeholder="<?php echo e($field['placeholder']); ?>">
+            <?php endif; ?>
         </div>
-        <div class="form-hint">{{ $field['hint'] }}</div>
+        <div class="form-hint"><?php echo e($field['hint']); ?></div>
     </div>
-    @endforeach
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 </div>
     <div class="form-group">
         <label class="form-label">Foto Profil</label>
         <label class="upload-area" for="profil-foto" id="profil-foto-area"
             style="position:relative;overflow:hidden;min-height:110px">
 
-            {{-- Preview foto existing --}}
-            @php $fotoAktif = $trainer?->foto ?? null; @endphp
-            @if($fotoAktif)
+            
+            <?php $fotoAktif = $trainer?->foto ?? null; ?>
+            <?php if($fotoAktif): ?>
                 <img id="profil-foto-preview"
-                    src="{{ asset('storage/' . $fotoAktif) }}"
+                    src="<?php echo e(asset('storage/' . $fotoAktif)); ?>"
                     alt="Foto Profil"
                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;z-index:1">
                 <div id="profil-foto-overlay"
@@ -2167,7 +2182,7 @@ if ($trainer && $trainer->sosmed) {
                     <span style="font-size:12px;font-weight:600;color:#fff">Ganti Foto</span>
                     <div class="upload-fname" id="profil-foto-name" style="color:#fff;z-index:3"></div>
                 </div>
-            @else
+            <?php else: ?>
                 <div id="profil-foto-preview" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;z-index:1"></div>
                 <div id="profil-foto-overlay" style="display:none"></div>
                 <div id="profil-foto-placeholder" style="display:flex;flex-direction:column;align-items:center;gap:8px">
@@ -2175,7 +2190,7 @@ if ($trainer && $trainer->sosmed) {
                     <div class="upload-text">Klik untuk upload foto atau <span>drag & drop</span></div>
                 </div>
                 <div class="upload-fname" id="profil-foto-name"></div>
-            @endif
+            <?php endif; ?>
 
         </label>
         <input type="file" id="profil-foto" name="foto" accept="image/*"
@@ -2224,7 +2239,7 @@ if ($trainer && $trainer->sosmed) {
         </div>
     </div>
 
-    {{-- ============ MODAL DAFTAR ABSENSI ============ --}}
+    
     <div class="modal-overlay" id="modal-absensi-daftar">
         <div class="modal" style="width:700px;max-width:95vw">
             <div class="modal-header">
@@ -2270,7 +2285,7 @@ if ($trainer && $trainer->sosmed) {
         </div>
     </div>
 
-    {{-- ============ MODAL DAFTAR PESERTA ============ --}}
+    
     <div class="modal-overlay" id="modal-peserta-daftar">
         <div class="modal" style="width:700px;max-width:95vw">
             <div class="modal-header">
@@ -2281,7 +2296,7 @@ if ($trainer && $trainer->sosmed) {
                 <button class="modal-close" onclick="closeModal('modal-peserta-daftar')">×</button>
             </div>
 
-            {{-- Summary badge --}}
+            
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
                 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
                     <span style="font-size:13px;color:var(--text-muted)">Total:</span>
@@ -2311,7 +2326,7 @@ if ($trainer && $trainer->sosmed) {
                 </div>
             </div>
 
-            {{-- Filter tab --}}
+            
             <div style="display:flex;gap:6px;margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:10px">
                 <button onclick="filterPeserta('semua')" id="tab-peserta-semua"
                     style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid #1d4ed8;background:#1d4ed8;color:#fff;cursor:pointer;font-family:inherit;transition:all .15s">
@@ -2366,8 +2381,8 @@ if ($trainer && $trainer->sosmed) {
         </div>
     </div>
 
-    <form id="form-hapus" method="POST" style="display:none">@csrf @method('DELETE')</form>
-    <form id="form-hapus-event" method="POST" style="display:none">@csrf @method('DELETE')</form>
+    <form id="form-hapus" method="POST" style="display:none"><?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?></form>
+    <form id="form-hapus-event" method="POST" style="display:none"><?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?></form>
 
     <script>
     /* ================================================================
@@ -2648,9 +2663,9 @@ if ($trainer && $trainer->sosmed) {
 
             
         }
-        @if($errors->any())
+        <?php if($errors->any()): ?>
         showPage('profil');
-    @endif
+    <?php endif; ?>
     });
 
     /* ================================================================
@@ -2890,7 +2905,7 @@ if ($trainer && $trainer->sosmed) {
     function resetEventModal() {
         document.getElementById('modal-event-title').textContent = 'Tambah Event';
         document.getElementById('event-method').value = 'POST';
-        document.getElementById('form-event').action  = '{{ route("trainer.event.store") }}';
+        document.getElementById('form-event').action  = '<?php echo e(route("trainer.event.store")); ?>';
         document.getElementById('form-event').reset();
         resetPreviewEvent();
     }
@@ -2925,11 +2940,11 @@ if ($trainer && $trainer->sosmed) {
         document.getElementById('modal-kurikulum-subtitle').textContent   = 'Isi detail kurikulum, modul dapat ditambah setelah kurikulum tersimpan';
         document.getElementById('kurikulum-submit-text').textContent      = 'Kirim untuk Disetujui';
         document.getElementById('kurikulum-method').value = 'POST';
-        document.getElementById('form-kurikulum').action  = '{{ route("trainer.kurikulum.store") }}';
+        document.getElementById('form-kurikulum').action  = '<?php echo e(route("trainer.kurikulum.store")); ?>';
         document.getElementById('form-kurikulum').reset();
         resetKurikulumGambarPreview();
         document.getElementById('sertifikat-tidak').checked  = true;
-        document.getElementById('k-phone').value = '{{ auth()->user()->phone ?? "" }}';
+        document.getElementById('k-phone').value = '<?php echo e(auth()->user()->phone ?? ""); ?>';
         document.getElementById('k-absensi-aktif').checked = false;
         document.getElementById('k-alamat').value = '';
         document.getElementById('k-biaya').value = '';  
@@ -3103,7 +3118,7 @@ if ($trainer && $trainer->sosmed) {
         document.getElementById('modal-modul-subtitle').textContent   = 'Modul tampil sebagai daftar bernomor di halaman kurikulum';
         document.getElementById('modul-submit-text').textContent      = 'Simpan Modul';
         document.getElementById('modul-method').value                 = 'POST';
-        document.getElementById('form-modul').action                  = '{{ route("trainer.modul.store") }}';
+        document.getElementById('form-modul').action                  = '<?php echo e(route("trainer.modul.store")); ?>';
         document.getElementById('form-modul').reset();
         document.getElementById('m-materi-pdf-existing').value        = '';
         // Reset materi
@@ -3143,10 +3158,10 @@ if ($trainer && $trainer->sosmed) {
     }
 
     function openModalModul() {
-        @if(!$adaKurikulum)
+        <?php if(!$adaKurikulum): ?>
             if (!confirm('Kamu belum punya kurikulum. Buat kurikulum terlebih dahulu?')) return;
             openModal('modal-kurikulum'); return;
-        @endif
+        <?php endif; ?>
         resetModulModal();
         openModal('modal-modul');
     }
@@ -3220,9 +3235,9 @@ if ($trainer && $trainer->sosmed) {
         if (['beranda', 'program', 'event', 'profil'].includes(hash)) {
             showPage(hash);
         } else {
-            @if(session('active_page'))
-                showPage('{{ session("active_page") }}');
-            @endif
+            <?php if(session('active_page')): ?>
+                showPage('<?php echo e(session("active_page")); ?>');
+            <?php endif; ?>
         }
     });
 
@@ -3398,4 +3413,4 @@ if ($trainer && $trainer->sosmed) {
     }
     </script>
     </body>
-    </html>
+    </html><?php /**PATH C:\laragon\www\Kaji-indo-main\resources\views/trainer/dashboard.blade.php ENDPATH**/ ?>

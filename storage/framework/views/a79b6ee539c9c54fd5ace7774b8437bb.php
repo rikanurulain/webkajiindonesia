@@ -1,10 +1,10 @@
-{{-- resources/views/mentor/dashboard.blade.php --}}
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="csrf-token" content="{{ csrf_token() }}">
+<meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 <title>Dashboard Mentor – KAJI Indonesia</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
 <style>
@@ -233,9 +233,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 </head>
 <body>
 
-{{-- ============ HELPER: parse spesialisasi ============ --}}
-{{-- Dipakai di beberapa tempat, definisikan sekali di sini --}}
-@php
+
+
+<?php
 $spesArr = [];
 if ($mentor && !empty($mentor->spesialisasi)) {
     $raw = $mentor->spesialisasi;
@@ -248,10 +248,10 @@ if ($mentor && !empty($mentor->spesialisasi)) {
             : array_values(array_filter(array_map('trim', explode(',', $raw))));
     }
 }
-@endphp
+?>
 
 
-{{-- ============ SIDEBAR ============ --}}
+
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
         <div class="brand-box">
@@ -276,16 +276,16 @@ if ($mentor && !empty($mentor->spesialisasi)) {
         <div class="nav-item" onclick="showPage('umkm')">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             UMKM Binaan
-            @if($totalUmkm > 0)
-                <span style="margin-left:auto;background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid #a7d7c566">{{ $totalUmkm }}</span>
-            @endif
+            <?php if($totalUmkm > 0): ?>
+                <span style="margin-left:auto;background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid #a7d7c566"><?php echo e($totalUmkm); ?></span>
+            <?php endif; ?>
         </div>
         <div class="nav-item" onclick="showPage('ulasan')">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
             Ulasan
-            @if($totalUlasan > 0)
-                <span style="margin-left:auto;background:#e3f0fa;color:var(--accent3);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid #bdd5ea">{{ $totalUlasan }}</span>
-            @endif
+            <?php if($totalUlasan > 0): ?>
+                <span style="margin-left:auto;background:#e3f0fa;color:var(--accent3);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid #bdd5ea"><?php echo e($totalUlasan); ?></span>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -295,24 +295,25 @@ if ($mentor && !empty($mentor->spesialisasi)) {
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             Profil Saya
         </div>
-        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="nav-item">
+        <a href="<?php echo e(route('logout')); ?>" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="nav-item">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
             Keluar
         </a>
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display:none">@csrf</form>
+        <form id="logout-form" action="<?php echo e(route('logout')); ?>" method="POST" style="display:none"><?php echo csrf_field(); ?></form>
     </div>
 
     <div class="sidebar-user">
         <div class="user-card" onclick="showPage('profil')">
             <div class="user-avatar">
-                @if($mentor?->foto)
-                    <img src="{{ asset('storage/' . $mentor->foto) }}" alt="{{ auth()->user()->name }}">
-                @else
-                    {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-                @endif
+                <?php if($mentor?->foto): ?>
+                    <img src="<?php echo e(asset('storage/' . $mentor->foto)); ?>" alt="<?php echo e(auth()->user()->name); ?>">
+                <?php else: ?>
+                    <?php echo e(strtoupper(substr(auth()->user()->name, 0, 2))); ?>
+
+                <?php endif; ?>
             </div>
             <div>
-                <div class="user-name">{{ auth()->user()->name }}</div>
+                <div class="user-name"><?php echo e(auth()->user()->name); ?></div>
                 <div class="user-role">Mentor</div>
             </div>
         </div>
@@ -321,7 +322,7 @@ if ($mentor && !empty($mentor->spesialisasi)) {
 
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 
-{{-- ============ MAIN ============ --}}
+
 <main class="main">
 <header class="topbar">
     <button class="hamburger" onclick="toggleSidebar()" aria-label="Toggle Menu">
@@ -329,8 +330,8 @@ if ($mentor && !empty($mentor->spesialisasi)) {
     </button>
     <div class="topbar-title" id="page-title">Dashboard Mentor</div>
     <div style="display:flex;gap:10px;align-items:center">
-        <span style="font-size:13px;color:var(--text-muted)">Halo, {{ auth()->user()->name }} 👋</span>
-        <a href="{{ url('/') }}" target="_blank" class="btn btn-ghost" style="font-size:13px;padding:8px 16px">
+        <span style="font-size:13px;color:var(--text-muted)">Halo, <?php echo e(auth()->user()->name); ?> 👋</span>
+        <a href="<?php echo e(url('/')); ?>" target="_blank" class="btn btn-ghost" style="font-size:13px;padding:8px 16px">
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
             Lihat Website
         </a>
@@ -339,74 +340,74 @@ if ($mentor && !empty($mentor->spesialisasi)) {
 
 <div class="content">
 
-    {{-- ============ BERANDA ============ --}}
+    
     <div class="page-section active" id="page-beranda">
-        @if(session('success'))<div class="alert alert-success">✅ {{ session('success') }}</div>@endif
-        @if(session('error'))<div class="alert alert-error">⚠️ {{ session('error') }}</div>@endif
+        <?php if(session('success')): ?><div class="alert alert-success">✅ <?php echo e(session('success')); ?></div><?php endif; ?>
+        <?php if(session('error')): ?><div class="alert alert-error">⚠️ <?php echo e(session('error')); ?></div><?php endif; ?>
 
-        {{-- Status banner --}}
-        @if($statusMentor === 'pending')
+        
+        <?php if($statusMentor === 'pending'): ?>
         <div class="status-banner pending">
             <div style="font-size:24px;flex-shrink:0">⏳</div>
             <div class="status-banner-text">
                 <strong>Akun mentor Anda sedang ditinjau.</strong> Admin akan memverifikasi data Anda dalam 1–3 hari kerja. Anda dapat melengkapi profil sambil menunggu.
             </div>
         </div>
-        @elseif($statusMentor === 'approved')
+        <?php elseif($statusMentor === 'approved'): ?>
         <div class="status-banner approved">
             <div style="font-size:24px;flex-shrink:0">✅</div>
             <div class="status-banner-text">
                 <strong>Akun mentor Anda aktif.</strong> Profil Anda sudah tampil di halaman publik dan UMKM dapat memilih Anda sebagai mentor.
             </div>
         </div>
-        @elseif($statusMentor === 'rejected')
+        <?php elseif($statusMentor === 'rejected'): ?>
         <div class="status-banner rejected">
             <div style="font-size:24px;flex-shrink:0">❌</div>
             <div class="status-banner-text">
                 <strong>Pendaftaran ditolak.</strong>
-                @if($mentor?->rejection_reason) Alasan: {{ $mentor->rejection_reason }}. @endif
+                <?php if($mentor?->rejection_reason): ?> Alasan: <?php echo e($mentor->rejection_reason); ?>. <?php endif; ?>
                 Silakan perbarui profil dan hubungi admin.
             </div>
         </div>
-        @endif
+        <?php endif; ?>
 
-        {{-- Stats --}}
+        
         <div class="stats-grid">
             <div class="stat-card green">
                 <div class="stat-icon">🏠</div>
                 <div class="stat-label">UMKM Binaan</div>
-                <div class="stat-value">{{ $totalUmkm }}</div>
+                <div class="stat-value"><?php echo e($totalUmkm); ?></div>
                 <div class="stat-sub">UMKM terhubung</div>
             </div>
             <div class="stat-card teal">
                 <div class="stat-icon">⭐</div>
                 <div class="stat-label">Rating</div>
-                <div class="stat-value">{{ number_format($avgRating, 1) }}</div>
+                <div class="stat-value"><?php echo e(number_format($avgRating, 1)); ?></div>
                 <div class="stat-sub">dari 5.0</div>
             </div>
             <div class="stat-card blue">
                 <div class="stat-icon">💬</div>
                 <div class="stat-label">Total Ulasan</div>
-                <div class="stat-value">{{ $totalUlasan }}</div>
+                <div class="stat-value"><?php echo e($totalUlasan); ?></div>
                 <div class="stat-sub">dari UMKM</div>
             </div>
             <div class="stat-card orange">
                 <div class="stat-icon">📍</div>
                 <div class="stat-label">Lokasi</div>
-                <div class="stat-value" style="font-size:16px;margin-top:6px;line-height:1.4">{{ $mentor?->kabupaten ?? '-' }}</div>
-                <div class="stat-sub">{{ $mentor?->provinsi ?? '' }}</div>
+                <div class="stat-value" style="font-size:16px;margin-top:6px;line-height:1.4"><?php echo e($mentor?->kabupaten ?? '-'); ?></div>
+                <div class="stat-sub"><?php echo e($mentor?->provinsi ?? ''); ?></div>
             </div>
         </div>
 
-        {{-- UMKM Terbaru --}}
+        
         <div class="section-header">
-            <div class="section-title">UMKM Binaan Terbaru <span>{{ $totalUmkm }} total</span></div>
-            @if($totalUmkm > 6)
+            <div class="section-title">UMKM Binaan Terbaru <span><?php echo e($totalUmkm); ?> total</span></div>
+            <?php if($totalUmkm > 6): ?>
             <button class="btn btn-outline btn-sm" onclick="showPage('umkm')">Lihat Semua →</button>
-            @endif
+            <?php endif; ?>
         </div>
 
-        @if($umkmList->isEmpty())
+        <?php if($umkmList->isEmpty()): ?>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)">
             <div class="empty-state">
                 <div class="empty-icon">🏠</div>
@@ -415,79 +416,81 @@ if ($mentor && !empty($mentor->spesialisasi)) {
                 <button class="btn btn-primary" style="margin-top:20px" onclick="showPage('profil')">Lengkapi Profil →</button>
             </div>
         </div>
-        @else
+        <?php else: ?>
         <div class="umkm-grid">
-            @foreach($umkmList->take(6) as $umkm)
-            @php
+            <?php $__currentLoopData = $umkmList->take(6); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $umkm): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <?php
                 $owner = $umkm->user;
                 $initial = strtoupper(substr($umkm->nama_usaha ?? $umkm->nama ?? 'U', 0, 1));
-            @endphp
+            ?>
             <div class="umkm-card">
                 <div class="umkm-card-header">
                     <div class="umkm-avatar">
-                        @if($umkm->foto_produk)
-                            <img src="{{ asset('storage/' . $umkm->foto_produk) }}" alt="{{ $umkm->nama_usaha ?? $umkm->nama }}">
-                        @else
-                            {{ $initial }}
-                        @endif
+                        <?php if($umkm->foto_produk): ?>
+                            <img src="<?php echo e(asset('storage/' . $umkm->foto_produk)); ?>" alt="<?php echo e($umkm->nama_usaha ?? $umkm->nama); ?>">
+                        <?php else: ?>
+                            <?php echo e($initial); ?>
+
+                        <?php endif; ?>
                     </div>
                     <div style="flex:1;min-width:0">
-                        <div class="umkm-name">{{ $umkm->nama_usaha ?? $umkm->nama ?? '-' }}</div>
-                        <div class="umkm-owner">{{ $owner?->name ?? 'Pemilik tidak diketahui' }}</div>
+                        <div class="umkm-name"><?php echo e($umkm->nama_usaha ?? $umkm->nama ?? '-'); ?></div>
+                        <div class="umkm-owner"><?php echo e($owner?->name ?? 'Pemilik tidak diketahui'); ?></div>
                     </div>
                 </div>
                 <div class="umkm-card-body">
-                    @if($umkm->deskripsi)
-                    <div class="umkm-desc">{{ $umkm->deskripsi }}</div>
-                    @endif
+                    <?php if($umkm->deskripsi): ?>
+                    <div class="umkm-desc"><?php echo e($umkm->deskripsi); ?></div>
+                    <?php endif; ?>
                     <div class="umkm-meta">
-                        @if($umkm->kategori)
-                        <span class="umkm-chip green">{{ $umkm->kategori }}</span>
-                        @endif
-                        @if($umkm->kota ?? $umkm->kabupaten)
-                        <span class="umkm-chip blue">📍 {{ $umkm->kota ?? $umkm->kabupaten }}</span>
-                        @endif
-                        @if($umkm->status)
-                        <span class="umkm-chip {{ $umkm->status === 'approved' ? 'green' : ($umkm->status === 'rejected' ? 'orange' : '') }}">
-                            {{ ucfirst($umkm->status) }}
+                        <?php if($umkm->kategori): ?>
+                        <span class="umkm-chip green"><?php echo e($umkm->kategori); ?></span>
+                        <?php endif; ?>
+                        <?php if($umkm->kota ?? $umkm->kabupaten): ?>
+                        <span class="umkm-chip blue">📍 <?php echo e($umkm->kota ?? $umkm->kabupaten); ?></span>
+                        <?php endif; ?>
+                        <?php if($umkm->status): ?>
+                        <span class="umkm-chip <?php echo e($umkm->status === 'approved' ? 'green' : ($umkm->status === 'rejected' ? 'orange' : '')); ?>">
+                            <?php echo e(ucfirst($umkm->status)); ?>
+
                         </span>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="umkm-card-footer">
-                    <span class="umkm-date">Bergabung {{ \Carbon\Carbon::parse($umkm->created_at)->translatedFormat('d M Y') }}</span>
-                    @if($owner?->phone)
-                    <a href="https://wa.me/{{ preg_replace('/\D/','',$owner->phone) }}" target="_blank"
+                    <span class="umkm-date">Bergabung <?php echo e(\Carbon\Carbon::parse($umkm->created_at)->translatedFormat('d M Y')); ?></span>
+                    <?php if($owner?->phone): ?>
+                    <a href="https://wa.me/<?php echo e(preg_replace('/\D/','',$owner->phone)); ?>" target="_blank"
                        class="btn btn-sm" style="background:#e8f5e4;color:#25d366;border:1px solid #a7d7c566;gap:5px">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.12 1.524 5.847L.073 23.927l6.224-1.427C7.88 23.445 9.895 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.655-.52-5.165-1.424l-.37-.22-3.694.847.875-3.596-.242-.373A9.935 9.935 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
                         WA
                     </a>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
-        @endif
+        <?php endif; ?>
     </div>
 
-    {{-- ============ UMKM BINAAN (LENGKAP) ============ --}}
+    
     <div class="page-section" id="page-umkm">
-        @if(session('success'))<div class="alert alert-success">✅ {{ session('success') }}</div>@endif
+        <?php if(session('success')): ?><div class="alert alert-success">✅ <?php echo e(session('success')); ?></div><?php endif; ?>
 
         <div class="section-header">
-            <div class="section-title">UMKM Binaan <span>{{ $totalUmkm }} terhubung</span></div>
+            <div class="section-title">UMKM Binaan <span><?php echo e($totalUmkm); ?> terhubung</span></div>
         </div>
 
-        @if(!$umkmList->isEmpty())
+        <?php if(!$umkmList->isEmpty()): ?>
         <div class="filter-bar">
             <div class="search-wrap">
                 <svg class="search-icon" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
                 <input type="text" class="search-input" id="umkm-search" placeholder="Cari nama UMKM atau pemilik..." oninput="filterUmkm(this.value)">
             </div>
         </div>
-        @endif
+        <?php endif; ?>
 
-        @if($umkmList->isEmpty())
+        <?php if($umkmList->isEmpty()): ?>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)">
             <div class="empty-state">
                 <div class="empty-icon">🏠</div>
@@ -495,82 +498,84 @@ if ($mentor && !empty($mentor->spesialisasi)) {
                 <p>UMKM yang memilih Anda sebagai mentor akan otomatis tampil di sini.</p>
             </div>
         </div>
-        @else
+        <?php else: ?>
         <div class="umkm-grid" id="umkm-grid">
-            @foreach($umkmList as $umkm)
-            @php
+            <?php $__currentLoopData = $umkmList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $umkm): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <?php
                 $owner   = $umkm->user;
                 $initial = strtoupper(substr($umkm->nama_usaha ?? $umkm->nama ?? 'U', 0, 1));
                 $namaUmkm = $umkm->nama_usaha ?? $umkm->nama ?? '-';
-            @endphp
-            <div class="umkm-card" data-nama="{{ strtolower($namaUmkm) }}" data-owner="{{ strtolower($owner?->name ?? '') }}">
+            ?>
+            <div class="umkm-card" data-nama="<?php echo e(strtolower($namaUmkm)); ?>" data-owner="<?php echo e(strtolower($owner?->name ?? '')); ?>">
                 <div class="umkm-card-header">
                     <div class="umkm-avatar">
-                        @if($umkm->foto_produk)
-                            <img src="{{ asset('storage/' . $umkm->foto_produk) }}" alt="{{ $namaUmkm }}">
-                        @else
-                            {{ $initial }}
-                        @endif
+                        <?php if($umkm->foto_produk): ?>
+                            <img src="<?php echo e(asset('storage/' . $umkm->foto_produk)); ?>" alt="<?php echo e($namaUmkm); ?>">
+                        <?php else: ?>
+                            <?php echo e($initial); ?>
+
+                        <?php endif; ?>
                     </div>
                     <div style="flex:1;min-width:0">
-                        <div class="umkm-name">{{ $namaUmkm }}</div>
-                        <div class="umkm-owner">{{ $owner?->name ?? '-' }}</div>
+                        <div class="umkm-name"><?php echo e($namaUmkm); ?></div>
+                        <div class="umkm-owner"><?php echo e($owner?->name ?? '-'); ?></div>
                     </div>
                 </div>
                 <div class="umkm-card-body">
-                    @if($umkm->deskripsi)
-                    <div class="umkm-desc">{{ $umkm->deskripsi }}</div>
-                    @endif
+                    <?php if($umkm->deskripsi): ?>
+                    <div class="umkm-desc"><?php echo e($umkm->deskripsi); ?></div>
+                    <?php endif; ?>
                     <div class="umkm-meta">
-                        @if($umkm->kategori)
-                        <span class="umkm-chip green">{{ $umkm->kategori }}</span>
-                        @endif
-                        @if($umkm->kota ?? $umkm->kabupaten)
-                        <span class="umkm-chip blue">📍 {{ $umkm->kota ?? $umkm->kabupaten }}</span>
-                        @endif
-                        @if($owner?->phone)
-                        <span class="umkm-chip">📞 {{ $owner->phone }}</span>
-                        @endif
+                        <?php if($umkm->kategori): ?>
+                        <span class="umkm-chip green"><?php echo e($umkm->kategori); ?></span>
+                        <?php endif; ?>
+                        <?php if($umkm->kota ?? $umkm->kabupaten): ?>
+                        <span class="umkm-chip blue">📍 <?php echo e($umkm->kota ?? $umkm->kabupaten); ?></span>
+                        <?php endif; ?>
+                        <?php if($owner?->phone): ?>
+                        <span class="umkm-chip">📞 <?php echo e($owner->phone); ?></span>
+                        <?php endif; ?>
                     </div>
-                    @if($owner?->email)
+                    <?php if($owner?->email): ?>
                     <div style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px">
                         <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        {{ $owner->email }}
+                        <?php echo e($owner->email); ?>
+
                     </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
                 <div class="umkm-card-footer">
-                    <span class="umkm-date">{{ \Carbon\Carbon::parse($umkm->created_at)->translatedFormat('d M Y') }}</span>
+                    <span class="umkm-date"><?php echo e(\Carbon\Carbon::parse($umkm->created_at)->translatedFormat('d M Y')); ?></span>
                     <div style="display:flex;gap:6px">
-                        @if($owner?->phone)
-                        <a href="https://wa.me/{{ preg_replace('/\D/','',$owner->phone) }}" target="_blank"
+                        <?php if($owner?->phone): ?>
+                        <a href="https://wa.me/<?php echo e(preg_replace('/\D/','',$owner->phone)); ?>" target="_blank"
                            class="btn btn-sm" style="background:#e8f5e4;color:#25d366;border:1px solid #a7d7c566;gap:5px;padding:5px 11px">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.12 1.524 5.847L.073 23.927l6.224-1.427C7.88 23.445 9.895 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.655-.52-5.165-1.424l-.37-.22-3.694.847.875-3.596-.242-.373A9.935 9.935 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
                             WA
                         </a>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
         <div id="umkm-empty-search" style="display:none;text-align:center;padding:40px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)">
             <div style="font-size:36px;margin-bottom:12px">🔍</div>
             <div style="font-size:14px;font-weight:600;color:var(--text)">Tidak ditemukan</div>
             <div style="font-size:13px;margin-top:4px">Coba kata kunci lain</div>
         </div>
-        @endif
+        <?php endif; ?>
     </div>
 
-    {{-- ============ ULASAN ============ --}}
+    
     <div class="page-section" id="page-ulasan">
         <div class="section-header">
-            <div class="section-title">Ulasan dari UMKM <span>{{ $totalUlasan }} ulasan</span></div>
+            <div class="section-title">Ulasan dari UMKM <span><?php echo e($totalUlasan); ?> ulasan</span></div>
         </div>
 
-        @php $ulasanList = $mentor ? $mentor->ulasanList()->with('user')->latest()->get() : collect(); @endphp
+        <?php $ulasanList = $mentor ? $mentor->ulasanList()->with('user')->latest()->get() : collect(); ?>
 
-        @if($ulasanList->isEmpty())
+        <?php if($ulasanList->isEmpty()): ?>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)">
             <div class="empty-state">
                 <div class="empty-icon">💬</div>
@@ -578,81 +583,83 @@ if ($mentor && !empty($mentor->spesialisasi)) {
                 <p>Ulasan dari UMKM binaan Anda akan tampil di sini.</p>
             </div>
         </div>
-        @else
-        {{-- Rating summary --}}
+        <?php else: ?>
+        
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px;box-shadow:var(--shadow);display:flex;align-items:center;gap:32px;flex-wrap:wrap">
             <div style="text-align:center;flex-shrink:0">
-                <div style="font-size:52px;font-weight:800;color:var(--text);line-height:1">{{ number_format($avgRating, 1) }}</div>
+                <div style="font-size:52px;font-weight:800;color:var(--text);line-height:1"><?php echo e(number_format($avgRating, 1)); ?></div>
                 <div style="color:#f59e0b;font-size:22px;margin:6px 0">
-                    @for($i = 1; $i <= 5; $i++)
-                        {{ $i <= round($avgRating) ? '★' : '☆' }}
-                    @endfor
+                    <?php for($i = 1; $i <= 5; $i++): ?>
+                        <?php echo e($i <= round($avgRating) ? '★' : '☆'); ?>
+
+                    <?php endfor; ?>
                 </div>
-                <div style="font-size:12px;color:var(--text-muted)">{{ $totalUlasan }} ulasan</div>
+                <div style="font-size:12px;color:var(--text-muted)"><?php echo e($totalUlasan); ?> ulasan</div>
             </div>
             <div style="flex:1;min-width:200px">
-                @for($star = 5; $star >= 1; $star--)
-                @php $count = $ulasanList->where('rating', $star)->count(); $pct = $totalUlasan ? round($count / $totalUlasan * 100) : 0; @endphp
+                <?php for($star = 5; $star >= 1; $star--): ?>
+                <?php $count = $ulasanList->where('rating', $star)->count(); $pct = $totalUlasan ? round($count / $totalUlasan * 100) : 0; ?>
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-                    <span style="font-size:12px;color:var(--text-muted);width:14px;text-align:right">{{ $star }}</span>
+                    <span style="font-size:12px;color:var(--text-muted);width:14px;text-align:right"><?php echo e($star); ?></span>
                     <span style="color:#f59e0b;font-size:13px">★</span>
                     <div style="flex:1;height:8px;background:var(--surface2);border-radius:20px;overflow:hidden">
-                        <div style="height:100%;width:{{ $pct }}%;background:#f59e0b;border-radius:20px;transition:width .5s"></div>
+                        <div style="height:100%;width:<?php echo e($pct); ?>%;background:#f59e0b;border-radius:20px;transition:width .5s"></div>
                     </div>
-                    <span style="font-size:11px;color:var(--text-muted);width:28px">{{ $count }}</span>
+                    <span style="font-size:11px;color:var(--text-muted);width:28px"><?php echo e($count); ?></span>
                 </div>
-                @endfor
+                <?php endfor; ?>
             </div>
         </div>
 
         <div class="ulasan-list">
-            @foreach($ulasanList as $ulasan)
+            <?php $__currentLoopData = $ulasanList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ulasan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <div class="ulasan-card">
                 <div class="ulasan-header">
                     <div>
-                        <div class="ulasan-reviewer">{{ $ulasan->user?->name ?? 'Anonim' }}</div>
-                        <div class="ulasan-date">{{ \Carbon\Carbon::parse($ulasan->created_at)->translatedFormat('d M Y') }}</div>
+                        <div class="ulasan-reviewer"><?php echo e($ulasan->user?->name ?? 'Anonim'); ?></div>
+                        <div class="ulasan-date"><?php echo e(\Carbon\Carbon::parse($ulasan->created_at)->translatedFormat('d M Y')); ?></div>
                     </div>
                     <div style="background:var(--surface2);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;color:#f59e0b;border:1px solid #fcd34d66">
-                        ★ {{ $ulasan->rating }}.0
+                        ★ <?php echo e($ulasan->rating); ?>.0
                     </div>
                 </div>
                 <div class="ulasan-stars">
-                    @for($i = 1; $i <= 5; $i++){{ $i <= $ulasan->rating ? '★' : '☆' }}@endfor
+                    <?php for($i = 1; $i <= 5; $i++): ?><?php echo e($i <= $ulasan->rating ? '★' : '☆'); ?><?php endfor; ?>
                 </div>
                
-@if($ulasan->komentar && trim($ulasan->komentar) !== '')
-    <div class="ulasan-text">"{{ $ulasan->komentar }}"</div>
-@else
+<?php if($ulasan->komentar && trim($ulasan->komentar) !== ''): ?>
+    <div class="ulasan-text">"<?php echo e($ulasan->komentar); ?>"</div>
+<?php else: ?>
     <div style="font-size:12px;color:var(--text-muted);font-style:italic;display:flex;align-items:center;gap:5px">
         <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         Tidak ada komentar tertulis
     </div>
-@endif
+<?php endif; ?>
             </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
-        @endif
+        <?php endif; ?>
     </div>
 
-    {{-- ============ PROFIL ============ --}}
+    
     <div class="page-section" id="page-profil">
-        @if(session('success'))<div class="alert alert-success">✅ {{ session('success') }}</div>@endif
+        <?php if(session('success')): ?><div class="alert alert-success">✅ <?php echo e(session('success')); ?></div><?php endif; ?>
 
         <div class="profile-hero">
             <div class="profile-avatar-xl">
-                @if($mentor?->foto)
-                    <img src="{{ asset('storage/' . $mentor->foto) }}" alt="{{ auth()->user()->name }}">
-                @else
-                    {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-                @endif
+                <?php if($mentor?->foto): ?>
+                    <img src="<?php echo e(asset('storage/' . $mentor->foto)); ?>" alt="<?php echo e(auth()->user()->name); ?>">
+                <?php else: ?>
+                    <?php echo e(strtoupper(substr(auth()->user()->name, 0, 2))); ?>
+
+                <?php endif; ?>
             </div>
             <div class="profile-hero-info">
-                <h2>{{ $mentor?->full_name ?? $mentor?->nama ?? auth()->user()->name }}</h2>
-                <p>Mentor · Bergabung sejak {{ \Carbon\Carbon::parse(auth()->user()->created_at)->translatedFormat('F Y') }}</p>
-                @if($mentor?->displayed_spesialisasi)
-                <p style="margin-top:4px;opacity:.8">{{ $mentor->displayed_spesialisasi }}</p>
-                @endif
+                <h2><?php echo e($mentor?->full_name ?? $mentor?->nama ?? auth()->user()->name); ?></h2>
+                <p>Mentor · Bergabung sejak <?php echo e(\Carbon\Carbon::parse(auth()->user()->created_at)->translatedFormat('F Y')); ?></p>
+                <?php if($mentor?->displayed_spesialisasi): ?>
+                <p style="margin-top:4px;opacity:.8"><?php echo e($mentor->displayed_spesialisasi); ?></p>
+                <?php endif; ?>
             </div>
             <button class="btn" style="background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.3);margin-left:auto;flex-shrink:0" onclick="openModal('modal-profil')">
                 ✏️ Edit Profil
@@ -663,53 +670,55 @@ if ($mentor && !empty($mentor->spesialisasi)) {
             <div class="form-row">
                 <div class="form-group">
                     <div class="form-label">Nama Lengkap</div>
-                    <div class="form-static">{{ $mentor?->full_name ?? $mentor?->nama ?? auth()->user()->name }}</div>
+                    <div class="form-static"><?php echo e($mentor?->full_name ?? $mentor?->nama ?? auth()->user()->name); ?></div>
                 </div>
                 <div class="form-group">
                     <div class="form-label">Email</div>
-                    <div class="form-static">{{ auth()->user()->email }}</div>
+                    <div class="form-static"><?php echo e(auth()->user()->email); ?></div>
                 </div>
                 <div class="form-group">
                     <div class="form-label">No. Telepon / WhatsApp</div>
                     <div class="form-static">
-                        @if($mentor?->phone ?? auth()->user()->phone)
-                            <span style="color:#25d366">✓</span> {{ $mentor?->phone ?? auth()->user()->phone }}
-                        @else
+                        <?php if($mentor?->phone ?? auth()->user()->phone): ?>
+                            <span style="color:#25d366">✓</span> <?php echo e($mentor?->phone ?? auth()->user()->phone); ?>
+
+                        <?php else: ?>
                             <span style="color:var(--text-muted);font-style:italic">Belum diisi</span>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="form-label">Lokasi</div>
-                    <div class="form-static">{{ $mentor?->alamat_tampil ?? '-' }}</div>
+                    <div class="form-static"><?php echo e($mentor?->alamat_tampil ?? '-'); ?></div>
                 </div>
             </div>
 
-            {{-- ===== SPESIALISASI (tampilan) – menggunakan $spesArr yang sudah di-parse di atas ===== --}}
+            
             <div class="form-group">
                 <div class="form-label">Spesialisasi</div>
                 <div class="form-static">
-                    @if(count($spesArr) > 0)
+                    <?php if(count($spesArr) > 0): ?>
                         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:2px">
-                            @foreach($spesArr as $spes)
-                            <span style="padding:3px 12px;border-radius:20px;font-size:12px;font-weight:600;background:var(--accent-light);color:var(--accent);border:1px solid #a7d7c566">{{ $spes }}</span>
-                            @endforeach
+                            <?php $__currentLoopData = $spesArr; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $spes): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <span style="padding:3px 12px;border-radius:20px;font-size:12px;font-weight:600;background:var(--accent-light);color:var(--accent);border:1px solid #a7d7c566"><?php echo e($spes); ?></span>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
-                    @else
+                    <?php else: ?>
                         <span style="color:var(--text-muted);font-style:italic">Belum diisi</span>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="form-label">Bio / Tentang Saya</div>
                 <div class="form-static" style="min-height:80px;line-height:1.7">
-                    {{ $mentor?->bio ?? 'Belum ada bio.' }}
+                    <?php echo e($mentor?->bio ?? 'Belum ada bio.'); ?>
+
                 </div>
             </div>
 
-            {{-- ============ SOSMED VIEW PROFIL MENTOR ============ --}}
-@php
+            
+<?php
 $sosmedIconsMentor = [
     'instagram' => '<svg viewBox="0 0 24 24" width="20" height="20"><defs><radialGradient id="igm" cx="30%" cy="107%" r="150%"><stop offset="0%" stop-color="#ffd879"/><stop offset="40%" stop-color="#fd1d1d"/><stop offset="100%" stop-color="#833ab4"/></radialGradient></defs><rect x="2" y="2" width="20" height="20" rx="6" fill="url(#igm)"/><circle cx="12" cy="12" r="4.5" stroke="white" stroke-width="1.5" fill="none"/><circle cx="17" cy="7" r="1.2" fill="white"/></svg>',
     'linkedin'  => '<svg viewBox="0 0 24 24" width="20" height="20"><rect width="24" height="24" rx="5" fill="#0077B5"/><path d="M7.5 9.5H5v9h2.5v-9zm-1.25-4a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm3.75 4h2.4v1.24h.04c.33-.63 1.15-1.29 2.37-1.29 2.53 0 3 1.67 3 3.84v4.21H15.3v-3.73c0-.89-.02-2.03-1.24-2.03-1.24 0-1.43.97-1.43 1.97v3.79H10V9.5z" fill="white"/></svg>',
@@ -738,75 +747,78 @@ $sosmedCfgMentor = [
     'facebook'  => ['label'=>'Facebook',  'color'=>'#1877F2', 'bg'=>'#e8f0fe', 'border'=>'#93c5fd',
         'href'=>fn($v)=>$v, 'display'=>fn($v)=>preg_match('/facebook\.com\/([^\/\?]+)/i',$v,$mx)?$mx[1]:'Facebook Page'],
 ];
-@endphp
+?>
 
 <hr style="border:none;border-top:1px solid var(--border);margin:8px 0 18px">
 <div class="form-label" style="margin-bottom:14px">Media Sosial</div>
 
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">
-    @foreach($sosmedCfgMentor as $key => $cfg)
-        @php $val = $sosmedDataMentor[$key] ?? null; @endphp
+    <?php $__currentLoopData = $sosmedCfgMentor; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $cfg): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <?php $val = $sosmedDataMentor[$key] ?? null; ?>
         <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;
-                    border:1.5px solid {{ $val ? $cfg['border'] : 'var(--border)' }};
-                    background:{{ $val ? $cfg['bg'] : 'var(--surface2)' }}">
+                    border:1.5px solid <?php echo e($val ? $cfg['border'] : 'var(--border)'); ?>;
+                    background:<?php echo e($val ? $cfg['bg'] : 'var(--surface2)'); ?>">
             <div style="width:36px;height:36px;border-radius:10px;flex-shrink:0;display:flex;
                         align-items:center;justify-content:center;
-                        background:{{ $val ? '#fff' : 'var(--border)' }};
-                        border:1px solid {{ $val ? $cfg['border'] : 'transparent' }}">
-                {!! $sosmedIconsMentor[$key] !!}
+                        background:<?php echo e($val ? '#fff' : 'var(--border)'); ?>;
+                        border:1px solid <?php echo e($val ? $cfg['border'] : 'transparent'); ?>">
+                <?php echo $sosmedIconsMentor[$key]; ?>
+
             </div>
             <div style="min-width:0;flex:1">
                 <div style="font-size:10px;font-weight:700;color:var(--text-muted);
                             text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">
-                    {{ $cfg['label'] }}
+                    <?php echo e($cfg['label']); ?>
+
                 </div>
-                @if($val)
-                    <a href="{{ $cfg['href']($val) }}" target="_blank"
-                       style="font-size:13px;font-weight:600;color:{{ $cfg['color'] }};
+                <?php if($val): ?>
+                    <a href="<?php echo e($cfg['href']($val)); ?>" target="_blank"
+                       style="font-size:13px;font-weight:600;color:<?php echo e($cfg['color']); ?>;
                               text-decoration:none;display:block;white-space:nowrap;
                               overflow:hidden;text-overflow:ellipsis"
-                       title="{{ $cfg['display']($val) }}">
-                        {{ $cfg['display']($val) }}
+                       title="<?php echo e($cfg['display']($val)); ?>">
+                        <?php echo e($cfg['display']($val)); ?>
+
                     </a>
-                @else
+                <?php else: ?>
                     <span style="font-size:12px;color:#bbb;font-style:italic">Belum diisi</span>
-                @endif
+                <?php endif; ?>
             </div>
-            @if($val)
-                <a href="{{ $cfg['href']($val) }}" target="_blank"
-                   style="flex-shrink:0;color:{{ $cfg['color'] }};opacity:.6;text-decoration:none">
+            <?php if($val): ?>
+                <a href="<?php echo e($cfg['href']($val)); ?>" target="_blank"
+                   style="flex-shrink:0;color:<?php echo e($cfg['color']); ?>;opacity:.6;text-decoration:none">
                     <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
                         <polyline points="15 3 21 3 21 9"/>
                         <line x1="10" y1="14" x2="21" y2="3"/>
                     </svg>
                 </a>
-            @endif
+            <?php endif; ?>
         </div>
-    @endforeach
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 </div>
 
-            {{-- Status akun --}}
+            
             <hr style="border:none;border-top:1px solid var(--border);margin:8px 0 18px">
             <div class="form-label">Status Akun</div>
             <div style="display:flex;align-items:center;gap:10px">
-                @if($statusMentor === 'approved')
+                <?php if($statusMentor === 'approved'): ?>
                     <span class="badge badge-approved"><span class="badge-dot"></span>Aktif & Terverifikasi</span>
-                @elseif($statusMentor === 'pending')
+                <?php elseif($statusMentor === 'pending'): ?>
                     <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu Verifikasi</span>
-                @elseif($statusMentor === 'rejected')
+                <?php elseif($statusMentor === 'rejected'): ?>
                     <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
-                @else
+                <?php else: ?>
                     <span class="badge badge-pending"><span class="badge-dot"></span>Belum Daftar</span>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
     </div>
 
-</div>{{-- /content --}}
+</div>
 </main>
 
-{{-- ============ MODAL EDIT PROFIL ============ --}}
+
 <div class="modal-overlay" id="modal-profil">
     <div class="modal">
         <div class="modal-header">
@@ -816,27 +828,27 @@ $sosmedCfgMentor = [
             </div>
             <button class="modal-close" onclick="closeModal('modal-profil')">×</button>
         </div>
-        <form method="POST" action="{{ route('mentor.profil.update') }}" enctype="multipart/form-data" autocomplete="off">
-            @csrf @method('PUT')
+        <form method="POST" action="<?php echo e(route('mentor.profil.update')); ?>" enctype="multipart/form-data" autocomplete="off">
+            <?php echo csrf_field(); ?> <?php echo method_field('PUT'); ?>
 
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Nama Lengkap *</label>
-                    <input class="form-input" type="text" name="nama" value="{{ $mentor?->full_name ?? $mentor?->nama ?? auth()->user()->name }}" required>
+                    <input class="form-input" type="text" name="nama" value="<?php echo e($mentor?->full_name ?? $mentor?->nama ?? auth()->user()->name); ?>" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label">No. Telepon / WhatsApp</label>
-                    <input class="form-input" type="text" name="phone" value="{{ $mentor?->phone ?? auth()->user()->phone ?? '' }}" placeholder="6281234567890">
+                    <input class="form-input" type="text" name="phone" value="<?php echo e($mentor?->phone ?? auth()->user()->phone ?? ''); ?>" placeholder="6281234567890">
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Lokasi</label>
-                <input class="form-input" type="text" name="lokasi" value="{{ $mentor?->lokasi ?? '' }}" placeholder="Contoh: Surabaya, Jawa Timur">
+                <input class="form-input" type="text" name="lokasi" value="<?php echo e($mentor?->lokasi ?? ''); ?>" placeholder="Contoh: Surabaya, Jawa Timur">
             </div>
 
-            {{-- ============ SOSMED INPUTS MODAL MENTOR ============ --}}
-@php
+            
+<?php
 $sosmedFieldsMentor = [
     'instagram' => ['label'=>'Instagram', 'placeholder'=>'username (tanpa @)', 'prefix'=>'@', 'hint'=>'Contoh: namaakun'],
     'linkedin'  => ['label'=>'LinkedIn',  'placeholder'=>'URL atau username',   'prefix'=>'',  'hint'=>'Contoh: https://linkedin.com/in/namaakun'],
@@ -851,46 +863,48 @@ if ($mentor && $mentor->sosmed) {
     $decModal = is_string($rawModal) ? json_decode($rawModal, true) : $rawModal;
     $sosmedDataModal = is_array($decModal) ? $decModal : [];
 }
-@endphp
+?>
 
 <div class="form-group">
     <label class="form-label">Media Sosial</label>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        @foreach($sosmedFieldsMentor as $key => $field)
-        @php $val = $sosmedDataModal[$key] ?? ''; @endphp
+        <?php $__currentLoopData = $sosmedFieldsMentor; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $field): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <?php $val = $sosmedDataModal[$key] ?? ''; ?>
         <div style="margin-bottom:0">
             <label class="form-label" style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-                {!! $sosmedIconsMentor[$key] !!}
-                {{ $field['label'] }}
+                <?php echo $sosmedIconsMentor[$key]; ?>
+
+                <?php echo e($field['label']); ?>
+
             </label>
             <div style="position:relative">
-                @if($field['prefix'])
+                <?php if($field['prefix']): ?>
                     <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);
                                  font-size:13px;font-weight:600;color:var(--text-muted);
-                                 pointer-events:none;z-index:1">{{ $field['prefix'] }}</span>
+                                 pointer-events:none;z-index:1"><?php echo e($field['prefix']); ?></span>
                     <input class="form-input" type="text"
-                        name="sosmed[{{ $key }}]"
-                        value="{{ $val }}"
-                        placeholder="{{ $field['placeholder'] }}"
+                        name="sosmed[<?php echo e($key); ?>]"
+                        value="<?php echo e($val); ?>"
+                        placeholder="<?php echo e($field['placeholder']); ?>"
                         style="padding-left:28px">
-                @else
+                <?php else: ?>
                     <input class="form-input" type="text"
-                        name="sosmed[{{ $key }}]"
-                        value="{{ $val }}"
-                        placeholder="{{ $field['placeholder'] }}">
-                @endif
+                        name="sosmed[<?php echo e($key); ?>]"
+                        value="<?php echo e($val); ?>"
+                        placeholder="<?php echo e($field['placeholder']); ?>">
+                <?php endif; ?>
             </div>
-            <div class="form-hint">{{ $field['hint'] }}</div>
+            <div class="form-hint"><?php echo e($field['hint']); ?></div>
         </div>
-        @endforeach
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </div>
 </div>
 
-            {{-- ===== SPESIALISASI (form) – menggunakan $spesArr yang sudah di-parse di atas ===== --}}
+            
             <div class="form-group">
                 <label class="form-label">Spesialisasi</label>
 
-                @php
+                <?php
                 $spesPresets = [
                     'Pemasaran Digital', 'Manajemen Keuangan', 'Pengembangan Produk',
                     'Strategi Bisnis', 'SDM & Organisasi', 'Ekspor & Impor',
@@ -901,27 +915,28 @@ if ($mentor && $mentor->sosmed) {
                 $savedSpesStr = implode(',', $spesArr);
                 // Item custom = yang ada di DB tapi bukan preset
                 $spesCustom = array_values(array_filter($spesArr, fn($v) => !in_array($v, $spesPresets)));
-                @endphp
+                ?>
 
-                {{-- Preset chips --}}
+                
                 <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px" id="spes-chips">
-                    @foreach($spesPresets as $preset)
-                    @php $isActive = in_array($preset, $spesArr); @endphp
+                    <?php $__currentLoopData = $spesPresets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $preset): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php $isActive = in_array($preset, $spesArr); ?>
                     <button type="button"
                         class="spes-chip"
                         onclick="toggleSpesChip(this)"
-                        data-active="{{ $isActive ? '1' : '0' }}"
+                        data-active="<?php echo e($isActive ? '1' : '0'); ?>"
                         style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;
-                               border:1.5px solid {{ $isActive ? 'var(--accent)' : '#d1d5db' }};
-                               background:{{ $isActive ? 'var(--accent)' : '#f9fafb' }};
-                               color:{{ $isActive ? '#fff' : '#4b5563' }};
+                               border:1.5px solid <?php echo e($isActive ? 'var(--accent)' : '#d1d5db'); ?>;
+                               background:<?php echo e($isActive ? 'var(--accent)' : '#f9fafb'); ?>;
+                               color:<?php echo e($isActive ? '#fff' : '#4b5563'); ?>;
                                cursor:pointer;font-family:inherit;transition:all .15s">
-                        {{ $preset }}
+                        <?php echo e($preset); ?>
+
                     </button>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
 
-                {{-- Input custom --}}
+                
                 <div style="display:flex;gap:8px;margin-bottom:6px">
                     <input type="text" id="spes-custom-input" placeholder="Tambah spesialisasi lain..." class="form-input" style="flex:1"
                            onkeydown="if(event.key==='Enter'){event.preventDefault();addSpesCustom();}">
@@ -931,34 +946,35 @@ if ($mentor && $mentor->sosmed) {
                     </button>
                 </div>
 
-                {{-- Custom tags dari DB --}}
+                
                 <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px" id="spes-custom-tags">
-                    @foreach($spesCustom as $item)
+                    <?php $__currentLoopData = $spesCustom; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;background:#ede9fe;color:#5b21b6;border:1.5px solid #c4b5fd">
-                        {{ $item }}
-                        <button type="button" onclick="removeSpesTag(this,'{{ $item }}')"
+                        <?php echo e($item); ?>
+
+                        <button type="button" onclick="removeSpesTag(this,'<?php echo e($item); ?>')"
                             style="background:none;border:none;cursor:pointer;font-size:15px;line-height:1;color:inherit;padding:0;opacity:.7">×</button>
                     </span>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
 
-                {{-- Hidden input yang dikirim ke server --}}
-                <input type="hidden" name="spesialisasi" id="spes-value" value="{{ $savedSpesStr }}">
+                
+                <input type="hidden" name="spesialisasi" id="spes-value" value="<?php echo e($savedSpesStr); ?>">
                 <div style="font-size:11px;color:var(--text-muted)">
-                    <span id="spes-count">{{ count($spesArr) }}</span> spesialisasi dipilih
+                    <span id="spes-count"><?php echo e(count($spesArr)); ?></span> spesialisasi dipilih
                 </div>
 
-                {{-- Dropdown "yang ditampilkan di publik" --}}
+                
                 <div style="margin-top:14px">
                     <label class="form-label">Yang Ditampilkan di Publik</label>
                     <select name="displayed_spesialisasi" id="spes-displayed" class="form-select">
-                        @foreach($spesArr as $item)
-                        <option value="{{ $item }}" {{ ($mentor?->displayed_spesialisasi === $item) ? 'selected' : '' }}>{{ $item }}</option>
-                        @endforeach
-                        {{-- Fallback bila $spesArr kosong --}}
-                        @if(count($spesArr) === 0)
+                        <?php $__currentLoopData = $spesArr; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($item); ?>" <?php echo e(($mentor?->displayed_spesialisasi === $item) ? 'selected' : ''); ?>><?php echo e($item); ?></option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        
+                        <?php if(count($spesArr) === 0): ?>
                         <option value="" disabled selected>— pilih spesialisasi dulu —</option>
-                        @endif
+                        <?php endif; ?>
                     </select>
                     <div class="form-hint">Spesialisasi utama yang tampil di kartu mentor publik.</div>
                 </div>
@@ -966,26 +982,26 @@ if ($mentor && $mentor->sosmed) {
 
             <div class="form-group">
                 <label class="form-label">Bio</label>
-                <textarea class="form-textarea" name="bio" rows="4" placeholder="Ceritakan pengalaman dan keahlian Anda...">{{ $mentor?->bio ?? '' }}</textarea>
+                <textarea class="form-textarea" name="bio" rows="4" placeholder="Ceritakan pengalaman dan keahlian Anda..."><?php echo e($mentor?->bio ?? ''); ?></textarea>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Foto Profil</label>
                 <label class="upload-area" for="mentor-foto" id="mentor-foto-area" style="position:relative;overflow:hidden;min-height:110px">
-                    @if($mentor?->foto)
+                    <?php if($mentor?->foto): ?>
                     <img id="mentor-foto-preview"
-                         src="{{ asset('storage/' . $mentor->foto) }}"
+                         src="<?php echo e(asset('storage/' . $mentor->foto)); ?>"
                          style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;z-index:1">
                     <div id="mentor-foto-overlay"
                          style="position:absolute;inset:0;background:rgba(0,0,0,.45);border-radius:12px;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
                         <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
                         <span style="font-size:12px;font-weight:600;color:#fff">Ganti Foto</span>
                     </div>
-                    @else
+                    <?php else: ?>
                     <div class="upload-icon">📷</div>
                     <div class="upload-text">Klik untuk upload atau <span>drag & drop</span></div>
                     <div class="upload-fname" id="mentor-foto-name"></div>
-                    @endif
+                    <?php endif; ?>
                 </label>
                 <input type="file" id="mentor-foto" name="foto" accept="image/*" style="display:none" onchange="onMentorFotoChange(this)">
                 <div style="font-size:11px;color:var(--text-muted);margin-top:5px">JPG, PNG · Maks 2 MB</div>
@@ -1202,9 +1218,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (['beranda', 'umkm', 'ulasan', 'profil'].includes(hash)) {
         showPage(hash);
     }
-    @if(session('active_page'))
-        showPage('{{ session("active_page") }}');
-    @endif
+    <?php if(session('active_page')): ?>
+        showPage('<?php echo e(session("active_page")); ?>');
+    <?php endif; ?>
 
     // ---- Pastikan visual chip sesuai data-active dari server ----
     // (Blade sudah set inline style, tapi ini sebagai safety-net)
@@ -1222,4 +1238,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 </body>
-</html>
+</html><?php /**PATH C:\laragon\www\Kaji-indo-main\resources\views/pages/mentor/dashboard.blade.php ENDPATH**/ ?>
