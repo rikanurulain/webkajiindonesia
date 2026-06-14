@@ -75,4 +75,9 @@ public function mentor()
     // Menghubungkan kolom mentor_id ke tabel mentor (Model Mentor)
     return $this->belongsTo(Mentor::class, 'mentor_id');
 }
+
+public function items()
+{
+    return $this->hasMany(ProdukItem::class, 'produk_id');
+}
 }

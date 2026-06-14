@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <section class="bg-gradient-to-br from-primary-dark via-primary to-primary- py-16 text-white">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-8">
             
@@ -18,7 +16,7 @@
             <!-- IMAGE -->
             <div>
                 <img 
-                    src="{{ asset('storage/logo/KARYAKAMI.png') }}"
+                    src="<?php echo e(asset('storage/logo/KARYAKAMI.png')); ?>"
                     alt="Logo Karya Kami"
                     class="w-32 md:w-40 object-contain"
                 >
@@ -32,7 +30,7 @@
             Daftar UMKM
         </h2>
 
-        {{-- Search --}}
+        
         <div class="max-w-2xl mx-auto flex flex-col sm:flex-row gap-4 mb-10">
 
             <div class="relative flex-1">
@@ -63,49 +61,50 @@
             </div>
         </div>
 
-        {{-- Grid Kartu --}}
+        
         <div 
             class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
             id="produkGrid"
         >
 
-        @forelse ($produks as $item)
+        <?php $__empty_1 = true; $__currentLoopData = $produks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
 
-        <div onclick="window.location='{{ route('produk.show', $item->id) }}'"
+        <div onclick="window.location='<?php echo e(route('produk.show', $item->id)); ?>'"
      class="produk-card bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200 flex flex-col duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer"
-     data-nama="{{ strtolower($item->nama) }}">
+     data-nama="<?php echo e(strtolower($item->nama)); ?>">
 
      <div class="relative w-full bg-gray-100 overflow-hidden" style="aspect-ratio: 3/4;">
-    <img src="{{ asset('storage/' . $item->foto) }}"
-         alt="{{ $item->nama }}"
+    <img src="<?php echo e(asset('storage/' . $item->foto)); ?>"
+         alt="<?php echo e($item->nama); ?>"
          class="w-full h-full object-cover object-top">
 
-    <img src="{{ asset('storage/logo/KARYAKAMI.png') }}"
+    <img src="<?php echo e(asset('storage/logo/KARYAKAMI.png')); ?>"
          alt="Logo"
          class="absolute top-2 right-2 w-20 h-10 object-contain rounded-md p-1 bg-white/80">
 </div>
 
     <div class="bg-green-100 px-4 py-2">
-        <h3 class="font-serif font-bold text-gray-900 text-lg text-center truncate">{{ $item->nama }}</h3>
-        <p class="text-xs text-green-700 text-center truncate">{{ $item->produk->nama }}</p>
+        <h3 class="font-serif font-bold text-gray-900 text-lg text-center truncate"><?php echo e($item->nama); ?></h3>
+        <p class="text-xs text-green-700 text-center truncate"><?php echo e($item->produk->nama); ?></p>
     </div>
 
     <div class="px-4 py-3 flex-1">
         <p class="text-sm text-gray-600 text-center leading-relaxed line-clamp-3 min-h-[3.75rem]">
-            {{ $item->deskripsi }}
+            <?php echo e($item->deskripsi); ?>
+
         </p>
     </div>
 
     <div class="grid grid-cols-2">
-        @php
+        <?php
             $nomorWa = preg_replace('/[^0-9]/', '', $item->produk->whatsapp ?? $item->produk->kontak ?? '');
             if ($nomorWa && str_starts_with($nomorWa, '0')) {
                 $nomorWa = '62' . substr($nomorWa, 1);
             }
             $pesanWa = urlencode('Halo UMKM ' . $item->produk->nama . ', saya tertarik dengan produk ' . $item->nama . ' setelah melihatnya di website KAJI Indonesia.' . "\n" . 'Boleh tanya-tanya lebih lanjut atau pesan produknya? Terima kasih!');
-        @endphp
+        ?>
         <span
-            onclick="event.stopPropagation(); {{ $nomorWa ? "window.open('https://wa.me/{$nomorWa}?text={$pesanWa}', '_blank')" : "alert('Nomor WhatsApp belum tersedia.')" }}"
+            onclick="event.stopPropagation(); <?php echo e($nomorWa ? "window.open('https://wa.me/{$nomorWa}?text={$pesanWa}', '_blank')" : "alert('Nomor WhatsApp belum tersedia.')"); ?>"
             class="flex items-center justify-center bg-green-500 hover:bg-green-600 text-white text-sm font-semibold text-center py-3 transition-colors duration-200 cursor-pointer">
             WhatsApp
         </span>
@@ -116,15 +115,15 @@
 
 </div>
 
-@empty
+<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
     <div class="col-span-4 text-center text-gray-400 py-20">
         Belum ada produk unggulan tersedia.
     </div>
-@endforelse
+<?php endif; ?>
 
         </div>
 
-        {{-- Pesan tidak ditemukan --}}
+        
         <div id="noResult" class="hidden text-center text-gray-400 py-20">
             Produk tidak ditemukan.
         </div>
@@ -159,4 +158,5 @@
 
     </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\Kaji-indo-main\resources\views/pages/umkm-produk.blade.php ENDPATH**/ ?>

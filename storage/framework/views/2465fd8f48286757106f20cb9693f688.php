@@ -39,20 +39,26 @@
         <div class="bg-white p-6 rounded-xl shadow-sm">
             <h3 class="text-center font-semibold mb-4">Pembimbing</h3>
 
-            <?php if($mentor->white_bg_photo): ?>
-                <img src="<?php echo e(asset('storage/' . $mentor->white_bg_photo)); ?>"
-                     alt="<?php echo e($mentor->full_name ?? $mentor->nama); ?>"
-                     class="rounded-lg w-full object-cover">
-            <?php elseif($mentor->foto): ?>
-                <img src="<?php echo e(asset('storage/pembimbing/' . $mentor->foto)); ?>"
-                     alt="<?php echo e($mentor->full_name ?? $mentor->nama); ?>"
-                     class="rounded-lg w-full object-cover">
-            <?php else: ?>
-                <div class="h-64 bg-emerald-50 rounded-lg flex items-center justify-center text-5xl font-bold text-emerald-700">
-                    <?php echo e(strtoupper(substr($mentor->full_name ?? $mentor->nama ?? 'M', 0, 2))); ?>
+           <div class="w-full bg-gray-100 rounded-lg overflow-hidden" style="aspect-ratio: 3/4;">
+    <?php if($mentor->foto): ?>
+        <img src="<?php echo e(asset('storage/' . $mentor->foto)); ?>"
+             alt="<?php echo e($mentor->full_name ?? $mentor->nama); ?>"
+             class="w-full h-full object-cover object-top">
+    <?php elseif($mentor->white_bg_photo): ?>
+        <img src="<?php echo e(asset('storage/' . $mentor->white_bg_photo)); ?>"
+             alt="<?php echo e($mentor->full_name ?? $mentor->nama); ?>"
+             class="w-full h-full object-cover object-top">
+    <?php elseif($mentor->user?->profile_photo_path): ?>
+        <img src="<?php echo e(asset('storage/' . $mentor->user->profile_photo_path)); ?>"
+             alt="<?php echo e($mentor->full_name ?? $mentor->nama); ?>"
+             class="w-full h-full object-cover object-top">
+    <?php else: ?>
+        <div class="w-full h-full flex items-center justify-center text-3xl font-bold text-emerald-700">
+            <?php echo e(strtoupper(substr($mentor->full_name ?? $mentor->nama ?? 'M', 0, 2))); ?>
 
-                </div>
-            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+</div>
 
             
             <div class="flex items-center gap-1 mt-4">

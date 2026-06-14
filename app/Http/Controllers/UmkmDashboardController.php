@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage; 
 use App\Models\Produk;
-use App\Models\Program; // Model program trainer
+use App\Models\ProdukItem; // ← TAMBAH INI
+use App\Models\Program;
 
 class UmkmDashboardController extends Controller
 {
@@ -14,27 +15,42 @@ class UmkmDashboardController extends Controller
     {
         $user = Auth::user();
 
-        // 1. Ambil produk milik UMKM ini LENGKAP dengan data relasi mentornya (FIXED)
         $myProducts = Produk::with('mentor')
             ->where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // 2. AMBIL PROGRAM YANG SUDAH DI-ACC ADMIN (Memakai scopePublished asli dari model Program)
-        $availablePrograms = Program::published()->latest()->get(); 
+        // ← BARU
+        $myUmkm = Produk::where('user_id', $user->id)
+    ->latest()
+    ->first();
 
-        // 3. Ambil ID program yang sudah diikuti oleh UMKM ini
+        // ← BARU
+        $produkItems = ProdukItem::where('user_id', $user->id)
+            ->orderByDesc('is_unggulan')
+            ->orderBy('created_at')
+            ->get();
+
+        $availablePrograms = Program::published()->latest()->get();
+
         $joinedProgramIds = $user->programs()->pluck('program_id')->toArray();
 
-        // 4. Hitung statistik ringkas untuk widget counter atas
         $stats = [
             'total_produk'    => $myProducts->count(),
             'pending_produk'  => $myProducts->where('status', 'pending')->count(),
             'active_produk'   => $myProducts->where('status', 'approved')->count(),
-            'program_diikuti' => count($joinedProgramIds) 
+            'program_diikuti' => count($joinedProgramIds),
         ];
 
-        return view('profile.dashboard-umkm', compact('user', 'myProducts', 'availablePrograms', 'joinedProgramIds', 'stats'));
+        return view('profile.dashboard-umkm', compact(
+            'user',
+            'myProducts',
+            'myUmkm',        // ← BARU
+            'produkItems',   // ← BARU
+            'availablePrograms',
+            'joinedProgramIds',
+            'stats',
+        ));
     }
 
     // Fungsi saat UMKM klik tombol "Daftar"
@@ -93,39 +109,45 @@ class UmkmDashboardController extends Controller
 
     // 2. Memproses Perubahan Data (Form Submission)
     public function updateProduk(Request $request, $id)
-    {
-        // Pastikan keamanan data milik user terkait
-        $product = Produk::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+{
+    $product = Produk::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
 
-        // Validasi input data dari form edit
-        $request->validate([
-            'nama'        => 'required|string|max:255',
-            'kategori'    => 'required',
-            'deskripsi'   => 'required|string',
-            'foto_produk' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
-        ]);
+    $request->validate([
+        'nama'        => 'required|string|max:255',
+        'kategori'    => 'required',
+        'deskripsi'   => 'required|string',
+        'kontak'      => 'nullable|string|max:20',
+        'foto_produk' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+        'logo'        => 'nullable|image|max:2048',
+    ]);
 
-        // Siapkan array data baru
-        $data = [
-            'nama'      => $request->nama,
-            'kategori'  => $request->kategori,
-            'deskripsi' => $request->deskripsi,
-            'status'    => 'pending', // Diubah kembali ke pending agar di-review ulang oleh admin
-        ];
-
-        // Jika user memasukkan berkas file foto produk baru
-        if ($request->hasFile('foto_produk')) {
-            // Bersihkan file foto lama dari folder biar storage local lapak laptopmu hemat space
-            if ($product->foto_produk) {
-                Storage::disk('public')->delete($product->foto_produk);
-            }
-            // Upload simpan file baru ke folder produk-pict di storage/app/public
-            $data['foto_produk'] = $request->file('foto_produk')->store('produk-pict', 'public');
-        }
-
-        // Eksekusi update data ke baris database
-        $product->update($data);
-
-        return redirect()->route('dashboard-umkm')->with('success', 'Data produk berhasil diperbarui! Menunggu persetujuan ulang pihak admin.');
+    if ($request->hasFile('logo')) {
+    if ($produk->logo) {
+        Storage::disk('public')->delete($produk->logo);
     }
+    $produk->logo = $request->file('logo')->store('produk/logo', 'public');
+}
+
+    $data = [
+        'nama'      => $request->nama,
+        'kategori'  => $request->kategori,
+        'deskripsi' => $request->deskripsi,
+        'kontak'    => $request->kontak,
+        // ← Kalau sudah approved sebelumnya, tetap approved. Kalau belum, tetap pending.
+        'status'    => $product->status === 'approved' ? 'approved' : 'pending',
+    ];
+
+    if ($request->hasFile('foto_produk')) {
+        if ($product->foto_produk) {
+            Storage::disk('public')->delete($product->foto_produk);
+        }
+        $data['foto_produk'] = $request->file('foto_produk')->store('produk-pict', 'public');
+    }
+
+    $product->update($data);
+
+    return redirect()->route('dashboard-umkm')
+        ->with('success', 'Data usaha berhasil diperbarui!');
+}
+
 }

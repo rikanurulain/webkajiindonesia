@@ -41,7 +41,7 @@
         <div class="bg-white p-6 rounded-xl shadow-sm">
             <h3 class="text-center font-semibold mb-4">Pembimbing</h3>
 
-            <div class="w-full bg-gray-100 rounded-lg overflow-hidden" style="aspect-ratio: 3/4;">
+           <div class="w-full bg-gray-100 rounded-lg overflow-hidden" style="aspect-ratio: 3/4;">
     @if($mentor->foto)
         <img src="{{ asset('storage/' . $mentor->foto) }}"
              alt="{{ $mentor->full_name ?? $mentor->nama }}"

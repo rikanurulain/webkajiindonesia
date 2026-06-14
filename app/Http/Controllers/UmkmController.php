@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use App\Models\ProdukItem;
 
 class UmkmController extends Controller
 {
@@ -29,34 +30,38 @@ class UmkmController extends Controller
     }
 
     public function produk(): View
-    {
-        $produks = Produk::where('status', 'approved')
-            ->latest()
-            ->get();
+{
+    $produks = ProdukItem::where('is_unggulan', true)
+        ->whereHas('produk', fn($q) => $q->where('status', 'approved'))
+        ->with('produk')
+        ->latest()
+        ->get();
 
-        return view('pages.umkm-produk', [
-            'title' => 'Produk UMKM',
-            'produks' => $produks,
-        ]);
-    }
+    return view('pages.umkm-produk', [
+        'title' => 'Produk UMKM',
+        'produks' => $produks,
+    ]);
+}
 
-    public function produkDetail($id): View
-    {
-        $produk = Produk::where('status', 'approved')
-            ->findOrFail($id);
+public function produkDetail($id): View
+{
+    // Hapus where is_unggulan agar semua item bisa dibuka
+    $item = ProdukItem::with('produk')
+        ->whereHas('produk', fn($q) => $q->where('status', 'approved'))
+        ->findOrFail($id);
 
-        $lainnya = Produk::where('status', 'approved')
-            ->where('id', '!=', $id)
-            ->take(20)
-            ->get();
+    $itemLainnya = ProdukItem::where('produk_id', $item->produk_id)
+        ->where('id', '!=', $item->id)
+        ->get();
 
-        return view('pages.detail-produk', [
-            'title' => $produk->nama,
-            'metaDescription' => $produk->deskripsi,
-            'produk' => $produk,
-            'lainnya' => $lainnya,
-        ]);
-    }
+    return view('pages.detail-produk', [
+        'title'           => $item->nama,
+        'metaDescription' => $item->deskripsi,
+        'item'            => $item,
+        'produk'          => $item->produk,
+        'itemLainnya'     => $itemLainnya,
+    ]);
+}
 
     public function pembimbing(): View
     {

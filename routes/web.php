@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Trainerpelatihancontroller;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\PendaftaranProgramController;
+use App\Http\Controllers\ProdukItemController;
 
 // =====================
 // HALAMAN UMUM (Bebas Akses)
@@ -72,13 +73,6 @@ Route::prefix('umkm')->group(function () {
     });
 });
 
-// Wajib login
-Route::middleware('auth')->group(function () {
-    Route::get('/pembimbing/{id}', [UmkmController::class, 'showMentor'])->name('umkm.mentor.detail'); // ← tambah ini
-    Route::get('/lokasi', [UmkmController::class, 'lokasi'])->name('umkm.lokasi');
-    Route::post('/pembimbing/{id}/ulasan', [UmkmMentorUlasanController::class, 'store'])->name('umkm.mentor.ulasan.store');
-    Route::delete('/pembimbing/{mentorId}/ulasan/{ulasanId}', [UmkmMentorUlasanController::class, 'destroy'])->name('umkm.mentor.ulasan.destroy');
-});
 Route::prefix('halal-center')->group(function () {
     Route::get('/', [HalalCenterController::class, 'index'])->name('halal-center');
     Route::get('/gratis', [HalalCenterController::class, 'gratis'])->name('halal-center.gratis');
@@ -126,6 +120,12 @@ Route::middleware(['auth'])->group(function () {
          ->name('dashboard.produk.edit');
     Route::put('/dashboard-umkm/produk/{id}/update', [\App\Http\Controllers\UmkmDashboardController::class, 'updateProduk'])
          ->name('dashboard.produk.update');
+
+         Route::post('/dashboard/produk-item',              [ProdukItemController::class, 'store'])->name('produk-item.store');
+         Route::put('/dashboard/produk-item/{id}',          [ProdukItemController::class, 'update'])->name('produk-item.update');
+         Route::delete('/dashboard/produk-item/{id}',       [ProdukItemController::class, 'destroy'])->name('produk-item.destroy');
+         Route::post('/dashboard/produk-item/{id}/unggulan',[ProdukItemController::class, 'setUnggulan'])->name('produk-item.set-unggulan');
+         Route::post('/dashboard/produk-item/{id}/unset',   [ProdukItemController::class, 'unsetUnggulan'])->name('produk-item.unset-unggulan');
 
     // Dashboard Trainer
     Route::get('/trainer/dashboard', [App\Http\Controllers\TrainerController::class, 'index'])
