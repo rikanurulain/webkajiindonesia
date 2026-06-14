@@ -222,7 +222,7 @@
 </style>
 @section('content')
 
-{{-- STATS GRID --}}
+{{-- STATS GRID --}} 
 <div class="stats-grid">
     <div class="stat-card green">
         <div class="stat-icon">📋</div>

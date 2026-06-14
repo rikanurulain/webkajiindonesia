@@ -220,7 +220,7 @@
 </style>
 <?php $__env->startSection('content'); ?>
 
-
+ 
 <div class="stats-grid">
     <div class="stat-card green">
         <div class="stat-icon">📋</div>

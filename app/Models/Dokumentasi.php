@@ -9,9 +9,9 @@ class Dokumentasi extends Model
     protected $table = 'dokumentasi';
 
     protected $fillable = [
-        'judul', 'deskripsi', 'tanggal_kegiatan',
-        'kategori', 'thumbnail', 'foto', 'youtube_url', 'is_published',
-    ];
+      'judul', 'deskripsi', 'tanggal_kegiatan',
+      'kategori', 'thumbnail', 'cover_video', 'foto', 'youtube_url', 'is_published', 'video_file',
+  ];
 
     protected $casts = [
         'foto'             => 'array',
@@ -28,9 +28,10 @@ class Dokumentasi extends Model
     }
 
     public function getThumbnailUrlAttribute(): string
-    {
-        if ($this->thumbnail) return asset('storage/' . $this->thumbnail);
-        if ($this->youtube_id) return "https://img.youtube.com/vi/{$this->youtube_id}/hqdefault.jpg";
-        return asset('images/placeholder.png');
-    }
+{
+    if ($this->thumbnail)    return asset('storage/' . $this->thumbnail);
+    if ($this->cover_video)  return asset('storage/' . $this->cover_video);
+    if ($this->youtube_id)   return "https://img.youtube.com/vi/{$this->youtube_id}/hqdefault.jpg";
+    return asset('images/placeholder.png');
+}
 }
