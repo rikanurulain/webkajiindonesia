@@ -242,4 +242,12 @@ Route::post('/approval/program/{program}/reject',  [AdminController::class, 'rej
     Route::get('/pendaftaran',                   [AdminController::class, 'pendaftaranIndex'])->name('pendaftaran.index');
     Route::post('/pendaftaran/{id}/approve',     [AdminController::class, 'pendaftaranApprove'])->name('pendaftaran.approve');
     Route::post('/pendaftaran/{id}/reject',      [AdminController::class, 'pendaftaranReject'])->name('pendaftaran.reject');
+
+    // ── Dokumentasi Kegiatan ─────────────────────────────────────────  ← TAMBAH DI SINI
+    Route::get('/dokumentasi',                    [MediaController::class, 'adminIndex'])  ->name('dokumentasi.index');
+    Route::get('/dokumentasi/tambah',             [MediaController::class, 'adminCreate']) ->name('dokumentasi.create');
+    Route::post('/dokumentasi',                   [MediaController::class, 'adminStore'])  ->name('dokumentasi.store');
+    Route::get('/dokumentasi/{dokumentasi}/edit', [MediaController::class, 'adminEdit'])   ->name('dokumentasi.edit');
+    Route::put('/dokumentasi/{dokumentasi}',      [MediaController::class, 'adminUpdate']) ->name('dokumentasi.update');
+    Route::delete('/dokumentasi/{dokumentasi}',   [MediaController::class, 'adminDestroy'])->name('dokumentasi.destroy');
 });
