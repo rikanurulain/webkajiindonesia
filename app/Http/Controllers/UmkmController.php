@@ -78,56 +78,54 @@ public function produkDetail($id): View
         ]);
     }
 
-public function showMentor($id): View
-{
-    $mentor = Mentor::where('status', 'approved')
-        ->findOrFail($id);
-
-    // Ambil produk / UMKM yang terhubung
-    $connectedUmkm = Produk::with('umkm')
-        ->where('mentor_id', $mentor->id)
-        ->where('status', 'approved')
-        ->get();
-
-    /*
-    |--------------------------------------------------------------------------
-    | Rating & Ulasan
-    |--------------------------------------------------------------------------
-    */
-
-    $ulasan      = $mentor->ulasanList()->with('user')->latest()->get();
-    $avgRating   = $ulasan->avg('rating') ?? 0;
-    $totalUlasan = $ulasan->count();
-
-    /*
-    |--------------------------------------------------------------------------
-    | Cek apakah user yang login boleh memberi ulasan
-    | Syarat: sudah login, punya produk approved, produk terhubung ke mentor ini,
-    |         dan belum pernah memberi ulasan untuk mentor ini.
-    |--------------------------------------------------------------------------
-    */
-
-    $bisaMemberiUlasan = false;
-    $sudahUlasan       = false;
-
-    if (Auth::check()) {
-        $user = Auth::user();
-
-        // Cek apakah user UMKM ini terhubung dengan mentor (produknya punya mentor_id ini)
-        $produkUser = Produk::where('user_id', $user->id)
+    public function showMentor($id): View
+    {
+        $mentor = Mentor::where('status', 'approved')
+            ->findOrFail($id);
+     
+        // ✅ FIX: Ambil UMKM via relasi many-to-many (tabel pivot)
+        // bukan lagi where('mentor_id', ...) kolom lama
+        $connectedUmkm = $mentor->produks()
             ->where('status', 'approved')
-            ->where('mentor_id', $mentor->id)
-            ->first();
-
-        if ($produkUser) {
-            $bisaMemberiUlasan = true;
-
-            // Cek apakah sudah pernah memberi ulasan
-            $sudahUlasan = MentorUlasan::where('mentor_id', $mentor->id)
-                ->where('user_id', $user->id)
-                ->exists();
+            ->get();
+     
+        // Rating & Ulasan
+        $ulasan      = $mentor->ulasanList()->with('user')->latest()->get();
+        $avgRating   = $ulasan->avg('rating') ?? 0;
+        $totalUlasan = $ulasan->count();
+     
+        // Cek apakah user yang login boleh memberi ulasan
+        $bisaMemberiUlasan = false;
+        $sudahUlasan       = false;
+     
+        if (Auth::check()) {
+            $user = Auth::user();
+     
+            // ✅ FIX: Cek via pivot, bukan kolom mentor_id
+            $produkUser = Produk::where('user_id', $user->id)
+                ->where('status', 'approved')
+                ->whereHas('mentors', fn($q) => $q->where('mentor_id', $mentor->id))
+                ->first();
+     
+            if ($produkUser) {
+                $bisaMemberiUlasan = true;
+     
+                $sudahUlasan = MentorUlasan::where('mentor_id', $mentor->id)
+                    ->where('user_id', $user->id)
+                    ->exists();
+            }
         }
-    }
+     
+        return view('pages.detail-pembimbing', [
+            'mentor'            => $mentor,
+            'connectedUmkm'     => $connectedUmkm,
+            'avgRating'         => $avgRating,
+            'totalUlasan'       => $totalUlasan,
+            'ulasan'            => $ulasan,
+            'bisaMemberiUlasan' => $bisaMemberiUlasan,
+            'sudahUlasan'       => $sudahUlasan,
+        ]);
+    
 
     return view('pages.detail-pembimbing', [
         'mentor'             => $mentor,

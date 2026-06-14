@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage; 
+use Illuminate\Support\Facades\Storage;
 use App\Models\Produk;
-use App\Models\ProdukItem; // ← TAMBAH INI
+use App\Models\ProdukItem;
 use App\Models\Program;
+use App\Models\Mentor;
 
 class UmkmDashboardController extends Controller
 {
@@ -15,17 +16,18 @@ class UmkmDashboardController extends Controller
     {
         $user = Auth::user();
 
-        $myProducts = Produk::with('mentor')
-            ->where('user_id', $user->id)
+        $myProducts = Produk::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // ← BARU
         $myUmkm = Produk::where('user_id', $user->id)
-    ->latest()
-    ->first();
+            ->where('status', 'approved')
+            ->with('mentors') // ← pakai mentors (many-to-many)
+            ->latest()
+            ->first();
 
-        // ← BARU
+        $myMentors = $myUmkm ? $myUmkm->mentors : collect();
+
         $produkItems = ProdukItem::where('user_id', $user->id)
             ->orderByDesc('is_unggulan')
             ->orderBy('created_at')
@@ -33,7 +35,10 @@ class UmkmDashboardController extends Controller
 
         $availablePrograms = Program::published()->latest()->get();
 
-        $joinedProgramIds = $user->programs()->pluck('program_id')->toArray();
+        $joinedProgramIds = \DB::table('pendaftaran_programs')
+        ->where('user_id', $user->id)
+        ->pluck('program_id')
+        ->toArray();
 
         $stats = [
             'total_produk'    => $myProducts->count(),
@@ -45,20 +50,19 @@ class UmkmDashboardController extends Controller
         return view('profile.dashboard-umkm', compact(
             'user',
             'myProducts',
-            'myUmkm',        // ← BARU
-            'produkItems',   // ← BARU
+            'myUmkm',
+            'myMentors', // ← BARU
+            'produkItems',
             'availablePrograms',
             'joinedProgramIds',
             'stats',
         ));
     }
 
-    // Fungsi saat UMKM klik tombol "Daftar"
     public function joinProgram($id)
     {
         $user = Auth::user();
 
-        // Cek mencegah duplikasi data
         if (!$user->programs()->where('program_id', $id)->exists()) {
             $user->programs()->attach($id, ['status' => 'joined']);
         }
@@ -67,87 +71,114 @@ class UmkmDashboardController extends Controller
     }
 
     // =========================================================
-    // 🌟 FUNGSI UNTUK MENGHUBUNGKAN UMKM KE MENTOR
+    // PILIH MENTOR (multi-mentor via pivot)
     // =========================================================
     public function pilihMentor($mentorId)
     {
         $user = Auth::user();
 
-        // 1. Ambil data UMKM (produk) milik user yang sedang login
-        $umkm = Produk::where('user_id', $user->id)->first();
+        $umkm = Produk::where('user_id', $user->id)
+                      ->where('status', 'approved')
+                      ->first();
 
-        // 2. Validasi: Cek apakah user sudah punya akun UMKM
         if (!$umkm) {
-            return redirect()->route('umkm.mentor.detail', $mentorId)->with('error', 'Anda harus mendaftarkan profil UMKM terlebih dahulu sebelum memilih mentor.');
-        }
-        
-        // 3. Validasi: Cek apakah status UMKM sudah di-acc admin atau belum
-        if ($umkm->status !== 'approved') {
-            return redirect()->route('umkm.mentor.detail', $mentorId)->with('error', 'Profil UMKM Anda belum disetujui oleh admin. Tunggu persetujuan admin terlebih dahulu.');
+            return redirect()->route('umkm.mentor.detail', $mentorId)
+                ->with('error', 'Profil UMKM Anda belum disetujui admin.');
         }
 
-        // 4. Update kolom mentor_id di tabel produks
-        $umkm->update([
-            'mentor_id' => $mentorId
-        ]);
+        $mentor = Mentor::where('status', 'approved')->find($mentorId);
 
-        return redirect()->route('umkm.mentor.detail', $mentorId)->with('success', 'Berhasil terhubung dengan Mentor pendamping!');
+        if (!$mentor) {
+            return redirect()->route('umkm.mentor.detail', $mentorId)
+                ->with('error', 'Mentor tidak ditemukan.');
+        }
+
+        // Cek sudah terhubung
+        if ($umkm->mentors()->where('mentor_id', $mentorId)->exists()) {
+            return redirect()->route('umkm.mentor.detail', $mentorId)
+                ->with('error', 'Anda sudah terhubung dengan mentor ini.');
+        }
+
+        $umkm->mentors()->attach($mentorId);
+
+        return redirect()->route('umkm.mentor.detail', $mentorId)
+            ->with('success', 'Berhasil terhubung dengan mentor ' . ($mentor->full_name ?? $mentor->nama) . '!');
     }
 
     // =========================================================
-    // 🌟 TAMBAHAN BARU: MANAJEMEN EDIT & UPDATE PRODUK UMKM
+    // LEPAS MENTOR
     // =========================================================
-    
-    // 1. Menampilkan Halaman Form Edit
+    public function lepasMentor($mentorId)
+    {
+        $user = Auth::user();
+
+        $umkm = Produk::where('user_id', $user->id)
+                      ->where('status', 'approved')
+                      ->first();
+
+        if (!$umkm) {
+            return back()->with('error', 'Profil UMKM tidak ditemukan.');
+        }
+
+        $umkm->mentors()->detach($mentorId);
+
+        return back()->with('success', 'Mentor berhasil dilepas.');
+    }
+
+    // =========================================================
+    // EDIT & UPDATE PRODUK UMKM
+    // =========================================================
     public function editProduk($id)
     {
-        // Cari produk berdasarkan ID dan pastikan milik user yang sedang login
-        $product = Produk::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
-        
+        $product = Produk::where('id', $id)
+                         ->where('user_id', Auth::id())
+                         ->firstOrFail();
+
         return view('profile.edit-produk', compact('product'));
     }
 
-    // 2. Memproses Perubahan Data (Form Submission)
     public function updateProduk(Request $request, $id)
-{
-    $product = Produk::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+    {
+        $product = Produk::where('id', $id)
+                         ->where('user_id', Auth::id())
+                         ->firstOrFail();
 
-    $request->validate([
-        'nama'        => 'required|string|max:255',
-        'kategori'    => 'required',
-        'deskripsi'   => 'required|string',
-        'kontak'      => 'nullable|string|max:20',
-        'foto_produk' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
-        'logo'        => 'nullable|image|max:2048',
-    ]);
+        $request->validate([
+            'nama'        => 'required|string|max:255',
+            'kategori'    => 'required',
+            'deskripsi'   => 'required|string',
+            'kontak'      => 'nullable|string|max:20',
+            'foto_produk' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+            'logo'        => 'nullable|image|max:2048',
+        ]);
 
-    if ($request->hasFile('logo')) {
-    if ($produk->logo) {
-        Storage::disk('public')->delete($produk->logo);
-    }
-    $produk->logo = $request->file('logo')->store('produk/logo', 'public');
-}
-
-    $data = [
-        'nama'      => $request->nama,
-        'kategori'  => $request->kategori,
-        'deskripsi' => $request->deskripsi,
-        'kontak'    => $request->kontak,
-        // ← Kalau sudah approved sebelumnya, tetap approved. Kalau belum, tetap pending.
-        'status'    => $product->status === 'approved' ? 'approved' : 'pending',
-    ];
-
-    if ($request->hasFile('foto_produk')) {
-        if ($product->foto_produk) {
-            Storage::disk('public')->delete($product->foto_produk);
+        // Update logo
+        if ($request->hasFile('logo')) {
+            if ($product->logo) {
+                Storage::disk('public')->delete($product->logo);
+            }
+            $product->logo = $request->file('logo')->store('produk/logo', 'public');
         }
-        $data['foto_produk'] = $request->file('foto_produk')->store('produk-pict', 'public');
+
+        $data = [
+            'nama'      => $request->nama,
+            'kategori'  => $request->kategori,
+            'deskripsi' => $request->deskripsi,
+            'kontak'    => $request->kontak,
+            'status'    => $product->status === 'approved' ? 'approved' : 'pending',
+        ];
+
+        // Update foto produk
+        if ($request->hasFile('foto_produk')) {
+            if ($product->foto_produk) {
+                Storage::disk('public')->delete($product->foto_produk);
+            }
+            $data['foto_produk'] = $request->file('foto_produk')->store('produk-pict', 'public');
+        }
+
+        $product->update($data);
+
+        return redirect()->route('dashboard-umkm')
+            ->with('success', 'Data usaha berhasil diperbarui!');
     }
-
-    $product->update($data);
-
-    return redirect()->route('dashboard-umkm')
-        ->with('success', 'Data usaha berhasil diperbarui!');
-}
-
 }

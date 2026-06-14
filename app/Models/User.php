@@ -156,11 +156,10 @@ class User extends Authenticatable
      * Relasi Banyak-ke-Banyak (BelongsToMany) ke program pelatihan yang diikuti oleh UMKM
      */
     public function programs()
-    {
-        // Berdasarkan file rute web.php kemarin, model yang digunakan untuk pelatihan trainer kemungkinan besar bernama Program.
-        // Jika ternyata nama modelnya adalah Pelatihan, silakan ganti \App\Models\Program::class menjadi \App\Models\Pelatihan::class
-        return $this->belongsToMany(\App\Models\Program::class, 'program_user')
-                    ->withPivot('status')
-                    ->withTimestamps();
-    }
+{
+    return $this->belongsToMany(\App\Models\Program::class, 'program_user', 'user_id', 'program_id')
+                ->using(\App\Pivots\ProgramUser::class)
+                ->withPivot('status')
+                ->withTimestamps();
+}
 }

@@ -8,6 +8,16 @@
 <title>Dashboard Mentor – KAJI Indonesia</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
 <style>
+
+/* ============ PRODUK GRID MODAL ============ */
+.produk-grid-modal { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.produk-card-modal { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.produk-card-modal-img { width: 100%; height: 120px; object-fit: cover; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 32px; }
+.produk-card-modal-img img { width: 100%; height: 100%; object-fit: cover; }
+.produk-card-modal-body { padding: 10px 12px; }
+.produk-card-modal-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.produk-card-modal-price { font-size: 12px; color: var(--accent); font-weight: 700; }
+.produk-card-modal-desc { font-size: 11px; color: var(--text-muted); margin-top: 3px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 :root {
     --bg: #f8f4ef;
     --surface: #ffffff;
@@ -423,17 +433,23 @@ if ($mentor && !empty($mentor->spesialisasi)) {
                 $initial = strtoupper(substr($umkm->nama_usaha ?? $umkm->nama ?? 'U', 0, 1));
             @endphp
             <div class="umkm-card">
-                <div class="umkm-card-header">
-                    <div class="umkm-avatar">
-                        @if($umkm->foto_produk)
-                            <img src="{{ asset('storage/' . $umkm->foto_produk) }}" alt="{{ $umkm->nama_usaha ?? $umkm->nama }}">
-                        @else
-                            {{ $initial }}
-                        @endif
-                    </div>
-                    <div style="flex:1;min-width:0">
+            <div class="umkm-card-header">
+    <div class="umkm-avatar">
+        @if($umkm->logo)
+            <img src="{{ asset('storage/' . $umkm->logo) }}"
+                 alt="{{ $umkm->nama_usaha ?? $umkm->nama }}"
+                 style="width:100%;height:100%;object-fit:contain;background:#fff;padding:4px;">
+        @elseif($umkm->foto_produk)
+            <img src="{{ asset('storage/' . $umkm->foto_produk) }}"
+                 alt="{{ $umkm->nama_usaha ?? $umkm->nama }}"
+                 style="width:100%;height:100%;object-fit:cover;">
+        @else
+            {{ $initial }}
+        @endif
+    </div>
+    <div style="flex:1;min-width:0">
                         <div class="umkm-name">{{ $umkm->nama_usaha ?? $umkm->nama ?? '-' }}</div>
-                        <div class="umkm-owner">{{ $owner?->name ?? 'Pemilik tidak diketahui' }}</div>
+                        <div class="umkm-owner">{{ $owner?->name ?? '-' }}</div>
                     </div>
                 </div>
                 <div class="umkm-card-body">
@@ -455,15 +471,21 @@ if ($mentor && !empty($mentor->spesialisasi)) {
                     </div>
                 </div>
                 <div class="umkm-card-footer">
-                    <span class="umkm-date">Bergabung {{ \Carbon\Carbon::parse($umkm->created_at)->translatedFormat('d M Y') }}</span>
-                    @if($owner?->phone)
-                    <a href="https://wa.me/{{ preg_replace('/\D/','',$owner->phone) }}" target="_blank"
-                       class="btn btn-sm" style="background:#e8f5e4;color:#25d366;border:1px solid #a7d7c566;gap:5px">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.12 1.524 5.847L.073 23.927l6.224-1.427C7.88 23.445 9.895 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.655-.52-5.165-1.424l-.37-.22-3.694.847.875-3.596-.242-.373A9.935 9.935 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-                        WA
-                    </a>
-                    @endif
-                </div>
+    <span class="umkm-date">Bergabung {{ \Carbon\Carbon::parse($umkm->created_at)->translatedFormat('d M Y') }}</span>
+    <div style="display:flex;gap:6px;align-items:center;">
+        <button onclick="lihatProdukUmkm({{ $umkm->id }}, '{{ addslashes($umkm->nama_usaha ?? $umkm->nama) }}')"
+                class="btn btn-sm btn-outline" style="font-size:11px;padding:5px 10px;">
+            📦 Produk
+        </button>
+        @if($owner?->phone)
+        <a href="https://wa.me/{{ preg_replace('/\D/','',$owner->phone) }}" target="_blank"
+           class="btn btn-sm" style="background:#e8f5e4;color:#25d366;border:1px solid #a7d7c566;gap:5px;padding:5px 11px">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.12 1.524 5.847L.073 23.927l6.224-1.427C7.88 23.445 9.895 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.655-.52-5.165-1.424l-.37-.22-3.694.847.875-3.596-.242-.373A9.935 9.935 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+            WA
+        </a>
+        @endif
+    </div>
+</div>
             </div>
             @endforeach
         </div>
@@ -505,13 +527,19 @@ if ($mentor && !empty($mentor->spesialisasi)) {
             @endphp
             <div class="umkm-card" data-nama="{{ strtolower($namaUmkm) }}" data-owner="{{ strtolower($owner?->name ?? '') }}">
                 <div class="umkm-card-header">
-                    <div class="umkm-avatar">
-                        @if($umkm->foto_produk)
-                            <img src="{{ asset('storage/' . $umkm->foto_produk) }}" alt="{{ $namaUmkm }}">
-                        @else
-                            {{ $initial }}
-                        @endif
-                    </div>
+                <div class="umkm-avatar">
+    @if($umkm->logo)
+        <img src="{{ asset('storage/' . $umkm->logo) }}"
+             alt="{{ $namaUmkm }}"
+             style="width:100%;height:100%;object-fit:contain;background:#fff;padding:4px;">
+    @elseif($umkm->foto_produk)
+        <img src="{{ asset('storage/' . $umkm->foto_produk) }}"
+             alt="{{ $namaUmkm }}"
+             style="width:100%;height:100%;object-fit:cover;">
+    @else
+        {{ $initial }}
+    @endif
+</div>
                     <div style="flex:1;min-width:0">
                         <div class="umkm-name">{{ $namaUmkm }}</div>
                         <div class="umkm-owner">{{ $owner?->name ?? '-' }}</div>
@@ -540,17 +568,22 @@ if ($mentor && !empty($mentor->spesialisasi)) {
                     @endif
                 </div>
                 <div class="umkm-card-footer">
-                    <span class="umkm-date">{{ \Carbon\Carbon::parse($umkm->created_at)->translatedFormat('d M Y') }}</span>
-                    <div style="display:flex;gap:6px">
-                        @if($owner?->phone)
-                        <a href="https://wa.me/{{ preg_replace('/\D/','',$owner->phone) }}" target="_blank"
-                           class="btn btn-sm" style="background:#e8f5e4;color:#25d366;border:1px solid #a7d7c566;gap:5px;padding:5px 11px">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.12 1.524 5.847L.073 23.927l6.224-1.427C7.88 23.445 9.895 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.655-.52-5.165-1.424l-.37-.22-3.694.847.875-3.596-.242-.373A9.935 9.935 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-                            WA
-                        </a>
-                        @endif
-                    </div>
-                </div>
+    <span class="umkm-date">{{ \Carbon\Carbon::parse($umkm->created_at)->translatedFormat('d M Y') }}</span>
+    <div style="display:flex;gap:6px;align-items:center;">
+        {{-- ← TAMBAH INI --}}
+        <button onclick="lihatProdukUmkm({{ $umkm->id }}, '{{ addslashes($namaUmkm) }}')"
+                class="btn btn-sm btn-outline" style="font-size:11px;padding:5px 10px;">
+            📦 Produk
+        </button>
+        @if($owner?->phone)
+        <a href="https://wa.me/{{ preg_replace('/\D/','',$owner->phone) }}" target="_blank"
+           class="btn btn-sm" style="background:#e8f5e4;color:#25d366;border:1px solid #a7d7c566;gap:5px;padding:5px 11px">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.12 1.524 5.847L.073 23.927l6.224-1.427C7.88 23.445 9.895 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.655-.52-5.165-1.424l-.37-.22-3.694.847.875-3.596-.242-.373A9.935 9.935 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+            WA
+        </a>
+        @endif
+    </div>
+</div>
             </div>
             @endforeach
         </div>
@@ -804,6 +837,27 @@ $sosmedCfgMentor = [
     </div>
 
 </div>{{-- /content --}}
+{{-- ============ MODAL: PRODUK UMKM ============ --}}
+<div class="modal-overlay" id="modal-produk-umkm">
+    <div class="modal" style="width:680px;max-width:95vw;">
+        <div class="modal-header">
+            <div class="modal-title">
+                Produk UMKM
+                <small id="modal-produk-umkm-nama">-</small>
+            </div>
+            <button class="modal-close" onclick="closeModal('modal-produk-umkm')">×</button>
+        </div>
+        <div id="modal-produk-umkm-body" style="min-height:120px;">
+            <div style="text-align:center;padding:40px;color:var(--text-muted)">
+                <div style="font-size:32px;margin-bottom:8px">⏳</div>
+                Memuat produk...
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-ghost" onclick="closeModal('modal-produk-umkm')">Tutup</button>
+        </div>
+    </div>
+</div>
 </main>
 
 {{-- ============ MODAL EDIT PROFIL ============ --}}
@@ -1000,6 +1054,61 @@ if ($mentor && $mentor->sosmed) {
 </div>
 
 <script>
+/* ================================================================
+   PRODUK UMKM MODAL
+================================================================ */
+function lihatProdukUmkm(produkId, namaUmkm) {
+    document.getElementById('modal-produk-umkm-nama').textContent = namaUmkm;
+    document.getElementById('modal-produk-umkm-body').innerHTML = `
+        <div style="text-align:center;padding:40px;color:var(--text-muted)">
+            <div style="font-size:32px;margin-bottom:8px">⏳</div>
+            Memuat produk...
+        </div>`;
+    openModal('modal-produk-umkm');
+
+    fetch(`/api/mentor/produk-umkm/${produkId}`, {
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json'
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        const body = document.getElementById('modal-produk-umkm-body');
+        if (!data.length) {
+            body.innerHTML = `
+                <div style="text-align:center;padding:40px;color:var(--text-muted)">
+                    <div style="font-size:40px;margin-bottom:12px">📦</div>
+                    <div style="font-size:14px;font-weight:600;color:var(--text)">Belum ada produk</div>
+                    <div style="font-size:13px;margin-top:4px">UMKM ini belum menambahkan produk.</div>
+                </div>`;
+            return;
+        }
+        body.innerHTML = `<div class="produk-grid-modal">` +
+            data.map(p => `
+                <div class="produk-card-modal">
+                    <div class="produk-card-modal-img">
+                        ${p.foto
+                            ? `<img src="${p.foto}" alt="${p.nama}">`
+                            : '📦'}
+                    </div>
+                    <div class="produk-card-modal-body">
+                        ${p.is_unggulan ? '<span style="font-size:10px;color:#f59e0b;font-weight:700;">⭐ Unggulan</span>' : ''}
+                        <div class="produk-card-modal-name">${p.nama}</div>
+                        <div class="produk-card-modal-price">${p.harga}</div>
+                        ${p.deskripsi ? `<div class="produk-card-modal-desc">${p.deskripsi}</div>` : ''}
+                        ${p.stok ? `<div style="font-size:11px;color:var(--text-muted);margin-top:4px">Stok: ${p.stok} ${p.satuan ?? ''}</div>` : ''}
+                    </div>
+                </div>`).join('') +
+        `</div>`;
+    })
+    .catch(() => {
+        document.getElementById('modal-produk-umkm-body').innerHTML = `
+            <div style="text-align:center;padding:40px;color:var(--accent2)">
+                ⚠️ Gagal memuat produk.
+            </div>`;
+    });
+}
 /* ================================================================
    SIDEBAR TOGGLE
 ================================================================ */
@@ -1202,9 +1311,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (['beranda', 'umkm', 'ulasan', 'profil'].includes(hash)) {
         showPage(hash);
     }
-    @if(session('active_page'))
-        showPage('{{ session("active_page") }}');
-    @endif
+    
 
     // ---- Pastikan visual chip sesuai data-active dari server ----
     // (Blade sudah set inline style, tapi ini sebagai safety-net)

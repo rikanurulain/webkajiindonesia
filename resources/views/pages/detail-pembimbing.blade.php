@@ -181,34 +181,43 @@
             @endif
 
             {{-- Tombol Hubungkan dengan Mentor --}}
-            @auth
-                @php
-                    $userUmkm = \App\Models\Produk::where('user_id', auth()->id())->first();
-                @endphp
-
-                @if($userUmkm)
-                    <div class="mt-3">
-                        @if($userUmkm->mentor_id == $mentor->id)
-                            <button class="w-full bg-blue-100 text-blue-700 text-sm font-semibold py-2.5 px-4 rounded-lg cursor-not-allowed flex items-center justify-center gap-2" disabled>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                </svg>
-                                Terhubung sebagai Pendamping
-                            </button>
-                        @elseif(!empty($userUmkm->mentor_id))
-                            <button class="w-full bg-gray-200 text-gray-500 text-sm font-semibold py-2.5 px-4 rounded-lg cursor-not-allowed text-center" disabled>
-                                Sudah Memiliki Mentor Lain
-                            </button>
-                            @else
-    <button type="button"
-            onclick="document.getElementById('modalHubungMentor').classList.remove('hidden')"
-            class="w-full bg-orange-400 hover:bg-orange-500 text-white text-sm font-semibold py-2.5 px-4 rounded-lg transition duration-200 shadow-sm text-center">
-        Hubungkan dengan Mentor
-    </button>
-@endif
-                    </div>
-                @endif
-            @endauth
+@auth
+    @php
+        $userUmkm = \App\Models\Produk::where('user_id', auth()->id())
+                        ->where('status', 'approved')
+                        ->with('mentors')
+                        ->first();
+        $sudahTerhubung = $userUmkm && $userUmkm->mentors->contains($mentor->id);
+    @endphp
+    @if($userUmkm)
+        @if($sudahTerhubung)
+            {{-- Sudah terhubung --}}
+            <div class="mt-3 w-full flex items-center justify-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-semibold py-2.5 px-4 rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Sudah Terhubung sebagai Pendamping
+            </div>
+        @else
+            {{-- Belum terhubung — tombol menarik --}}
+            <button type="button"
+                    onclick="document.getElementById('modalHubungMentor').classList.remove('hidden')"
+                    class="mt-3 w-full group relative overflow-hidden flex items-center justify-center gap-2
+                           bg-gradient-to-r from-orange-400 to-orange-500
+                           hover:from-orange-500 hover:to-orange-600
+                           text-white text-sm font-bold py-3 px-4 rounded-xl
+                           shadow-md hover:shadow-orange-200 hover:shadow-lg
+                           transition-all duration-200 active:scale-95">
+                {{-- Efek kilap --}}
+                <span class="absolute inset-0 w-full h-full bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 skew-x-12"></span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                Hubungkan dengan Mentor Ini
+            </button>
+        @endif
+    @endif
+@endauth
         </div>
 
         {{-- ══════════════════════════════════════════
@@ -251,52 +260,93 @@
         </div>
 
         {{-- ══════════════════════════════════════════
-             KANAN: UMKM Terhubung
-        ══════════════════════════════════════════ --}}
-        <div class="bg-white p-6 rounded-xl shadow-sm">
-            <div class="mb-4">
-                <h3 class="font-semibold text-gray-900">UMKM Didampingi</h3>
-            </div>
+     KANAN: UMKM Terhubung
+══════════════════════════════════════════ --}}
+<div class="bg-white p-6 rounded-xl shadow-sm">
+    <div class="mb-4">
+        <h3 class="font-semibold text-gray-900">UMKM Didampingi</h3>
+    </div>
 
-            @if($connectedUmkm->isEmpty())
-                <div class="flex flex-col items-center justify-center py-8 text-center">
-                    <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                        </svg>
-                    </div>
-                    <p class="text-gray-400 text-xs">Belum ada UMKM yang terhubung</p>
-                </div>
+    @if($connectedUmkm->isEmpty())
+        <div class="flex flex-col items-center justify-center py-8 text-center">
+            <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+            </div>
+            <p class="text-gray-400 text-xs">Belum ada UMKM yang terhubung</p>
+        </div>
+    @else
+        <div class="space-y-3 max-h-80 overflow-y-auto pr-1">
+            @foreach($connectedUmkm as $umkm)
+            @php
+                // Ambil produk unggulan milik UMKM ini
+                $itemUnggulan = \App\Models\ProdukItem::where('produk_id', $umkm->id)
+                    ->where('is_unggulan', true)
+                    ->first();
+                // Fallback ke produk item pertama jika tidak ada unggulan
+                $itemFallback = $itemUnggulan ?? \App\Models\ProdukItem::where('produk_id', $umkm->id)->first();
+            @endphp
+
+            @if($itemFallback)
+                {{-- Ada produk item → bisa diklik --}}
+                <a href="{{ route('produk.show', $itemFallback->id) }}"
+                   class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg hover:bg-emerald-50 hover:shadow-sm transition group">
             @else
-                <div class="space-y-3 max-h-80 overflow-y-auto pr-1">
-                    @foreach($connectedUmkm as $umkm)
-                    <a href="{{ route('produk.show', $umkm->id) }}"
-                       class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg hover:bg-emerald-50 hover:shadow-sm transition group">
-                        @if($umkm->logo)
-                            <img src="{{ asset('storage/' . $umkm->logo) }}"
-                                 alt="{{ $umkm->nama }}"
-                                 class="w-10 h-10 rounded-lg object-cover flex-shrink-0 border border-gray-100">
-                        @else
-                            <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-sm flex-shrink-0">
-                                {{ strtoupper(substr($umkm->nama ?? 'U', 0, 2)) }}
-                            </div>
-                        @endif
-                        <div class="min-w-0 flex-1">
-                            <p class="text-sm font-semibold text-gray-900 truncate group-hover:text-emerald-700 transition">{{ $umkm->nama }}</p>
+                {{-- Tidak ada produk item → tidak bisa diklik, tampil saja --}}
+                <div class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg opacity-60 cursor-default">
+            @endif
+                    {{-- Logo / Avatar UMKM --}}
+                    @if($umkm->logo)
+                        <img src="{{ asset('storage/' . $umkm->logo) }}"
+                             alt="{{ $umkm->nama }}"
+                             class="w-10 h-10 rounded-lg object-cover flex-shrink-0 border border-gray-100">
+                    @elseif($itemFallback?->foto)
+                        <img src="{{ asset('storage/' . $itemFallback->foto) }}"
+                             alt="{{ $umkm->nama }}"
+                             class="w-10 h-10 rounded-lg object-cover flex-shrink-0 border border-gray-100">
+                    @else
+                        <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-sm flex-shrink-0">
+                            {{ strtoupper(substr($umkm->nama ?? 'U', 0, 2)) }}
+                        </div>
+                    @endif
+
+                    <div class="min-w-0 flex-1">
+                        <p class="text-sm font-semibold text-gray-900 truncate {{ $itemFallback ? 'group-hover:text-emerald-700' : '' }} transition">
+                            {{ $umkm->nama }}
+                        </p>
+                        <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
                             @if($umkm->kategori)
-                                <span class="inline-block bg-white text-gray-400 text-xs px-2 py-0.5 rounded-full border border-gray-100 mt-0.5">
+                                <span class="inline-block bg-white text-gray-400 text-xs px-2 py-0.5 rounded-full border border-gray-100">
                                     {{ $umkm->kategori }}
                                 </span>
                             @endif
+                            @if($itemUnggulan)
+                                <span class="inline-block bg-amber-50 text-amber-600 text-xs px-2 py-0.5 rounded-full border border-amber-100">
+                                    ⭐ {{ $itemUnggulan->nama }}
+                                </span>
+                            @elseif(!$itemFallback)
+                                <span class="text-xs text-gray-300">Belum ada produk</span>
+                            @endif
                         </div>
+                    </div>
+
+                    @if($itemFallback)
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-300 group-hover:text-emerald-500 transition flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
                         </svg>
-                    </a>
-                    @endforeach
+                    @endif
+
+            @if($itemFallback)
+                </a>
+            @else
                 </div>
             @endif
+
+            @endforeach
         </div>
+    @endif
+</div>
 
     </div>
 

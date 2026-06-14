@@ -83,9 +83,10 @@ class Mentor extends Model
      * UMKM (Produk) yang terhubung dengan mentor ini
      */
     public function produks()
-    {
-        return $this->hasMany(Produk::class, 'mentor_id');
-    }
+{
+    return $this->belongsToMany(Produk::class, 'produk_mentor', 'mentor_id', 'produk_id')
+                ->withTimestamps();
+}
 
     // GANTI nama accessor ini:
 public function getDisplayedSpesialisasiAttribute(): ?string
@@ -122,4 +123,6 @@ public function getDisplayedSpesialisasiAttribute(): ?string
     {
         return $this->ulasanList()->count();
     }
+
+    
 }

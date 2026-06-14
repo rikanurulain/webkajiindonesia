@@ -80,4 +80,16 @@ public function items()
 {
     return $this->hasMany(ProdukItem::class, 'produk_id');
 }
+
+// Relasi baru: banyak mentor (many-to-many)
+public function mentors()
+{
+    return $this->belongsToMany(Mentor::class, 'produk_mentor', 'produk_id', 'mentor_id')
+                ->withTimestamps();
+}
+
+public function user()
+{
+    return $this->belongsTo(\App\Models\User::class, 'user_id');
+}
 }

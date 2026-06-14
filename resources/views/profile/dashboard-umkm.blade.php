@@ -357,66 +357,181 @@
     {{-- ============ BERANDA ============ --}}
     <div class="page-section active" id="page-beranda">
 
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon green">🛍️</div>
-          <div class="stat-label">Total UMKM</div>
-          <div class="stat-value">{{ $stats['total_produk'] }}</div>
-          <div class="stat-sub">{{ $stats['pending_produk'] }} pending persetujuan</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon orange">📦</div>
-          <div class="stat-label">Total Produk</div>
-          <div class="stat-value">{{ $produkItems->count() }}</div>
-          <div class="stat-sub">
+    <div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon green">📦</div>
+        <div class="stat-label">Total Produk</div>
+        <div class="stat-value">{{ $produkItems->count() }}</div>
+        <div class="stat-sub">
             @php $unggulan = $produkItems->where('is_unggulan', true)->first(); @endphp
             {{ $unggulan ? '⭐ ' . $unggulan->nama : 'Belum ada produk unggulan' }}
-          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon blue">📋</div>
-          <div class="stat-label">Program Diikuti</div>
-          <div class="stat-value">{{ $stats['program_diikuti'] }}</div>
-          <div class="stat-sub">Terdaftar aktif</div>
-        </div>
-      </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon blue">👨‍🏫</div>
+        <div class="stat-label">Mentor Aktif</div>
+        <div class="stat-value">{{ $myMentors->count() }}</div>
+        <div class="stat-sub">{{ $myMentors->count() > 0 ? $myMentors->first()->full_name ?? $myMentors->first()->nama : 'Belum ada mentor' }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon orange">📋</div>
+        <div class="stat-label">Program Diikuti</div>
+        <div class="stat-value">{{ $stats['program_diikuti'] }}</div>
+        <div class="stat-sub">Terdaftar aktif</div>
+    </div>
+</div>
 
       {{-- Mentor box --}}
-      @php $myUmkmData = $myProducts->first(); @endphp
-      @if($myUmkmData && $myUmkmData->mentor_id && $myUmkmData->mentor)
-        <div class="stat-card mentor-active-box" style="margin-bottom:32px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;">
-          <div style="display:flex;align-items:center;gap:16px;">
-            <div class="stat-icon green" style="margin-bottom:0;font-size:22px;width:48px;height:48px;border-radius:50%;">👨‍🏫</div>
-            <div>
-              <div class="stat-label" style="font-size:10px;color:var(--accent);font-weight:700;letter-spacing:1.5px;">Mentor Pendamping Anda</div>
-              <div style="font-size:17px;font-weight:700;color:var(--text);margin-top:2px;">{{ $myUmkmData->mentor->full_name ?? $myUmkmData->mentor->nama }}</div>
-              <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">
-                📞 {{ $myUmkmData->mentor->phone ?? '-' }} &nbsp;|&nbsp; 📧 {{ $myUmkmData->mentor->email ?? '-' }}
-              </div>
-            </div>
-          </div>
-          @if($myUmkmData->mentor->phone)
-            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $myUmkmData->mentor->phone) }}"
-               target="_blank" class="btn btn-primary"
-               style="font-size:12px;padding:8px 16px;border-radius:8px;background:#25d366;box-shadow:none;">
-               💬 Chat Konsultasi
-            </a>
-          @endif
+      @if($myMentors->count() > 0)
+    <div style="margin-bottom:32px;">
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:12px;">
+            👨‍🏫 Mentor Pendamping Anda ({{ $myMentors->count() }})
         </div>
-      @else
-        <div class="stat-card mentor-empty-box" style="margin-bottom:32px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;background:#fffcfb;">
-          <div style="display:flex;align-items:center;gap:16px;">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+            @foreach($myMentors as $m)
+            <div class="stat-card mentor-active-box" style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px 20px;">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <div style="width:44px;height:44px;border-radius:50%;overflow:hidden;background:var(--accent-light);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);">
+                        @if($m->white_bg_photo)
+                            <img src="{{ asset('storage/' . $m->white_bg_photo) }}" style="width:100%;height:100%;object-fit:cover;">
+                        @elseif($m->foto)
+                            <img src="{{ asset('storage/' . $m->foto) }}" style="width:100%;height:100%;object-fit:cover;">
+                        @else
+                            {{ strtoupper(substr($m->full_name ?? $m->nama, 0, 2)) }}
+                        @endif
+                    </div>
+                    <div>
+                    <div style="font-size:15px;font-weight:700;color:var(--text);">{{ $m->full_name ?? $m->nama }}</div>
+
+{{-- Kontak --}}
+<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">
+    📞 {{ $m->phone ?? '-' }} &nbsp;|&nbsp; 📧 {{ $m->email ?? '-' }}
+</div>
+
+{{-- Spesialisasi --}}
+@php
+    $mSpes = [];
+    $rawMSpes = $m->spesialisasi;
+    if (is_array($rawMSpes)) {
+        $mSpes = array_values(array_filter(array_map('trim', $rawMSpes)));
+    } elseif (is_string($rawMSpes) && $rawMSpes) {
+        $dec = json_decode($rawMSpes, true);
+        $mSpes = is_array($dec)
+            ? array_values(array_filter(array_map('trim', $dec)))
+            : array_values(array_filter(array_map('trim', explode(',', $rawMSpes))));
+    }
+@endphp
+@if(count($mSpes) > 0)
+<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+    @foreach(array_slice($mSpes, 0, 3) as $s)
+    <span style="display:inline-block;background:var(--accent-light);color:var(--accent);
+                 font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;
+                 text-transform:uppercase;letter-spacing:.5px;">
+        {{ $s }}
+    </span>
+    @endforeach
+    @if(count($mSpes) > 3)
+                    <span style="font-size:10px;color:var(--text-muted);align-self:center;">
+                        +{{ count($mSpes) - 3 }} lainnya
+                    </span>
+                    @endif
+                </div>
+                @endif
+
+                    </div>{{-- ← tutup div info kiri --}}
+                </div>{{-- ← tutup div flex kiri (foto + info) --}}
+
+                {{-- ── KANAN: Sosmed + Chat + Lepas ── --}}
+                <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+
+                @php
+                    $mSosmed = [];
+                    if (!empty($m->sosmed)) {
+                        $dec = is_array($m->sosmed) ? $m->sosmed : json_decode($m->sosmed, true);
+                        $mSosmed = is_array($dec) ? $dec : [];
+                    }
+                    $mSosmedCfg = [
+                        'instagram' => [
+                            'prefix' => 'https://instagram.com/',
+                            'title'  => 'Instagram',
+                            'svg'    => '<svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>',
+                            'bg'     => 'linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)',
+                        ],
+                        'twitter' => [
+                            'prefix' => 'https://x.com/',
+                            'title'  => 'X / Twitter',
+                            'svg'    => '<svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
+                            'bg'     => '#000',
+                        ],
+                        'linkedin' => [
+                            'prefix' => 'https://linkedin.com/in/',
+                            'title'  => 'LinkedIn',
+                            'svg'    => '<svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>',
+                            'bg'     => '#0077b5',
+                        ],
+                        'youtube' => [
+                            'prefix' => 'https://youtube.com/@',
+                            'title'  => 'YouTube',
+                            'svg'    => '<svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>',
+                            'bg'     => '#ff0000',
+                        ],
+                    ];
+                @endphp
+
+                @foreach($mSosmedCfg as $key => $cfg)
+                    @if(!empty($mSosmed[$key]))
+                    @php
+                        $val = $mSosmed[$key];
+                        $url = str_starts_with($val, 'http') ? $val : ($cfg['prefix'] . ltrim($val, '/'));
+                    @endphp
+                    <a href="{{ $url }}" target="_blank" rel="noopener noreferrer"
+                       title="{{ $cfg['title'] }}"
+                       style="display:inline-flex;align-items:center;justify-content:center;
+                              width:30px;height:30px;border-radius:8px;
+                              background:{{ $cfg['bg'] }};color:#fff;
+                              text-decoration:none;flex-shrink:0;opacity:.9;transition:opacity .2s;"
+                       onmouseover="this.style.opacity='1';this.style.transform='translateY(-1px)'"
+                       onmouseout="this.style.opacity='.9';this.style.transform='translateY(0)'">
+                        {!! $cfg['svg'] !!}
+                    </a>
+                    @endif
+                @endforeach
+
+                {{-- Chat WA --}}
+                @if($m->phone)
+                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $m->phone) }}"
+                   target="_blank" class="btn btn-sm"
+                   style="background:#25d366;color:#fff;font-size:12px;border-radius:8px;">
+                   💬 Chat
+                </a>
+                @endif
+
+                {{-- Lepas --}}
+                <button type="button"
+                        onclick="bukaMOdalLepasMentor('{{ $m->id }}', '{{ addslashes($m->full_name ?? $m->nama) }}')"
+                        class="btn btn-danger btn-sm" style="font-size:12px;">
+                    Lepas
+                </button>
+
+                </div>{{-- ← tutup div kanan --}}
+            </div>{{-- ← tutup stat-card --}}
+            @endforeach
+        </div>
+    </div>
+@else
+    <div class="stat-card mentor-empty-box" style="margin-bottom:32px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;background:#fffcfb;">
+        <div style="display:flex;align-items:center;gap:16px;">
             <div class="stat-icon orange" style="margin-bottom:0;font-size:22px;width:48px;height:48px;border-radius:50%;">📢</div>
             <div>
-              <div style="font-size:15px;font-weight:700;color:var(--text);">Anda Belum Memiliki Mentor Pendamping</div>
-              <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Hubungkan unit UMKM Anda dengan pembimbing terbaik kami untuk konsultasi gratis.</div>
+                <div style="font-size:15px;font-weight:700;color:var(--text);">Anda Belum Memiliki Mentor Pendamping</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Hubungkan UMKM Anda dengan pembimbing terbaik kami. Bisa lebih dari satu!</div>
             </div>
-          </div>
-          <a href="{{ route('umkm.pembimbing') }}" class="btn btn-ghost" style="font-size:12px;padding:8px 16px;border-radius:8px;border-color:var(--accent2);color:var(--accent2);">
-            Cari Mentor →
-          </a>
         </div>
-      @endif
+        <a href="{{ route('umkm.pembimbing') }}" class="btn btn-ghost" style="font-size:12px;padding:8px 16px;border-radius:8px;border-color:var(--accent2);color:var(--accent2);">
+            Cari Mentor →
+        </a>
+    </div>
+@endif
 
       {{-- Produk unggulan di beranda --}}
       @if($unggulan)
@@ -665,17 +780,36 @@
             </tr>
           </thead>
           <tbody>
-            @forelse($availablePrograms as $program)
-            <tr>
-              <td><strong>{{ $program->judul }}</strong></td>
-              <td>{{ $program->trainer->name ?? 'Trainer Profesional' }}</td>
-              <td><span style="text-transform:capitalize">{{ $program->tipe }}</span></td>
-              <td>{{ $program->tanggal ? $program->tanggal->translatedFormat('d M Y') : '-' }}</td>
-              <td><span class="badge badge-approved"><span class="badge-dot"></span>Dibuka</span></td>
-              <td>
-                <a href="{{ route('pelatihan.detail', $program->id) }}" class="btn btn-primary btn-sm" style="text-decoration:none;">Detail</a>
-              </td>
-            </tr>
+          @forelse($availablePrograms as $program)
+<tr>
+  <td>
+    <strong>{{ $program->judul }}</strong>
+    @if(in_array($program->id, $joinedProgramIds))
+      <div style="margin-top:4px;">
+        <span class="badge badge-approved" style="font-size:10px;">
+          <span class="badge-dot"></span>Sudah Terdaftar
+        </span>
+      </div>
+    @endif
+  </td>
+  <td>{{ $program->trainer->name ?? 'Trainer Profesional' }}</td>
+  <td><span style="text-transform:capitalize">{{ $program->tipe }}</span></td>
+  <td>{{ $program->tanggal ? $program->tanggal->translatedFormat('d M Y') : '-' }}</td>
+  <td>
+    @if(in_array($program->id, $joinedProgramIds))
+      <span class="badge badge-approved"><span class="badge-dot"></span>Dibuka</span>
+    @else
+      <span class="badge badge-approved"><span class="badge-dot"></span>Dibuka</span>
+    @endif
+  </td>
+  <td>
+    <a href="{{ route('pelatihan.detail', $program->id) }}" 
+       class="btn btn-sm {{ in_array($program->id, $joinedProgramIds) ? 'btn-ghost' : 'btn-primary' }}" 
+       style="text-decoration:none;">
+      {{ in_array($program->id, $joinedProgramIds) ? 'Lihat Detail' : 'Detail' }}
+    </a>
+  </td>
+</tr>
             @empty
             <tr><td colspan="6" style="text-align:center;color:#7a7065;padding:40px;">Belum ada program pelatihan aktif.</td></tr>
             @endforelse
@@ -1005,7 +1139,54 @@
 </div>
 @endif
 
+{{-- ============ MODAL: LEPAS MENTOR ============ --}}
+<div class="modal-overlay" id="modal-lepas-mentor">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <div class="modal-title">
+        Lepas Mentor?
+        <small>Tindakan ini tidak dapat dibatalkan</small>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-lepas-mentor')">×</button>
+    </div>
+
+    <div style="text-align:center;padding:8px 0 20px;">
+      <div style="width:64px;height:64px;background:#fff0ed;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;">
+        👨‍🏫
+      </div>
+      <p style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;" id="modal-lepas-nama">
+        Nama Mentor
+      </p>
+      <p style="font-size:13px;color:var(--text-muted);line-height:1.6;">
+        Anda akan melepas hubungan pendampingan dengan mentor ini.<br>
+        Anda dapat menghubungkan kembali kapan saja.
+      </p>
+      <div style="margin-top:16px;padding:12px 16px;background:#fff8e1;border:1px solid #fcd34d66;border-radius:10px;font-size:12px;color:#92400e;">
+        ⚠️ Setelah dilepas, Anda tidak bisa memberi ulasan untuk mentor ini.
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-ghost" onclick="closeModal('modal-lepas-mentor')">
+        Batal
+      </button>
+      <form id="form-lepas-mentor" method="POST" action="" style="margin:0;">
+        @csrf @method('DELETE')
+        <button type="submit" class="btn btn-danger">
+          🗑 Ya, Lepas Mentor
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
 <script>
+
+  /* ── MODAL LEPAS MENTOR ── */
+function bukaMOdalLepasMentor(mentorId, mentorNama) {
+    document.getElementById('modal-lepas-nama').textContent = mentorNama;
+    document.getElementById('form-lepas-mentor').action = '/dashboard-umkm/lepas-mentor/' + mentorId;
+    openModal('modal-lepas-mentor');
+}
   /* ── NAVIGASI ── */
   function showPage(id) {
     closeSidebar();

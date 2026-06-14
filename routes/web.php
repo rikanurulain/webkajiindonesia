@@ -15,13 +15,14 @@ use App\Http\Controllers\Trainerpelatihancontroller;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\PendaftaranProgramController;
 use App\Http\Controllers\ProdukItemController;
+use App\Http\Controllers\UmkmDashboardController;
 
 // =====================
 // HALAMAN UMUM (Bebas Akses)
 // =====================
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/media', [MediaController::class, 'index'])->name('media');
-Route::get('/produk/{id}', [UmkmController::class, 'produkDetail'])->name('produk.show')->middleware('auth');
+Route::get('/produk/{id}', [UmkmController::class, 'produkDetail'])->name('produk.show');
 
 // Auth System
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -29,7 +30,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
-Route::post('/umkm/pilih-mentor/{mentorId}', [\App\Http\Controllers\UmkmDashboardController::class, 'pilihMentor'])->name('umkm.pilih-mentor');
+
 
 // Pelatihan, UMKM, Halal, Konsultan (Prefix Groups)
 Route::prefix('pelatihan')->name('pelatihan.')->group(function () {
@@ -121,6 +122,12 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/dashboard-umkm/produk/{id}/update', [\App\Http\Controllers\UmkmDashboardController::class, 'updateProduk'])
          ->name('dashboard.produk.update');
 
+    Route::post('/dashboard-umkm/pilih-mentor/{mentorId}', [UmkmDashboardController::class, 'pilihMentor'])
+         ->name('umkm.pilih-mentor');
+    Route::delete('/dashboard-umkm/lepas-mentor/{mentorId}', [UmkmDashboardController::class, 'lepasMentor'])
+         ->name('umkm.lepas-mentor');
+
+
          Route::post('/dashboard/produk-item',              [ProdukItemController::class, 'store'])->name('produk-item.store');
          Route::put('/dashboard/produk-item/{id}',          [ProdukItemController::class, 'update'])->name('produk-item.update');
          Route::delete('/dashboard/produk-item/{id}',       [ProdukItemController::class, 'destroy'])->name('produk-item.destroy');
@@ -133,12 +140,15 @@ Route::middleware(['auth'])->group(function () {
          ->middleware('trainer');
         
      // Dashboard Mentor
-         Route::get('/mentor/dashboard', [App\Http\Controllers\MentorController::class, 'index'])
-         ->name('mentor.dashboard')
-         ->middleware('mentor');
+Route::middleware('mentor')->group(function () {
+    Route::get('/mentor/dashboard', [App\Http\Controllers\MentorController::class, 'index'])
+         ->name('mentor.dashboard');
 
     Route::put('/mentor/profil/update', [App\Http\Controllers\MentorController::class, 'updateProfil'])
          ->name('mentor.profil.update');
+
+    Route::get('/api/mentor/produk-umkm/{produkId}', [App\Http\Controllers\MentorController::class, 'getProdukUmkm']);
+});
 
     // Absensi
     Route::post('/absensi/{pelatihan}/submit', [AbsensiController::class, 'submit'])
