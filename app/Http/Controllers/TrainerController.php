@@ -22,48 +22,57 @@ class TrainerController extends Controller
     // ═══════════════════════════════════════════════════════════════
 
     public function index()
-    {
-        $user = Auth::user();
-        $trainer = \App\Models\Trainer::where('user_id', $user->id)->first();
+{
+    $user    = Auth::user();
+    $trainer = \App\Models\Trainer::where('user_id', $user->id)->first();
 
-    
-        $pelatihanList = Program::where('trainer_id', $user->id)->latest()->get();
-        $eventList     = Event::where('trainer_id', $user->id)->latest()->get();
-    
-        // ✅ Pisah hitungan kurikulum dan modul
-        $totalKurikulum = $pelatihanList->where('tipe', 'kurikulum')->count();
-        $totalModul     = $pelatihanList->where('tipe', 'modul')->count();
-    
-        $totalEvent            = $eventList->count();
-        $pendingPelatihanCount = $pelatihanList->where('status', 'pending')->count();
-        $pendingEventCount     = $eventList->where('status', 'pending')->count();
-        $pendingTotal          = $pendingPelatihanCount + $pendingEventCount;
-    
-        $recentSubmissions = $pelatihanList
-        ->map(fn($item) => tap(clone $item, fn($i) => $i->tipe = $i->tipe)) // sudah ada tipe-nya
+    $pelatihanList = Program::where('trainer_id', $user->id)
+    ->latest()
+    ->get();
+
+    $eventList = Event::where('trainer_id', $user->id)
+        ->latest()
+        ->get();
+
+    $totalKurikulum        = $pelatihanList->where('tipe', 'kurikulum')->count();
+    $totalModul            = $pelatihanList->where('tipe', 'modul')->count();
+    $totalEvent            = $eventList->count();
+    $pendingPelatihanCount = $pelatihanList->where('status', 'pending')->count();
+    $pendingEventCount     = $eventList->where('status', 'pending')->count();
+    $pendingTotal          = $pendingPelatihanCount + $pendingEventCount;
+
+    $recentSubmissions = $pelatihanList
         ->concat(
-            $eventList->map(fn($item) => tap(clone $item, fn($i) => $i->tipe = 'event')) // ← fix: set tipe
+            $eventList->map(fn($item) => tap(clone $item, fn($i) => $i->tipe = 'event'))
         )
         ->sortByDesc('created_at')
         ->take(5);
 
-        $totalUlasan = \App\Models\TrainerUlasan::where('trainer_id', $user->id)->count();
+    $totalUlasan = \App\Models\TrainerUlasan::where('trainer_id', $user->id)->count();
 
-        return view('trainer.dashboard', compact(
-            'user',
-            'totalKurikulum',  
-            'totalModul',      
-            'totalEvent',
-            'pendingTotal',
-            'pendingPelatihanCount',
-            'pendingEventCount',
-            'pelatihanList',
-            'eventList',
-            'recentSubmissions',
-            'trainer',
-            'totalUlasan'  
-        ));
-    }
+    $deletedLogs = \App\Models\DeletedProgramLog::where('trainer_user_id', $user->id)
+        ->orderByDesc('deleted_at_by_admin')
+        ->get();
+
+    $activePage = session('active_page', 'dashboard');
+
+    return view('trainer.dashboard', compact(
+        'user',
+        'totalKurikulum',
+        'totalModul',
+        'totalEvent',
+        'pendingTotal',
+        'pendingPelatihanCount',
+        'pendingEventCount',
+        'pelatihanList',
+        'eventList',
+        'recentSubmissions',
+        'trainer',
+        'totalUlasan',
+        'deletedLogs',
+        'activePage',
+    ));
+}
 
     // ═══════════════════════════════════════════════════════════════
     // PROGRAM — STORE
@@ -483,6 +492,10 @@ public function exportPesertaCsv($id)
         'password_confirmation' => 'nullable|string',
     ]);
 
+    // ═══════════════════════════════════════════════════════════════
+// DELETED PROGRAM LOG — MARK AS READ
+// ═══════════════════════════════════════════════════════════════
+
     // Update users table
     $userData = $request->only(['name', 'email', 'phone']);
     if ($request->filled('password')) {
@@ -535,6 +548,54 @@ $trainer->sosmed = $sosmed;
     return back()
         ->with('success', 'Profil berhasil diperbarui.')
         ->with('active_page', 'profil');
+}
+
+public function restoreProgram($id)
+{
+    $log = \App\Models\DeletedProgramLog::where('id', $id)
+        ->where('trainer_user_id', Auth::id())
+        ->firstOrFail();
+
+    // Coba cari dengan withTrashed (soft deleted)
+    $program = Program::withTrashed()->where('id', $log->program_id)->first();
+
+    if ($program) {
+        // Data masih ada (soft deleted) — pulihkan
+        $program->restore();
+        $program->update([
+            'status'         => 'pending',
+            'catatan_admin'  => null,
+            'deleted_by'     => null,
+            'deleted_reason' => null,
+            'trainer_id'     => Auth::id(),
+        ]);
+    } else {
+        // Data sudah hard deleted — buat ulang minimal
+        Program::create([
+            'trainer_id' => Auth::id(),
+            'judul'      => $log->program_title,
+            'tipe'       => $log->program_tipe,
+            'status'     => 'pending',
+            'deskripsi'  => 'Program dipulihkan. Mohon lengkapi data kembali.',
+            'bahasa'     => 'Bahasa Indonesia',
+            'tingkat'    => 'pemula',
+            'metode'     => 'online',
+        ]);
+    }
+
+    $log->delete();
+
+    return redirect()->route('trainer.dashboard')
+        ->with('success', 'Program "' . $log->program_title . '" berhasil dipulihkan. Silakan lengkapi data program.')
+        ->with('active_page', 'program');
+}
+public function markDeletedLogRead()
+{
+    \App\Models\DeletedProgramLog::where('trainer_user_id', auth()->id())
+        ->where('is_read', false)
+        ->update(['is_read' => true]);
+
+    return response()->json(['success' => true]);
 }
     // ═══════════════════════════════════════════════════════════════
     // HELPER PRIVATE

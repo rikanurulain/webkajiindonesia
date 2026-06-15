@@ -612,45 +612,113 @@
             </div>
         </div>
         <div class="nav-section">
-            <div class="nav-label">Menu Utama</div>
-            <div class="nav-item active" onclick="showPage('beranda')">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-                Beranda
-            </div>
-            <div class="nav-item" onclick="showPage('program')">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                Program / Pelatihan
-                @if(isset($pendingPelatihanCount) && $pendingPelatihanCount > 0)
-                    <span class="nav-badge">{{ $pendingPelatihanCount }}</span>
-                @endif
-            </div>
-            <div class="nav-item" onclick="showPage('event')">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                Event
-                @if(isset($pendingEventCount) && $pendingEventCount > 0)
-                    <span class="nav-badge">{{ $pendingEventCount }}</span>
-                @endif
-            </div>
-            <div class="nav-item" onclick="showPage('ulasan')">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-                Ulasan
-                @if(isset($totalUlasan) && $totalUlasan > 0)
-                    <span class="nav-badge">{{ $totalUlasan }}</span>
-                @endif
-            </div>
-        </div>{{-- tutup nav-section Menu Utama --}}
+    <div class="nav-label">Menu Utama</div>
 
-        <div class="nav-section">
-            <div class="nav-label">Akun</div>
-            <div class="nav-item" onclick="showPage('profil')">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                Profil Saya
-            </div>
-            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="nav-item">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                Keluar
-            </a>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display:none">@csrf</form>
+    {{-- Beranda --}}
+    <div class="nav-item active" onclick="showPage('beranda')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+        </svg>
+        Beranda
+    </div>
+
+    {{-- Program --}}
+    @php
+        $badgeProgram = ($pelatihanList ?? collect())
+            ->whereIn('status', ['pending', 'rejected'])->count();
+    @endphp
+    <div class="nav-item" onclick="showPage('program')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        Program / Pelatihan
+        @if($badgeProgram > 0)
+            <span class="nav-badge">{{ $badgeProgram }}</span>
+        @endif
+    </div>
+
+    {{-- Event --}}
+    @php
+        $badgeEvent = ($eventList ?? collect())
+            ->whereIn('status', ['pending', 'rejected'])->count();
+    @endphp
+    <div class="nav-item" onclick="showPage('event')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        Event
+        @if($badgeEvent > 0)
+            <span class="nav-badge">{{ $badgeEvent }}</span>
+        @endif
+    </div>
+
+    {{-- Ulasan --}}
+    @php
+        $badgeUlasan = isset($totalUlasan) && $totalUlasan > 0 ? $totalUlasan : 0;
+    @endphp
+    <div class="nav-item" onclick="showPage('ulasan')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+        </svg>
+        Ulasan
+        @if($badgeUlasan > 0)
+        <span class="nav-badge">{{ $badgeUlasan }}</span>
+        @endif
+    </div>
+
+    {{-- Program Dihapus --}}
+    @php $unreadDeleted = $deletedLogs->where('is_read', false)->count(); @endphp
+    <div class="nav-item {{ $activePage === 'deleted' ? 'active' : '' }}"
+         onclick="showPage('deleted')" id="nav-deleted">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+        </svg>
+        Program Dihapus
+        @if($unreadDeleted > 0)
+        <span class="nav-badge" id="deleted-badge">{{ $unreadDeleted }}</span>
+        @endif
+    </div>
+
+</div>{{-- tutup nav-section Menu Utama --}}
+
+<div class="nav-section">
+    <div class="nav-label">Akun</div>
+
+    {{-- Profil Saya --}}
+    @php
+        $profilTidakLengkap = empty($trainer?->bio)
+            || empty($trainer?->foto)
+            || empty($trainer?->lokasi)
+            || empty(auth()->user()->phone);
+        $badgeProfil = $profilTidakLengkap ? 1 : 0;
+    @endphp
+    <div class="nav-item" onclick="showPage('profil')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+        </svg>
+        Profil Saya
+        @if($badgeProfil)
+        <span class="nav-badge" style="background:#457b9d" title="Profil belum lengkap">!</span>
+        @endif
+    </div>
+
+    <a href="{{ route('logout') }}"
+       onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+       class="nav-item">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        Keluar
+    </a>
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display:none">
+        @csrf
+    </form>
+</div><form id="logout-form" action="{{ route('logout') }}" method="POST" style="display:none">@csrf</form>
         </div>
         <div class="sidebar-user">
             <div class="user-card" onclick="showPage('profil')">
@@ -695,7 +763,61 @@
 
     <div class="content">
 
-        {{-- ============ BERANDA ============ --}}
+{{-- ============ NOTIFIKASI PROGRAM DIHAPUS ADMIN ============ --}}
+@if(isset($deletedLogs) && $deletedLogs->where('is_read', false)->count() > 0)
+<div id="notif-deleted-wrap"
+    style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:14px;
+           padding:16px 20px;margin-bottom:20px;box-shadow:0 2px 12px rgba(234,88,12,.08)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:36px;height:36px;border-radius:10px;background:#ffedd5;
+                        display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">
+                🗑️
+            </div>
+            <div>
+                <div style="font-size:14px;font-weight:700;color:#c2410c">
+                    Program Dihapus oleh Admin
+                </div>
+                <div style="font-size:12px;color:#9a3412;margin-top:1px">
+                    {{ $deletedLogs->where('is_read', false)->count() }} program berikut telah dihapus
+                </div>
+            </div>
+        </div>
+        <button onclick="tandaiSudahDibaca()"
+            style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;
+                   background:#ea580c;color:#fff;border:none;cursor:pointer;font-family:inherit;
+                   transition:background .15s;flex-shrink:0"
+            onmouseover="this.style.background='#c2410c'"
+            onmouseout="this.style.background='#ea580c'">
+            ✓ Tandai Sudah Dibaca
+        </button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+        @foreach($deletedLogs->where('is_read', false) as $log)
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;
+                    background:#fff;border:1px solid #fed7aa;border-radius:10px">
+            <div style="font-size:18px;flex-shrink:0">
+                {{ $log->program_tipe === 'modul' ? '📝' : '📚' }}
+            </div>
+            <div style="flex:1;min-width:0">
+                <div style="font-size:13px;font-weight:700;color:#1a1a2e">
+                    {{ $log->program_title }}
+                </div>
+                <div style="font-size:11px;color:#9a3412;margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                    <span style="background:#ffedd5;color:#c2410c;border:1px solid #fed7aa;
+                                 padding:1px 8px;border-radius:20px;font-weight:600;font-size:10px">
+                        {{ ucfirst($log->program_tipe ?? 'program') }}
+                    </span>
+                    <span>Dihapus pada {{ $log->deleted_at_by_admin->translatedFormat('d M Y, H:i') }} WIB</span>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</div>
+@endif
+
+{{-- ============ BERANDA ============ --}}
         <div class="page-section active" id="page-beranda">
             @if(session('success'))<div class="alert alert-success">✅ {{ session('success') }}</div>@endif
             @if(session('error'))<div class="alert alert-error">⚠️ {{ session('error') }}</div>@endif
@@ -1165,6 +1287,78 @@
             </ul>
         </div>
     @endif
+
+    {{-- ============ PROGRAM DIHAPUS ============ --}}
+<div class="page-section {{ $activePage === 'deleted' ? 'active' : '' }}" id="page-deleted">
+
+    <div class="section-header">
+        <div>
+            <div class="section-title">Program Dihapus Admin</div>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">
+                Program di bawah ini dihapus oleh admin. Anda bisa memulihkannya — program akan dikirim ulang sebagai pending.
+            </p>
+        </div>
+    </div>
+
+    @if($deletedLogs->isEmpty())
+        <div class="empty-state">
+            <div class="empty-icon">🗑️</div>
+            <h3>Tidak ada program yang dihapus</h3>
+            <p>Semua program Anda masih aktif.</p>
+        </div>
+    @else
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Judul Program</th>
+                        <th>Tipe</th>
+                        <th>Dihapus Pada</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($deletedLogs as $log)
+                    <tr style="{{ !$log->is_read ? 'background:#fff8f0;' : '' }}">
+                        <td>
+                            <strong>{{ $log->program_title }}</strong>
+                            @if(!$log->is_read)
+                                <span class="badge" style="background:#fff3ed;color:#e76f51;border:1px solid #e76f5133;font-size:10px;margin-left:6px;">Baru</span>
+                            @endif
+                        </td>
+                        <td>
+                            <span style="text-transform:capitalize;">{{ $log->program_tipe ?? '-' }}</span>
+                        </td>
+                        <td>
+                            {{ $log->deleted_at_by_admin
+                                ? $log->deleted_at_by_admin->translatedFormat('d M Y, H:i')
+                                : '-' }}
+                        </td>
+                        <td>
+                            <span class="badge badge-rejected">
+                                <span class="badge-dot"></span>Dihapus Admin
+                            </span>
+                        </td>
+                        <td>
+    <button type="button"
+        class="btn btn-primary btn-sm"
+        onclick="bukaModalPulihkan(
+            {{ $log->id }},
+            '{{ addslashes($log->program_title) }}',
+            '{{ ucfirst($log->program_tipe ?? 'program') }}',
+            '{{ $log->deleted_at_by_admin?->translatedFormat('d M Y, H:i') }}'
+        )">
+        ♻️ Pulihkan
+    </button>
+</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
+</div>
         {{-- ============ PROFIL ============ --}}
         <div class="page-section" id="page-profil">
             @if(session('success'))<div class="alert alert-success">✅ {{ session('success') }}</div>@endif
@@ -2673,16 +2867,30 @@ if ($trainer && $trainer->sosmed) {
     NAVIGASI
     ================================================================ */
     function showPage(id) {
-        if (window.innerWidth <= 768) closeSidebar();
-        document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        document.getElementById('page-' + id).classList.add('active');
-        const titles = { beranda:'Dashboard Trainer', program:'Program / Pelatihan', event:'Event', ulasan:'Ulasan', profil:'Profil Saya' };
-        document.getElementById('page-title').textContent = titles[id] || 'Dashboard';
-        document.querySelectorAll('.nav-item').forEach(item => {
-            if ((item.getAttribute('onclick') || '').includes("'" + id + "'")) item.classList.add('active');
+    if (window.innerWidth <= 768) closeSidebar();
+    document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    const titles = { beranda:'Dashboard Trainer', program:'Program / Pelatihan', event:'Event', ulasan:'Ulasan', deleted:'Program Dihapus', profil:'Profil Saya' }
+    document.getElementById('page-title').textContent = titles[id] || 'Dashboard';
+    document.querySelectorAll('.nav-item').forEach(item => {
+        if ((item.getAttribute('onclick') || '').includes("'" + id + "'")) item.classList.add('active');
+    });
+
+    // ← tambahkan langsung di sini
+    if (id === 'deleted') {
+        fetch('{{ route("trainer.deleted-log.mark-read") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            }
+        }).then(() => {
+            const badge = document.getElementById('deleted-badge');
+            if (badge) badge.remove();
         });
     }
+}
 
     /* ================================================================
     MODAL HELPERS
@@ -3217,7 +3425,7 @@ if ($trainer && $trainer->sosmed) {
         });
         initAbsensiTimers();
         const hash = window.location.hash.replace('#', '');
-        if (['beranda', 'program', 'event', 'profil'].includes(hash)) {
+        if (['beranda', 'program', 'event', 'ulasan', 'deleted', 'profil'].includes(hash)) {
             showPage(hash);
         } else {
             @if(session('active_page'))
@@ -3396,6 +3604,103 @@ if ($trainer && $trainer->sosmed) {
 
         reader.readAsDataURL(file);
     }
+    /* ================================================================
+TANDAI LOG DIHAPUS SUDAH DIBACA
+================================================================ */
+function tandaiSudahDibaca() {
+    fetch('/trainer/deleted-log/read', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.success) {
+            const wrap = document.getElementById('notif-deleted-wrap');
+            if (wrap) {
+                wrap.style.transition = 'opacity .3s';
+                wrap.style.opacity = '0';
+                setTimeout(() => wrap.remove(), 300);
+            }
+        }
+    })
+    .catch(() => alert('Gagal menandai. Coba lagi.'));
+}
+
+/* ================================================================
+MODAL KONFIRMASI PULIHKAN
+================================================================ */
+function bukaModalPulihkan(logId, judul, tipe, tanggalHapus) {
+    document.getElementById('pulihkan-judul').textContent = judul;
+    document.getElementById('pulihkan-meta').textContent  =
+        tipe + ' · Dihapus ' + tanggalHapus + ' WIB';
+    document.getElementById('pulihkan-icon').textContent  =
+        tipe.toLowerCase() === 'modul' ? '📝' : '📚';
+    
+    // ← GANTI BARIS INI
+    document.getElementById('form-pulihkan').action =
+        '/trainer/deleted-log/' + logId + '/restore'; // bukan /trainer/program/
+    
+    openModal('modal-pulihkan');
+}
     </script>
+    {{-- ============ MODAL KONFIRMASI PULIHKAN ============ --}}
+<div class="modal-overlay" id="modal-pulihkan">
+    <div class="modal" style="width:460px;text-align:center;padding:36px 32px">
+        <div style="width:68px;height:68px;border-radius:20px;background:#f3f0ff;
+                    display:flex;align-items:center;justify-content:center;
+                    font-size:30px;margin:0 auto 18px;border:2px solid #e9d5ff">
+            ♻️
+        </div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;
+                    color:var(--text);margin-bottom:8px">
+            Pulihkan Program?
+        </div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:22px;line-height:1.7">
+            Program akan dikirim ulang ke admin sebagai
+            <strong style="color:var(--warning)">pending</strong>
+            dan perlu disetujui kembali sebelum aktif.
+        </p>
+
+        {{-- Detail program --}}
+        <div style="background:#faf8f5;border:1.5px solid #e8e0d6;border-radius:14px;
+                    padding:14px 18px;margin-bottom:24px;text-align:left">
+            <div style="font-size:10px;font-weight:700;color:var(--text-muted);
+                        text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px">
+                Detail Program
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+                <div style="width:40px;height:40px;border-radius:10px;background:#f3f0ff;
+                            display:flex;align-items:center;justify-content:center;
+                            font-size:20px;flex-shrink:0;border:1px solid #e9d5ff"
+                     id="pulihkan-icon">📚</div>
+                <div style="min-width:0;flex:1">
+                    <div style="font-size:14px;font-weight:700;color:var(--text);
+                                white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
+                         id="pulihkan-judul">–</div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:3px"
+                         id="pulihkan-meta">–</div>
+                </div>
+            </div>
+        </div>
+
+        <form id="form-pulihkan" method="POST">
+            @csrf
+            <div style="display:flex;gap:10px">
+                <button type="button" class="btn btn-ghost"
+                        onclick="closeModal('modal-pulihkan')"
+                        style="flex:1;justify-content:center">
+                    Batal
+                </button>
+                <button type="submit" class="btn btn-primary"
+                        style="flex:1;justify-content:center;background:#7c3aed">
+                    ♻️ Ya, Pulihkan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
     </body>
     </html>

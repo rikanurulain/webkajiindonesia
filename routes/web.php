@@ -186,6 +186,14 @@ Route::middleware('mentor')->group(function () {
         Route::post('/trainer/profil/bidang', [App\Http\Controllers\TrainerController::class, 'updateDisplayedBidang'])
     ->name('trainer.profil.bidang');
 
+    Route::post('/trainer/deleted-log/read', [App\Http\Controllers\TrainerController::class, 'markDeletedLogRead'])
+    ->name('trainer.deleted-log.read');
+
+    Route::post('/trainer/deleted-log/{id}/restore', [App\Http\Controllers\TrainerController::class, 'restoreProgram'])
+    ->name('trainer.program.restore');
+Route::post('/trainer/deleted-log/mark-read', [App\Http\Controllers\TrainerController::class, 'markDeletedLogRead'])
+    ->name('trainer.deleted-log.mark-read');
+
     // =========================
 // TRAINER KURIKULUM & MATERI
 // =========================
@@ -209,7 +217,7 @@ Route::get('/approval/program/counts',             [AdminController::class, 'app
 Route::get('/approval/program',                    [AdminController::class, 'approvalProgram'])->name('approval.program');
 Route::post('/approval/program/{program}/approve', [AdminController::class, 'approveProgram'])->name('approval.program.approve');
 Route::post('/approval/program/{program}/reject',  [AdminController::class, 'rejectProgram'])->name('approval.program.reject');
-
+Route::delete('/approval/program/{program}',       [AdminController::class, 'destroyProgram'])->name('approval.program.delete');
     // ── Approval Produk ──────────────────────────────────────────────
     Route::get('/approval/produk',                     [AdminController::class, 'approvalProduk'])->name('approval.produk');
     Route::post('/approval/produk/{produk}/approve',   [AdminController::class, 'approveProduk'])->name('approval.produk.approve');

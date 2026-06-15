@@ -188,6 +188,38 @@ $request->get('tab') === 'pendaftaran'
         }
         return back()->with('success', "Program \"{$program->judul}\" telah ditolak.");
     }
+
+    public function destroyProgram(Program $program)
+    {
+        $trainerUserId = $program->trainer_id;
+    
+        if ($trainerUserId) {
+            \App\Models\DeletedProgramLog::create([
+                'trainer_user_id'     => $trainerUserId,
+                'program_id'          => $program->id,
+                'program_title'       => $program->judul,
+                'program_tipe'        => $program->tipe,
+                'is_read'             => false,
+                'deleted_at_by_admin' => now(),
+            ]);
+        }
+    
+        if ($program->gambar && \Storage::disk('public')->exists($program->gambar)) {
+            \Storage::disk('public')->delete($program->gambar);
+        }
+    
+        // Soft delete modul juga (dengan SoftDeletes, delete() = soft delete)
+        if ($program->tipe === 'kurikulum') {
+            Program::where('kurikulum_id', $program->id)->each(function ($modul) {
+                $modul->delete(); // soft delete modul
+            });
+        }
+    
+        $judul = $program->judul;
+        $program->delete(); // soft delete kurikulum
+    
+        return back()->with('success', "Program \"{$judul}\" berhasil dihapus.");
+    }
     
     // Tambah method baru untuk polling counts
     public function approvalProgramCounts(Request $request)

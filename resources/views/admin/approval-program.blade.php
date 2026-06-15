@@ -6,6 +6,33 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.all.min.js"></script>
 <style>
+
+/* Tombol hapus */
+.btn-delete {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1.5px solid #fed7aa;
+}
+.btn-delete:hover {
+    background: #ffedd5;
+    border-color: #fb923c;
+}
+
+/* SweetAlert konfirmasi hapus */
+.swal-btn-confirm-delete {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600;
+    background: #ea580c; color: #fff; border: none; cursor: pointer; transition: background 0.15s;
+}
+.swal-btn-confirm-delete:hover { background: #c2410c; }
+
+/* Mobile: tombol hapus tetap muncul */
+@media (max-width: 768px) {
+    .btn-delete {
+        font-size: 10px !important;
+        padding: 4px 6px !important;
+    }
+}
     .swal-btn-confirm-approve {
         display: inline-flex; align-items: center; gap: 6px;
         padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600;
@@ -480,36 +507,48 @@
                 </td>
 
                 {{-- Aksi --}}
-                <td>
-                    <div class="action-group">
-                        <button class="btn btn-ghost btn-sm btn-icon" title="Detail"
-                            onclick="openDetailModal({{ $program->id }})">
-                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                            </svg>
-                        </button>
+<td>
+    <div class="action-group">
+        <button class="btn btn-ghost btn-sm btn-icon" title="Detail"
+            onclick="openDetailModal({{ $program->id }})">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+        </button>
 
-                        @if($st !== 'approved')
-                        <form method="POST" action="{{ route('admin.approval.program.approve', $program->id) }}"
-      id="form-approve-{{ $program->id }}" style="display:inline;">
-    @csrf
+        @if($st !== 'approved')
+        <form method="POST" action="{{ route('admin.approval.program.approve', $program->id) }}"
+            id="form-approve-{{ $program->id }}" style="display:inline;">
+            @csrf
+            <button type="button" class="btn btn-approve btn-sm"
+                onclick="confirmApprove({{ $program->id }}, '{{ addslashes($program->judul ?? $program->nama) }}')">
+                ✓ Setujui
+            </button>
+        </form>
+        @endif
 
-                            <button type="button" class="btn btn-approve btn-sm"
-                                onclick="confirmApprove({{ $program->id }}, '{{ addslashes($program->judul ?? $program->nama) }}')">
-                                ✓ Setujui
-                            </button>
-                        </form>
-                        @endif
+        @if($st !== 'rejected')
+        <button class="btn btn-reject btn-sm"
+            onclick="confirmReject({{ $program->id }}, '{{ addslashes($program->judul ?? $program->nama) }}')">
+            ✕ Tolak
+        </button>
+        @endif
 
-                        @if($st !== 'rejected')
-                        <button class="btn btn-reject btn-sm"
-                            onclick="confirmReject({{ $program->id }}, '{{ addslashes($program->judul ?? $program->nama) }}')">
-                            ✕ Tolak
-                        </button>
-                        @endif
-                    </div>
-                </td>
+        {{-- Tombol hapus hanya untuk yang approved --}}
+        @if($st === 'approved')
+        <form method="POST" action="{{ route('admin.approval.program.delete', $program->id) }}"
+            id="form-delete-{{ $program->id }}" style="display:none;">
+            @csrf
+            @method('DELETE')
+        </form>
+        <button type="button" class="btn btn-delete btn-sm"
+            onclick="confirmDelete({{ $program->id }}, '{{ addslashes($program->judul ?? $program->nama) }}', '{{ $program->tipe }}')">
+            🗑️ Hapus
+        </button>
+        @endif
+    </div>
+</td>
             </tr>
             @empty
             <tr>
@@ -611,21 +650,25 @@
                     @endif
                 </td>
                 <td>
-                    <div class="action-group">
-                        @if($p->status !== 'diterima')
-                        <form method="POST" action="{{ route('admin.pendaftaran.approve', $p->id) }}" style="display:inline;">
-                            @csrf
-                            <button type="submit" class="btn btn-approve btn-sm">✓ Terima</button>
-                        </form>
-                        @endif
-                        @if($p->status !== 'ditolak')
-<button type="button" class="btn btn-reject btn-sm"
-    onclick="bukaTolakDaftar({{ $p->id }}, '{{ addslashes($p->nama_lengkap) }}')">
-    ✕ Tolak
-</button>
-@endif
-                    </div>
-                </td>
+    <div class="action-group">
+        @if($p->status !== 'diterima')
+        <form method="POST" action="{{ route('admin.pendaftaran.approve', $p->id) }}"
+            id="form-approve-daftar-{{ $p->id }}" style="display:none;">
+            @csrf
+        </form>
+        <button type="button" class="btn btn-approve btn-sm"
+            onclick="confirmApproveDaftar({{ $p->id }}, '{{ addslashes($p->nama_lengkap) }}')">
+            ✓ Terima
+        </button>
+        @endif
+        @if($p->status !== 'ditolak')
+        <button type="button" class="btn btn-reject btn-sm"
+            onclick="confirmRejectDaftar({{ $p->id }}, '{{ addslashes($p->nama_lengkap) }}')">
+            ✕ Tolak
+        </button>
+        @endif
+    </div>
+</td>
             </tr>
             @empty
             <tr>
@@ -862,6 +905,62 @@ const swalReject = Swal.mixin({
     buttonsStyling: false,
 });
 
+// Mixin SweetAlert untuk hapus
+const swalDelete = Swal.mixin({
+    customClass: { confirmButton: 'swal-btn-confirm-delete', cancelButton: 'swal-btn-cancel' },
+    buttonsStyling: false,
+});
+
+function confirmDelete(id, name, tipe) {
+    const isKurikulum = tipe === 'kurikulum';
+    swalDelete.fire({
+        title: 'Hapus Program?',
+        html: `
+            <span style="font-size:14px;color:#6b7280;line-height:1.6;">
+                Kamu akan menghapus <strong>${name}</strong>.
+                ${isKurikulum
+                    ? '<br><span style="color:#ef4444;font-size:13px;margin-top:6px;display:block;">⚠️ Semua modul dalam kurikulum ini juga akan ikut terhapus.</span>'
+                    : ''
+                }
+                <br>Tindakan ini <strong>tidak dapat dibatalkan</strong>.
+            </span>`,
+        icon: 'warning', iconColor: '#ea580c',
+        showCancelButton: true,
+        confirmButtonText: '🗑️ Ya, Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true, focusCancel: true,
+    }).then(r => {
+        if (r.isConfirmed) document.getElementById('form-delete-' + id).submit();
+    });
+}
+
+function confirmApproveDaftar(id, nama) {
+    swalApprove.fire({
+        title: 'Terima Pendaftaran?',
+        html: `<span style="font-size:14px;color:#6b7280;">Pendaftaran <strong>${nama}</strong> akan disetujui.</span>`,
+        icon: 'question', iconColor: '#10b981',
+        showCancelButton: true,
+        confirmButtonText: '✓ Ya, Terima',
+        cancelButtonText: 'Batal',
+        reverseButtons: true, focusCancel: true,
+    }).then(r => {
+        if (r.isConfirmed) document.getElementById('form-approve-daftar-' + id).submit();
+    });
+}
+
+function confirmRejectDaftar(id, nama) {
+    swalReject.fire({
+        title: 'Tolak Pendaftaran?',
+        html: `<span style="font-size:14px;color:#6b7280;">Kamu akan menolak pendaftaran <strong>${nama}</strong>.</span>`,
+        icon: 'warning', iconColor: '#ef4444',
+        showCancelButton: true,
+        confirmButtonText: '→ Lanjut Isi Alasan',
+        cancelButtonText: 'Batal',
+        reverseButtons: true, focusCancel: true,
+    }).then(r => {
+        if (r.isConfirmed) bukaTolakDaftar(id, nama);
+    });
+}
 function confirmApprove(id, name) {
     swalApprove.fire({
         title: 'Setujui Program?',
