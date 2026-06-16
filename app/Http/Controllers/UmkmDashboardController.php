@@ -13,51 +13,60 @@ use App\Models\Mentor;
 class UmkmDashboardController extends Controller
 {
     public function index()
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        $myProducts = Produk::where('user_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
+    $myProducts = Produk::where('user_id', $user->id)
+        ->orderBy('created_at', 'desc')
+        ->get();
 
-        $myUmkm = Produk::where('user_id', $user->id)
-            ->where('status', 'approved')
-            ->with('mentors') // ← pakai mentors (many-to-many)
-            ->latest()
-            ->first();
+    $myUmkm = Produk::where('user_id', $user->id)
+        ->where('status', 'approved')
+        ->with('mentors')
+        ->latest()
+        ->first();
 
-        $myMentors = $myUmkm ? $myUmkm->mentors : collect();
+    $myMentors = $myUmkm ? $myUmkm->mentors : collect();
 
-        $produkItems = ProdukItem::where('user_id', $user->id)
-            ->orderByDesc('is_unggulan')
-            ->orderBy('created_at')
-            ->get();
+    $produkItems = ProdukItem::where('user_id', $user->id)
+        ->orderByDesc('is_unggulan')
+        ->orderBy('created_at')
+        ->get();
 
-        $availablePrograms = Program::published()->latest()->get();
+    // ── Produk terhapus (soft deleted) ──────────────────────── ← TAMBAH INI
+    $produkTerhapus = $myUmkm
+        ? ProdukItem::onlyTrashed()
+            ->where('produk_id', $myUmkm->id)
+            ->latest('deleted_at')
+            ->get()
+        : collect();
 
-        $joinedProgramIds = \DB::table('pendaftaran_programs')
+    $availablePrograms = Program::published()->latest()->get();
+
+    $joinedProgramIds = \DB::table('pendaftaran_programs')
         ->where('user_id', $user->id)
         ->pluck('program_id')
         ->toArray();
 
-        $stats = [
-            'total_produk'    => $myProducts->count(),
-            'pending_produk'  => $myProducts->where('status', 'pending')->count(),
-            'active_produk'   => $myProducts->where('status', 'approved')->count(),
-            'program_diikuti' => count($joinedProgramIds),
-        ];
+    $stats = [
+        'total_produk'    => $myProducts->count(),
+        'pending_produk'  => $myProducts->where('status', 'pending')->count(),
+        'active_produk'   => $myProducts->where('status', 'approved')->count(),
+        'program_diikuti' => count($joinedProgramIds),
+    ];
 
-        return view('profile.dashboard-umkm', compact(
-            'user',
-            'myProducts',
-            'myUmkm',
-            'myMentors', // ← BARU
-            'produkItems',
-            'availablePrograms',
-            'joinedProgramIds',
-            'stats',
-        ));
-    }
+    return view('profile.dashboard-umkm', compact(
+        'user',
+        'myProducts',
+        'myUmkm',
+        'myMentors',
+        'produkItems',
+        'produkTerhapus', // ← TAMBAH INI
+        'availablePrograms',
+        'joinedProgramIds',
+        'stats',
+    ));
+}
 
     public function joinProgram($id)
     {

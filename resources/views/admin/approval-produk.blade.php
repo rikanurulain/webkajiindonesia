@@ -5,288 +5,319 @@
 
 @push('styles')
 <style>
-/* ===================== RESPONSIVE MOBILE - APPROVAL PRODUK ===================== */
+/* ═══════════════════════════════════════════════
+   TAB BAR UTAMA
+═══════════════════════════════════════════════ */
+.tab-bar { display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; }
+.tab-btn {
+    padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 600;
+    border: 1.5px solid var(--border); background: var(--surface2); color: var(--text-muted);
+    cursor: pointer; font-family: inherit; transition: all .15s;
+    display: flex; align-items: center; gap: 6px;
+}
+.tab-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.count-pill {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 20px; height: 20px; padding: 0 6px; border-radius: 20px;
+    background: var(--accent2); color: #fff; font-size: 10px; font-weight: 700;
+}
+.tab-btn.active .count-pill { background: rgba(255,255,255,.25); }
 
-/* Tab bar scroll horizontal */
+/* ═══════════════════════════════════════════════
+   SUB-TAB
+═══════════════════════════════════════════════ */
+.sub-tab-bar {
+    display: flex; gap: 6px; margin-bottom: 20px;
+    border-bottom: 2px solid var(--border); padding-bottom: 0;
+}
+.sub-tab-btn {
+    padding: 8px 16px; font-size: 13px; font-weight: 600;
+    border: none; background: transparent; color: var(--text-muted);
+    cursor: pointer; font-family: inherit; transition: all .15s;
+    border-bottom: 2px solid transparent; margin-bottom: -2px;
+    display: flex; align-items: center; gap: 6px;
+}
+.sub-tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.sub-tab-btn:hover:not(.active) { color: var(--text); }
+
+/* ═══════════════════════════════════════════════
+   TABLE CARD (Pending, Profil UMKM, Rejected)
+═══════════════════════════════════════════════ */
+.table-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:var(--shadow); margin-bottom:24px; }
+.table-card-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--border); }
+.table-card-title { font-size:14px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:8px; }
+.table-card-subtitle { font-size:12px; color:var(--text-muted); font-weight:400; }
+.table-card table { width:100%; border-collapse:collapse; }
+.table-card thead th { padding:12px 16px; font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; background:var(--surface2); border-bottom:1px solid var(--border); text-align:left; }
+.table-card tbody tr { border-bottom:1px solid var(--border); transition:background .1s; }
+.table-card tbody tr:last-child { border-bottom:none; }
+.table-card tbody tr:hover { background:var(--surface2); }
+.table-card tbody td { padding:12px 16px; vertical-align:middle; }
+
+/* ── Submitter cell ── */
+.submitter { display:flex; align-items:center; gap:10px; }
+.submitter-avatar { width:38px; height:38px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; overflow:hidden; flex-shrink:0; }
+.submitter-avatar img { width:100%; height:100%; object-fit:cover; }
+.submitter-name { font-size:13px; font-weight:600; color:var(--text); }
+.submitter-sub  { font-size:11px; color:var(--text-muted); margin-top:1px; }
+
+/* ── Action group ── */
+.action-group { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+
+/* ═══════════════════════════════════════════════
+   CARD (Produk Item sub-tab only)
+═══════════════════════════════════════════════ */
+.umkm-avatar {
+    width: 52px; height: 52px; border-radius: 12px; overflow: hidden; flex-shrink: 0;
+    background: var(--surface2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
+.umkm-avatar img { width:100%; height:100%; object-fit:cover; }
+.umkm-name  { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.umkm-owner { font-size: 12px; color: var(--text-muted); }
+.umkm-meta  { display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
+.umkm-meta-chip {
+    font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px;
+    background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border);
+}
+.umkm-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    overflow: hidden; box-shadow: var(--shadow); transition: box-shadow .2s; align-self: start;
+}
+.umkm-card:hover { box-shadow: 0 4px 24px rgba(45,106,79,.1); }
+.umkm-card-header {
+    padding: 16px 18px; display: flex; align-items: center; gap: 14px;
+    border-bottom: 1px solid var(--border);
+}
+.umkm-card-footer {
+    padding: 12px 18px; border-top: 1px solid var(--border);
+    display: flex; gap: 8px; align-items: center; background: var(--surface2);
+}
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px; align-items: start;
+}
+.items-scroll {
+    max-height: 148px; overflow-y: auto;
+    scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.items-scroll::-webkit-scrollbar { width: 4px; }
+.items-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.item-row {
+    display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+    border: 1px solid var(--border); border-radius: 10px; margin-bottom: 6px;
+    background: var(--surface2);
+}
+.item-thumb {
+    width: 36px; height: 36px; border-radius: 8px; overflow: hidden; flex-shrink: 0;
+    background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.item-thumb img { width:100%; height:100%; object-fit:cover; }
+.item-name  { font-size: 12px; font-weight: 600; color: var(--text); }
+.item-price { font-size: 11px; color: var(--accent); font-weight: 700; }
+.item-del-btn {
+    margin-left: auto; flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px;
+    background: #fee2e2; border: 1px solid #fca5a5; color: #dc2626;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .15s;
+}
+.item-del-btn:hover { background: #dc2626; color: #fff; }
+.no-items {
+    text-align: center; padding: 16px; font-size: 12px; color: var(--text-muted);
+    background: var(--surface2); border-radius: 10px; border: 1px dashed var(--border);
+}
+.umkm-items-title {
+    font-size: 11px; font-weight: 700; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.harga-range {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; font-weight: 700; color: var(--accent);
+    background: var(--accent-light); padding: 3px 10px; border-radius: 20px;
+    border: 1px solid #a7d7c566;
+}
+
+/* ═══════════════════════════════════════════════
+   BADGE & BUTTON
+═══════════════════════════════════════════════ */
+.badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+.badge-dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
+.badge-pending  { background:#fffbea; color:#f59e0b; border:1px solid #fcd34d66; }
+.badge-approved { background:var(--accent-light); color:var(--accent); border:1px solid #a7d7c566; }
+.badge-rejected { background:#fff0ed; color:#e76f51; border:1px solid #e76f5166; }
+
+.btn { display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:10px; font-size:12px; font-weight:600; border:none; cursor:pointer; font-family:inherit; transition:all .15s; text-decoration:none; }
+.btn-approve { background:var(--accent); color:#fff; }
+.btn-approve:hover { background:#1f4e37; }
+.btn-reject  { background:#fff0ed; color:#e76f51; border:1px solid #e76f5166; }
+.btn-reject:hover  { background:#e76f51; color:#fff; }
+.btn-ghost   { background:var(--surface); color:var(--text); border:1px solid var(--border); }
+.btn-ghost:hover   { background:var(--surface2); }
+.btn-danger  { background:#fee2e2; color:#dc2626; border:1px solid #fca5a5; }
+.btn-danger:hover  { background:#dc2626; color:#fff; }
+.btn-sm { padding:6px 12px; font-size:11px; border-radius:8px; }
+
+/* ═══════════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════════ */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); backdrop-filter:blur(4px); z-index:200; align-items:center; justify-content:center; }
+.modal-overlay.open { display:flex; }
+.modal { background:var(--surface); border-radius:20px; width:540px; max-height:90vh; overflow-y:auto; padding:28px; box-shadow:0 24px 80px rgba(0,0,0,.2); animation:popIn .2s ease; border:1px solid var(--border); }
+@keyframes popIn { from{transform:scale(.95);opacity:0} to{transform:scale(1);opacity:1} }
+.modal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+.modal-title  { font-size:18px; font-weight:700; color:var(--text); }
+.modal-close  { width:32px; height:32px; border-radius:8px; background:var(--surface2); border:1px solid var(--border); cursor:pointer; font-size:18px; color:var(--text-muted); display:flex; align-items:center; justify-content:center; }
+.modal-close:hover { background:#fee; color:#dc2626; }
+.modal-footer { display:flex; gap:10px; justify-content:flex-end; margin-top:20px; padding-top:16px; border-top:1px solid var(--border); }
+.form-group   { margin-bottom:16px; }
+.form-label   { display:block; font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+.form-textarea { width:100%; padding:10px 12px; background:var(--surface2); border:1.5px solid var(--border); border-radius:10px; font-family:inherit; font-size:13px; color:var(--text); resize:vertical; }
+.form-textarea:focus { outline:none; border-color:var(--accent); }
+.detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+.detail-item.full { grid-column:1/-1; }
+.detail-label { font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
+.detail-value { font-size:13px; font-weight:600; color:var(--text); }
+.img-preview  { width:100%; height:180px; border-radius:12px; overflow:hidden; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:48px; margin-bottom:16px; border:1px solid var(--border); }
+.img-preview img { width:100%; height:100%; object-fit:cover; }
+
+/* ═══════════════════════════════════════════════
+   EMPTY STATE
+═══════════════════════════════════════════════ */
+.empty-state { text-align:center; padding:60px 20px; color:var(--text-muted); }
+.empty-state-icon { font-size:48px; margin-bottom:12px; }
+.empty-state-text { font-size:14px; }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
 @media (max-width: 768px) {
-    .tab-bar {
-        width: 100% !important;
-        overflow-x: auto !important;
-        flex-wrap: nowrap !important;
-        -webkit-overflow-scrolling: touch;
-    }
+    .tab-bar { overflow-x:auto; flex-wrap:nowrap; -webkit-overflow-scrolling:touch; }
+    .tab-btn { white-space:nowrap; flex-shrink:0; }
+    .items-grid { grid-template-columns: 1fr; }
+    .modal { width:95vw; padding:20px 16px; }
+    .detail-grid { grid-template-columns:1fr; }
+    .detail-item.full { grid-column:1; }
+    .table-card-header { flex-direction:column; align-items:flex-start; gap:6px; padding:12px 14px; }
 
-    .tab-btn {
-        white-space: nowrap !important;
-        flex-shrink: 0 !important;
-    }
-
-    /* Table card header */
-    .table-card-header {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        gap: 6px !important;
-        padding: 12px 14px !important;
-    }
-
-    /* ── TAB PENDING: kolom Kategori, Lokasi, Dikirim disembunyikan ── */
-    #tab-pending table,
-    #tab-approved table,
-    #tab-rejected table {
-        table-layout: fixed !important;
-        width: 100% !important;
-    }
-
-    /* Pending: sembunyikan Kategori(2), Harga(3), Lokasi(4), Dikirim(5) */
-    #tab-pending thead tr th:nth-child(2),
-    #tab-pending tbody tr td:nth-child(2),
+    /* Pending: sembunyikan Lokasi(3), NIB(4), Didaftarkan(5) */
     #tab-pending thead tr th:nth-child(3),
     #tab-pending tbody tr td:nth-child(3),
     #tab-pending thead tr th:nth-child(4),
     #tab-pending tbody tr td:nth-child(4),
     #tab-pending thead tr th:nth-child(5),
-    #tab-pending tbody tr td:nth-child(5) {
-        display: none !important;
-    }
-
-    /* Pending: lebar kolom Produk(1) dan Aksi(6) */
+    #tab-pending tbody tr td:nth-child(5) { display:none !important; }
+    #tab-pending table { table-layout:fixed; width:100%; }
     #tab-pending thead tr th:nth-child(1),
-    #tab-pending tbody tr td:nth-child(1) {
-        width: 60% !important;
-    }
+    #tab-pending tbody tr td:nth-child(1) { width:55%; }
+    #tab-pending thead tr th:nth-child(2),
+    #tab-pending tbody tr td:nth-child(2) { width:15%; }
     #tab-pending thead tr th:nth-child(6),
-    #tab-pending tbody tr td:nth-child(6) {
-        width: 40% !important;
-    }
+    #tab-pending tbody tr td:nth-child(6) { width:30%; }
 
-    /* Approved: sembunyikan Kategori(2), Harga(3), Lokasi(4), Disetujui(5), Status(6) */
-    #tab-approved thead tr th:nth-child(2),
-    #tab-approved tbody tr td:nth-child(2),
-    #tab-approved thead tr th:nth-child(3),
-    #tab-approved tbody tr td:nth-child(3),
-    #tab-approved thead tr th:nth-child(4),
-    #tab-approved tbody tr td:nth-child(4),
-    #tab-approved thead tr th:nth-child(5),
-    #tab-approved tbody tr td:nth-child(5),
-    #tab-approved thead tr th:nth-child(6),
-    #tab-approved tbody tr td:nth-child(6) {
-        display: none !important;
-    }
+    /* Approved profil: sembunyikan Lokasi(3), NIB(4), Disetujui(5) */
+    #subtab-profil thead tr th:nth-child(3),
+    #subtab-profil tbody tr td:nth-child(3),
+    #subtab-profil thead tr th:nth-child(4),
+    #subtab-profil tbody tr td:nth-child(4),
+    #subtab-profil thead tr th:nth-child(5),
+    #subtab-profil tbody tr td:nth-child(5) { display:none !important; }
+    #subtab-profil table { table-layout:fixed; width:100%; }
+    #subtab-profil thead tr th:nth-child(1),
+    #subtab-profil tbody tr td:nth-child(1) { width:55%; }
+    #subtab-profil thead tr th:nth-child(2),
+    #subtab-profil tbody tr td:nth-child(2) { width:15%; }
+    #subtab-profil thead tr th:nth-child(6),
+    #subtab-profil tbody tr td:nth-child(6) { width:30%; }
 
-    /* Approved: lebar kolom Produk(1) dan Aksi(7) */
-    #tab-approved thead tr th:nth-child(1),
-    #tab-approved tbody tr td:nth-child(1) {
-        width: 65% !important;
-    }
-    #tab-approved thead tr th:nth-child(7),
-    #tab-approved tbody tr td:nth-child(7) {
-        width: 35% !important;
-    }
-
-    /* Rejected: sembunyikan Kategori(2), Alasan(3), Ditolak(4) */
+    /* Rejected: sembunyikan Pemilik(2), Alasan(3), Ditolak(4) */
     #tab-rejected thead tr th:nth-child(2),
     #tab-rejected tbody tr td:nth-child(2),
     #tab-rejected thead tr th:nth-child(3),
     #tab-rejected tbody tr td:nth-child(3),
     #tab-rejected thead tr th:nth-child(4),
-    #tab-rejected tbody tr td:nth-child(4) {
-        display: none !important;
-    }
-
-    /* Rejected: lebar kolom Produk(1) dan Aksi(5) */
+    #tab-rejected tbody tr td:nth-child(4) { display:none !important; }
+    #tab-rejected table { table-layout:fixed; width:100%; }
     #tab-rejected thead tr th:nth-child(1),
-    #tab-rejected tbody tr td:nth-child(1) {
-        width: 60% !important;
-    }
+    #tab-rejected tbody tr td:nth-child(1) { width:65%; }
     #tab-rejected thead tr th:nth-child(5),
-    #tab-rejected tbody tr td:nth-child(5) {
-        width: 40% !important;
-    }
+    #tab-rejected tbody tr td:nth-child(5) { width:35%; }
 
-    /* Thead & tbody padding */
-    thead th {
-        padding: 10px 10px !important;
-        font-size: 9px !important;
-    }
-    tbody td {
-        padding: 10px 10px !important;
-    }
+    thead th { padding:10px 10px !important; font-size:9px !important; }
+    tbody td  { padding:10px 10px !important; }
 
-    /* Submitter cell (dipakai sebagai preview produk) */
-    .submitter {
-        gap: 6px !important;
-    }
+    .submitter { gap:6px; }
+    .submitter-avatar { width:32px !important; height:32px !important; font-size:13px !important; }
+    .submitter-name { font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:110px; }
+    .submitter-sub  { display:none; }
 
-    .submitter-avatar {
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 14px !important;
-        flex-shrink: 0 !important;
-    }
-
-    .submitter-name {
-        font-size: 11px !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        white-space: nowrap !important;
-        max-width: 120px !important;
-    }
-
-    .submitter-sub {
-        font-size: 10px !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        white-space: nowrap !important;
-        max-width: 120px !important;
-    }
-
-/* Tombol aksi: susun vertikal, semua sama lebar */
-    .action-group {
-        flex-direction: column !important;
-        gap: 4px !important;
-        align-items: stretch !important;
-        width: 100% !important;
-    }
-
-    /* Semua tombol sama lebar & tinggi */
-    .action-group .btn-sm {
-        font-size: 11px !important;
-        padding: 6px 4px !important;
-        white-space: nowrap !important;
-        justify-content: center !important;
-        width: 100% !important;
-        display: flex !important;
-        box-sizing: border-box !important;
-        min-height: 30px !important;
-    }
-
-    /* Tombol Detail: tampilkan ikon + teks kecil */
-    .action-group .btn-ghost.btn-sm {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 4px !important;
-    }
-
-    .action-group .btn-ghost.btn-sm svg {
-        width: 13px !important;
-        height: 13px !important;
-        flex-shrink: 0 !important;
-    }
-
-    .action-group .btn-ghost.btn-sm svg {
-        width: 14px !important;
-        height: 14px !important;
-        font-size: 14px !important; /* kembalikan ukuran ikon */
-    }
-
-    /* ── Modal: tampil di tengah ── */
-    .modal-overlay {
-        align-items: center !important;
-        padding: 16px !important;
-    }
-
-    .modal {
-        width: 100% !important;
-        max-width: 420px !important;
-        border-radius: 20px !important;
-        padding: 20px 16px 24px !important;
-        max-height: 88vh !important;
-        margin: auto !important;
-    }
-
-    #modal-reject .modal {
-        width: 100% !important;
-        max-width: 420px !important;
-    }
-
-    /* Detail grid: 1 kolom */
-    .detail-grid {
-        grid-template-columns: 1fr !important;
-        gap: 8px !important;
-    }
-
-    .detail-item.full {
-        grid-column: 1 !important;
-    }
-
-    /* Gambar preview di modal lebih kecil */
-    .img-preview {
-        height: 130px !important;
-        margin-bottom: 14px !important;
-    }
-
-    /* Tombol aksi di modal: susun vertikal */
-    #d-action-btns {
-        flex-direction: column-reverse !important;
-        gap: 8px !important;
-    }
-
-    #d-action-btns .btn {
-        flex: unset !important;
-        width: 100% !important;
-        justify-content: center !important;
-    }
-
-    /* Form reject */
-    .form-textarea {
-        font-size: 14px !important;
-    }
+    .action-group { flex-direction:column; gap:4px; align-items:stretch; width:100%; }
+    .action-group .btn-sm { font-size:11px; padding:6px 4px; white-space:nowrap; justify-content:center; width:100%; display:flex; box-sizing:border-box; min-height:30px; }
 }
 </style>
 @endpush
 
 @section('content')
 
-{{-- Tab Bar --}}
+@if(session('success'))
+<div style="background:var(--accent-light);color:var(--accent);border:1px solid #a7d7c566;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;display:flex;align-items:center;gap:8px">
+    ✅ {{ session('success') }}
+</div>
+@endif
+@if(session('error'))
+<div style="background:#fff0ed;color:#e76f51;border:1px solid #e76f5166;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;display:flex;align-items:center;gap:8px">
+    ⚠️ {{ session('error') }}
+</div>
+@endif
+
+{{-- ════════════ TAB BAR UTAMA ════════════ --}}
 <div class="tab-bar">
-    <button class="tab-btn active" data-tab="pending" onclick="switchTab('pending', this)">
-        Menunggu
+    <button class="tab-btn" data-tab="pending" onclick="switchTab('pending',this)">
+        ⏳ Menunggu
         @if($counts['pending'] > 0)
             <span class="count-pill">{{ $counts['pending'] }}</span>
         @endif
     </button>
-    <button class="tab-btn" data-tab="approved" onclick="switchTab('approved', this)">
-        Disetujui
+    <button class="tab-btn" data-tab="approved" onclick="switchTab('approved',this)">
+        ✅ Disetujui
         @if($counts['approved'] > 0)
-            <span class="count-pill" style="background:var(--accent);">{{ $counts['approved'] }}</span>
+            <span class="count-pill" style="background:var(--accent)">{{ $counts['approved'] }}</span>
         @endif
     </button>
-    <button class="tab-btn" data-tab="rejected" onclick="switchTab('rejected', this)">
-        Ditolak
+    <button class="tab-btn" data-tab="rejected" onclick="switchTab('rejected',this)">
+        ✕ Ditolak
         @if($counts['rejected'] > 0)
-            <span class="count-pill" style="background:#9ca3af;">{{ $counts['rejected'] }}</span>
+            <span class="count-pill" style="background:#9ca3af">{{ $counts['rejected'] }}</span>
         @endif
     </button>
 </div>
 
-{{-- ======================== TAB PENDING ======================== --}}
-<div id="tab-pending">
+{{-- ════════════════════════════════════════════════
+     TAB 1 — MENUNGGU (table view)
+════════════════════════════════════════════════ --}}
+<div id="tab-pending" style="display:none">
     <div class="table-card">
         <div class="table-card-header">
             <div class="table-card-title">
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                Produk Menunggu Review
-                <span class="table-card-subtitle">{{ $counts['pending'] }} produk</span>
+                ⏳ Pendaftaran UMKM Menunggu
+                <span class="table-card-subtitle">{{ $counts['pending'] }} pendaftaran</span>
             </div>
         </div>
 
         @if($pending->isEmpty())
             <div class="empty-state">
                 <div class="empty-state-icon">🎉</div>
-                <div class="empty-state-text">Tidak ada produk yang menunggu review.</div>
+                <div class="empty-state-text">Tidak ada pendaftaran UMKM yang menunggu persetujuan.</div>
             </div>
         @else
             <table>
                 <thead>
                     <tr>
-                        <th>Produk</th>
-                        <th>Kategori</th>
-                        <th>Harga</th>
+                        <th>Usaha</th>
+                        <th>Pemilik</th>
                         <th>Lokasi</th>
-                        <th>Dikirim</th>
+                        <th>NIB</th>
+                        <th>Didaftarkan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -295,54 +326,49 @@
                     <tr>
                         <td>
                             <div class="submitter">
-                                <div class="submitter-avatar" style="background:var(--accent3);border-radius:8px;overflow:hidden;">
-                                    @if($produk->foto)
-                                        <img src="{{ asset('storage/' . $produk->foto) }}" alt="{{ $produk->nama }}" style="width:100%;height:100%;object-fit:cover;">
+                                <div class="submitter-avatar" style="background:var(--surface2);border:1px solid var(--border);">
+                                    @if($produk->logo)
+                                        <img src="{{ asset('storage/'.$produk->logo) }}" alt="{{ $produk->nama }}">
+                                    @elseif($produk->foto_produk)
+                                        <img src="{{ asset('storage/'.$produk->foto_produk) }}" alt="{{ $produk->nama }}">
                                     @else
-                                        🛍️
+                                        🏪
                                     @endif
                                 </div>
                                 <div>
                                     <div class="submitter-name">{{ $produk->nama }}</div>
-                                    <div class="submitter-sub">{{ Str::limit($produk->deskripsi ?? '', 35) }}</div>
+                                    <div class="submitter-sub">{{ $produk->kategori ?? '-' }}</div>
                                 </div>
                             </div>
                         </td>
-                        <td><div style="font-size:13px;">{{ $produk->kategori ?? '-' }}</div></td>
-                        <td><div style="font-size:13px;">Rp {{ number_format($produk->harga ?? 0, 0, ',', '.') }}</div></td>
                         <td>
-                            <div style="font-size:12px;color:var(--text-muted);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                                {{ $produk->alamat ?? '-' }}
-                            </div>
+                            <div style="font-size:13px;font-weight:600;">{{ $produk->owner ?? '-' }}</div>
+                            <div style="font-size:11px;color:var(--text-muted);">{{ $produk->kontak ?? '-' }}</div>
                         </td>
                         <td>
-                            <div style="font-size:12px;color:var(--text-muted);">
-                                {{ $produk->created_at->diffForHumans() }}
-                            </div>
+                            <div style="font-size:12px;">{{ $produk->kabupaten_kota ?? '-' }}</div>
+                            <div style="font-size:11px;color:var(--text-muted);">{{ $produk->provinsi ?? '-' }}</div>
                         </td>
+                        <td style="font-size:12px;color:var(--text-muted);">{{ $produk->nib ?? '-' }}</td>
+                        <td style="font-size:12px;color:var(--text-muted);">{{ $produk->created_at->format('d M Y') }}</td>
                         <td>
                             <div class="action-group">
                                 <button class="btn btn-ghost btn-sm" onclick="openDetailModal({{ $produk->id }})">
-                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="13" height="13">
                                         <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                     </svg>
                                     Detail
                                 </button>
-                                {{-- FIX: hapus @method('PATCH') — route sudah POST --}}
                                 <form method="POST" action="{{ route('admin.approval.produk.approve', $produk) }}" style="display:inline;">
                                     @csrf
                                     <button type="submit" class="btn btn-approve btn-sm">
-                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path d="M5 13l4 4L19 7"/>
-                                        </svg>
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="12" height="12"><path d="M5 13l4 4L19 7"/></svg>
                                         Setujui
                                     </button>
                                 </form>
                                 <button class="btn btn-reject btn-sm" onclick="openRejectModal({{ $produk->id }}, '{{ addslashes($produk->nama) }}')">
-                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path d="M6 18L18 6M6 6l12 12"/>
-                                    </svg>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="12" height="12"><path d="M6 18L18 6M6 6l12 12"/></svg>
                                     Tolak
                                 </button>
                             </div>
@@ -355,108 +381,246 @@
     </div>
 </div>
 
-{{-- ======================== TAB APPROVED ======================== --}}
-<div id="tab-approved" style="display:none;">
-    <div class="table-card">
-        <div class="table-card-header">
-            <div class="table-card-title">
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                Produk Disetujui
-                <span class="table-card-subtitle">{{ $counts['approved'] }} produk aktif</span>
+{{-- ════════════════════════════════════════════════
+     TAB 2 — DISETUJUI
+     Sub-tab: Profil UMKM (table) & Produk Item (card)
+════════════════════════════════════════════════ --}}
+<div id="tab-approved" style="display:none">
+
+    <div class="sub-tab-bar">
+        <button class="sub-tab-btn active" data-subtab="profil" onclick="switchSubTab('profil',this)">
+            🏪 Profil UMKM
+            <span style="background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;">{{ $counts['approved'] }}</span>
+        </button>
+        <button class="sub-tab-btn" data-subtab="produk" onclick="switchSubTab('produk',this)">
+            🛍️ Produk Item
+        </button>
+    </div>
+
+    {{-- ── Sub-tab: Profil UMKM (TABLE VIEW) ── --}}
+    <div id="subtab-profil">
+        <div class="table-card">
+            <div class="table-card-header">
+                <div class="table-card-title">
+                    🏪 Data UMKM Disetujui
+                    <span class="table-card-subtitle">{{ $counts['approved'] }} UMKM aktif</span>
+                </div>
             </div>
+
+            @if($approved->isEmpty())
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <div class="empty-state-text">Belum ada UMKM yang disetujui.</div>
+                </div>
+            @else
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Usaha</th>
+                            <th>Pemilik</th>
+                            <th>Lokasi</th>
+                            <th>NIB</th>
+                            <th>Disetujui</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($approved as $produk)
+                        <tr>
+                            <td>
+                                <div class="submitter">
+                                    <div class="submitter-avatar" style="background:var(--surface2);border:1px solid var(--border);">
+                                        @if($produk->logo)
+                                            <img src="{{ asset('storage/'.$produk->logo) }}" alt="{{ $produk->nama }}">
+                                        @elseif($produk->foto_produk)
+                                            <img src="{{ asset('storage/'.$produk->foto_produk) }}" alt="{{ $produk->nama }}">
+                                        @else
+                                            🏪
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <div class="submitter-name">{{ $produk->nama }}</div>
+                                        <div class="submitter-sub">{{ $produk->kategori ?? '-' }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="font-size:13px;font-weight:600;">{{ $produk->owner ?? '-' }}</div>
+                                <div style="font-size:11px;color:var(--text-muted);">{{ $produk->kontak ?? '-' }}</div>
+                            </td>
+                            <td>
+                                <div style="font-size:12px;">{{ $produk->kabupaten_kota ?? '-' }}</div>
+                                <div style="font-size:11px;color:var(--text-muted);">{{ $produk->provinsi ?? '-' }}</div>
+                            </td>
+                            <td style="font-size:12px;color:var(--text-muted);">{{ $produk->nib ?? '-' }}</td>
+                            <td style="font-size:12px;color:var(--accent);font-weight:600;">
+                                {{ $produk->approved_at?->format('d M Y') ?? '-' }}
+                            </td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn btn-ghost btn-sm" onclick="openDetailModal({{ $produk->id }})">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="13" height="13">
+                                            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        Detail
+                                    </button>
+                                    <form method="POST"
+                                          action="{{ route('admin.approval.umkm.destroy', $produk) }}"
+                                          style="display:inline;"
+                                          onsubmit="return confirm('Hapus UMKM \"{{ addslashes($produk->nama) }}\"?\n\nTindakan ini tidak dapat dibatalkan.')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12">
+                                                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 6V4h6v2M4 7h16"/>
+                                            </svg>
+                                            Hapus
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
         </div>
+    </div>
+
+    {{-- ── Sub-tab: Produk Item (CARD VIEW) ── --}}
+    <div id="subtab-produk" style="display:none">
 
         @if($approved->isEmpty())
             <div class="empty-state">
-                <div class="empty-state-icon">📭</div>
-                <div class="empty-state-text">Belum ada produk yang disetujui.</div>
+                <div class="empty-state-icon">📦</div>
+                <div class="empty-state-text">Belum ada UMKM yang disetujui.</div>
             </div>
         @else
-            <table>
-                <thead>
-                    <tr>
-                        <th>Produk</th>
-                        <th>Kategori</th>
-                        <th>Harga</th>
-                        <th>Lokasi</th>
-                        <th>Disetujui</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($approved as $produk)
-                    <tr>
-                        <td>
-                            <div class="submitter">
-                                <div class="submitter-avatar" style="background:var(--accent3);border-radius:8px;overflow:hidden;">
-                                    @if($produk->foto)
-                                        <img src="{{ asset('storage/' . $produk->foto) }}" alt="{{ $produk->nama }}" style="width:100%;height:100%;object-fit:cover;">
-                                    @else
-                                        🛍️
-                                    @endif
+            <div class="items-grid">
+                @foreach($approved as $produk)
+                @php
+                    $items     = $produk->items ?? collect();
+                    $itemCount = $items->count();
+                    $hargaMin  = $items->min('harga');
+                    $hargaMax  = $items->max('harga');
+                @endphp
+                <div class="umkm-card">
+                    <div class="umkm-card-header">
+                        <div class="umkm-avatar">
+                            @if($produk->logo)
+                                <img src="{{ asset('storage/'.$produk->logo) }}" alt="{{ $produk->nama }}">
+                            @elseif($produk->foto_produk)
+                                <img src="{{ asset('storage/'.$produk->foto_produk) }}" alt="{{ $produk->nama }}">
+                            @else
+                                🏪
+                            @endif
+                        </div>
+                        <div style="flex:1;min-width:0">
+                            <div class="umkm-name">{{ $produk->nama }}</div>
+                            @if($produk->owner)
+                                <div class="umkm-owner">👤 {{ $produk->owner }}</div>
+                            @endif
+                            <div class="umkm-meta">
+                                @if($produk->kategori)
+                                    <span class="umkm-meta-chip">{{ $produk->kategori }}</span>
+                                @endif
+                                @if($produk->kabupaten_kota)
+                                    <span class="umkm-meta-chip">📍 {{ $produk->kabupaten_kota }}</span>
+                                @endif
+                                @if($itemCount > 0)
+                                    <span class="harga-range">
+                                        Rp {{ number_format($hargaMin, 0, ',', '.') }}
+                                        @if($hargaMin !== $hargaMax)
+                                            – {{ number_format($hargaMax, 0, ',', '.') }}
+                                        @endif
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <span class="badge badge-approved"><span class="badge-dot"></span>Aktif</span>
+                    </div>
+
+                    <div style="padding:14px 18px;">
+                        <div class="umkm-items-title">
+                            <span>🛍️ Produk ({{ $itemCount }})</span>
+                            @if($itemCount > 0)
+                                <button class="btn btn-ghost btn-sm" onclick="openUmkmDetailModal({{ $produk->id }})">Lihat Semua</button>
+                            @endif
+                        </div>
+
+                        @if($items->isEmpty())
+                            <div class="no-items">Belum ada produk ditambahkan</div>
+                        @else
+                            <div class="items-scroll">
+                                @foreach($items as $item)
+                                <div class="item-row">
+                                    <div class="item-thumb">
+                                        @if($item->foto)
+                                            <img src="{{ asset('storage/'.$item->foto) }}" alt="{{ $item->nama }}">
+                                        @else 📦 @endif
+                                    </div>
+                                    <div style="flex:1;min-width:0">
+                                        <div class="item-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $item->nama }}</div>
+                                        <div class="item-price">{{ $item->harga_format }}</div>
+                                    </div>
+                                    <form method="POST"
+                                          action="{{ route('admin.approval.umkm.item.destroy', [$produk->id, $item->id]) }}"
+                                          onsubmit="return confirm('Hapus produk \"{{ addslashes($item->nama) }}\"?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="item-del-btn" title="Hapus produk">
+                                            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                <path d="M18 6L6 18M6 6l12 12"/>
+                                            </svg>
+                                        </button>
+                                    </form>
                                 </div>
-                                <div>
-                                    <div class="submitter-name">{{ $produk->nama }}</div>
-                                    <div class="submitter-sub">{{ Str::limit($produk->deskripsi ?? '', 35) }}</div>
+                                @endforeach
+                            </div>
+                            @if($itemCount > 2)
+                                <div style="font-size:10px;color:var(--text-muted);text-align:center;padding:4px 0 2px;display:flex;align-items:center;justify-content:center;gap:4px">
+                                    <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M19 9l-7 7-7-7"/></svg>
+                                    scroll untuk {{ $itemCount - 2 }} produk lainnya
                                 </div>
-                            </div>
-                        </td>
-                        <td><div style="font-size:13px;">{{ $produk->kategori ?? '-' }}</div></td>
-                        <td><div style="font-size:13px;">Rp {{ number_format($produk->harga ?? 0, 0, ',', '.') }}</div></td>
-                        <td>
-                            <div style="font-size:12px;color:var(--text-muted);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                                {{ $produk->alamat ?? '-' }}
-                            </div>
-                        </td>
-                        <td>
-                            <div style="font-size:12px;color:var(--text-muted);">
-                                {{ $produk->approved_at?->diffForHumans() ?? '-' }}
-                            </div>
-                        </td>
-                        <td><span class="badge badge-approved"><span class="badge-dot"></span>Aktif</span></td>
-                        <td>
-                            <div class="action-group">
-                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal({{ $produk->id }})">
-                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                    </svg>
-                                    Detail
-                                </button>
-                                <form method="POST"
-                                      action="{{ route('admin.approval.produk.destroy', $produk) }}"
-                                      style="display:inline;"
-                                      onsubmit="return confirmHapus('{{ addslashes($produk->nama) }}')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;">
-                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                        </svg>
-                                        Hapus
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                            @endif
+                        @endif
+                    </div>
+
+                    <div class="umkm-card-footer">
+                        <button class="btn btn-ghost btn-sm" onclick="openUmkmDetailModal({{ $produk->id }})" style="flex:1;justify-content:center">
+                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0"/>
+                                <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                            Detail Produk
+                        </button>
+                        <form method="POST"
+                              action="{{ route('admin.approval.umkm.destroy', $produk) }}"
+                              onsubmit="return confirm('Hapus UMKM \"{{ addslashes($produk->nama) }}\" beserta semua produknya?')">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 6V4h6v2M4 7h16"/>
+                                </svg>
+                                Hapus UMKM
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @endforeach
+            </div>
         @endif
     </div>
+
 </div>
 
-{{-- ======================== TAB REJECTED ======================== --}}
-<div id="tab-rejected" style="display:none;">
+{{-- ════════════════════════════════════════════════
+     TAB 3 — DITOLAK (table view)
+════════════════════════════════════════════════ --}}
+<div id="tab-rejected" style="display:none">
     <div class="table-card">
         <div class="table-card-header">
             <div class="table-card-title">
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                Produk Ditolak
+                ✕ Pendaftaran UMKM Ditolak
                 <span class="table-card-subtitle">{{ $counts['rejected'] }} ditolak</span>
             </div>
         </div>
@@ -464,14 +628,14 @@
         @if($rejected->isEmpty())
             <div class="empty-state">
                 <div class="empty-state-icon">📭</div>
-                <div class="empty-state-text">Tidak ada produk yang ditolak.</div>
+                <div class="empty-state-text">Tidak ada pendaftaran UMKM yang ditolak.</div>
             </div>
         @else
             <table>
                 <thead>
                     <tr>
-                        <th>Produk</th>
-                        <th>Kategori</th>
+                        <th>Usaha</th>
+                        <th>Pemilik</th>
                         <th>Alasan Penolakan</th>
                         <th>Ditolak</th>
                         <th>Aksi</th>
@@ -482,34 +646,35 @@
                     <tr>
                         <td>
                             <div class="submitter">
-                                <div class="submitter-avatar" style="background:#9ca3af;border-radius:8px;overflow:hidden;">
-                                    @if($produk->foto)
-                                        <img src="{{ asset('storage/' . $produk->foto) }}" alt="{{ $produk->nama }}" style="width:100%;height:100%;object-fit:cover;">
+                                <div class="submitter-avatar" style="background:var(--surface2);border:1px solid var(--border);">
+                                    @if($produk->logo)
+                                        <img src="{{ asset('storage/'.$produk->logo) }}" alt="{{ $produk->nama }}">
+                                    @elseif($produk->foto_produk)
+                                        <img src="{{ asset('storage/'.$produk->foto_produk) }}" alt="{{ $produk->nama }}">
                                     @else
-                                        🛍️
+                                        🏪
                                     @endif
                                 </div>
                                 <div>
                                     <div class="submitter-name">{{ $produk->nama }}</div>
-                                    <div class="submitter-sub">{{ Str::limit($produk->deskripsi ?? '', 35) }}</div>
+                                    <div class="submitter-sub">{{ $produk->kategori ?? '-' }}</div>
                                 </div>
                             </div>
                         </td>
-                        <td><div style="font-size:13px;">{{ $produk->kategori ?? '-' }}</div></td>
                         <td>
-                            <div style="font-size:12px;color:var(--accent2);max-width:200px;">
-                                {{ Str::limit($produk->catatan_admin ?? '-', 60) }}
-                            </div>
+                            <div style="font-size:13px;font-weight:600;">{{ $produk->owner ?? '-' }}</div>
+                            <div style="font-size:11px;color:var(--text-muted);">{{ $produk->kontak ?? '-' }}</div>
                         </td>
-                        <td>
-                            <div style="font-size:12px;color:var(--text-muted);">
-                                {{ $produk->rejected_at?->diffForHumans() ?? '-' }}
-                            </div>
+                        <td style="font-size:12px;color:#e76f51;max-width:200px;line-height:1.5;">
+                            {{ Str::limit($produk->catatan_admin ?? $produk->rejection_reason ?? '-', 60) }}
+                        </td>
+                        <td style="font-size:12px;color:#e76f51;">
+                            {{ $produk->rejected_at?->format('d M Y') ?? '-' }}
                         </td>
                         <td>
                             <div class="action-group">
                                 <button class="btn btn-ghost btn-sm" onclick="openDetailModal({{ $produk->id }})">
-                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="13" height="13">
                                         <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                     </svg>
@@ -518,11 +683,11 @@
                                 <form method="POST"
                                       action="{{ route('admin.approval.produk.destroy', $produk) }}"
                                       style="display:inline;"
-                                      onsubmit="return confirmHapus('{{ addslashes($produk->nama) }}')">
+                                      onsubmit="return confirm('Hapus data UMKM \"{{ addslashes($produk->nama) }}\"?')">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;">
-                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12">
+                                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 6V4h6v2M4 7h16"/>
                                         </svg>
                                         Hapus
                                     </button>
@@ -537,21 +702,17 @@
     </div>
 </div>
 
-{{-- ======================== MODAL DETAIL ======================== --}}
+{{-- ════════════ MODAL DETAIL ════════════ --}}
 <div class="modal-overlay" id="modal-detail">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">Detail Produk</div>
+            <div class="modal-title">Detail Pendaftaran UMKM</div>
             <button class="modal-close" onclick="closeModal('modal-detail')">✕</button>
         </div>
-
-        <div class="img-preview" id="detail-img">
-            <span>🛍️</span>
-        </div>
-
+        <div class="img-preview" id="detail-img"><span>🏪</span></div>
         <div class="detail-grid">
             <div class="detail-item">
-                <div class="detail-label">Nama Produk</div>
+                <div class="detail-label">Nama Usaha</div>
                 <div class="detail-value" id="d-nama">-</div>
             </div>
             <div class="detail-item">
@@ -563,77 +724,105 @@
                 <div class="detail-value" id="d-kategori">-</div>
             </div>
             <div class="detail-item">
-                <div class="detail-label">Harga</div>
-                <div class="detail-value" id="d-harga">-</div>
+                <div class="detail-label">Pemilik</div>
+                <div class="detail-value" id="d-owner">-</div>
             </div>
             <div class="detail-item">
-                <div class="detail-label">No. WhatsApp</div>
-                <div class="detail-value" id="d-whatsapp">-</div>
+                <div class="detail-label">NIB</div>
+                <div class="detail-value" id="d-nib">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Kontak WA</div>
+                <div class="detail-value" id="d-kontak">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Provinsi</div>
+                <div class="detail-value" id="d-provinsi">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Kab/Kota</div>
+                <div class="detail-value" id="d-kabkota">-</div>
             </div>
             <div class="detail-item">
                 <div class="detail-label">Didaftarkan</div>
                 <div class="detail-value" id="d-tanggal">-</div>
             </div>
-            <div class="detail-item full">
-                <div class="detail-label">Deskripsi</div>
-                <div class="detail-value" id="d-deskripsi" style="font-weight:400;line-height:1.6;font-size:13px;color:var(--text-muted);">-</div>
+            <div class="detail-item">
+                <div class="detail-label">ID Anggota</div>
+                <div class="detail-value" id="d-idtkm">-</div>
             </div>
             <div class="detail-item full">
                 <div class="detail-label">Alamat</div>
                 <div class="detail-value" id="d-alamat" style="font-weight:400;font-size:13px;">-</div>
             </div>
-            <div class="detail-item full" id="d-reject-wrap" style="display:none;">
-                <div class="detail-label" style="color:var(--accent2);">Alasan Penolakan</div>
-                <div class="detail-value" id="d-reject" style="font-weight:400;font-size:13px;color:var(--accent2);">-</div>
+            <div class="detail-item full">
+                <div class="detail-label">Deskripsi</div>
+                <div class="detail-value" id="d-deskripsi" style="font-weight:400;line-height:1.6;font-size:13px;color:var(--text-muted);">-</div>
+            </div>
+            <div class="detail-item full" id="d-reject-wrap" style="display:none">
+                <div class="detail-label" style="color:#e76f51">Alasan Penolakan</div>
+                <div class="detail-value" id="d-reject" style="font-weight:400;font-size:13px;color:#e76f51;">-</div>
             </div>
         </div>
-
         <div id="d-action-btns" style="display:flex;gap:10px;margin-top:4px;">
-            <button class="btn btn-ghost" style="flex:1;" onclick="closeModal('modal-detail')">Tutup</button>
-            <button class="btn btn-reject" id="btn-detail-reject" style="flex:1;">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M6 18L18 6M6 6l12 12"/>
-                </svg>
+            <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-detail')">Tutup</button>
+            <button class="btn btn-reject" id="btn-detail-reject" style="flex:1">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M6 18L18 6M6 6l12 12"/></svg>
                 Tolak
             </button>
-            <button class="btn btn-approve" id="btn-detail-approve" style="flex:1;">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M5 13l4 4L19 7"/>
-                </svg>
+            <button class="btn btn-approve" id="btn-detail-approve" style="flex:1">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M5 13l4 4L19 7"/></svg>
                 Setujui
             </button>
         </div>
         <div id="d-close-only" style="display:none;margin-top:4px;">
-            <button class="btn btn-ghost" style="width:100%;" onclick="closeModal('modal-detail')">Tutup</button>
+            <button class="btn btn-ghost" style="width:100%" onclick="closeModal('modal-detail')">Tutup</button>
         </div>
     </div>
 </div>
 
-{{-- ======================== MODAL TOLAK ======================== --}}
-<div class="modal-overlay" id="modal-reject">
-    <div class="modal" style="width:460px;">
+{{-- ════════════ MODAL PRODUK ITEMS ════════════ --}}
+<div class="modal-overlay" id="modal-umkm-items">
+    <div class="modal" style="width:600px">
         <div class="modal-header">
-            <div class="modal-title">Tolak Produk</div>
+            <div class="modal-title">🛍️ Semua Produk UMKM</div>
+            <button class="modal-close" onclick="closeModal('modal-umkm-items')">✕</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface2);border-radius:12px;margin-bottom:16px">
+            <div id="modal-umkm-items-avatar" style="width:44px;height:44px;border-radius:10px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden">🏪</div>
+            <div>
+                <div id="modal-umkm-items-name" style="font-size:14px;font-weight:700"></div>
+                <div id="modal-umkm-items-meta" style="font-size:12px;color:var(--text-muted)"></div>
+            </div>
+        </div>
+        <div id="modal-umkm-items-list" style="display:flex;flex-direction:column;gap:8px;max-height:420px;overflow-y:auto"></div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('modal-umkm-items')">Tutup</button>
+        </div>
+    </div>
+</div>
+
+{{-- ════════════ MODAL TOLAK ════════════ --}}
+<div class="modal-overlay" id="modal-reject">
+    <div class="modal" style="width:460px">
+        <div class="modal-header">
+            <div class="modal-title">✕ Tolak Pendaftaran UMKM</div>
             <button class="modal-close" onclick="closeModal('modal-reject')">✕</button>
         </div>
-        <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:18px;line-height:1.6;">
-            Berikan alasan penolakan untuk <strong id="reject-name"></strong>. Alasan ini akan tersimpan sebagai catatan.
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;line-height:1.6">
+            Berikan alasan penolakan untuk <strong id="reject-name"></strong>.
         </p>
-        {{-- FIX: hapus @method('PATCH') — route sudah POST --}}
         <form id="reject-form" method="POST">
             @csrf
             <div class="form-group">
                 <label class="form-label">Alasan Penolakan *</label>
                 <textarea name="alasan" class="form-textarea" rows="4"
-                    placeholder="Contoh: Foto produk kurang jelas, deskripsi tidak lengkap..."
-                    required></textarea>
+                    placeholder="Contoh: Data tidak lengkap, NIB tidak valid..." required></textarea>
             </div>
-            <div style="display:flex;gap:10px;margin-top:6px;">
-                <button type="button" class="btn btn-ghost" style="flex:1;" onclick="closeModal('modal-reject')">Batal</button>
-                <button type="submit" class="btn btn-reject" style="flex:1;">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
+            <div style="display:flex;gap:10px;margin-top:6px">
+                <button type="button" class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-reject')">Batal</button>
+                <button type="submit" class="btn btn-reject" style="flex:1">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M6 18L18 6M6 6l12 12"/></svg>
                     Konfirmasi Tolak
                 </button>
             </div>
@@ -641,14 +830,15 @@
     </div>
 </div>
 
-{{-- Data JSON untuk JS --}}
+{{-- ════════════ JAVASCRIPT ════════════ --}}
 <script>
-const produkData = @json($pending->merge($approved)->merge($rejected)->keyBy('id'));
-const csrfToken  = '{{ csrf_token() }}';
+const produkData   = @json($pending->merge($approved)->merge($rejected)->keyBy('id'));
+const approvedData = @json($approved->keyBy('id'));
+const csrfToken    = '{{ csrf_token() }}';
 
 function switchTab(tab, btn) {
-    ['pending', 'approved', 'rejected'].forEach(t => {
-        document.getElementById('tab-' + t).style.display = t === tab ? 'block' : 'none';
+    ['pending','approved','rejected'].forEach(t => {
+        document.getElementById('tab-'+t).style.display = t === tab ? 'block' : 'none';
     });
     btn.closest('.tab-bar').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -657,94 +847,148 @@ function switchTab(tab, btn) {
     window.history.replaceState({}, '', url);
 }
 
+function switchSubTab(sub, btn) {
+    ['profil','produk'].forEach(s => {
+        document.getElementById('subtab-'+s).style.display = s === sub ? 'block' : 'none';
+    });
+    btn.closest('.sub-tab-bar').querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const url = new URL(window.location);
+    url.searchParams.set('subtab', sub);
+    window.history.replaceState({}, '', url);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-    const params    = new URLSearchParams(window.location.search);
-    const activeTab = params.get('tab') || 'pending';
-    const tabBtn    = document.querySelector(`.tab-btn[data-tab="${activeTab}"]`);
-    if (tabBtn) switchTab(activeTab, tabBtn);
+    const params = new URLSearchParams(window.location.search);
+    const tab    = params.get('tab') || 'pending';
+    const subtab = params.get('subtab') || 'profil';
+    const tabBtn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+    if (tabBtn) switchTab(tab, tabBtn);
+    if (tab === 'approved') {
+        const subBtn = document.querySelector(`.sub-tab-btn[data-subtab="${subtab}"]`);
+        if (subBtn) switchSubTab(subtab, subBtn);
+    }
+});
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
 });
 
 function openDetailModal(id) {
     const p = produkData[id];
     if (!p) return;
-
     const imgEl = document.getElementById('detail-img');
-    if (p.foto) {
-        imgEl.innerHTML = `<img src="/storage/${p.foto}" alt="${p.nama}" style="width:100%;height:100%;object-fit:cover;">`;
-    } else {
-        imgEl.innerHTML = '<span>🛍️</span>';
-    }
-
-    document.getElementById('d-nama').textContent      = p.nama;
+    const foto  = p.logo || p.foto_produk;
+    imgEl.innerHTML = foto
+        ? `<img src="/storage/${foto}" style="width:100%;height:100%;object-fit:cover">`
+        : '<span>🏪</span>';
+    document.getElementById('d-nama').textContent      = p.nama ?? '-';
     document.getElementById('d-kategori').textContent  = p.kategori ?? '-';
-    document.getElementById('d-harga').textContent     = 'Rp ' + (p.harga ?? 0).toLocaleString('id');
-    document.getElementById('d-whatsapp').textContent  = p.whatsapp ?? '-';
-    document.getElementById('d-deskripsi').textContent = p.deskripsi ?? '-';
+    document.getElementById('d-owner').textContent     = p.owner ?? '-';
+    document.getElementById('d-nib').textContent       = p.nib ?? '-';
+    document.getElementById('d-kontak').textContent    = p.kontak ?? '-';
+    document.getElementById('d-provinsi').textContent  = p.provinsi ?? '-';
+    document.getElementById('d-kabkota').textContent   = p.kabupaten_kota ?? '-';
+    document.getElementById('d-idtkm').textContent     = p.id_tkm ?? '-';
     document.getElementById('d-alamat').textContent    = p.alamat ?? '-';
+    document.getElementById('d-deskripsi').textContent = p.deskripsi ?? '-';
     document.getElementById('d-tanggal').textContent   = p.created_at
-        ? new Date(p.created_at).toLocaleDateString('id-ID', {day:'2-digit',month:'long',year:'numeric'})
+        ? new Date(p.created_at).toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'})
         : '-';
-
     const statusMap = {
         pending:  '<span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>',
         approved: '<span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>',
         rejected: '<span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>',
     };
     document.getElementById('d-status').innerHTML = statusMap[p.status] ?? p.status;
-
     const rejectWrap = document.getElementById('d-reject-wrap');
-    if (p.status === 'rejected' && p.catatan_admin) {
+    if (p.status === 'rejected' && (p.catatan_admin || p.rejection_reason)) {
         rejectWrap.style.display = 'block';
-        document.getElementById('d-reject').textContent = p.catatan_admin;
+        document.getElementById('d-reject').textContent = p.catatan_admin || p.rejection_reason;
     } else {
         rejectWrap.style.display = 'none';
     }
-
     const actionBtns = document.getElementById('d-action-btns');
     const closeOnly  = document.getElementById('d-close-only');
     if (p.status === 'pending') {
         actionBtns.style.display = 'flex';
         closeOnly.style.display  = 'none';
-        document.getElementById('btn-detail-approve').onclick = () => {
-            closeModal('modal-detail');
-            submitApprove(id);
-        };
-        document.getElementById('btn-detail-reject').onclick = () => {
-            closeModal('modal-detail');
-            openRejectModal(id, p.nama);
-        };
+        document.getElementById('btn-detail-approve').onclick = () => { closeModal('modal-detail'); submitApprove(id); };
+        document.getElementById('btn-detail-reject').onclick  = () => { closeModal('modal-detail'); openRejectModal(id, p.nama); };
     } else {
         actionBtns.style.display = 'none';
         closeOnly.style.display  = 'block';
     }
-
     openModal('modal-detail');
 }
 
+function openUmkmDetailModal(id) {
+    const u = approvedData[id];
+    if (!u) return;
+    const foto = u.logo || u.foto_produk;
+    document.getElementById('modal-umkm-items-avatar').innerHTML = foto
+        ? `<img src="/storage/${foto}" style="width:100%;height:100%;object-fit:cover">`
+        : '🏪';
+    document.getElementById('modal-umkm-items-name').textContent = u.nama;
+    document.getElementById('modal-umkm-items-meta').textContent =
+        [u.kategori, u.kabupaten_kota ? '📍 '+u.kabupaten_kota : null].filter(Boolean).join(' · ');
+    const listEl = document.getElementById('modal-umkm-items-list');
+    const items  = u.items || [];
+    if (items.length === 0) {
+        listEl.innerHTML = '<div class="no-items">Belum ada produk ditambahkan</div>';
+    } else {
+        listEl.innerHTML = items.map(item => `
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface2)">
+                <div style="width:44px;height:44px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:18px">
+                    ${item.foto ? `<img src="/storage/${item.foto}" style="width:100%;height:100%;object-fit:cover">` : '📦'}
+                </div>
+                <div style="flex:1;min-width:0">
+                    <div style="font-size:13px;font-weight:600;color:var(--text)">${_esc(item.nama)}</div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:2px">
+                        ${item.kategori ? item.kategori+' · ' : ''}Stok: ${item.stok ?? '-'} ${item.satuan ?? ''}
+                    </div>
+                    <div style="font-size:12px;font-weight:700;color:var(--accent);margin-top:3px">
+                        Rp ${Number(item.harga).toLocaleString('id-ID')}
+                    </div>
+                    ${item.deskripsi ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;line-height:1.5">${_esc(item.deskripsi)}</div>` : ''}
+                </div>
+                <form method="POST" action="/admin/approval/produk/${id}/item/${item.id}"
+                      onsubmit="return confirm('Hapus produk ini?')">
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" class="item-del-btn">
+                        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        `).join('');
+    }
+    openModal('modal-umkm-items');
+}
 
 function submitApprove(id) {
-    const form  = document.createElement('form');
-    form.method = 'POST';
-    form.action = `/admin/approval/produk/${id}/approve`;
-
-    const token   = document.createElement('input');
-    token.type    = 'hidden';
-    token.name    = '_token';
-    token.value   = csrfToken;
-
-    form.appendChild(token);
-    document.body.appendChild(form);
-    form.submit();
+    const f = document.createElement('form');
+    f.method = 'POST';
+    f.action = `/admin/approval/produk/${id}/approve`;
+    const t  = document.createElement('input');
+    t.type='hidden'; t.name='_token'; t.value=csrfToken;
+    f.appendChild(t); document.body.appendChild(f); f.submit();
 }
 
 function openRejectModal(id, nama) {
     document.getElementById('reject-name').textContent = nama;
-    document.getElementById('reject-form').action = `/admin/approval/produk/${id}/reject?tab=rejected`;
+    document.getElementById('reject-form').action = `/admin/approval/produk/${id}/reject`;
+    document.getElementById('reject-form').querySelector('textarea').value = '';
     openModal('modal-reject');
 }
 
-function confirmHapus(nama) {
-    return confirm(`Hapus produk "${nama}"?\n\nTindakan ini tidak dapat dibatalkan.`);
+function _esc(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 </script>
 

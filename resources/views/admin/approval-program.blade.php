@@ -6,6 +6,34 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.all.min.js"></script>
 <style>
+/* ── CSV Export Button ── */
+.btn-csv-export {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1.5px solid #86efac;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+}
+.btn-csv-export:hover {
+    background: #dcfce7;
+    border-color: #4ade80;
+    color: #166534;
+}
+@media (max-width: 768px) {
+    .btn-csv-export {
+        font-size: 11px;
+        padding: 5px 10px;
+    }
+}
 
 /* Tombol hapus */
 .btn-delete {
@@ -401,6 +429,17 @@
             🎓 Daftar Program Pelatihan
             <span class="table-card-subtitle">{{ $programs->total() }} program</span>
         </div>
+        <a href="{{ route('admin.approval.program.export-csv', array_filter([
+            'status' => $status,
+            'tipe'   => $tipe,
+            'tab'    => 'program',
+        ])) }}"
+           class="btn-csv-export">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Export CSV
+        </a>
     </div>
 
     <table>
@@ -574,14 +613,23 @@
 {{-- ======================== MODAL DETAIL ======================== --}}
 {{-- ══ SECTION PENDAFTARAN (muncul jika tab=pendaftaran) ══ --}}
 @if(request('tab') === 'pendaftaran')
-
-
 <div class="table-card">
     <div class="table-card-header">
         <div class="table-card-title">
             📩 Pendaftaran Program
             <span class="table-card-subtitle">{{ $pendaftarans->total() }} pendaftaran</span>
         </div>
+        <a href="{{ route('admin.approval.program.export-csv', array_filter([
+            'status'        => $status,
+            'tab'           => 'pendaftaran',
+            'status_daftar' => $statusDaftar,
+        ])) }}"
+           class="btn-csv-export">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Export CSV
+        </a>
     </div>
     <table>
         <thead>

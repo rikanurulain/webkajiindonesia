@@ -5,9 +5,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ProdukItem;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProdukItem extends Model
 {
+    use SoftDeletes;
+    
     protected $fillable = [
         'produk_id', 'user_id', 'nama', 'kategori',
         'deskripsi', 'harga', 'stok', 'satuan', 'foto', 'is_unggulan',

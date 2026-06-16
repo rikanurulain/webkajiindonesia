@@ -121,6 +121,8 @@ Route::middleware(['auth'])->group(function () {
          ->name('dashboard.produk.edit');
     Route::put('/dashboard-umkm/produk/{id}/update', [\App\Http\Controllers\UmkmDashboardController::class, 'updateProduk'])
          ->name('dashboard.produk.update');
+    Route::post('/dashboard/produk-item/{id}/restore', [ProdukItemController::class, 'restore'])
+         ->name('produk-item.restore');
 
     Route::post('/dashboard-umkm/pilih-mentor/{mentorId}', [UmkmDashboardController::class, 'pilihMentor'])
          ->name('umkm.pilih-mentor');
@@ -213,7 +215,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/', [AdminController::class, 'index'])->name('dashboard');
 
     // ── Approval Program ─────────────────────────────────────────────
-Route::get('/approval/program/counts',             [AdminController::class, 'approvalProgramCounts'])->name('approval.program.counts'); // ← TAMBAH INI PALING ATAS
+Route::get('/approval/program/counts',             [AdminController::class, 'approvalProgramCounts'])->name('approval.program.counts'); 
+Route::get('/approval/program/export-csv',         [AdminController::class, 'exportCsvApproval'])->name('approval.program.export-csv');
 Route::get('/approval/program',                    [AdminController::class, 'approvalProgram'])->name('approval.program');
 Route::post('/approval/program/{program}/approve', [AdminController::class, 'approveProgram'])->name('approval.program.approve');
 Route::post('/approval/program/{program}/reject',  [AdminController::class, 'rejectProgram'])->name('approval.program.reject');
@@ -223,6 +226,8 @@ Route::delete('/approval/program/{program}',       [AdminController::class, 'des
     Route::post('/approval/produk/{produk}/approve',   [AdminController::class, 'approveProduk'])->name('approval.produk.approve');
     Route::post('/approval/produk/{produk}/reject',    [AdminController::class, 'rejectProduk'])->name('approval.produk.reject');
     Route::delete('/approval/produk/{produk}',         [AdminController::class, 'destroyProduk'])->name('approval.produk.destroy');
+    Route::delete('/approval/produk/{produk}/destroy-umkm',        [AdminController::class, 'destroyUmkm'])->name('approval.umkm.destroy');
+Route::delete('/approval/produk/{produkId}/item/{itemId}',     [AdminController::class, 'destroyProdukItem'])->name('approval.umkm.item.destroy');
 
     // ── Approval Event ───────────────────────────────────────────────
     Route::get('/approval/event',                      [AdminController::class, 'approvalEvent'])->name('approval.event');

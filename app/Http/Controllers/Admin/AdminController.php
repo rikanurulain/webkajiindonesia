@@ -247,6 +247,87 @@ $request->get('tab') === 'pendaftaran'
         ]);
     }
 
+// ── Export CSV Approval Program & Pendaftaran ─────────────────────────
+public function exportCsvApproval(Request $request)
+{
+    $tab    = $request->get('tab', 'program');
+    $status = $request->get('status', 'pending');
+
+    if ($tab === 'pendaftaran') {
+        $statusDaftar = $request->get('status_daftar', 'menunggu_verifikasi');
+
+        $rows = \App\Models\PendaftaranProgram::with('program')
+            ->where('status', $statusDaftar)
+            ->orderByDesc('created_at')
+            ->get();
+
+        $filename = 'pendaftaran-' . $statusDaftar . '-' . now()->format('Ymd') . '.csv';
+
+        return response()->streamDownload(function () use ($rows) {
+            $h = fopen('php://output', 'w');
+            fprintf($h, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM UTF-8
+            fputcsv($h, ['ID','Nama Lengkap','Email','No HP','Alamat','Program','Biaya Program','Bukti Bayar','Status','Alasan Penolakan','Tanggal Daftar']);
+
+            foreach ($rows as $p) {
+                $isBerbayar = !empty($p->program->biaya)
+                    && strtolower($p->program->biaya) !== 'gratis'
+                    && $p->program->biaya != 0;
+
+                fputcsv($h, [
+                    $p->id,
+                    $p->nama_lengkap,
+                    $p->email,
+                    $p->no_hp,
+                    $p->alamat ?? '-',
+                    $p->program->judul ?? '-',
+                    $isBerbayar ? 'Berbayar' : 'Gratis',
+                    $p->bukti_pembayaran ? 'Ada' : 'Tidak Ada',
+                    $p->status,
+                    $p->alasan_penolakan ?? '-',
+                    $p->created_at->format('d/m/Y H:i'),
+                ]);
+            }
+            fclose($h);
+        }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    // ── Tab program (kurikulum & modul) ──────────────────────────────
+    $tipe = $request->get('tipe', 'all');
+
+    $rows = Program::with('trainer')
+        ->when($status !== 'all', fn($q) => $q->where('status', $status))
+        ->when($tipe   !== 'all', fn($q) => $q->where('tipe', $tipe))
+        ->orderByDesc('created_at')
+        ->get();
+
+    $filename = 'approval-program-' . $status
+        . ($tipe !== 'all' ? '-' . $tipe : '')
+        . '-' . now()->format('Ymd') . '.csv';
+
+    return response()->streamDownload(function () use ($rows) {
+        $h = fopen('php://output', 'w');
+        fprintf($h, chr(0xEF).chr(0xBB).chr(0xBF));
+        fputcsv($h, ['ID','Judul','Tipe','Trainer','Metode','Tingkat','Bahasa','Biaya','Status','Catatan Admin','Diajukan']);
+
+        foreach ($rows as $p) {
+            fputcsv($h, [
+                $p->id,
+                $p->judul ?? $p->nama,
+                ucfirst($p->tipe ?? '-'),
+                optional($p->trainer)->name ?? '-',
+                $p->metode ?? '-',
+                $p->tingkat ?? '-',
+                $p->bahasa ?? '-',
+                $p->biaya ?? '-',
+                $p->status,
+                $p->catatan_admin ?? '-',
+                $p->created_at->format('d/m/Y H:i'),
+            ]);
+        }
+        fclose($h);
+    }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+}
+
     // ═════════════════════════════════════════════════════════════════════
 // APPROVAL PENDAFTARAN PROGRAM
 // ═════════════════════════════════════════════════════════════════════
@@ -300,19 +381,31 @@ public function unsuspendPengguna(Request $request, User $user)
     // APPROVAL PRODUK
     // ═════════════════════════════════════════════════════════════════════
     public function approvalProduk(Request $request)
-    {
-        $pending  = Produk::with('umkm')->where('status', 'pending')->latest()->get();
-        $approved = Produk::with('umkm')->where('status', 'approved')->latest()->get();
-        $rejected = Produk::with('umkm')->where('status', 'rejected')->latest()->get();
+{
+    $pending  = Produk::with(['items'])
+                    ->where('status', 'pending')
+                    ->latest()->get();
 
-        $counts = [
-            'pending'  => $pending->count(),
-            'approved' => $approved->count(),
-            'rejected' => $rejected->count(),
-        ];
+    $approved = Produk::with(['items'])
+                    ->where('status', 'approved')
+                    ->latest()->get();
 
-        return view('admin.approval-produk', compact('pending', 'approved', 'rejected', 'counts'));
-    }
+    $rejected = Produk::with(['items'])
+                    ->where('status', 'rejected')
+                    ->latest()->get();
+
+    $counts = [
+        'pending'  => $pending->count(),
+        'approved' => $approved->count(),
+        'rejected' => $rejected->count(),
+    ];
+
+    return view('admin.approval-produk', compact(
+        'pending', 'approved', 'rejected', 'counts'
+    ));
+}
+
+    
     public function detailProduk(Produk $produk)
     {
         return response()->json($produk->load('umkm'));
@@ -371,6 +464,16 @@ public function rejectProduk(Request $request, Produk $produk)
         $produk->delete();
         return back()->with('success', "Produk \"{$nama}\" berhasil dihapus.");
     }
+
+    public function destroyProdukItem($produkId, $itemId)
+{
+    $produk = Produk::findOrFail($produkId);
+    $item   = $produk->items()->findOrFail($itemId);
+
+    $item->delete(); // soft delete — UMKM masih bisa pulihkan
+
+    return back()->with('success', "Item \"{$item->nama}\" berhasil dihapus.");
+}
 
     // ═════════════════════════════════════════════════════════════════════
     // APPROVAL EVENT — (diperbarui dari AdminEventController)

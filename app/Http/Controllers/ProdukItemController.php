@@ -91,16 +91,16 @@ class ProdukItemController extends Controller
 
     // ── Hapus produk item ────────────────────────────────────
     public function destroy($id)
-    {
-        $item = ProdukItem::where('id', $id)
-                           ->where('user_id', Auth::id())
-                           ->firstOrFail();
+{
+    $item = ProdukItem::where('id', $id)
+                       ->where('user_id', Auth::id())
+                       ->firstOrFail();
 
-        if ($item->foto) Storage::disk('public')->delete($item->foto);
-        $item->delete();
+    // Foto TIDAK dihapus — masih dibutuhkan jika dipulihkan
+    $item->delete(); // soft delete saja
 
-        return back()->with('success', 'Produk berhasil dihapus.');
-    }
+    return back()->with('success', 'Produk berhasil dihapus. Bisa dipulihkan di menu Produk Terhapus.');
+}
 
     // ── Set produk ini jadi unggulan ─────────────────────────
     public function setUnggulan($id)
@@ -129,4 +129,17 @@ class ProdukItemController extends Controller
 
         return back()->with('success', 'Status unggulan dilepas.');
     }
+
+    // ── Pulihkan produk item yang terhapus ──────────────────────
+public function restore($id)
+{
+    $item = ProdukItem::withTrashed()
+                       ->where('id', $id)
+                       ->where('user_id', Auth::id())
+                       ->firstOrFail();
+
+    $item->restore();
+
+    return back()->with('success', "Produk \"{$item->nama}\" berhasil dipulihkan!");
+}
 }

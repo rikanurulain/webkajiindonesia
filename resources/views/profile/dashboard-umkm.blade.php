@@ -284,6 +284,18 @@
     </div>
     @endif
 
+    @if($myUmkm)
+<div class="nav-item" onclick="showPage('produk-terhapus')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+    </svg>
+    Produk Terhapus
+    @if($produkTerhapus->count() > 0)
+        <span class="nav-badge" style="background:#9ca3af;">{{ $produkTerhapus->count() }}</span>
+    @endif
+</div>
+@endif
+
     <div class="nav-item" onclick="showPage('program')">
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -742,11 +754,10 @@
               </button>
 
               {{-- Tombol hapus --}}
-              <form method="POST" action="{{ route('produk-item.destroy', $item->id) }}"
-                    onsubmit="return confirm('Hapus produk {{ addslashes($item->nama) }}?')">
-                @csrf @method('DELETE')
-                <button type="submit" class="btn btn-danger btn-sm">🗑</button>
-              </form>
+              <button type="button" class="btn btn-danger btn-sm"
+    onclick="konfirmasiHapus({{ $item->id }}, '{{ addslashes($item->nama) }}')">
+    🗑
+</button>
             </div>
           </div>
           @endforeach
@@ -761,6 +772,78 @@
         @endif
       @endif
     </div>
+
+    {{-- ============ PRODUK TERHAPUS ============ --}}
+<div class="page-section" id="page-produk-terhapus">
+
+    @if(!$myUmkm)
+        <div class="empty-state">
+            <div class="empty-icon">⏳</div>
+            <h3>Profil UMKM Belum Disetujui</h3>
+        </div>
+    @else
+        <div class="section-header">
+            <div class="section-title">
+                Produk Terhapus
+                <span>{{ $produkTerhapus->count() }} produk · bisa dipulihkan</span>
+            </div>
+        </div>
+
+        @if($produkTerhapus->count() > 0)
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produk</th>
+                        <th>Kategori</th>
+                        <th>Harga</th>
+                        <th>Dihapus</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($produkTerhapus as $item)
+                    <tr>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div style="width:40px;height:40px;border-radius:8px;overflow:hidden;background:var(--surface2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;">
+                                    @if($item->foto)
+                                        <img src="{{ asset('storage/' . $item->foto) }}" style="width:100%;height:100%;object-fit:cover;">
+                                    @else
+                                        📦
+                                    @endif
+                                </div>
+                                <div>
+                                    <div style="font-weight:600;font-size:13px;">{{ $item->nama }}</div>
+                                    <div style="font-size:11px;color:var(--text-muted);">{{ \Illuminate\Support\Str::limit($item->deskripsi ?? '', 40) }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-size:13px;">{{ $item->kategori ?? '-' }}</td>
+                        <td style="font-size:13px;">{{ $item->harga_format }}</td>
+                        <td style="font-size:12px;color:var(--text-muted);">{{ $item->deleted_at->diffForHumans() }}</td>
+                        <td>
+                            <form method="POST" action="{{ route('produk-item.restore', $item->id) }}">
+                                @csrf
+                                <button type="submit" class="btn btn-outline btn-sm">
+                                    ♻️ Pulihkan
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @else
+        <div class="empty-state">
+            <div class="empty-icon">🗑️</div>
+            <h3>Tidak Ada Produk Terhapus</h3>
+            <p>Produk yang dihapus akan muncul di sini dan bisa dipulihkan kapan saja.</p>
+        </div>
+        @endif
+    @endif
+</div>
 
     {{-- ============ PROGRAM TERSEDIA ============ --}}
     <div class="page-section" id="page-program">
@@ -1197,10 +1280,12 @@ function bukaMOdalLepasMentor(mentorId, mentorNama) {
 
     const titles = {
   'beranda':      'Dashboard UMKM',
-  'profil-umkm':  'Data Usaha',       // ← ganti
+  'profil-umkm':  'Data Usaha',       
   'produk-items': 'Produk Saya',
   'program':      'Program Tersedia',
-  'profil':       'Akun Saya',        // ← ganti
+  'profil':       'Akun Saya',        
+  'produk-terhapus': 'Produk Terhapus',
+
 };
     document.getElementById('page-title').textContent = titles[id] || 'Dashboard UMKM';
 
@@ -1274,9 +1359,58 @@ function bukaMOdalLepasMentor(mentorId, mentorNama) {
   /* ── INIT: cek hash URL ── */
   document.addEventListener('DOMContentLoaded', function () {
     const hash = window.location.hash.replace('#', '');
-    const valid = ['beranda','profil-umkm','produk-items','program','profil'];
+    const valid = ['beranda','profil-umkm','produk-items','produk-terhapus','program','profil'];
     if (valid.includes(hash)) showPage(hash);
   });
+
+  /* ── KONFIRMASI HAPUS PRODUK ── */
+function konfirmasiHapus(id, nama) {
+    document.getElementById('modal-hapus-nama').textContent = nama;
+    document.getElementById('form-hapus-item').action = '/dashboard/produk-item/' + id;
+    openModal('modal-hapus-item');
+}
 </script>
+
+{{-- ============ MODAL: KONFIRMASI HAPUS PRODUK ============ --}}
+<div class="modal-overlay" id="modal-hapus-item">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <div class="modal-title">
+        Hapus Produk?
+        <small>Produk bisa dipulihkan di menu Produk Terhapus</small>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-hapus-item')">×</button>
+    </div>
+
+    <div style="text-align:center;padding:8px 0 20px;">
+      <div style="width:64px;height:64px;background:#fff0ed;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;">
+        🗑️
+      </div>
+      <p style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;" id="modal-hapus-nama">
+        Nama Produk
+      </p>
+      <p style="font-size:13px;color:var(--text-muted);line-height:1.6;">
+        Produk ini akan dipindahkan ke <strong>Produk Terhapus</strong>.<br>
+        Anda bisa memulihkannya kapan saja.
+      </p>
+      <div style="margin-top:16px;padding:12px 16px;background:#f0fdf4;border:1px solid #86efac66;border-radius:10px;font-size:12px;color:#166534;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:16px;">♻️</span>
+        <span>Produk tidak langsung hilang — tersimpan di menu <strong>Produk Terhapus</strong></span>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-ghost" onclick="closeModal('modal-hapus-item')">
+        Batal
+      </button>
+      <form id="form-hapus-item" method="POST" action="" style="margin:0;">
+        @csrf @method('DELETE')
+        <button type="submit" class="btn btn-danger">
+          🗑️ Ya, Hapus Produk
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
 </body>
 </html>

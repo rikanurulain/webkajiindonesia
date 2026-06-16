@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Produk extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
     'user_id',
     'nama',
@@ -38,6 +41,7 @@ class Produk extends Model
     protected $casts = [
         'approved_at' => 'datetime',
         'rejected_at' => 'datetime',
+        'deleted_at'  => 'datetime',
     ];
 
     // ── Scopes ──────────────────────────────────
@@ -75,6 +79,8 @@ public function mentor()
     // Menghubungkan kolom mentor_id ke tabel mentor (Model Mentor)
     return $this->belongsTo(Mentor::class, 'mentor_id');
 }
+
+
 
 public function items()
 {
