@@ -22,23 +22,21 @@ class Trainerpelatihancontroller extends Controller
             'total_jam'       => 'nullable|numeric|min:0',
             'jumlah_sesi'     => 'nullable|integer|min:0',
             'sertifikat'      => 'nullable|in:0,1',
-            'phone'           => 'nullable|string|max:20',
-            'biaya'           => 'nullable|string|max:100',
-            'alamat'          => 'nullable|string|max:500', // ← tambah ini
             'gambar'          => 'nullable|image|max:5120',
+            'phone'           => 'nullable|string|max:20',
             'absensi_aktif'   => 'nullable',
             'absensi_mulai'   => 'nullable|date',
             'absensi_selesai' => 'nullable|date|after:absensi_mulai',
             'absensi_url'     => 'nullable|url|max:500',
-            'akses_mulai'    => 'nullable|date',
-            'akses_selesai'  => 'nullable|date|after:akses_mulai',
+            'alamat'          => 'nullable|string|max:500',
+            'biaya'           => 'nullable|string|max:100',
+            'program_mulai'   => 'nullable|date',            // ← tambah
+            'program_selesai' => 'nullable|date|after_or_equal:program_mulai', // ← tambah
         ]);
-    
+        
         $absensiAktif = $request->input('absensi_aktif') == '1';
-    
+        
         $data = [
-            'trainer_id'      => Auth::id(),
-            'tipe'            => 'kurikulum',
             'judul'           => $request->judul,
             'deskripsi'       => $request->deskripsi,
             'metode'          => $request->metode,
@@ -47,15 +45,16 @@ class Trainerpelatihancontroller extends Controller
             'jumlah_materi'   => $request->jumlah_materi,
             'total_jam'       => $request->total_jam,
             'jumlah_sesi'     => $request->jumlah_sesi,
-            'phone'           => $request->phone ?? Auth::user()->phone,
+            'phone'           => $request->phone,
             'sertifikat'      => $request->sertifikat ?? 0,
+            'alamat'          => $request->alamat,
             'biaya'           => $request->biaya,
-            'alamat'          => $request->alamat, // ← tambah ini
-            'status'          => 'pending',
             'absensi_aktif'   => $absensiAktif,
             'absensi_mulai'   => $absensiAktif ? $request->absensi_mulai   : null,
             'absensi_selesai' => $absensiAktif ? $request->absensi_selesai : null,
             'absensi_url'     => $absensiAktif ? $request->absensi_url     : null,
+            'program_mulai'   => $request->filled('program_mulai')   ? $request->program_mulai   : null,  // ← tambah
+            'program_selesai' => $request->filled('program_selesai') ? $request->program_selesai : null,  // ← tambah
         ];
     
         if ($request->hasFile('gambar')) {
@@ -97,6 +96,8 @@ class Trainerpelatihancontroller extends Controller
             'absensi_url'     => 'nullable|url|max:500',
             'alamat'          => 'nullable|string|max:500',
             'biaya'           => 'nullable|string|max:100',
+            'program_mulai'   => 'nullable|date',                              // ← TAMBAH
+            'program_selesai' => 'nullable|date|after_or_equal:program_mulai', // ← TAMBAH
         ]);
     
         $absensiAktif = $request->input('absensi_aktif') == '1';
@@ -118,6 +119,8 @@ class Trainerpelatihancontroller extends Controller
             'absensi_mulai'   => $absensiAktif ? $request->absensi_mulai   : null,
             'absensi_selesai' => $absensiAktif ? $request->absensi_selesai : null,
             'absensi_url'     => $absensiAktif ? $request->absensi_url     : null,
+            'program_mulai'   => $request->filled('program_mulai')   ? $request->program_mulai   : null, // ← TAMBAH
+            'program_selesai' => $request->filled('program_selesai') ? $request->program_selesai : null, // ← TAMBAH
         ];
     
         // Reset ke pending hanya jika bukan approved

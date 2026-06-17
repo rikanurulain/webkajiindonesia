@@ -45,6 +45,8 @@ class Program extends Model
     'materi_pdf',
     'akses_mulai',
     'akses_selesai',
+    'program_mulai',
+'program_selesai',
     ];
 
     protected $casts = [
@@ -54,6 +56,8 @@ class Program extends Model
         'absensi_aktif'   => 'boolean',
         'absensi_mulai'   => 'datetime',
         'absensi_selesai' => 'datetime',
+        'program_mulai'    => 'date',   // ← tambah
+        'program_selesai'  => 'date',   // ← tambah
     ];
 
     // ── Auto-generate slug dari judul ─────────────────────────────────────

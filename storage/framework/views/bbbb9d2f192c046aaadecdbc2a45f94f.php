@@ -259,6 +259,50 @@
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
     .btn-resubmit { animation: pulse-orange 2s infinite; }
+    /* ============ PROGRAM STATUS BADGE ============ */
+.program-status-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    border: 1px solid var(--border);
+    border-top: none;
+    background: var(--surface);
+    flex-wrap: wrap;
+}
+.program-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .3px;
+}
+.psb-belum  { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+.psb-aktif  { background: #f0fdf4; color: #16a34a; border: 1px solid #86efac; }
+.psb-selesai{ background: #f8fafc; color: #64748b; border: 1px solid #cbd5e1; }
+.program-countdown {
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+}
+.program-countdown.aktif  { background: #f0fdf4; color: #16a34a; border-color: #86efac; }
+.program-countdown.warning{ background: #fffbea; color: #b45309; border-color: #fcd34d; }
+.psb-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+.psb-dot.blink { animation: blink 1s infinite; }
     @keyframes pulse-orange { 0%, 100% { box-shadow: 0 0 0 0 rgba(231,111,81,.3); } 50% { box-shadow: 0 0 0 4px rgba(231,111,81,0); } }
 
     /* Upload area portrait 9:16 */
@@ -1074,6 +1118,8 @@
                                 data-absensi-url="<?php echo e($k->absensi_url ?? ''); ?>"
                             data-alamat="<?php echo e(json_encode($k->alamat ?? '')); ?>"
                             data-gambar-url="<?php echo e($k->gambar ? asset('storage/'.$k->gambar) : ''); ?>"
+data-program-mulai="<?php echo e($k->program_mulai ? \Carbon\Carbon::parse($k->program_mulai)->format('Y-m-d\TH:i') : ''); ?>"
+data-program-selesai="<?php echo e($k->program_selesai ? \Carbon\Carbon::parse($k->program_selesai)->format('Y-m-d\TH:i') : ''); ?>"
                                 title="Edit Kurikulum">
                                 <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                             </button>
@@ -1083,6 +1129,61 @@
                             </button>
                         </div>
                     </div>
+                    <?php
+    $progMulai   = !empty($k->program_mulai)   ? \Carbon\Carbon::parse($k->program_mulai, 'Asia/Jakarta')   : null;
+    $progSelesai = !empty($k->program_selesai) ? \Carbon\Carbon::parse($k->program_selesai, 'Asia/Jakarta') : null;
+    $nowProg     = \Carbon\Carbon::now('Asia/Jakarta');
+    $statusProg  = null;
+    if ($progMulai) {
+        if ($nowProg->lt($progMulai))                                                        $statusProg = 'belum';
+        elseif (!$progSelesai || $nowProg->lte($progSelesai))                               $statusProg = 'aktif';
+        else                                                                                  $statusProg = 'selesai';
+    }
+?>
+<?php if($statusProg): ?>
+<div class="program-status-wrap"
+     id="prog-status-bar-<?php echo e($k->id); ?>"
+     data-mulai="<?php echo e($progMulai ? $progMulai->timestamp : 0); ?>"
+     data-selesai="<?php echo e($progSelesai ? $progSelesai->timestamp : 0); ?>"
+     data-status="<?php echo e($statusProg); ?>">
+
+    <?php if($statusProg === 'belum'): ?>
+        <span class="program-status-badge psb-belum">
+            <span class="psb-dot"></span>⏳ Belum Dibuka
+        </span>
+        <span style="font-size:12px;color:var(--text-muted)">Dibuka dalam</span>
+        <span class="program-countdown" id="prog-timer-<?php echo e($k->id); ?>">--:--:--</span>
+        <span style="font-size:11px;color:var(--text-muted);margin-left:4px">
+            (<?php echo e($progMulai->translatedFormat('d M Y, H:i')); ?> WIB)
+        </span>
+
+    <?php elseif($statusProg === 'aktif'): ?>
+        <span class="program-status-badge psb-aktif">
+            <span class="psb-dot blink"></span>✅ Sedang Berlangsung
+        </span>
+        <?php if($progSelesai): ?>
+            <span style="font-size:12px;color:var(--text-muted)">Berakhir dalam</span>
+            <span class="program-countdown aktif" id="prog-timer-<?php echo e($k->id); ?>">--:--:--</span>
+            <span style="font-size:11px;color:var(--text-muted);margin-left:4px">
+                (s/d <?php echo e($progSelesai->translatedFormat('d M Y, H:i')); ?> WIB)
+            </span>
+        <?php else: ?>
+            <span style="font-size:12px;color:var(--text-muted)">
+                Dimulai <?php echo e($progMulai->translatedFormat('d M Y, H:i')); ?> WIB · Tidak ada batas akhir
+            </span>
+        <?php endif; ?>
+
+    <?php else: ?>
+        <span class="program-status-badge psb-selesai">
+            <span class="psb-dot"></span>🔒 Program Selesai
+        </span>
+        <span style="font-size:11px;color:var(--text-muted)">
+            Berakhir <?php echo e($progSelesai->translatedFormat('d M Y, H:i')); ?> WIB
+        </span>
+    <?php endif; ?>
+
+</div>
+<?php endif; ?>
 
                     <?php if($absensiAktif): ?>
                     <div class="absensi-bar absensi-<?php echo e($statusAbsensi); ?>"
@@ -1850,6 +1951,24 @@ $sosmedCfg2 = [
                         onchange="onKurikulumGambarChange(this)">
                 </div>
 
+                <hr class="form-divider">
+<div class="form-section-title">📅 Status Pembukaan Program</div>
+<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:12px;color:#0369a1;line-height:1.7">
+    <strong>ℹ️ Opsional.</strong> Atur tanggal mulai &amp; selesai program agar peserta tahu kapan program dibuka. 
+    Sistem akan otomatis menampilkan label <strong>Belum Dibuka</strong>, <strong>Sedang Berlangsung</strong>, atau <strong>Selesai</strong> beserta countdown.
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+    <div class="form-group">
+        <label class="form-label">Program Dibuka</label>
+        <input class="form-input" type="datetime-local" name="program_mulai" id="k-program-mulai">
+        <div class="form-hint">Tanggal &amp; jam program mulai</div>
+    </div>
+    <div class="form-group">
+        <label class="form-label">Program Ditutup / Selesai</label>
+        <input class="form-input" type="datetime-local" name="program_selesai" id="k-program-selesai">
+        <div class="form-hint">Kosongkan jika tidak ada batas waktu</div>
+    </div>
+</div>
                 <hr class="form-divider">
                 <div class="absensi-toggle-section">
                     <div class="absensi-toggle-header" onclick="toggleAbsensiSection()">
@@ -3186,6 +3305,40 @@ function bukaModalPulihkanEvent(logId, judul, tanggalHapus) {
         const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60;
         return h > 0 ? pad(h)+':'+pad(m)+':'+pad(ss) : pad(m)+':'+pad(ss);
     }
+    /* ================================================================
+PROGRAM STATUS COUNTDOWN
+================================================================ */
+function initProgramTimers() {
+    document.querySelectorAll('[id^="prog-status-bar-"]').forEach(function(bar) {
+        const tsMulai   = parseInt(bar.dataset.mulai,   10) * 1000;
+        const tsSelesai = parseInt(bar.dataset.selesai, 10) * 1000;
+        const status    = bar.dataset.status;
+        const barId     = bar.id.replace('prog-status-bar-', '');
+        const timerEl   = document.getElementById('prog-timer-' + barId);
+        if (!timerEl) return; // selesai / tidak ada timer
+
+        var ivId;
+        function tick() {
+            var now = Date.now();
+            if (status === 'belum') {
+                var ms = tsMulai - now;
+                if (ms <= 0) { location.reload(); return; }
+                timerEl.textContent = formatCountdown(ms);
+            } else if (status === 'aktif' && tsSelesai > 0) {
+                var ms = tsSelesai - now;
+                if (ms <= 0) { location.reload(); return; }
+                timerEl.textContent = formatCountdown(ms);
+                timerEl.className = ms < 3600000
+                    ? 'program-countdown warning'
+                    : 'program-countdown aktif';
+            } else {
+                clearInterval(ivId);
+            }
+        }
+        tick();
+        ivId = setInterval(tick, 1000);
+    });
+}
     function initAbsensiTimers() {
         document.querySelectorAll('[id^="absensi-bar-"]').forEach(function(bar) {
             const tsMulai   = parseInt(bar.dataset.mulai, 10) * 1000;
@@ -3271,6 +3424,10 @@ function bukaModalPulihkanEvent(logId, judul, tanggalHapus) {
         document.querySelectorAll('input[name="_token"]').forEach(el => {
             el.value = document.querySelector('meta[name="csrf-token"]').content;
         });
+
+        // Program mulai & selesai
+        document.getElementById('k-program-mulai').value   = d.programMulai   || '';
+        document.getElementById('k-program-selesai').value = d.programSelesai || '';
 
         // Preview gambar existing saat edit
         const gambarUrl = d.gambarUrl || '';
@@ -3365,6 +3522,8 @@ function bukaModalPulihkanEvent(logId, judul, tanggalHapus) {
         document.getElementById('k-absensi-aktif').checked = false;
         document.getElementById('k-alamat').value = '';
         document.getElementById('k-biaya').value = '';  
+        document.getElementById('k-program-mulai').value   = '';
+        document.getElementById('k-program-selesai').value = '';
         toggleAlamat('');
         toggleAbsensiSection(false);
     }
@@ -3757,6 +3916,8 @@ function bukaModalPulihkanEvent(logId, judul, tanggalHapus) {
         const el = document.getElementById(id);
         if (el) el.addEventListener('input', updatePreview);
     });
+
+    initProgramTimers();
 
     // Absensi timers
     initAbsensiTimers();

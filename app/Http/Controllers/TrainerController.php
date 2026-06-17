@@ -116,6 +116,8 @@ class TrainerController extends Controller
         'materi_type'    => 'nullable|in:pdf,youtube',
         'materi_pdf'     => 'nullable|file|mimes:pdf|max:20480',
         'materi_youtube' => 'nullable|url|max:255',
+        'program_mulai'   => 'nullable|date',
+'program_selesai' => 'nullable|date|after_or_equal:program_mulai',
     ]);
 
     $gambar = null;
@@ -147,6 +149,8 @@ if ($request->materi_type === 'pdf' && $request->hasFile('materi_pdf')) {
         'absensi_mulai'  => $request->absensi_aktif ? $request->absensi_mulai   : null,
         'absensi_selesai'=> $request->absensi_aktif ? $request->absensi_selesai : null,
         'absensi_url'    => $request->absensi_aktif ? $request->absensi_url     : null,
+        'program_mulai'  => $request->filled('program_mulai')  ? $request->program_mulai  : null,  // ← tambah
+        'program_selesai'=> $request->filled('program_selesai') ? $request->program_selesai : null, // ← tambah
         'materi_type'    => $request->materi_type,
         'materi_pdf'     => $materiPdf,
         'materi_youtube' => $request->materi_type === 'youtube' ? $request->materi_youtube : null,
@@ -174,6 +178,8 @@ if ($request->materi_type === 'pdf' && $request->hasFile('materi_pdf')) {
             'absensi_selesai'=> $request->absensi_aktif ? $request->absensi_selesai : null,
             'absensi_url'    => $request->absensi_aktif ? $request->absensi_url     : null,
             'phone'          => $request->phone ?? Auth::user()->phone,
+            'program_mulai'   => $request->filled('program_mulai')   ? $request->program_mulai   : null,  // ← tambah
+            'program_selesai' => $request->filled('program_selesai') ? $request->program_selesai : null,  // ← tambah
         ]);
         return redirect()->route('trainer.dashboard')
             ->with('success', 'Jadwal absensi berhasil diperbarui.')
@@ -201,6 +207,8 @@ if ($request->materi_type === 'pdf' && $request->hasFile('materi_pdf')) {
         'materi_type'    => 'nullable|in:pdf,youtube',
         'materi_pdf'     => 'nullable|file|mimes:pdf|max:20480',
         'materi_youtube' => 'nullable|url|max:255',
+        'program_mulai'   => 'nullable|date',
+'program_selesai' => 'nullable|date|after_or_equal:program_mulai',
     ]);
 
     if ($request->hasFile('gambar')) {
@@ -238,6 +246,8 @@ if ($request->materi_type === 'pdf' && $request->hasFile('materi_pdf')) {
         'absensi_mulai'  => $request->absensi_aktif ? $request->absensi_mulai   : null,
         'absensi_selesai'=> $request->absensi_aktif ? $request->absensi_selesai : null,
         'absensi_url'    => $request->absensi_aktif ? $request->absensi_url     : null,
+        'program_mulai'  => $request->filled('program_mulai')  ? $request->program_mulai  : null,  // ← tambah
+        'program_selesai'=> $request->filled('program_selesai') ? $request->program_selesai : null, // ← tambah
         'materi_type'    => $request->materi_type,
     'materi_pdf'     => $materiPdf,
     'materi_youtube' => $request->materi_type === 'youtube' ? $request->materi_youtube : null,

@@ -49,17 +49,20 @@
         <div id="all-cards-data" class="hidden">
             @foreach($programsDB as $program)
             <div
-                class="program-card-data"
-                data-id="{{ $program->id }}"
-                data-title="{{ strtolower($program->judul) }}"
-                data-desc="{{ strtolower($program->deskripsi ?? '') }}"
-                data-judul="{{ $program->judul }}"
-                data-deskripsi="{{ $program->deskripsi ?? '' }}"
-                data-gambar="{{ $program->gambar ? asset('storage/' . $program->gambar) : '' }}"
-                data-trainer="{{ $program->trainer_academic_degree }}"
-                data-phone="{{ !empty($program->phone) ? $program->phone : (!empty($program->trainer->phone) ? $program->trainer->phone : '6281234567890') }}"
-                data-detail-url="{{ route('pelatihan.detail', $program->id) }}"
-            ></div>
+    class="program-card-data"
+    data-id="{{ $program->id }}"
+    data-title="{{ strtolower($program->judul) }}"
+    data-desc="{{ strtolower($program->deskripsi ?? '') }}"
+    data-judul="{{ $program->judul }}"
+    data-deskripsi="{{ $program->deskripsi ?? '' }}"
+    data-gambar="{{ $program->gambar ? asset('storage/' . $program->gambar) : '' }}"
+    data-trainer="{{ $program->trainer_academic_degree }}"
+    data-phone="{{ !empty($program->phone) ? $program->phone : (!empty($program->trainer->phone) ? $program->trainer->phone : '6281234567890') }}"
+    data-detail-url="{{ route('pelatihan.detail', $program->id) }}"
+    data-program-mulai="{{ $program->program_mulai ?? '' }}"
+    data-program-selesai="{{ $program->program_selesai ?? '' }}"
+    data-biaya="{{ $program->biaya ?? '' }}"
+></div>
             @endforeach
         </div>
 
@@ -108,6 +111,9 @@ document.addEventListener('DOMContentLoaded', function () {
         trainer:   el.dataset.trainer,
         phone:     el.dataset.phone,
         detailUrl: el.dataset.detailUrl,
+        programMulai:  el.dataset.programMulai,
+    programSelesai: el.dataset.programSelesai,
+    biaya:         el.dataset.biaya,
     }));
 
     // ── State ────────────────────────────────────────────────
@@ -124,7 +130,30 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('live-search-input');
 
     // ── Build card HTML ──────────────────────────────────────
-    function buildCard(p) {
+    // ── Build card HTML ──────────────────────────────────────
+// ── Build card HTML ──────────────────────────────────────
+function buildCard(p) {
+    // Label status program
+    let statusLabel = '';
+    const now = Date.now();
+    const mulai   = p.programMulai   ? new Date(p.programMulai).getTime()   : null;
+    const selesai = p.programSelesai ? new Date(p.programSelesai).getTime() : null;
+
+    if (mulai) {
+        if (now < mulai) {
+            statusLabel = `<span style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;">⏳ Belum Dibuka</span>`;
+        } else if (!selesai || now <= selesai) {
+            statusLabel = `<span style="background:#f0fdf4;color:#16a34a;border:1px solid #86efac;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;">✅ Berlangsung</span>`;
+        } else {
+            statusLabel = `<span style="background:#f8fafc;color:#64748b;border:1px solid #cbd5e1;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;">🔒 Selesai</span>`;
+        }
+    }
+
+    const isGratis = !p.biaya || p.biaya.toLowerCase() === 'gratis';
+    const biayaLabel = isGratis
+        ? `<span style="background:#f0fdf4;color:#16a34a;border:1px solid #86efac;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;">🎁 Gratis</span>`
+        : `<span style="background:#fff7ed;color:#ea580c;border:1px solid #fed7aa;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;">💳 Berbayar</span>`;
+
     const imgHtml = p.gambar
         ? `<img src="${p.gambar}" alt="${p.judul}" class="w-full h-full object-cover">`
         : `<span class="text-5xl">🎓</span>`;
@@ -134,27 +163,22 @@ document.addEventListener('DOMContentLoaded', function () {
     return `
     <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200 flex flex-col duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer"
          onclick="window.location='${p.detailUrl}'">
-
-        {{-- Gambar + logo overlay --}}
         <div class="relative w-full h-44 flex items-center justify-center overflow-hidden bg-green-50">
             ${imgHtml}
-            <img src="/storage/logo/KAMILATIH.png"
-                 alt="Logo"
+            <img src="/storage/logo/KAMILATIH.png" alt="Logo"
                  class="absolute top-2 right-2 w-20 h-10 object-contain rounded-md p-1 bg-white/80">
         </div>
-
-        {{-- Badge judul --}}
         <div class="bg-green-100 px-4 py-2">
             <h3 class="font-serif font-bold text-gray-900 text-lg text-center truncate">${p.judul}</h3>
         </div>
-
-        {{-- Deskripsi seragam --}}
-<div class="px-4 py-3 flex-1 flex flex-col">
-    <p style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;min-height:3.75rem;font-size:0.875rem;color:#4b5563;text-align:center;line-height:1.625;">${p.deskripsi}</p>
-    ${p.trainer ? `<p style="font-size:0.75rem;color:#9ca3af;text-align:center;margin-top:auto;padding-top:8px;">oleh ${p.trainer}</p>` : ''}
-</div>
-
-        {{-- Tombol --}}
+        <div class="px-4 py-3 flex-1 flex flex-col">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:8px;">
+                ${biayaLabel}
+                ${statusLabel}
+            </div>
+            <p style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;min-height:3.75rem;font-size:0.875rem;color:#4b5563;text-align:center;line-height:1.625;">${p.deskripsi}</p>
+            ${p.trainer ? `<p style="font-size:0.75rem;color:#9ca3af;text-align:center;margin-top:auto;padding-top:8px;">oleh ${p.trainer}</p>` : ''}
+        </div>
         <div class="grid grid-cols-2">
             <span onclick="event.stopPropagation(); window.open('https://wa.me/${p.phone}?text=${waText}', '_blank')"
                   class="flex items-center justify-center bg-green-500 hover:bg-green-600 text-white text-sm font-semibold py-3 transition-colors duration-200 cursor-pointer">

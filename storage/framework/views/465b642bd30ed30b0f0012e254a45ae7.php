@@ -185,11 +185,53 @@ $trainerGelar = $isDB
        class="bg-green-500 hover:bg-green-600 text-white text-sm font-bold px-5 py-2.5 rounded-lg transition-colors">
         🔄 Daftar Ulang
     </a>
-<?php else: ?>
-    <a href="<?php echo e(route('pelatihan.pendaftaran.create', $program->id)); ?>"
-       class="bg-green-500 hover:bg-green-600 text-white text-sm font-bold px-5 py-2.5 rounded-lg transition-colors">
-        Daftar Program
-    </a>
+    <?php else: ?>
+    <?php
+        $programBisaDaftar = true;
+        $pesanTidakBisaDaftar = '';
+
+        if ($isDB && !empty($program->program_mulai)) {
+            $pMulai  = \Carbon\Carbon::parse($program->program_mulai, 'Asia/Jakarta');
+            $pAkhir  = !empty($program->program_selesai)
+                        ? \Carbon\Carbon::parse($program->program_selesai, 'Asia/Jakarta')
+                        : null;
+            $pNow    = \Carbon\Carbon::now('Asia/Jakarta');
+
+            if ($pNow->lt($pMulai)) {
+                $programBisaDaftar    = false;
+                $pesanTidakBisaDaftar = 'Program belum dibuka · ' . $pMulai->translatedFormat('d M Y, H:i') . ' WIB';
+            } elseif ($pAkhir && $pNow->gt($pAkhir)) {
+                $programBisaDaftar    = false;
+                $pesanTidakBisaDaftar = 'Program sudah selesai';
+            }
+        }
+    ?>
+
+    <?php if($programBisaDaftar): ?>
+        <a href="<?php echo e(route('pelatihan.pendaftaran.create', $program->id)); ?>"
+           class="bg-green-500 hover:bg-green-600 text-white text-sm font-bold px-5 py-2.5 rounded-lg transition-colors">
+            Daftar Program
+        </a>
+    <?php else: ?>
+        <div>
+            <button disabled
+                    style="opacity:.45;cursor:not-allowed;pointer-events:none"
+                    class="bg-gray-400 text-white text-sm font-bold px-5 py-2.5 rounded-lg">
+                🔒 Daftar Program
+            </button>
+            <div style="margin-top:6px;font-size:11px;font-weight:600;color:#b45309;
+                        display:flex;align-items:center;gap:5px">
+                <svg width="12" height="12" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <?php echo e($pesanTidakBisaDaftar); ?>
+
+            </div>
+        </div>
+    <?php endif; ?>
 <?php endif; ?>
 
 <?php else: ?>
@@ -268,6 +310,92 @@ $trainerGelar = $isDB
             
             
             
+            
+<?php
+    $hasProgramStatus = $isDB && !empty($program->program_mulai);
+    if ($hasProgramStatus) {
+        $progMulai2   = \Carbon\Carbon::parse($program->program_mulai, 'Asia/Jakarta');
+        $progSelesai2 = !empty($program->program_selesai)
+            ? \Carbon\Carbon::parse($program->program_selesai, 'Asia/Jakarta')
+            : null;
+        $nowProg2 = \Carbon\Carbon::now('Asia/Jakarta');
+
+        if ($nowProg2->lt($progMulai2))                                               $statusProg2 = 'belum';
+        elseif (!$progSelesai2 || $nowProg2->lte($progSelesai2))                     $statusProg2 = 'aktif';
+        else                                                                           $statusProg2 = 'selesai';
+    }
+?>
+
+<?php if($hasProgramStatus): ?>
+<?php
+    $barBg     = $statusProg2 === 'belum'   ? '#fffbea' : ($statusProg2 === 'aktif' ? '#f0fdf4' : '#f8fafc');
+    $barBorder = $statusProg2 === 'belum'   ? '#fcd34d' : ($statusProg2 === 'aktif' ? '#86efac' : '#cbd5e1');
+    $barColor  = $statusProg2 === 'belum'   ? '#92400e' : ($statusProg2 === 'aktif' ? '#15803d' : '#475569');
+    $barIcon   = $statusProg2 === 'belum'   ? '⏳'      : ($statusProg2 === 'aktif' ? '✅'      : '🔒');
+    $barLabel  = $statusProg2 === 'belum'   ? 'Program Belum Dibuka'
+               : ($statusProg2 === 'aktif'  ? 'Program Sedang Berlangsung'
+               :                              'Program Telah Selesai');
+?>
+<div style="background:<?php echo e($barBg); ?>;border:1.5px solid <?php echo e($barBorder); ?>;border-radius:16px;
+            padding:16px 20px;display:flex;align-items:center;justify-content:space-between;
+            flex-wrap:wrap;gap:12px"
+     id="prog-status-detail"
+     data-mulai="<?php echo e($progMulai2->timestamp); ?>"
+     data-selesai="<?php echo e($progSelesai2 ? $progSelesai2->timestamp : 0); ?>"
+     data-status="<?php echo e($statusProg2); ?>">
+
+    <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:12px;background:<?php echo e($barBg); ?>;
+                    border:1.5px solid <?php echo e($barBorder); ?>;display:flex;align-items:center;
+                    justify-content:center;font-size:22px;flex-shrink:0">
+            <?php echo e($barIcon); ?>
+
+        </div>
+        <div>
+            <div style="font-size:14px;font-weight:800;color:<?php echo e($barColor); ?>;display:flex;align-items:center;gap:8px">
+                <?php echo e($barLabel); ?>
+
+                <?php if($statusProg2 === 'aktif'): ?>
+                <span style="width:8px;height:8px;border-radius:50%;background:#16a34a;
+                             display:inline-block;animation:blink-green 1s infinite"></span>
+                <?php endif; ?>
+            </div>
+            <div style="font-size:12px;color:<?php echo e($barColor); ?>;opacity:.75;margin-top:3px">
+                <?php if($statusProg2 === 'belum'): ?>
+                    Dibuka <?php echo e($progMulai2->translatedFormat('d M Y, H:i')); ?> WIB
+                    <?php if($progSelesai2): ?> · Selesai <?php echo e($progSelesai2->translatedFormat('d M Y, H:i')); ?> WIB <?php endif; ?>
+                <?php elseif($statusProg2 === 'aktif'): ?>
+                    Dimulai <?php echo e($progMulai2->translatedFormat('d M Y, H:i')); ?> WIB
+                    <?php if($progSelesai2): ?> · Berakhir <?php echo e($progSelesai2->translatedFormat('d M Y, H:i')); ?> WIB <?php endif; ?>
+                <?php else: ?>
+                    Berakhir <?php echo e($progSelesai2->translatedFormat('d M Y, H:i')); ?> WIB
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+
+    <?php if($statusProg2 !== 'selesai'): ?>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <span style="font-size:12px;font-weight:600;color:<?php echo e($barColor); ?>;opacity:.8">
+            <?php echo e($statusProg2 === 'belum' ? 'Dibuka dalam' : 'Berakhir dalam'); ?>
+
+        </span>
+        <span id="prog-countdown-detail"
+              style="font-family:'Courier New',monospace;font-size:15px;font-weight:800;
+                     letter-spacing:1.5px;color:<?php echo e($barColor); ?>;
+                     background:<?php echo e($statusProg2 === 'belum' ? '#fef3c7' : '#dcfce7'); ?>;
+                     padding:6px 14px;border-radius:8px;border:1.5px solid <?php echo e($barBorder); ?>">
+            --:--:--
+        </span>
+    </div>
+    <?php endif; ?>
+
+</div>
+<style>
+@keyframes blink-green { 0%,100%{opacity:1} 50%{opacity:.2} }
+</style>
+<?php endif; ?>
+
             
 <?php echo $__env->make('partials.absensi-block', [
     'absAktif'   => $absAktif   ?? false,
@@ -639,8 +767,29 @@ if ($isDB && $jumlahSesi) $infoRows[] = ['Jumlah Sesi', $jumlahSesi];
 if ($isDB && $alamat)     $infoRows[] = ['Alamat Lokasi', $alamat];
 if (!$isDB)               $infoRows[] = ['Durasi', $totalJam];
 
+if ($isDB && !empty($program->program_mulai)) {
+    $progMulai   = \Carbon\Carbon::parse($program->program_mulai, 'Asia/Jakarta');
+    $progSelesai = !empty($program->program_selesai)
+        ? \Carbon\Carbon::parse($program->program_selesai, 'Asia/Jakarta')
+        : null;
+    $nowProg = \Carbon\Carbon::now('Asia/Jakarta');
+
+    if ($nowProg->lt($progMulai)) {
+        $statusProgram = '⏳ Belum Dibuka (mulai ' . $progMulai->translatedFormat('d M Y, H:i') . ' WIB)';
+    } elseif (!$progSelesai || $nowProg->lte($progSelesai)) {
+        $statusProgram = '✅ Sedang Berlangsung';
+        if ($progSelesai) {
+            $statusProgram .= ' (s/d ' . $progSelesai->translatedFormat('d M Y, H:i') . ' WIB)';
+        }
+    } else {
+        $statusProgram = '🔒 Program Selesai (' . $progSelesai->translatedFormat('d M Y, H:i') . ' WIB)';
+    }
+    $infoRows[] = ['Status Program', $statusProgram];
+}
+
 $biayaProgram = $isDB ? ($program->biaya ?? null) : ($program['biaya'] ?? null);
-if ($biayaProgram)        $infoRows[] = ['Biaya', $biayaProgram];
+if ($biayaProgram) $infoRows[] = ['Biaya', $biayaProgram];
+
                     ?>
                     <?php $__currentLoopData = $infoRows; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$lbl, $val]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div>
@@ -655,6 +804,37 @@ if ($biayaProgram)        $infoRows[] = ['Biaya', $biayaProgram];
     </section>
     <script>
 (function() {
+    var bar = document.getElementById('prog-status-detail');
+    if (!bar) return;
+    var el      = document.getElementById('prog-countdown-detail');
+    var status  = bar.dataset.status;
+    var tsMulai = parseInt(bar.dataset.mulai,   10) * 1000;
+    var tsAkhir = parseInt(bar.dataset.selesai, 10) * 1000;
+    if (!el || status === 'selesai') return;
+
+    function padN(n) { return String(n).padStart(2,'0'); }
+    function fmt(ms) {
+        if (ms <= 0) return '00:00:00';
+        var s = Math.floor(ms/1000);
+        var h = Math.floor(s/3600), m = Math.floor((s%3600)/60), ss = s%60;
+        return padN(h)+':'+padN(m)+':'+padN(ss);
+    }
+
+    var iv = setInterval(function() {
+        var now = Date.now();
+        var ms  = status === 'belum' ? (tsMulai - now) : (tsAkhir - now);
+        if (ms <= 0) { clearInterval(iv); location.reload(); return; }
+        el.textContent = fmt(ms);
+        // Warna warning saat < 1 jam
+        if (ms < 3600000 && status === 'aktif') {
+            el.style.color       = '#b45309';
+            el.style.background  = '#fef3c7';
+            el.style.borderColor = '#fcd34d';
+        }
+    }, 1000);
+})(); // ← TUTUP IIFE countdown program
+
+/* ── Countdown timer modul ── */
 
 /* ── Countdown timer modul ── */
 function padNum(n) { return String(n).padStart(2, '0'); }
@@ -882,8 +1062,6 @@ document.querySelectorAll('[id^="pdf-tracker-"]').forEach(function(tracker) {
         }
     });
 });
-
-})();
 </script>
 <?php $__env->stopSection(); ?>
 
