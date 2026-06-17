@@ -182,19 +182,76 @@
     </div>
 
     {{-- Filter Role --}}
-    <div style="display:flex;gap:8px;align-items:center;">
-        <form method="GET" style="display:flex;gap:8px;">
-            <select name="role" class="form-select" style="width:auto;padding:7px 12px;"
-                onchange="this.form.submit()">
-                <option value="admin"      {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
-<option value="trainer"    {{ request('role') === 'trainer' ? 'selected' : '' }}>Trainer</option>
-<option value="pembimbing" {{ request('role') === 'pembimbing' ? 'selected' : '' }}>Pembimbing</option>
-<option value="mentor"     {{ request('role') === 'mentor' ? 'selected' : '' }}>Mentor</option>
-<option value="umkm"       {{ request('role') === 'umkm' ? 'selected' : '' }}>UMKM</option>
-<option value="umum"       {{ request('role') === 'umum' ? 'selected' : '' }}>Umum</option>
-            </select>
-        </form>
-    </div>
+<div style="display:flex;gap:8px;align-items:center;">
+    <form method="GET" style="display:flex;gap:8px;align-items:center;">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            @php
+                $roles = [
+                    ''        => ['label' => 'Semua',    'icon' => '👥'],
+                    'admin'   => ['label' => 'Admin',    'icon' => '🛡️'],
+                    'trainer' => ['label' => 'Trainer',  'icon' => '🎓'],
+                    'mentor'  => ['label' => 'Mentor',   'icon' => '💡'],
+                    'umkm'    => ['label' => 'UMKM',     'icon' => '🏪'],
+                    'umum'    => ['label' => 'Umum',     'icon' => '👤'],
+                ];
+                $activeRole = request('role', '');
+            @endphp
+
+            @foreach($roles as $value => $meta)
+                <button type="submit" name="role" value="{{ $value }}"
+                    style="
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 5px;
+                        padding: 6px 13px;
+                        border-radius: 20px;
+                        font-size: 12px;
+                        font-weight: 600;
+                        border: 1.5px solid {{ $activeRole === $value ? 'var(--accent)' : 'var(--border)' }};
+                        background: {{ $activeRole === $value ? 'var(--accent)' : 'var(--surface)' }};
+                        color: {{ $activeRole === $value ? '#fff' : 'var(--text-muted)' }};
+                        cursor: pointer;
+                        transition: all 0.15s;
+                        white-space: nowrap;
+                    "
+                    onmouseover="if('{{ $activeRole }}' !== '{{ $value }}'){this.style.borderColor='var(--accent)';this.style.color='var(--accent)';this.style.background='var(--surface2)';}"
+                    onmouseout="if('{{ $activeRole }}' !== '{{ $value }}'){this.style.borderColor='var(--border)';this.style.color='var(--text-muted)';this.style.background='var(--surface)';}">
+                    <span>{{ $meta['icon'] }}</span>
+                    {{ $meta['label'] }}
+                    {{-- Badge jumlah (opsional, hapus jika tidak ada $counts) --}}
+                    {{-- @if(isset($counts[$value]))
+                        <span style="background:rgba(255,255,255,0.25);border-radius:10px;padding:0 5px;font-size:10px;">{{ $counts[$value] }}</span>
+                    @endif --}}
+                </button>
+            @endforeach
+            </div>
+    </form>
+
+    {{-- Export CSV --}}
+    <a href="{{ route('admin.pengguna.export') }}?role={{ request('role', '') }}"
+        style="
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1.5px solid var(--border);
+            background: var(--surface);
+            color: var(--text-muted);
+            text-decoration: none;
+            white-space: nowrap;
+            transition: all 0.15s;
+        "
+        onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)';this.style.background='var(--surface2)';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)';this.style.background='var(--surface)';">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        Export CSV
+    </a>
+</div>
 </div>
 
 <div class="table-card">

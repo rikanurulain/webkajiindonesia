@@ -263,6 +263,7 @@ Route::post('/approval/event/{event}/restore',     [AdminController::class, 'res
 
     // ── Manajemen Pengguna ───────────────────────────────────────────
     Route::get('/pengguna',                            [AdminController::class, 'pengguna'])->name('pengguna');
+    Route::get('/pengguna/export',                     [AdminController::class, 'exportCsvPengguna'])->name('pengguna.export'); 
     Route::post('/pengguna/{user}/verifikasi',         [AdminController::class, 'verifikasiPengguna'])->name('pengguna.verifikasi');
     Route::post('/pengguna/{user}/suspend',            [AdminController::class, 'suspendPengguna'])->name('pengguna.suspend');
     Route::post('/pengguna/{user}/unsuspend',          [AdminController::class, 'unsuspendPengguna'])->name('pengguna.unsuspend');

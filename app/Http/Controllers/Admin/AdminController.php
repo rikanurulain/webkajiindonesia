@@ -708,6 +708,47 @@ public function restoreEventAdmin($id)
             ->withQueryString();
         return view('admin.pengguna', compact('users'));
     }
+    public function exportCsvPengguna(Request $request)
+{
+    $role = $request->get('role', '');
+
+    $users = User::when($role !== '', fn($q) => $q->where('role', $role))
+        ->latest()
+        ->get();
+
+    $roleLabel = match($role) {
+        'admin'   => 'Admin',
+        'trainer' => 'Trainer',
+        'mentor'  => 'Mentor',
+        'umkm'    => 'UMKM',
+        'umum'    => 'Umum',
+        default   => 'Semua',
+    };
+
+    $filename = 'pengguna-' . strtolower($roleLabel) . '-' . now()->format('Ymd') . '.csv';
+
+    return response()->streamDownload(function () use ($users) {
+        $h = fopen('php://output', 'w');
+        fprintf($h, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM UTF-8
+
+        fputcsv($h, ['ID', 'Nama', 'Email', 'Role', 'No. Telepon', 'Alamat', 'Status', 'Bergabung']);
+
+        foreach ($users as $u) {
+            fputcsv($h, [
+                $u->id,
+                $u->name,
+                $u->email,
+                $u->role ?? 'umum',
+                $u->phone ?? '-',
+                $u->address ?? '-',
+                $u->suspended_at ? 'Suspend' : 'Aktif',
+                $u->created_at->format('d/m/Y'),
+            ]);
+        }
+
+        fclose($h);
+    }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+}
     public function verifikasiPengguna(Request $request, User $user)
     {
         $user->update(['status' => 'active', 'email_verified_at' => now()]);
