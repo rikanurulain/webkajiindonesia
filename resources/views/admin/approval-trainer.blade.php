@@ -599,16 +599,17 @@
                                     </svg>
                                     Detail
                                 </button>
-                                <form method="POST" action="{{ route('admin.trainer.destroy', $trainer->id) }}" style="display:inline;"
-                                      onsubmit="return confirm('Hapus data trainer ini? Status trainer akan direset.')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--accent2);">
-                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                        </svg>
-                                        Hapus
-                                    </button>
+                                <form method="POST" action="{{ route('admin.trainer.destroy', $trainer->id) }}"
+      id="form-destroy-trainer-{{ $trainer->id }}" style="display:none;">
+    @csrf @method('DELETE')
+</form>
+<button type="button" class="btn btn-ghost btn-sm" style="color:var(--accent2);"
+        onclick="confirmDestroyTrainer({{ $trainer->id }}, '{{ addslashes($trainer->academic_degree ?? $trainer->nama) }}', 'approved')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+    </svg>
+    Hapus
+</button>
                                 </form>
                             </div>
                         </td>
@@ -725,16 +726,17 @@
                                     </svg>
                                     Detail
                                 </button>
-                                <form method="POST" action="{{ route('admin.trainer.destroy', $trainer->id) }}" style="display:inline;"
-                                      onsubmit="return confirm('Hapus data pendaftaran ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--accent2);">
-                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                        </svg>
-                                        Hapus
-                                    </button>
+                                <form method="POST" action="{{ route('admin.trainer.destroy', $trainer->id) }}"
+      id="form-destroy-trainer-{{ $trainer->id }}" style="display:none;">
+    @csrf @method('DELETE')
+</form>
+<button type="button" class="btn btn-ghost btn-sm" style="color:var(--accent2);"
+        onclick="confirmDestroyTrainer({{ $trainer->id }}, '{{ addslashes($trainer->academic_degree ?? $trainer->nama) }}', 'rejected')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+    </svg>
+    Hapus
+</button>
                                 </form>
                             </div>
                         </td>
@@ -1029,6 +1031,41 @@ document.querySelectorAll('.modal-overlay').forEach(function(el) {
         if (e.target === el) closeModal(el.id);
     });
 });
+
+const swalDelete = Swal.mixin({
+    customClass: {
+        confirmButton: 'swal-btn-confirm-reject', // merah
+        cancelButton:  'swal-btn-cancel'
+    },
+    buttonsStyling: false,
+});
+
+function confirmDestroyTrainer(id, name, type) {
+    const isApproved = type === 'approved';
+    swalDelete.fire({
+        title: isApproved ? 'Hapus Data Trainer?' : 'Hapus Pendaftaran?',
+        html: isApproved
+            ? `<span style="font-size:14px;color:#6b7280;line-height:1.6;">
+                Data trainer <strong>${name}</strong> akan dihapus.<br>
+                <span style="color:#ef4444;font-size:13px;margin-top:6px;display:block;">
+                    ⚠️ Status trainer akan direset dan akses trainer dicabut.
+                </span>
+               </span>`
+            : `<span style="font-size:14px;color:#6b7280;line-height:1.6;">
+                Data pendaftaran <strong>${name}</strong> akan dihapus permanen.<br>
+                <span style="color:#ef4444;font-size:13px;margin-top:6px;display:block;">
+                    ⚠️ Tindakan ini tidak dapat dibatalkan.
+                </span>
+               </span>`,
+        icon: 'warning', iconColor: '#ef4444',
+        showCancelButton: true,
+        confirmButtonText: '🗑️ Ya, Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true, focusCancel: true,
+    }).then(function(result) {
+        if (result.isConfirmed) document.getElementById('form-destroy-trainer-' + id).submit();
+    });
+}
 </script>
 
 @endsection

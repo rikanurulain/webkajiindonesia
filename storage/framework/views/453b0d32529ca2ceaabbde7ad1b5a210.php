@@ -1,9 +1,6 @@
-{{-- resources/views/admin/approval/mentor.blade.php --}}
-@extends('layouts.admin')
+<?php $__env->startSection('page-title', 'Approval Mentor'); ?>
 
-@section('page-title', 'Approval Mentor')
-
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.all.min.js"></script> 
@@ -221,33 +218,33 @@
     }
 }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
-{{-- Tab Bar --}}
+
 <div class="tab-bar">
     <button class="tab-btn active" data-tab="pending" onclick="switchTab('pending', this)">
         Menunggu
-        @if($stats['pending'] > 0)
-            <span class="count-pill">{{ $stats['pending'] }}</span>
-        @endif
+        <?php if($stats['pending'] > 0): ?>
+            <span class="count-pill"><?php echo e($stats['pending']); ?></span>
+        <?php endif; ?>
     </button>
     <button class="tab-btn" data-tab="approved" onclick="switchTab('approved', this)">
         Disetujui
-        @if($stats['approved'] > 0)
-            <span class="count-pill" style="background:var(--accent);">{{ $stats['approved'] }}</span>
-        @endif
+        <?php if($stats['approved'] > 0): ?>
+            <span class="count-pill" style="background:var(--accent);"><?php echo e($stats['approved']); ?></span>
+        <?php endif; ?>
     </button>
     <button class="tab-btn" data-tab="rejected" onclick="switchTab('rejected', this)">
         Ditolak
-        @if($stats['rejected'] > 0)
-            <span class="count-pill" style="background:#9ca3af;">{{ $stats['rejected'] }}</span>
-        @endif
+        <?php if($stats['rejected'] > 0): ?>
+            <span class="count-pill" style="background:#9ca3af;"><?php echo e($stats['rejected']); ?></span>
+        <?php endif; ?>
     </button>
 </div>
 
-{{-- ======================== TAB PENDING ======================== --}}
+
 <div id="tab-pending">
     <div class="table-card">
         <div class="table-card-header">
@@ -256,16 +253,16 @@
                     <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 Pendaftaran Menunggu Review
-                <span class="table-card-subtitle">{{ $stats['pending'] }} pendaftar</span>
+                <span class="table-card-subtitle"><?php echo e($stats['pending']); ?> pendaftar</span>
             </div>
         </div>
 
-        @if($pending->isEmpty())
+        <?php if($pending->isEmpty()): ?>
             <div class="empty-state">
                 <div class="empty-state-icon">🎉</div>
                 <div class="empty-state-text">Tidak ada pendaftaran yang menunggu review.</div>
             </div>
-        @else
+        <?php else: ?>
             <table>
                 <thead>
                     <tr>
@@ -277,44 +274,47 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($pending as $item)
+                    <?php $__currentLoopData = $pending; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>
                         <td>
                             <div class="submitter">
                                 <div class="submitter-avatar" style="background:var(--accent);">
-                                    {{ strtoupper(substr($item->full_name, 0, 2)) }}
+                                    <?php echo e(strtoupper(substr($item->full_name, 0, 2))); ?>
+
                                 </div>
                                 <div>
-                                    <div class="submitter-name">{{ $item->full_name }}</div>
-                                    <div class="submitter-sub">{{ $item->user->email ?? '-' }}</div>
+                                    <div class="submitter-name"><?php echo e($item->full_name); ?></div>
+                                    <div class="submitter-sub"><?php echo e($item->user->email ?? '-'); ?></div>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            <div style="font-size:13px;">{{ $item->phone }}</div>
-                            <div style="font-size:11px;color:var(--text-muted);">{{ $item->email }}</div>
+                            <div style="font-size:13px;"><?php echo e($item->phone); ?></div>
+                            <div style="font-size:11px;color:var(--text-muted);"><?php echo e($item->email); ?></div>
                         </td>
                         <td style="max-width:180px;">
                             <div style="font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                                {{ $item->gmaps_location }}
+                                <?php echo e($item->gmaps_location); ?>
+
                             </div>
                         </td>
                         <td>
                             <div style="font-size:12px;color:var(--text-muted);">
-                                {{ $item->created_at->diffForHumans() }}
+                                <?php echo e($item->created_at->diffForHumans()); ?>
+
                             </div>
                         </td>
                         <td>
                             <div class="action-group">
-                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal({{ $item->id }})">
+                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal(<?php echo e($item->id); ?>)">
                                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                     </svg>
                                     Detail
                                 </button>
-                                <form method="POST" action="{{ route('admin.approval.mentor.approve', $item) }}?tab=approved" style="display:inline;">
-                                    @csrf
+                                <form method="POST" action="<?php echo e(route('admin.approval.mentor.approve', $item)); ?>?tab=approved" style="display:inline;">
+                                    <?php echo csrf_field(); ?>
                                     <button type="submit" class="btn btn-approve btn-sm">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path d="M5 13l4 4L19 7"/>
@@ -322,7 +322,7 @@
                                         Setujui
                                     </button>
                                 </form>
-                                <button class="btn btn-reject btn-sm" onclick="openRejectModal({{ $item->id }}, '{{ addslashes($item->full_name) }}')">
+                                <button class="btn btn-reject btn-sm" onclick="openRejectModal(<?php echo e($item->id); ?>, '<?php echo e(addslashes($item->full_name)); ?>')">
                                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path d="M6 18L18 6M6 6l12 12"/>
                                     </svg>
@@ -331,14 +331,14 @@
                             </div>
                         </td>
                     </tr>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 
-{{-- ======================== TAB APPROVED ======================== --}}
+
 <div id="tab-approved" style="display:none;">
     <div class="table-card">
         <div class="table-card-header">
@@ -347,16 +347,16 @@
                     <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 Mentor Disetujui
-                <span class="table-card-subtitle">{{ $stats['approved'] }} mentor aktif</span>
+                <span class="table-card-subtitle"><?php echo e($stats['approved']); ?> mentor aktif</span>
             </div>
         </div>
 
-        @if($approved->isEmpty())
+        <?php if($approved->isEmpty()): ?>
             <div class="empty-state">
                 <div class="empty-state-icon">📭</div>
                 <div class="empty-state-text">Belum ada pendaftaran yang disetujui.</div>
             </div>
-        @else
+        <?php else: ?>
             <table>
                 <thead>
                     <tr>
@@ -369,49 +369,52 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($approved as $item)
+                    <?php $__currentLoopData = $approved; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>
                         <td>
                             <div class="submitter">
                                 <div class="submitter-avatar" style="background:var(--accent);">
-                                    {{ strtoupper(substr($item->full_name, 0, 2)) }}
+                                    <?php echo e(strtoupper(substr($item->full_name, 0, 2))); ?>
+
                                 </div>
                                 <div>
-                                    <div class="submitter-name">{{ $item->full_name }}</div>
-                                    <div class="submitter-sub">{{ $item->user->email ?? '-' }}</div>
+                                    <div class="submitter-name"><?php echo e($item->full_name); ?></div>
+                                    <div class="submitter-sub"><?php echo e($item->user->email ?? '-'); ?></div>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            <div style="font-size:13px;">{{ $item->phone }}</div>
-                            <div style="font-size:11px;color:var(--text-muted);">{{ $item->email }}</div>
+                            <div style="font-size:13px;"><?php echo e($item->phone); ?></div>
+                            <div style="font-size:11px;color:var(--text-muted);"><?php echo e($item->email); ?></div>
                         </td>
                         <td style="max-width:180px;">
                             <div style="font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                                {{ $item->gmaps_location }}
+                                <?php echo e($item->gmaps_location); ?>
+
                             </div>
                         </td>
                         <td>
                             <div style="font-size:12px;color:var(--text-muted);">
-                                {{ $item->reviewed_at?->diffForHumans() ?? '-' }}
+                                <?php echo e($item->reviewed_at?->diffForHumans() ?? '-'); ?>
+
                             </div>
                         </td>
                         <td><span class="badge badge-approved"><span class="badge-dot"></span>Aktif</span></td>
                         <td>
                             <div class="action-group">
-                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal({{ $item->id }})">
+                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal(<?php echo e($item->id); ?>)">
                                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                     </svg>
                                     Detail
                                 </button>
-                                <form method="POST" action="{{ route('admin.approval.mentor.destroy', $item) }}" style="display:none;"
-      id="form-destroy-mentor-{{ $item->id }}">
-    @csrf @method('DELETE')
+                                <form method="POST" action="<?php echo e(route('admin.approval.mentor.destroy', $item)); ?>" style="display:none;"
+      id="form-destroy-mentor-<?php echo e($item->id); ?>">
+    <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
 </form>
 <button type="button" class="btn btn-ghost btn-sm" style="color:var(--accent2);"
-        onclick="confirmDestroyMentor({{ $item->id }}, '{{ addslashes($item->full_name) }}', 'approved')">
+        onclick="confirmDestroyMentor(<?php echo e($item->id); ?>, '<?php echo e(addslashes($item->full_name)); ?>', 'approved')">
     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
     </svg>
@@ -421,14 +424,14 @@
                             </div>
                         </td>
                     </tr>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 
-{{-- ======================== TAB REJECTED ======================== --}}
+
 <div id="tab-rejected" style="display:none;">
     <div class="table-card">
         <div class="table-card-header">
@@ -437,16 +440,16 @@
                     <path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 Pendaftaran Ditolak
-                <span class="table-card-subtitle">{{ $stats['rejected'] }} ditolak</span>
+                <span class="table-card-subtitle"><?php echo e($stats['rejected']); ?> ditolak</span>
             </div>
         </div>
 
-        @if($rejected->isEmpty())
+        <?php if($rejected->isEmpty()): ?>
             <div class="empty-state">
                 <div class="empty-state-icon">📭</div>
                 <div class="empty-state-text">Tidak ada pendaftaran yang ditolak.</div>
             </div>
-        @else
+        <?php else: ?>
             <table>
                 <thead>
                     <tr>
@@ -458,48 +461,51 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($rejected as $item)
+                    <?php $__currentLoopData = $rejected; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>
                         <td>
                             <div class="submitter">
                                 <div class="submitter-avatar" style="background:#9ca3af;">
-                                    {{ strtoupper(substr($item->full_name, 0, 2)) }}
+                                    <?php echo e(strtoupper(substr($item->full_name, 0, 2))); ?>
+
                                 </div>
                                 <div>
-                                    <div class="submitter-name">{{ $item->full_name }}</div>
-                                    <div class="submitter-sub">{{ $item->user->email ?? '-' }}</div>
+                                    <div class="submitter-name"><?php echo e($item->full_name); ?></div>
+                                    <div class="submitter-sub"><?php echo e($item->user->email ?? '-'); ?></div>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            <div style="font-size:13px;">{{ $item->phone }}</div>
-                            <div style="font-size:11px;color:var(--text-muted);">{{ $item->email }}</div>
+                            <div style="font-size:13px;"><?php echo e($item->phone); ?></div>
+                            <div style="font-size:11px;color:var(--text-muted);"><?php echo e($item->email); ?></div>
                         </td>
                         <td style="max-width:200px;">
                             <div style="font-size:12px;color:var(--accent2);">
-                                {{ Str::limit($item->rejection_reason, 60) }}
+                                <?php echo e(Str::limit($item->rejection_reason, 60)); ?>
+
                             </div>
                         </td>
                         <td>
                             <div style="font-size:12px;color:var(--text-muted);">
-                                {{ $item->reviewed_at?->diffForHumans() ?? '-' }}
+                                <?php echo e($item->reviewed_at?->diffForHumans() ?? '-'); ?>
+
                             </div>
                         </td>
                         <td>
                             <div class="action-group">
-                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal({{ $item->id }})">
+                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal(<?php echo e($item->id); ?>)">
                                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                     </svg>
                                     Detail
                                 </button>
-                                <form method="POST" action="{{ route('admin.approval.mentor.destroy', $item) }}" style="display:none;"
-      id="form-destroy-mentor-{{ $item->id }}">
-    @csrf @method('DELETE')
+                                <form method="POST" action="<?php echo e(route('admin.approval.mentor.destroy', $item)); ?>" style="display:none;"
+      id="form-destroy-mentor-<?php echo e($item->id); ?>">
+    <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
 </form>
 <button type="button" class="btn btn-ghost btn-sm" style="color:var(--accent2);"
-        onclick="confirmDestroyMentor({{ $item->id }}, '{{ addslashes($item->full_name) }}', 'rejected')">
+        onclick="confirmDestroyMentor(<?php echo e($item->id); ?>, '<?php echo e(addslashes($item->full_name)); ?>', 'rejected')">
     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
     </svg>
@@ -509,15 +515,15 @@
                             </div>
                         </td>
                     </tr>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 
 
-{{-- ======================== MODAL DETAIL ======================== --}}
+
 <div class="modal-overlay" id="modal-detail">
     <div class="modal">
         <div class="modal-header">
@@ -585,7 +591,7 @@
     </div>
 </div>
 
-{{-- ======================== MODAL TOLAK ======================== --}}
+
 <div class="modal-overlay" id="modal-reject">
     <div class="modal" style="width:460px;">
         <div class="modal-header">
@@ -596,7 +602,7 @@
             Berikan alasan penolakan untuk <strong id="reject-name"></strong>. Alasan ini akan tersimpan sebagai catatan.
         </p>
         <form id="reject-form" method="POST">
-            @csrf
+            <?php echo csrf_field(); ?>
             <div class="form-group">
                 <label class="form-label">Alasan Penolakan *</label>
                 <textarea name="rejection_reason" class="form-textarea" rows="4"
@@ -616,10 +622,10 @@
     </div>
 </div>
 
-{{-- Data JSON untuk JS --}}
+
 <script>
 
-const mentorData = @json($pending->merge($approved)->merge($rejected)->keyBy('id'));
+const mentorData = <?php echo json_encode($pending->merge($approved)->merge($rejected)->keyBy('id'), 15, 512) ?>;
 
 // Pertahankan tab aktif setelah page reload
 function switchTab(tab, btn) {
@@ -739,4 +745,5 @@ function confirmDestroyMentor(id, name, type) {
 }
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\Kaji-indo-main\resources\views/admin/approval-mentor.blade.php ENDPATH**/ ?>
