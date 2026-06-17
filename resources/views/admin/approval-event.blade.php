@@ -138,18 +138,6 @@
 
 @section('content')
 
-{{-- Flash messages --}}
-@if(session('success'))
-<div style="background:var(--accent-light);color:var(--accent);border:1px solid #a7d7c566;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;display:flex;align-items:center;gap:8px;">
-    ✅ {{ session('success') }}
-</div>
-@endif
-@if(session('error'))
-<div style="background:#fff0ed;color:#e76f51;border:1px solid #e76f5166;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;display:flex;align-items:center;gap:8px;">
-    ⚠️ {{ session('error') }}
-</div>
-@endif
-
 {{-- ── Tab status ── --}}
 <div class="tab-bar">
     <button class="tab-btn {{ $status === 'pending'  ? 'active' : '' }}"
@@ -382,29 +370,31 @@
 
                         {{-- Pulihkan (restore) — hanya di tab deleted --}}
                         @if($status === 'deleted')
-                        <form method="POST"
-                              action="{{ route('admin.approval.event.restore', $event->id) }}"
-                              id="form-restore-{{ $event->id }}"
-                              style="display:inline;">
-                            @csrf
-                            <button type="button" class="btn btn-restore btn-sm"
-                                    onclick="confirmRestore({{ $event->id }}, '{{ addslashes($event->judul) }}')">
-                                ↩️ Pulihkan
-                            </button>
-                        </form>
+    {{-- Pulihkan --}}
+    <form method="POST"
+          action="{{ route('admin.approval.event.restore', $event->id) }}"
+          id="form-restore-{{ $event->id }}"
+          style="display:inline;">
+        @csrf
+        <button type="button" class="btn btn-restore btn-sm"
+                onclick="confirmRestore({{ $event->id }}, '{{ addslashes($event->judul) }}')">
+            ↩️ Pulihkan
+        </button>
+    </form>
 
-                        <form method="POST"
-      action="{{ route('admin.approval.event.destroy', $event->id) }}"
-      id="form-force-delete-event-{{ $event->id }}"
-      style="display:none;">
-    @csrf
-    @method('DELETE')
-</form>
-<button type="button" class="btn btn-delete btn-sm"
-        onclick="confirmForceDeleteEvent({{ $event->id }}, '{{ addslashes($event->judul) }}')">
-    🗑️ Hapus Permanen
-</button>
-                        @endif
+    {{-- Hapus Permanen --}}
+    <form method="POST"
+          action="{{ route('admin.approval.event.force-delete', $event->id) }}"
+          id="form-force-delete-event-{{ $event->id }}"
+          style="display:none;">
+        @csrf
+        @method('DELETE')
+    </form>
+    <button type="button" class="btn btn-delete btn-sm"
+            onclick="confirmForceDeleteEvent({{ $event->id }}, '{{ addslashes($event->judul) }}')">
+        🗑️ Hapus Permanen
+    </button>
+@endif
 
                     </div>
                 </td>

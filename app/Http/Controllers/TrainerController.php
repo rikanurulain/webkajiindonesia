@@ -650,19 +650,35 @@ public function restoreEvent($id)
         ->where('trainer_user_id', Auth::id())
         ->firstOrFail();
 
-    // Buat ulang event sebagai pending
-    \App\Models\Event::create([
-        'trainer_id' => Auth::id(),
-        'judul'      => $log->event_title,
-        'tanggal'    => $log->event_tanggal ?? now()->addDays(7)->toDateString(),
-        'deskripsi'  => 'Event dipulihkan. Mohon lengkapi data kembali.',
-        'status'     => 'pending',
-    ]);
+    // Cari event aslinya pakai event_id
+    $event = \App\Models\Event::withoutGlobalScope('not_deleted_by_admin')
+        ->find($log->event_id);
+
+    if ($event) {
+        // Pulihkan event yang sudah ada
+        $event->update([
+            'deleted_by_admin_at' => null,
+            'deleted_by_admin_id' => null,
+            'deleted_reason'      => null,
+            'status'              => 'pending',
+            'approved_at'         => null,
+            'approved_by'         => null,
+        ]);
+    } else {
+        // Event sudah force deleted — buat ulang minimal
+        \App\Models\Event::create([
+            'trainer_id' => Auth::id(),
+            'judul'      => $log->event_title,
+            'tanggal'    => $log->event_tanggal ?? now()->addDays(7)->toDateString(),
+            'deskripsi'  => 'Event dipulihkan. Mohon lengkapi data kembali.',
+            'status'     => 'pending',
+        ]);
+    }
 
     $log->delete();
 
     return redirect()->route('trainer.dashboard')
-        ->with('success', 'Event "' . $log->event_title . '" berhasil dipulihkan.')
+        ->with('success', 'Event "' . $log->event_title . '" berhasil dipulihkan dan menunggu persetujuan.')
         ->with('active_page', 'event');
 }
 

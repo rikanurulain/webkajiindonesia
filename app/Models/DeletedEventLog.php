@@ -8,6 +8,7 @@ class DeletedEventLog extends Model
 {
     protected $fillable = [
         'trainer_user_id',
+        'event_id', 
         'event_title',
         'event_tanggal',
         'deleted_at_by_admin',

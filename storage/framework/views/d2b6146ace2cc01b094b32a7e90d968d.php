@@ -137,20 +137,6 @@
 <?php $__env->startSection('content'); ?>
 
 
-<?php if(session('success')): ?>
-<div style="background:var(--accent-light);color:var(--accent);border:1px solid #a7d7c566;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;display:flex;align-items:center;gap:8px;">
-    ✅ <?php echo e(session('success')); ?>
-
-</div>
-<?php endif; ?>
-<?php if(session('error')): ?>
-<div style="background:#fff0ed;color:#e76f51;border:1px solid #e76f5166;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;display:flex;align-items:center;gap:8px;">
-    ⚠️ <?php echo e(session('error')); ?>
-
-</div>
-<?php endif; ?>
-
-
 <div class="tab-bar">
     <button class="tab-btn <?php echo e($status === 'pending'  ? 'active' : ''); ?>"
         onclick="location.href='<?php echo e(route('admin.approval.event')); ?>?status=pending'">
@@ -393,29 +379,31 @@
 
                         
                         <?php if($status === 'deleted'): ?>
-                        <form method="POST"
-                              action="<?php echo e(route('admin.approval.event.restore', $event->id)); ?>"
-                              id="form-restore-<?php echo e($event->id); ?>"
-                              style="display:inline;">
-                            <?php echo csrf_field(); ?>
-                            <button type="button" class="btn btn-restore btn-sm"
-                                    onclick="confirmRestore(<?php echo e($event->id); ?>, '<?php echo e(addslashes($event->judul)); ?>')">
-                                ↩️ Pulihkan
-                            </button>
-                        </form>
+    
+    <form method="POST"
+          action="<?php echo e(route('admin.approval.event.restore', $event->id)); ?>"
+          id="form-restore-<?php echo e($event->id); ?>"
+          style="display:inline;">
+        <?php echo csrf_field(); ?>
+        <button type="button" class="btn btn-restore btn-sm"
+                onclick="confirmRestore(<?php echo e($event->id); ?>, '<?php echo e(addslashes($event->judul)); ?>')">
+            ↩️ Pulihkan
+        </button>
+    </form>
 
-                        <form method="POST"
-      action="<?php echo e(route('admin.approval.event.destroy', $event->id)); ?>"
-      id="form-force-delete-event-<?php echo e($event->id); ?>"
-      style="display:none;">
-    <?php echo csrf_field(); ?>
-    <?php echo method_field('DELETE'); ?>
-</form>
-<button type="button" class="btn btn-delete btn-sm"
-        onclick="confirmForceDeleteEvent(<?php echo e($event->id); ?>, '<?php echo e(addslashes($event->judul)); ?>')">
-    🗑️ Hapus Permanen
-</button>
-                        <?php endif; ?>
+    
+    <form method="POST"
+          action="<?php echo e(route('admin.approval.event.force-delete', $event->id)); ?>"
+          id="form-force-delete-event-<?php echo e($event->id); ?>"
+          style="display:none;">
+        <?php echo csrf_field(); ?>
+        <?php echo method_field('DELETE'); ?>
+    </form>
+    <button type="button" class="btn btn-delete btn-sm"
+            onclick="confirmForceDeleteEvent(<?php echo e($event->id); ?>, '<?php echo e(addslashes($event->judul)); ?>')">
+        🗑️ Hapus Permanen
+    </button>
+<?php endif; ?>
 
                     </div>
                 </td>

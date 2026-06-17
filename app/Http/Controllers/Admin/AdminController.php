@@ -172,11 +172,28 @@ class AdminController extends Controller
             'deleted_by'    => null,
         ]);
     }
+    
 
     $judul = $log->program_title;
     $log->delete();
 
     return back()->with('success', "Program \"{$judul}\" berhasil dipulihkan.");
+}
+
+public function destroyDeletedLog($id)
+{
+    $log = \App\Models\DeletedProgramLog::findOrFail($id);
+    $judul = $log->program_title;
+
+    // Hapus permanen program-nya juga (force delete)
+    $program = Program::withTrashed()->find($log->program_id);
+    if ($program) {
+        $program->forceDelete();
+    }
+
+    $log->delete();
+
+    return back()->with('success', "Log program \"{$judul}\" berhasil dihapus permanen.");
 }
     public function detailProgram(Program $program)
     {
@@ -655,43 +672,76 @@ public function destroyUmkm($produk)
 {
     $event = Event::withoutGlobalScope('not_deleted_by_admin')->findOrFail($id);
 
-    // Catat ke deleted_event_logs agar trainer bisa lihat & pulihkan
-    \App\Models\DeletedEventLog::create([
-        'trainer_user_id'     => $event->trainer_id,
-        'event_title'         => $event->judul ?? $event->nama,
-        'event_tanggal'       => $event->tanggal,
-        'deleted_at_by_admin' => now(),
-        'is_read'             => false,
-    ]);
+    if ($event->deleted_by_admin_at) {
+        return back()->with('error', 'Event sudah dihapus sebelumnya.');
+    }
 
-    // Tandai sebagai dihapus admin — JANGAN delete dari DB
     $event->update([
         'deleted_by_admin_at' => now(),
-        'deleted_by_admin'    => Auth::id(),
-        'deleted_reason'      => $request->input('reason'),
+        'deleted_by_admin_id' => Auth::id(),
+        'deleted_reason'      => $request->reason,
     ]);
 
-    $judul = $event->judul ?? $event->nama;
+    if ($event->trainer_id) {
+        \App\Models\DeletedEventLog::create([
+            'trainer_user_id'     => $event->trainer_id,
+            'event_id'            => $event->id,       // ← kunci utama
+            'event_title'         => $event->judul,
+            'event_tanggal'       => $event->tanggal,
+            'is_read'             => false,
+            'deleted_at_by_admin' => now(),
+        ]);
+    }
 
-    return back()->with('success', "Event \"{$judul}\" berhasil dihapus.");
+    return redirect()->route('admin.approval.event', ['status' => 'deleted'])
+        ->with('success', 'Event "' . $event->judul . '" berhasil dihapus.');
 }
 
+    // Hapus permanen event dari tab deleted
+    public function forceDeleteEvent($id)
+    {
+        $event = Event::withoutGlobalScope('not_deleted_by_admin')
+            ->whereNotNull('deleted_by_admin_at')
+            ->findOrFail($id);
+    
+        $judul = $event->judul;
+    
+        if ($event->gambar && \Storage::disk('public')->exists($event->gambar)) {
+            \Storage::disk('public')->delete($event->gambar);
+        }
+    
+        \App\Models\DeletedEventLog::where('trainer_user_id', $event->trainer_id)
+            ->where('event_title', $judul)
+            ->delete();
+    
+        $event->forceDelete();
+    
+        return redirect()->route('admin.approval.event', ['status' => 'deleted'])
+            ->with('success', "Event \"{$judul}\" dihapus permanen.");
+    }
+
+// Pulihkan event ke pending
 public function restoreEventAdmin($id)
 {
-    $event = Event::whereNotNull('deleted_by_admin_at')->findOrFail($id);
+    $event = Event::withoutGlobalScope('not_deleted_by_admin')
+        ->whereNotNull('deleted_by_admin_at')
+        ->findOrFail($id);
 
     $event->update([
         'deleted_by_admin_at' => null,
-        'deleted_by_admin'    => null,
+        'deleted_by_admin_id' => null,  // ← fix: sebelumnya 'deleted_by_admin'
         'deleted_reason'      => null,
+        'status'              => 'pending',
+        'approved_at'         => null,
+        'approved_by'         => null,
     ]);
 
-    // Hapus log agar tidak muncul lagi di trainer dashboard
-    \App\Models\DeletedEventLog::where('event_title', $event->judul)
-        ->where('trainer_user_id', $event->trainer_id)
+    \App\Models\DeletedEventLog::where('trainer_user_id', $event->trainer_id)
+        ->where('event_title', $event->judul)
         ->delete();
 
-    return back()->with('success', 'Event "' . ($event->judul ?? $event->nama) . '" berhasil dipulihkan.');
+    return redirect()->route('admin.approval.event', ['status' => 'pending'])
+        ->with('success', 'Event "' . ($event->judul) . '" dipulihkan ke pending.');
 }
 
     // ═════════════════════════════════════════════════════════════════════

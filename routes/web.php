@@ -220,14 +220,18 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/', [AdminController::class, 'index'])->name('dashboard');
 
     // ── Approval Program ─────────────────────────────────────────────
-Route::get('/approval/program/counts',             [AdminController::class, 'approvalProgramCounts'])->name('approval.program.counts'); 
-Route::get('/approval/program/export-csv',         [AdminController::class, 'exportCsvApproval'])->name('approval.program.export-csv');
-Route::get('/approval/program',                    [AdminController::class, 'approvalProgram'])->name('approval.program');
-Route::post('/approval/program/{program}/approve', [AdminController::class, 'approveProgram'])->name('approval.program.approve');
-Route::post('/approval/program/{program}/reject',  [AdminController::class, 'rejectProgram'])->name('approval.program.reject');
-Route::delete('/approval/program/{program}',       [AdminController::class, 'destroyProgram'])->name('approval.program.delete');
-Route::post('/approval/program/deleted/{id}/restore',  [AdminController::class, 'restoreProgramAdmin'])->name('approval.program.restore');
-Route::delete('/approval/program/deleted/{id}',        [AdminController::class, 'destroyDeletedLog'])->name('approval.program.deleted.destroy');
+    Route::get('/approval/program/counts',             [AdminController::class, 'approvalProgramCounts'])->name('approval.program.counts'); 
+    Route::get('/approval/program/export-csv',         [AdminController::class, 'exportCsvApproval'])->name('approval.program.export-csv');
+    Route::get('/approval/program',                    [AdminController::class, 'approvalProgram'])->name('approval.program');
+    
+    // ← Spesifik dulu, sebelum {program} generic
+    Route::post('/approval/program/deleted/{id}/restore',  [AdminController::class, 'restoreProgramAdmin'])->name('approval.program.restore');
+    Route::delete('/approval/program/deleted/{id}',        [AdminController::class, 'destroyDeletedLog'])->name('approval.program.deleted.destroy');
+    
+    // ← Generic belakangan
+    Route::post('/approval/program/{program}/approve', [AdminController::class, 'approveProgram'])->name('approval.program.approve');
+    Route::post('/approval/program/{program}/reject',  [AdminController::class, 'rejectProgram'])->name('approval.program.reject');
+    Route::delete('/approval/program/{program}',       [AdminController::class, 'destroyProgram'])->name('approval.program.delete');
     // ── Approval Produk ──────────────────────────────────────────────
     Route::get('/approval/produk',                     [AdminController::class, 'approvalProduk'])->name('approval.produk');
     Route::post('/approval/produk/{produk}/approve',   [AdminController::class, 'approveProduk'])->name('approval.produk.approve');
@@ -243,11 +247,12 @@ Route::delete('/approval/produk/deleted/{id}/force',  [AdminController::class, '
 
   
 // ── Approval Event ───────────────────────────────────────────────
-Route::get('/approval/event',                      [AdminController::class, 'approvalEvent'])->name('approval.event');
-Route::post('/approval/event/{event}/approve',     [AdminController::class, 'approveEvent'])->name('approval.event.approve');
-Route::post('/approval/event/{event}/reject',      [AdminController::class, 'rejectEvent'])->name('approval.event.reject');
-Route::delete('/approval/event/{event}',           [AdminController::class, 'destroyEvent'])->name('approval.event.destroy');
-Route::post('/approval/event/{event}/restore',     [AdminController::class, 'restoreEventAdmin'])->name('approval.event.restore'); 
+Route::get('/approval/event',                          [AdminController::class, 'approvalEvent'])->name('approval.event');
+Route::post('/approval/event/{event}/approve',         [AdminController::class, 'approveEvent'])->name('approval.event.approve');
+Route::post('/approval/event/{event}/reject',          [AdminController::class, 'rejectEvent'])->name('approval.event.reject');
+Route::post('/approval/event/{event}/restore',         [AdminController::class, 'restoreEventAdmin'])->name('approval.event.restore');
+Route::delete('/approval/event/{id}/force-delete',     [AdminController::class, 'forceDeleteEvent'])->name('approval.event.force-delete'); // ← tambah di sini
+Route::delete('/approval/event/{event}',               [AdminController::class, 'destroyEvent'])->name('approval.event.destroy');
 
     // ── Approval Trainer ─────────────────────────────────────────────
     Route::get('/approval/trainer',                        [AdminController::class, 'approvalTrainer'])->name('approval.trainer');
