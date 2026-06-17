@@ -522,9 +522,9 @@ class PelatihanController extends Controller
     public function event()
     {
         $events = \App\Models\Event::with('trainer')
-            ->where('status', 'approved')
-            ->orderBy('tanggal', 'asc')
-            ->get();
+    ->where('status', 'approved')
+    ->orderBy('tanggal', 'asc')
+    ->get();
     
         return view('pages.pelatihan-event', compact('events'));
     }

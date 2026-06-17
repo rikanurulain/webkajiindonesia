@@ -50,6 +50,13 @@ class Event extends Model
     return $this->belongsTo(User::class, 'deleted_by_admin_id');
 }
 
+protected static function booted(): void
+{
+    static::addGlobalScope('not_deleted_by_admin', function ($query) {
+        $query->whereNull('deleted_by_admin_at');
+    });
+}
+
     // ── Accessor: biaya tampil "Gratis" jika kosong / 0 ──────────
     public function getBiayaLabelAttribute(): string
     {

@@ -1,15 +1,12 @@
-{{-- resources/views/pages/pelatihan-event-detail.blade.php --}}
-@extends('layouts.app')
+<?php $__env->startSection('title', $event->judul . ' - KAJI INDONESIA'); ?>
 
-@section('title', $event->judul . ' - KAJI INDONESIA')
+<?php $__env->startSection('content'); ?>
 
-@section('content')
-
-    {{-- Header --}}
+    
     <section class="bg-gradient-to-br from-primary-dark via-primary to-primary- py-10 text-white">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex items-center gap-3">
-                <a href="{{ url()->previous() }}" class="text-white/80 hover:text-white transition">
+                <a href="<?php echo e(url()->previous()); ?>" class="text-white/80 hover:text-white transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
                     </svg>
@@ -22,30 +19,31 @@
     <section class="bg-gray-50 py-12 px-4 min-h-screen">
         <div class="max-w-3xl mx-auto space-y-6">
 
-            {{-- ── Hero Card ───────────────────────────────────────── --}}
+            
             <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200">
 
-                {{-- Gambar Banner --}}
-                @if($event->gambar)
-                    <img src="{{ asset('storage/' . $event->gambar) }}"
-                         alt="{{ $event->judul }}"
+                
+                <?php if($event->gambar): ?>
+                    <img src="<?php echo e(asset('storage/' . $event->gambar)); ?>"
+                         alt="<?php echo e($event->judul); ?>"
                          class="w-full object-cover max-h-64">
-                @else
+                <?php else: ?>
                     <div class="w-full h-48 flex items-center justify-center text-7xl bg-gradient-to-br from-green-100 to-green-300">
                         🎪
                     </div>
-                @endif
+                <?php endif; ?>
 
                 <div class="p-6">
-                    {{-- Judul --}}
+                    
                     <h1 class="font-serif text-2xl font-bold text-gray-900 mb-5">
-                        {{ $event->judul }}
+                        <?php echo e($event->judul); ?>
+
                     </h1>
 
-                    {{-- Info grid --}}
+                    
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
 
-                        {{-- Tanggal --}}
+                        
                         <div class="flex items-start gap-3">
                             <div class="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -55,13 +53,14 @@
                             <div>
                                 <div class="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-0.5">Tanggal</div>
                                 <div class="text-sm font-bold text-green-800">
-                                    {{ \Carbon\Carbon::parse($event->tanggal)->translatedFormat('l, d F Y') }}
+                                    <?php echo e(\Carbon\Carbon::parse($event->tanggal)->translatedFormat('l, d F Y')); ?>
+
                                 </div>
                             </div>
                         </div>
 
-                        {{-- Waktu --}}
-                        @if($event->waktu_mulai && $event->waktu_selesai)
+                        
+                        <?php if($event->waktu_mulai && $event->waktu_selesai): ?>
                         <div class="flex items-start gap-3">
                             <div class="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -70,13 +69,13 @@
                             </div>
                             <div>
                                 <div class="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-0.5">Waktu</div>
-                                <div class="text-sm font-bold text-green-800">{{ $event->jam }}</div>
+                                <div class="text-sm font-bold text-green-800"><?php echo e($event->jam); ?></div>
                             </div>
                         </div>
-                        @endif
+                        <?php endif; ?>
 
-                        {{-- Lokasi --}}
-                        @if($event->lokasi)
+                        
+                        <?php if($event->lokasi): ?>
                         <div class="flex items-start gap-3">
                             <div class="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -86,13 +85,13 @@
                             </div>
                             <div>
                                 <div class="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-0.5">Lokasi</div>
-                                <div class="text-sm font-bold text-green-800">{{ $event->lokasi }}</div>
+                                <div class="text-sm font-bold text-green-800"><?php echo e($event->lokasi); ?></div>
                             </div>
                         </div>
-                        @endif
+                        <?php endif; ?>
 
-                        {{-- Kapasitas --}}
-                        @if($event->kapasitas)
+                        
+                        <?php if($event->kapasitas): ?>
                         <div class="flex items-start gap-3">
                             <div class="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -101,12 +100,12 @@
                             </div>
                             <div>
                                 <div class="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-0.5">Kapasitas</div>
-                                <div class="text-sm font-bold text-green-800">{{ $event->kapasitas }} Peserta</div>
+                                <div class="text-sm font-bold text-green-800"><?php echo e($event->kapasitas); ?> Peserta</div>
                             </div>
                         </div>
-                        @endif
+                        <?php endif; ?>
 
-                        {{-- Biaya --}}
+                        
                         <div class="flex items-start gap-3">
                             <div class="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -115,21 +114,22 @@
                             </div>
                             <div>
                                 <div class="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-0.5">Biaya</div>
-                                <div class="text-sm font-bold {{ $event->biaya_label === 'Gratis' ? 'text-green-600' : 'text-orange-600' }}">
-                                    {{ $event->biaya_label }}
+                                <div class="text-sm font-bold <?php echo e($event->biaya_label === 'Gratis' ? 'text-green-600' : 'text-orange-600'); ?>">
+                                    <?php echo e($event->biaya_label); ?>
+
                                 </div>
                             </div>
                         </div>
 
                     </div>
 
-                    {{-- Tombol Daftar --}}
-                    @php
+                    
+                    <?php
                     $waPhone = $event->phone ?? $event->trainer?->phone ?? '6281234567890';
                         $waText  = urlencode('Halo, saya ingin mendaftar event: ' . $event->judul . ' pada ' . \Carbon\Carbon::parse($event->tanggal)->translatedFormat('d F Y'));
-                    @endphp
+                    ?>
                     <div class="flex flex-wrap gap-3">
-                        <a href="https://wa.me/{{ $waPhone }}?text={{ $waText }}"
+                        <a href="https://wa.me/<?php echo e($waPhone); ?>?text=<?php echo e($waText); ?>"
                            target="_blank"
                            class="bg-green-500 hover:bg-green-600 text-white text-sm font-bold px-6 py-3 rounded-xl transition-colors inline-flex items-center gap-2">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -137,7 +137,7 @@
                             </svg>
                             Daftar via WhatsApp
                         </a>
-                        <a href="{{ route('pelatihan.event') }}"
+                        <a href="<?php echo e(route('pelatihan.event')); ?>"
                            class="border border-green-600 text-green-700 hover:bg-green-50 text-sm font-bold px-5 py-3 rounded-xl transition-colors">
                             ← Kembali
                         </a>
@@ -145,17 +145,18 @@
                 </div>
             </div>
 
-            {{-- ── Deskripsi ─────────────────────────────────────── --}}
+            
             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
                 <h2 class="font-serif font-bold text-gray-900 text-xl mb-4 pb-3 border-b border-gray-100">
                     Tentang Event Ini
                 </h2>
                 <div class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
-                    {{ $event->deskripsi }}
+                    <?php echo e($event->deskripsi); ?>
+
                 </div>
             </div>
 
-            {{-- ── Informasi Teknis ──────────────────────────────── --}}
+            
             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
                 <h2 class="font-serif font-bold text-gray-900 text-xl mb-4 pb-3 border-b border-gray-100">
                     Informasi Teknis
@@ -163,42 +164,45 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <div class="text-xs uppercase tracking-wide font-semibold text-gray-400 mb-1">Nama Event</div>
-                        <div class="text-sm font-semibold text-green-900">{{ $event->judul }}</div>
+                        <div class="text-sm font-semibold text-green-900"><?php echo e($event->judul); ?></div>
                     </div>
                     <div>
                         <div class="text-xs uppercase tracking-wide font-semibold text-gray-400 mb-1">Tanggal</div>
                         <div class="text-sm font-semibold text-green-900">
-                            {{ \Carbon\Carbon::parse($event->tanggal)->translatedFormat('l, d F Y') }}
+                            <?php echo e(\Carbon\Carbon::parse($event->tanggal)->translatedFormat('l, d F Y')); ?>
+
                         </div>
                     </div>
-                    @if($event->waktu_mulai && $event->waktu_selesai)
+                    <?php if($event->waktu_mulai && $event->waktu_selesai): ?>
                     <div>
                         <div class="text-xs uppercase tracking-wide font-semibold text-gray-400 mb-1">Waktu</div>
-                        <div class="text-sm font-semibold text-green-900">{{ $event->jam }}</div>
+                        <div class="text-sm font-semibold text-green-900"><?php echo e($event->jam); ?></div>
                     </div>
-                    @endif
-                    @if($event->lokasi)
+                    <?php endif; ?>
+                    <?php if($event->lokasi): ?>
                     <div>
                         <div class="text-xs uppercase tracking-wide font-semibold text-gray-400 mb-1">Lokasi</div>
-                        <div class="text-sm font-semibold text-green-900">{{ $event->lokasi }}</div>
+                        <div class="text-sm font-semibold text-green-900"><?php echo e($event->lokasi); ?></div>
                     </div>
-                    @endif
-                    @if($event->kapasitas)
+                    <?php endif; ?>
+                    <?php if($event->kapasitas): ?>
                     <div>
                         <div class="text-xs uppercase tracking-wide font-semibold text-gray-400 mb-1">Kapasitas</div>
-                        <div class="text-sm font-semibold text-green-900">{{ $event->kapasitas }} Peserta</div>
+                        <div class="text-sm font-semibold text-green-900"><?php echo e($event->kapasitas); ?> Peserta</div>
                     </div>
-                    @endif
+                    <?php endif; ?>
                     <div>
                         <div class="text-xs uppercase tracking-wide font-semibold text-gray-400 mb-1">Biaya</div>
-                        <div class="text-sm font-semibold {{ $event->biaya_label === 'Gratis' ? 'text-green-600' : 'text-orange-600' }}">
-                            {{ $event->biaya_label }}
+                        <div class="text-sm font-semibold <?php echo e($event->biaya_label === 'Gratis' ? 'text-green-600' : 'text-orange-600'); ?>">
+                            <?php echo e($event->biaya_label); ?>
+
                         </div>
                     </div>
                     <div>
     <div class="text-xs uppercase tracking-wide font-semibold text-gray-400 mb-1">Penyelenggara</div>
     <div class="text-sm font-semibold text-green-900">
-        {{ \App\Models\Trainer::where('user_id', $event->trainer_id)->value('academic_degree') ?? $event->trainer?->name ?? 'KAJI INDONESIA' }}
+        <?php echo e(\App\Models\Trainer::where('user_id', $event->trainer_id)->value('academic_degree') ?? $event->trainer?->name ?? 'KAJI INDONESIA'); ?>
+
     </div>
 </div>
                     </div>
@@ -208,4 +212,5 @@
         </div>
     </section>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\Kaji-indo-main\resources\views/pages/pelatihan-event-detail.blade.php ENDPATH**/ ?>

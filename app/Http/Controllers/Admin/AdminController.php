@@ -590,8 +590,9 @@ public function destroyUmkm($produk)
     $status = $request->get('status', 'pending');
 
     // Query base — exclude yang dihapus admin (kecuali tab deleted)
-    $query = Event::with(['trainer', 'deletedByAdmin'])
-        ->orderBy('created_at', 'desc');
+    $query = Event::withoutGlobalScope('not_deleted_by_admin')
+    ->with(['trainer', 'deletedByAdmin'])
+    ->orderBy('created_at', 'desc');
 
     if ($status === 'deleted') {
         // Hanya tampilkan yang dihapus admin
@@ -622,7 +623,7 @@ public function destroyUmkm($produk)
     }
     public function approveEvent($id)
     {
-        $event = Event::findOrFail($id);
+        $event = Event::withoutGlobalScope('not_deleted_by_admin')->findOrFail($id);
         $event->update([
             'status'        => 'approved',
             'approved_at'   => now(),
@@ -638,7 +639,7 @@ public function destroyUmkm($produk)
         $request->validate([
             'catatan_admin' => 'required|string|max:500',
         ]);
-        $event = Event::findOrFail($id);
+        $event = Event::withoutGlobalScope('not_deleted_by_admin')->findOrFail($id);
         $event->update([
             'status'        => 'rejected',
             'rejected_at'   => now(),
@@ -652,7 +653,7 @@ public function destroyUmkm($produk)
 
     public function destroyEvent(Request $request, $id)
 {
-    $event = Event::findOrFail($id);
+    $event = Event::withoutGlobalScope('not_deleted_by_admin')->findOrFail($id);
 
     // Catat ke deleted_event_logs agar trainer bisa lihat & pulihkan
     \App\Models\DeletedEventLog::create([

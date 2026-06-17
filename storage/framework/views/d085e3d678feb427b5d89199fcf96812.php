@@ -65,6 +65,8 @@
                     $waText  = urlencode('Halo, saya ingin mendaftar event: ' . $item->judul . ' pada ' . \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y'));
                     $tanggalFormatted = \Carbon\Carbon::parse($item->tanggal)->translatedFormat('l, d F Y');
                     $isGratis = empty($item->biaya) || $item->biaya == '0' || strtolower($item->biaya) === 'gratis';
+                    $trainerGelarEvent = \App\Models\Trainer::where('user_id', $item->trainer_id)
+        ->value('academic_degree') ?? $item->trainer?->name ?? '';
                 ?>
                 <div
                     class="event-card-data"
@@ -77,7 +79,7 @@
                     data-tanggal="<?php echo e($tanggalFormatted); ?>"
                     data-biaya="<?php echo e($item->biaya ?? ''); ?>"
                     data-is-gratis="<?php echo e($isGratis ? '1' : '0'); ?>"
-                    data-trainer="<?php echo e($item->trainer?->name ?? ''); ?>"
+                    data-trainer="<?php echo e($trainerGelarEvent); ?>"
                     data-wa-phone="<?php echo e($waPhone); ?>"
                     data-wa-text="<?php echo e($waText); ?>"
                     data-detail-url="<?php echo e(route('pelatihan.event.detail', $item->id)); ?>"
