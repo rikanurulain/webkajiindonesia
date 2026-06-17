@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.all.min.js"></script>
 <style>
+.tipe-chip.active-deleted { background: #fef2f2; color: #991b1b; border-color: #fca5a5; }
 /* ── CSV Export Button ── */
 .btn-csv-export {
     display: inline-flex;
@@ -362,33 +363,43 @@
     $statusDaftarMap = ['pending' => 'menunggu_verifikasi', 'approved' => 'diterima', 'rejected' => 'ditolak'];
 @endphp
 <div class="tab-bar">
-    <button class="tab-btn {{ $status === 'pending' ? 'active' : '' }}"
-        onclick="navigateTo({ status: 'pending' })">
-        Pending
+<button class="tab-btn {{ $status === 'pending' && $activeTab !== 'deleted' ? 'active' : '' }}"
+    onclick="navigateTo({ status: 'pending' })">
+    Pending
         @if($counts['pending'] > 0)
             <span class="count-pill" data-count="pending">{{ $counts['pending'] }}</span>
         @else
             <span class="count-pill" data-count="pending" style="display:none;">0</span>
         @endif
     </button>
-    <button class="tab-btn {{ $status === 'approved' ? 'active' : '' }}"
-        onclick="navigateTo({ status: 'approved' })">
-        Disetujui
+    <button class="tab-btn {{ $status === 'approved' && $activeTab !== 'deleted' ? 'active' : '' }}"
+    onclick="navigateTo({ status: 'approved' })">
+    Disetujui
         @if($counts['approved'] > 0)
             <span class="count-pill" data-count="approved" style="background:var(--accent);">{{ $counts['approved'] }}</span>
         @else
             <span class="count-pill" data-count="approved" style="background:var(--accent);display:none;">0</span>
         @endif
     </button>
-    <button class="tab-btn {{ $status === 'rejected' ? 'active' : '' }}"
-        onclick="navigateTo({ status: 'rejected' })">
-        Ditolak
+    <button class="tab-btn {{ $status === 'rejected' && $activeTab !== 'deleted' ? 'active' : '' }}"
+    onclick="navigateTo({ status: 'rejected' })">
+    Ditolak
         @if($counts['rejected'] > 0)
             <span class="count-pill" data-count="rejected" style="background:#9ca3af;">{{ $counts['rejected'] }}</span>
         @else
             <span class="count-pill" data-count="rejected" style="background:#9ca3af;display:none;">0</span>
         @endif
     </button>
+    <button class="tab-btn {{ $activeTab === 'deleted' ? 'active' : '' }}"
+        onclick="navigateTo({ tab: 'deleted' })"
+        style="{{ $activeTab === 'deleted' ? '' : '' }}">
+        🗑️ Dihapus
+        @if(($counts['deleted'] ?? 0) > 0)
+            <span class="count-pill" data-count="deleted" style="background:#ef4444;">{{ $counts['deleted'] }}</span>
+        @else
+            <span class="count-pill" data-count="deleted" style="background:#ef4444;display:none;">0</span>
+        @endif
+        </button>
 </div>
 
 {{-- ── Filter tipe chips ── --}}
@@ -422,7 +433,7 @@
     </a>
 </div>
 
-@if(request('tab') !== 'pendaftaran')
+@if(request('tab') !== 'pendaftaran' && request('tab') !== 'deleted')
 <div class="table-card">
     <div class="table-card-header">
         <div class="table-card-title">
@@ -609,6 +620,103 @@
     @endif
 </div>
 @endif {{-- end tab !== pendaftaran --}}
+
+@if(request('tab') === 'deleted')
+<div class="table-card">
+    <div class="table-card-header">
+        <div class="table-card-title">
+            🗑️ Program Dihapus Admin
+            <span class="table-card-subtitle">{{ $deletedLogs->total() }} program</span>
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Judul Program</th>
+                <th>Tipe</th>
+                <th>Trainer</th>
+                <th>Dihapus Pada</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($deletedLogs as $log)
+            <tr>
+                <td>
+                    <div style="font-weight:600;font-size:13px;">{{ $log->program_title }}</div>
+                </td>
+                <td>
+                    @if($log->program_tipe === 'kurikulum')
+                        <span class="badge badge-tipe-kurikulum" style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;">
+                            📚 Kurikulum
+                        </span>
+                    @elseif($log->program_tipe === 'modul')
+                        <span class="badge badge-tipe-modul" style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;">
+                            📝 Modul
+                        </span>
+                    @else
+                        <span style="font-size:12px;color:#9ca3af;">{{ ucfirst($log->program_tipe ?? '-') }}</span>
+                    @endif
+                </td>
+                <td>
+                    @php $trainer = \App\Models\User::find($log->trainer_user_id); @endphp
+                    @if($trainer)
+                    <div class="submitter">
+                        <div class="submitter-avatar" style="background:var(--accent);">
+                            {{ strtoupper(substr($trainer->name, 0, 2)) }}
+                        </div>
+                        <div>
+                            <div class="submitter-name">{{ $trainer->name }}</div>
+                            <div class="submitter-sub">Trainer</div>
+                        </div>
+                    </div>
+                    @else
+                        <span style="color:#9ca3af;font-size:12px;">—</span>
+                    @endif
+                </td>
+                <td style="font-size:12px;color:var(--text-muted);">
+                    {{ $log->deleted_at_by_admin?->format('d M Y, H:i') }}
+                </td>
+                <td>
+                    <div class="action-group">
+                        <form method="POST"
+                            action="{{ route('admin.approval.program.restore', $log->id) }}">
+                            @csrf
+                            <button type="submit" class="btn btn-approve btn-sm"
+                                onclick="return confirm('Pulihkan program ini ke status pending?')">
+                                ♻️ Pulihkan
+                            </button>
+                        </form>
+                        <form method="POST"
+                            action="{{ route('admin.approval.program.deleted.destroy', $log->id) }}"
+                            onsubmit="return confirm('Hapus log ini secara permanen?')">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn btn-delete btn-sm">
+                                🗑️ Hapus Log
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="5">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✅</div>
+                        <div class="empty-state-text">Tidak ada program yang dihapus</div>
+                    </div>
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+    @if($deletedLogs->hasPages())
+    <div style="padding:14px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
+        {{ $deletedLogs->withQueryString()->links() }}
+    </div>
+    @endif
+</div>
+@endif
 
 {{-- ======================== MODAL DETAIL ======================== --}}
 {{-- ══ SECTION PENDAFTARAN (muncul jika tab=pendaftaran) ══ --}}
@@ -874,11 +982,20 @@ const _statusDaftarMap = {
 function navigateTo(overrides) {
     const next = { ..._state, ...overrides };
 
+    if ('status' in overrides && !('tab' in overrides)) {
+        next.tab = 'program';
+    }
+
     // Jika buka tab pendaftaran: sesuaikan status_daftar dengan tab aktif
     if (next.tab === 'pendaftaran') {
         next.status_daftar = _statusDaftarMap[next.status] ?? 'menunggu_verifikasi';
         // tipe tidak relevan untuk pendaftaran, reset ke all
         next.tipe = 'all';
+    }
+
+    if (next.tab === 'deleted') {   // ← tambah ini
+        next.tipe = 'all';
+        next.status = 'pending';
     }
 
     // Jika balik ke tab program: pastikan tipe ada

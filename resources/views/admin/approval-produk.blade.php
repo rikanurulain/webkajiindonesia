@@ -5,6 +5,31 @@
 
 @push('styles')
 <style>
+/* ── CSV Export Button ── */
+.btn-csv-export {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1.5px solid #86efac;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+}
+.btn-csv-export:hover {
+    background: #dcfce7;
+    border-color: #4ade80;
+    color: #166534;
+}
+@media (max-width: 768px) {
+    .btn-csv-export { font-size: 11px; padding: 5px 10px; }
+}
 /* ═══════════════════════════════════════════════
    TAB BAR UTAMA
 ═══════════════════════════════════════════════ */
@@ -297,12 +322,19 @@
 ════════════════════════════════════════════════ --}}
 <div id="tab-pending" style="display:none">
     <div class="table-card">
-        <div class="table-card-header">
-            <div class="table-card-title">
-                ⏳ Pendaftaran UMKM Menunggu
-                <span class="table-card-subtitle">{{ $counts['pending'] }} pendaftaran</span>
-            </div>
-        </div>
+    <div class="table-card-header">
+    <div class="table-card-title">
+        ⏳ Pendaftaran UMKM Menunggu
+        <span class="table-card-subtitle">{{ $counts['pending'] }} pendaftaran</span>
+    </div>
+    <a href="{{ route('admin.approval.produk.export-csv', ['status' => 'pending']) }}"
+       class="btn-csv-export">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        Export CSV
+    </a>
+</div>
 
         @if($pending->isEmpty())
             <div class="empty-state">
@@ -400,12 +432,19 @@
     {{-- ── Sub-tab: Profil UMKM (TABLE VIEW) ── --}}
     <div id="subtab-profil">
         <div class="table-card">
-            <div class="table-card-header">
-                <div class="table-card-title">
-                    🏪 Data UMKM Disetujui
-                    <span class="table-card-subtitle">{{ $counts['approved'] }} UMKM aktif</span>
-                </div>
-            </div>
+        <div class="table-card-header">
+    <div class="table-card-title">
+        🏪 Data UMKM Disetujui
+        <span class="table-card-subtitle">{{ $counts['approved'] }} UMKM aktif</span>
+    </div>
+    <a href="{{ route('admin.approval.produk.export-csv', ['status' => 'approved']) }}"
+       class="btn-csv-export">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        Export CSV
+    </a>
+</div>
 
             @if($approved->isEmpty())
                 <div class="empty-state">
@@ -488,128 +527,163 @@
     </div>
 
     {{-- ── Sub-tab: Produk Item (CARD VIEW) ── --}}
-    <div id="subtab-produk" style="display:none">
+<div id="subtab-produk" style="display:none">
 
-        @if($approved->isEmpty())
-            <div class="empty-state">
-                <div class="empty-state-icon">📦</div>
-                <div class="empty-state-text">Belum ada UMKM yang disetujui.</div>
-            </div>
-        @else
-            <div class="items-grid">
-                @foreach($approved as $produk)
-                @php
-                    $items     = $produk->items ?? collect();
-                    $itemCount = $items->count();
-                    $hargaMin  = $items->min('harga');
-                    $hargaMax  = $items->max('harga');
-                @endphp
-                <div class="umkm-card">
-                    <div class="umkm-card-header">
-                        <div class="umkm-avatar">
-                            @if($produk->logo)
-                                <img src="{{ asset('storage/'.$produk->logo) }}" alt="{{ $produk->nama }}">
-                            @elseif($produk->foto_produk)
-                                <img src="{{ asset('storage/'.$produk->foto_produk) }}" alt="{{ $produk->nama }}">
-                            @else
-                                🏪
-                            @endif
-                        </div>
-                        <div style="flex:1;min-width:0">
-                            <div class="umkm-name">{{ $produk->nama }}</div>
-                            @if($produk->owner)
-                                <div class="umkm-owner">👤 {{ $produk->owner }}</div>
-                            @endif
-                            <div class="umkm-meta">
-                                @if($produk->kategori)
-                                    <span class="umkm-meta-chip">{{ $produk->kategori }}</span>
-                                @endif
-                                @if($produk->kabupaten_kota)
-                                    <span class="umkm-meta-chip">📍 {{ $produk->kabupaten_kota }}</span>
-                                @endif
-                                @if($itemCount > 0)
-                                    <span class="harga-range">
-                                        Rp {{ number_format($hargaMin, 0, ',', '.') }}
-                                        @if($hargaMin !== $hargaMax)
-                                            – {{ number_format($hargaMax, 0, ',', '.') }}
-                                        @endif
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                        <span class="badge badge-approved"><span class="badge-dot"></span>Aktif</span>
-                    </div>
+    {{-- Header dengan Export CSV --}}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+        <div style="font-size:13px;color:var(--text-muted);">
+            Menampilkan produk dari UMKM yang telah disetujui
+        </div>
+        <a href="{{ route('admin.approval.produk.export-csv', ['status' => 'approved', 'type' => 'items']) }}"
+           class="btn-csv-export">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Export CSV
+        </a>
+    </div>
 
-                    <div style="padding:14px 18px;">
-                        <div class="umkm-items-title">
-                            <span>🛍️ Produk ({{ $itemCount }})</span>
-                            @if($itemCount > 0)
-                                <button class="btn btn-ghost btn-sm" onclick="openUmkmDetailModal({{ $produk->id }})">Lihat Semua</button>
-                            @endif
-                        </div>
-
-                        @if($items->isEmpty())
-                            <div class="no-items">Belum ada produk ditambahkan</div>
+    @if($approved->isEmpty())
+        <div class="empty-state">
+            <div class="empty-state-icon">📦</div>
+            <div class="empty-state-text">Belum ada UMKM yang disetujui.</div>
+        </div>
+    @else
+        {{-- Grid Cards --}}
+        <div class="items-grid" id="produk-cards-grid">
+            @foreach($approved as $produk)
+            @php
+                $items     = $produk->items ?? collect();
+                $itemCount = $items->count();
+                $hargaMin  = $items->min('harga');
+                $hargaMax  = $items->max('harga');
+            @endphp
+            <div class="umkm-card produk-card-item" style="display:none">
+                <div class="umkm-card-header">
+                    <div class="umkm-avatar">
+                        @if($produk->logo)
+                            <img src="{{ asset('storage/'.$produk->logo) }}" alt="{{ $produk->nama }}">
+                        @elseif($produk->foto_produk)
+                            <img src="{{ asset('storage/'.$produk->foto_produk) }}" alt="{{ $produk->nama }}">
                         @else
-                            <div class="items-scroll">
-                                @foreach($items as $item)
-                                <div class="item-row">
-                                    <div class="item-thumb">
-                                        @if($item->foto)
-                                            <img src="{{ asset('storage/'.$item->foto) }}" alt="{{ $item->nama }}">
-                                        @else 📦 @endif
-                                    </div>
-                                    <div style="flex:1;min-width:0">
-                                        <div class="item-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $item->nama }}</div>
-                                        <div class="item-price">{{ $item->harga_format }}</div>
-                                    </div>
-                                    <form method="POST"
-                                          action="{{ route('admin.approval.umkm.item.destroy', [$produk->id, $item->id]) }}"
-                                          onsubmit="return confirm('Hapus produk \"{{ addslashes($item->nama) }}\"?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="item-del-btn" title="Hapus produk">
-                                            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                                <path d="M18 6L6 18M6 6l12 12"/>
-                                            </svg>
-                                        </button>
-                                    </form>
-                                </div>
-                                @endforeach
-                            </div>
-                            @if($itemCount > 2)
-                                <div style="font-size:10px;color:var(--text-muted);text-align:center;padding:4px 0 2px;display:flex;align-items:center;justify-content:center;gap:4px">
-                                    <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M19 9l-7 7-7-7"/></svg>
-                                    scroll untuk {{ $itemCount - 2 }} produk lainnya
-                                </div>
+                            🏪
+                        @endif
+                    </div>
+                    <div style="flex:1;min-width:0">
+                        <div class="umkm-name">{{ $produk->nama }}</div>
+                        @if($produk->owner)
+                            <div class="umkm-owner">👤 {{ $produk->owner }}</div>
+                        @endif
+                        <div class="umkm-meta">
+                            @if($produk->kategori)
+                                <span class="umkm-meta-chip">{{ $produk->kategori }}</span>
                             @endif
+                            @if($produk->kabupaten_kota)
+                                <span class="umkm-meta-chip">📍 {{ $produk->kabupaten_kota }}</span>
+                            @endif
+                            @if($itemCount > 0)
+                                <span class="harga-range">
+                                    Rp {{ number_format($hargaMin, 0, ',', '.') }}
+                                    @if($hargaMin !== $hargaMax)
+                                        – {{ number_format($hargaMax, 0, ',', '.') }}
+                                    @endif
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <span class="badge badge-approved"><span class="badge-dot"></span>Aktif</span>
+                </div>
+
+                <div style="padding:14px 18px;">
+                    <div class="umkm-items-title">
+                        <span>🛍️ Produk ({{ $itemCount }})</span>
+                        @if($itemCount > 0)
+                            <button class="btn btn-ghost btn-sm" onclick="openUmkmDetailModal({{ $produk->id }})">Lihat Semua</button>
                         @endif
                     </div>
 
-                    <div class="umkm-card-footer">
-                        <button class="btn btn-ghost btn-sm" onclick="openUmkmDetailModal({{ $produk->id }})" style="flex:1;justify-content:center">
-                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0"/>
-                                <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                            </svg>
-                            Detail Produk
-                        </button>
-                        <form method="POST"
-                              action="{{ route('admin.approval.umkm.destroy', $produk) }}"
-                              onsubmit="return confirm('Hapus UMKM \"{{ addslashes($produk->nama) }}\" beserta semua produknya?')">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm">
-                                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 6V4h6v2M4 7h16"/>
-                                </svg>
-                                Hapus UMKM
-                            </button>
-                        </form>
-                    </div>
+                    @if($items->isEmpty())
+                        <div class="no-items">Belum ada produk ditambahkan</div>
+                    @else
+                        <div class="items-scroll">
+                            @foreach($items as $item)
+                            <div class="item-row">
+                                <div class="item-thumb">
+                                    @if($item->foto)
+                                        <img src="{{ asset('storage/'.$item->foto) }}" alt="{{ $item->nama }}">
+                                    @else 📦 @endif
+                                </div>
+                                <div style="flex:1;min-width:0">
+                                    <div class="item-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $item->nama }}</div>
+                                    <div class="item-price">{{ $item->harga_format }}</div>
+                                </div>
+                                <form method="POST"
+                                      action="{{ route('admin.approval.umkm.item.destroy', [$produk->id, $item->id]) }}"
+                                      onsubmit="return confirm('Hapus produk \"{{ addslashes($item->nama) }}\"?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="item-del-btn" title="Hapus produk">
+                                        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                            <path d="M18 6L6 18M6 6l12 12"/>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                            @endforeach
+                        </div>
+                        @if($itemCount > 2)
+                            <div style="font-size:10px;color:var(--text-muted);text-align:center;padding:4px 0 2px;display:flex;align-items:center;justify-content:center;gap:4px">
+                                <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M19 9l-7 7-7-7"/></svg>
+                                scroll untuk {{ $itemCount - 2 }} produk lainnya
+                            </div>
+                        @endif
+                    @endif
                 </div>
-                @endforeach
+
+                <div class="umkm-card-footer">
+                    <button class="btn btn-ghost btn-sm" onclick="openUmkmDetailModal({{ $produk->id }})" style="flex:1;justify-content:center">
+                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0"/>
+                            <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                        Detail Produk
+                    </button>
+                    <form method="POST"
+                          action="{{ route('admin.approval.umkm.destroy', $produk) }}"
+                          onsubmit="return confirm('Hapus UMKM \"{{ addslashes($produk->nama) }}\" beserta semua produknya?')">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 6V4h6v2M4 7h16"/>
+                            </svg>
+                            Hapus UMKM
+                        </button>
+                    </form>
+                </div>
             </div>
-        @endif
-    </div>
+            @endforeach
+        </div>
+
+        {{-- Pagination Controls --}}
+        <div id="produk-pagination" style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;flex-wrap:wrap;gap:10px;">
+            <div style="font-size:12px;color:var(--text-muted);" id="produk-page-info"></div>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <button class="btn btn-ghost btn-sm" id="btn-produk-prev" onclick="changeProdukPage(-1)" disabled>
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    Prev
+                </button>
+                <div id="produk-page-dots" style="display:flex;gap:4px;"></div>
+                <button class="btn btn-ghost btn-sm" id="btn-produk-next" onclick="changeProdukPage(1)">
+                    Next
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    @endif
+</div>
 
 </div>
 
@@ -618,12 +692,19 @@
 ════════════════════════════════════════════════ --}}
 <div id="tab-rejected" style="display:none">
     <div class="table-card">
-        <div class="table-card-header">
-            <div class="table-card-title">
-                ✕ Pendaftaran UMKM Ditolak
-                <span class="table-card-subtitle">{{ $counts['rejected'] }} ditolak</span>
-            </div>
-        </div>
+    <div class="table-card-header">
+    <div class="table-card-title">
+        ✕ Pendaftaran UMKM Ditolak
+        <span class="table-card-subtitle">{{ $counts['rejected'] }} ditolak</span>
+    </div>
+    <a href="{{ route('admin.approval.produk.export-csv', ['status' => 'rejected']) }}"
+       class="btn-csv-export">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        Export CSV
+    </a>
+</div>
 
         @if($rejected->isEmpty())
             <div class="empty-state">
@@ -830,11 +911,69 @@
     </div>
 </div>
 
+
 {{-- ════════════ JAVASCRIPT ════════════ --}}
 <script>
 const produkData   = @json($pending->merge($approved)->merge($rejected)->keyBy('id'));
 const approvedData = @json($approved->keyBy('id'));
 const csrfToken    = '{{ csrf_token() }}';
+
+// ── Produk Item Pagination ──
+const PRODUK_PER_PAGE = 6;
+let produkCurrentPage = 1;
+
+function initProdukPagination() {
+    const cards = document.querySelectorAll('.produk-card-item');
+    if (!cards.length) return;
+    renderProdukPage(1, cards, Math.ceil(cards.length / PRODUK_PER_PAGE));
+}
+
+function renderProdukPage(page, cards, totalPages) {
+    if (!cards)      cards      = document.querySelectorAll('.produk-card-item');
+    if (!totalPages) totalPages = Math.ceil(cards.length / PRODUK_PER_PAGE);
+
+    produkCurrentPage = page;
+    const start = (page - 1) * PRODUK_PER_PAGE;
+    const end   = start + PRODUK_PER_PAGE;
+
+    cards.forEach((card, i) => {
+        const show = i >= start && i < end;
+        card.style.display       = show ? 'flex' : 'none';
+        card.style.flexDirection = show ? 'column' : '';
+    });
+
+    const infoEl = document.getElementById('produk-page-info');
+    if (infoEl) infoEl.textContent = `Menampilkan ${start + 1}–${Math.min(end, cards.length)} dari ${cards.length} UMKM`;
+
+    const prevBtn = document.getElementById('btn-produk-prev');
+    const nextBtn = document.getElementById('btn-produk-next');
+    if (prevBtn) prevBtn.disabled = page <= 1;
+    if (nextBtn) nextBtn.disabled = page >= totalPages;
+
+    const dotsEl = document.getElementById('produk-page-dots');
+    if (dotsEl) {
+        dotsEl.innerHTML = '';
+        for (let i = 1; i <= totalPages; i++) {
+            const dot = document.createElement('button');
+            dot.style.cssText = `
+                width:28px;height:28px;border-radius:8px;border:1.5px solid var(--border);
+                background:${i === page ? 'var(--accent)' : 'var(--surface)'};
+                color:${i === page ? '#fff' : 'var(--text-muted)'};
+                font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;
+            `;
+            dot.textContent = i;
+            dot.onclick = () => renderProdukPage(i);
+            dotsEl.appendChild(dot);
+        }
+    }
+}
+
+function changeProdukPage(dir) {
+    const cards      = document.querySelectorAll('.produk-card-item');
+    const totalPages = Math.ceil(cards.length / PRODUK_PER_PAGE);
+    const newPage    = produkCurrentPage + dir;
+    if (newPage >= 1 && newPage <= totalPages) renderProdukPage(newPage, cards, totalPages);
+}
 
 function switchTab(tab, btn) {
     ['pending','approved','rejected'].forEach(t => {
@@ -856,17 +995,26 @@ function switchSubTab(sub, btn) {
     const url = new URL(window.location);
     url.searchParams.set('subtab', sub);
     window.history.replaceState({}, '', url);
+
+    if (sub === 'produk') {
+        setTimeout(() => initProdukPagination(), 10);
+    }
 }
 
+// ── Single DOMContentLoaded ──
 document.addEventListener('DOMContentLoaded', function () {
     const params = new URLSearchParams(window.location.search);
     const tab    = params.get('tab') || 'pending';
     const subtab = params.get('subtab') || 'profil';
+
     const tabBtn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
     if (tabBtn) switchTab(tab, tabBtn);
+
     if (tab === 'approved') {
         const subBtn = document.querySelector(`.sub-tab-btn[data-subtab="${subtab}"]`);
         if (subBtn) switchSubTab(subtab, subBtn);
+        // init pagination langsung jika subtab produk
+        if (subtab === 'produk') setTimeout(() => initProdukPagination(), 50);
     }
 });
 

@@ -195,6 +195,11 @@ Route::middleware('mentor')->group(function () {
     ->name('trainer.program.restore');
 Route::post('/trainer/deleted-log/mark-read', [App\Http\Controllers\TrainerController::class, 'markDeletedLogRead'])
     ->name('trainer.deleted-log.mark-read');
+    Route::post('/trainer/deleted-event-log/mark-read', [App\Http\Controllers\TrainerController::class, 'markDeletedEventLogRead'])
+    ->name('trainer.deleted-event-log.mark-read');
+
+Route::post('/trainer/deleted-event-log/{id}/restore', [App\Http\Controllers\TrainerController::class, 'restoreEvent'])
+    ->name('trainer.deleted-event-log.restore');
 
     // =========================
 // TRAINER KURIKULUM & MATERI
@@ -221,18 +226,25 @@ Route::get('/approval/program',                    [AdminController::class, 'app
 Route::post('/approval/program/{program}/approve', [AdminController::class, 'approveProgram'])->name('approval.program.approve');
 Route::post('/approval/program/{program}/reject',  [AdminController::class, 'rejectProgram'])->name('approval.program.reject');
 Route::delete('/approval/program/{program}',       [AdminController::class, 'destroyProgram'])->name('approval.program.delete');
+Route::post('/approval/program/deleted/{id}/restore',  [AdminController::class, 'restoreProgramAdmin'])->name('approval.program.restore');
+Route::delete('/approval/program/deleted/{id}',        [AdminController::class, 'destroyDeletedLog'])->name('approval.program.deleted.destroy');
     // ── Approval Produk ──────────────────────────────────────────────
     Route::get('/approval/produk',                     [AdminController::class, 'approvalProduk'])->name('approval.produk');
     Route::post('/approval/produk/{produk}/approve',   [AdminController::class, 'approveProduk'])->name('approval.produk.approve');
     Route::post('/approval/produk/{produk}/reject',    [AdminController::class, 'rejectProduk'])->name('approval.produk.reject');
     Route::delete('/approval/produk/{produk}',         [AdminController::class, 'destroyProduk'])->name('approval.produk.destroy');
     Route::delete('/approval/produk/{produk}/destroy-umkm',        [AdminController::class, 'destroyUmkm'])->name('approval.umkm.destroy');
-Route::delete('/approval/produk/{produkId}/item/{itemId}',     [AdminController::class, 'destroyProdukItem'])->name('approval.umkm.item.destroy');
+    Route::delete('/approval/produk/{produkId}/item/{itemId}',     [AdminController::class, 'destroyProdukItem'])->name('approval.umkm.item.destroy');
+    Route::get('/approval/produk/export-csv', [AdminController::class, 'exportCsvProduk'])
+    ->name('approval.produk.export-csv');
 
-    // ── Approval Event ───────────────────────────────────────────────
-    Route::get('/approval/event',                      [AdminController::class, 'approvalEvent'])->name('approval.event');
-    Route::post('/approval/event/{event}/approve',     [AdminController::class, 'approveEvent'])->name('approval.event.approve');
-    Route::post('/approval/event/{event}/reject',      [AdminController::class, 'rejectEvent'])->name('approval.event.reject');
+  
+// ── Approval Event ───────────────────────────────────────────────
+Route::get('/approval/event',                      [AdminController::class, 'approvalEvent'])->name('approval.event');
+Route::post('/approval/event/{event}/approve',     [AdminController::class, 'approveEvent'])->name('approval.event.approve');
+Route::post('/approval/event/{event}/reject',      [AdminController::class, 'rejectEvent'])->name('approval.event.reject');
+Route::delete('/approval/event/{event}',           [AdminController::class, 'destroyEvent'])->name('approval.event.destroy');
+Route::post('/approval/event/{event}/restore',     [AdminController::class, 'restoreEventAdmin'])->name('approval.event.restore'); 
 
     // ── Approval Trainer ─────────────────────────────────────────────
     Route::get('/approval/trainer',                        [AdminController::class, 'approvalTrainer'])->name('approval.trainer');

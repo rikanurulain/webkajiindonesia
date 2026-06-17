@@ -26,13 +26,14 @@ class TrainerController extends Controller
     $user    = Auth::user();
     $trainer = \App\Models\Trainer::where('user_id', $user->id)->first();
 
-    $pelatihanList = Program::where('trainer_id', $user->id)
+    $pelatihanList = Program::withTrashed()
+    ->where('trainer_id', $user->id)
     ->latest()
     ->get();
 
     $eventList = Event::where('trainer_id', $user->id)
-        ->latest()
-        ->get();
+    ->latest()
+    ->get();
 
     $totalKurikulum        = $pelatihanList->where('tipe', 'kurikulum')->count();
     $totalModul            = $pelatihanList->where('tipe', 'modul')->count();
@@ -42,15 +43,27 @@ class TrainerController extends Controller
     $pendingTotal          = $pendingPelatihanCount + $pendingEventCount;
 
     $recentSubmissions = $pelatihanList
-        ->concat(
-            $eventList->map(fn($item) => tap(clone $item, fn($i) => $i->tipe = 'event'))
-        )
-        ->sortByDesc('created_at')
-        ->take(5);
+    ->concat(
+        $eventList->map(function($item) {
+            $clone = clone $item;
+            $clone->tipe = 'event';
+            // Normalisasi agar blade bisa cek !empty($item->deleted_at)
+            if (!empty($clone->deleted_by_admin_at)) {
+                $clone->deleted_at = $clone->deleted_by_admin_at;
+            }
+            return $clone;
+        })
+    )
+    ->sortByDesc('created_at')
+    ->take(5);
 
     $totalUlasan = \App\Models\TrainerUlasan::where('trainer_id', $user->id)->count();
 
     $deletedLogs = \App\Models\DeletedProgramLog::where('trainer_user_id', $user->id)
+        ->orderByDesc('deleted_at_by_admin')
+        ->get();
+
+        $deletedEventLogs = \App\Models\DeletedEventLog::where('trainer_user_id', $user->id)
         ->orderByDesc('deleted_at_by_admin')
         ->get();
 
@@ -70,7 +83,9 @@ class TrainerController extends Controller
         'trainer',
         'totalUlasan',
         'deletedLogs',
+        'deletedEventLogs', 
         'activePage',
+
     ));
 }
 
@@ -238,22 +253,27 @@ if ($request->materi_type === 'pdf' && $request->hasFile('materi_pdf')) {
     // ═══════════════════════════════════════════════════════════════
 
     public function destroyProgram($id)
-    {
-        $program = Program::where('id', $id)
-            ->where('trainer_id', Auth::id())
-            ->firstOrFail();
+{
+    $program = Program::where('id', $id)
+        ->where('trainer_id', Auth::id())
+        ->firstOrFail();
 
-        if ($program->status === 'approved') {
-            return back()->with('error', 'Program yang sudah disetujui tidak dapat dihapus.');
-        }
-
-        if ($program->gambar) Storage::disk('public')->delete($program->gambar);
-        $program->delete();
-
-        return redirect()->route('trainer.dashboard')
-            ->with('success', 'Program berhasil dihapus.')
-            ->with('active_page', 'program');
+    if ($program->status === 'approved') {
+        return back()->with('error', 'Program yang sudah disetujui tidak dapat dihapus.');
     }
+
+    if ($program->gambar) Storage::disk('public')->delete($program->gambar);
+    
+    // Tandai bahwa ini dihapus oleh trainer sendiri
+    $program->deleted_by = Auth::id(); // ← tambah ini
+    $program->save();
+    
+    $program->delete();
+
+    return redirect()->route('trainer.dashboard')
+        ->with('success', 'Program berhasil dihapus.')
+        ->with('active_page', 'program');
+}
 
     // ═══════════════════════════════════════════════════════════════
     // EVENT — STORE
@@ -388,7 +408,8 @@ if ($request->materi_type === 'pdf' && $request->hasFile('materi_pdf')) {
 
 public function getPeserta($id)
 {
-    $program = Program::where('id', $id)
+    $program = Program::withTrashed()  // ← tambah ini
+        ->where('id', $id)
         ->where('trainer_id', auth()->id())
         ->firstOrFail();
 
@@ -419,7 +440,8 @@ public function getPeserta($id)
 
 public function exportPesertaCsv($id)
 {
-    $program = Program::where('id', $id)
+    $program = Program::withTrashed()  // ← tambah ini juga
+        ->where('id', $id)
         ->where('trainer_id', auth()->id())
         ->firstOrFail();
 
@@ -597,6 +619,43 @@ public function markDeletedLogRead()
 
     return response()->json(['success' => true]);
 }
+
+// DELETED EVENT LOG — MARK AS READ
+// ═══════════════════════════════════════════════════════════════
+public function markDeletedEventLogRead()
+{
+    \App\Models\DeletedEventLog::where('trainer_user_id', auth()->id())
+        ->where('is_read', false)
+        ->update(['is_read' => true]);
+
+    return response()->json(['success' => true]);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DELETED EVENT LOG — RESTORE
+// ═══════════════════════════════════════════════════════════════
+public function restoreEvent($id)
+{
+    $log = \App\Models\DeletedEventLog::where('id', $id)
+        ->where('trainer_user_id', Auth::id())
+        ->firstOrFail();
+
+    // Buat ulang event sebagai pending
+    \App\Models\Event::create([
+        'trainer_id' => Auth::id(),
+        'judul'      => $log->event_title,
+        'tanggal'    => $log->event_tanggal ?? now()->addDays(7)->toDateString(),
+        'deskripsi'  => 'Event dipulihkan. Mohon lengkapi data kembali.',
+        'status'     => 'pending',
+    ]);
+
+    $log->delete();
+
+    return redirect()->route('trainer.dashboard')
+        ->with('success', 'Event "' . $log->event_title . '" berhasil dipulihkan.')
+        ->with('active_page', 'event');
+}
+
     // ═══════════════════════════════════════════════════════════════
     // HELPER PRIVATE
     // ═══════════════════════════════════════════════════════════════

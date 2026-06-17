@@ -27,12 +27,16 @@ class Event extends Model
         'approved_by',
         'rejected_at',
         'rejected_by',
+        'deleted_by_admin_at',
+        'deleted_by_admin_id',
+        'deleted_reason',
     ];
 
     protected $casts = [
         'tanggal'      => 'date',
         'approved_at'  => 'datetime',
         'rejected_at'  => 'datetime',
+        'deleted_by_admin_at' => 'datetime',
     ];
 
     // ── Relasi ────────────────────────────────────────────────────
@@ -40,6 +44,11 @@ class Event extends Model
     {
         return $this->belongsTo(User::class, 'trainer_id');
     }
+
+    public function deletedByAdmin()
+{
+    return $this->belongsTo(User::class, 'deleted_by_admin_id');
+}
 
     // ── Accessor: biaya tampil "Gratis" jika kosong / 0 ──────────
     public function getBiayaLabelAttribute(): string

@@ -683,6 +683,23 @@
         <?php endif; ?>
     </div>
 
+    
+<?php $unreadDeletedEvent = isset($deletedEventLogs) ? $deletedEventLogs->where('is_read', false)->count() : 0; ?>
+<div class="nav-item <?php echo e(isset($activePage) && $activePage === 'deleted-event' ? 'active' : ''); ?>"
+     onclick="showPage('deleted-event')" id="nav-deleted-event">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+        <line x1="9" y1="16" x2="9.01" y2="16"/>
+    </svg>
+    Event Dihapus
+    <?php if($unreadDeletedEvent > 0): ?>
+        <span class="nav-badge" id="deleted-event-badge"><?php echo e($unreadDeletedEvent); ?></span>
+    <?php endif; ?>
+</div>
+
 </div>
 
 <div class="nav-section">
@@ -718,7 +735,7 @@
     <form id="logout-form" action="<?php echo e(route('logout')); ?>" method="POST" style="display:none">
         <?php echo csrf_field(); ?>
     </form>
-</div><form id="logout-form" action="<?php echo e(route('logout')); ?>" method="POST" style="display:none"><?php echo csrf_field(); ?></form>
+</div>
         </div>
         <div class="sidebar-user">
             <div class="user-card" onclick="showPage('profil')">
@@ -821,6 +838,57 @@
 </div>
 <?php endif; ?>
 
+<?php if(isset($deletedEventLogs) && $deletedEventLogs->where('is_read', false)->count() > 0): ?>
+<div id="notif-deleted-event-wrap"
+    style="background:#f0f4ff;border:1.5px solid #bfdbfe;border-radius:14px;
+           padding:16px 20px;margin-bottom:20px;box-shadow:0 2px 12px rgba(69,123,157,.08)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:36px;height:36px;border-radius:10px;background:#dbeafe;
+                        display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">
+                🗓️
+            </div>
+            <div>
+                <div style="font-size:14px;font-weight:700;color:#1d4ed8">
+                    Event Dihapus oleh Admin
+                </div>
+                <div style="font-size:12px;color:#1e40af;margin-top:1px">
+                    <?php echo e($deletedEventLogs->where('is_read', false)->count()); ?> event berikut telah dihapus
+                </div>
+            </div>
+        </div>
+        <button onclick="tandaiEventSudahDibaca()"
+            style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;
+                   background:#1d4ed8;color:#fff;border:none;cursor:pointer;font-family:inherit;
+                   transition:background .15s;flex-shrink:0"
+            onmouseover="this.style.background='#1e40af'"
+            onmouseout="this.style.background='#1d4ed8'">
+            ✓ Tandai Sudah Dibaca
+        </button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+        <?php $__currentLoopData = $deletedEventLogs->where('is_read', false); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $log): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;
+                    background:#fff;border:1px solid #bfdbfe;border-radius:10px">
+            <div style="font-size:18px;flex-shrink:0">🎪</div>
+            <div style="flex:1;min-width:0">
+                <div style="font-size:13px;font-weight:700;color:#1a1a2e">
+                    <?php echo e($log->event_title); ?>
+
+                </div>
+                <div style="font-size:11px;color:#1e40af;margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                    <span style="background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe;
+                                 padding:1px 8px;border-radius:20px;font-weight:600;font-size:10px">
+                        Event
+                    </span>
+                    <span>Dihapus pada <?php echo e($log->deleted_at_by_admin->translatedFormat('d M Y, H:i')); ?> WIB</span>
+                </div>
+            </div>
+        </div>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    </div>
+</div>
+<?php endif; ?>
 
         <div class="page-section active" id="page-beranda">
             <?php if(session('success')): ?><div class="alert alert-success">✅ <?php echo e(session('success')); ?></div><?php endif; ?>
@@ -866,13 +934,17 @@
                             <td><span class="chip chip-<?php echo e($item->tipe ?? 'kurikulum'); ?>"><?php echo e(ucfirst($item->tipe ?? '-')); ?></span></td>
                             <td><?php echo e(\Carbon\Carbon::parse($item->created_at)->translatedFormat('d M Y')); ?></td>
                             <td>
-                                <?php if(($item->status ?? '') === 'approved'): ?>
-                                    <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
-                                <?php elseif(($item->status ?? '') === 'rejected'): ?>
-                                    <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
-                                <?php else: ?>
-                                    <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
-                                <?php endif; ?>
+                            <?php if(!empty($item->deleted_at)): ?>
+    <span class="badge" style="background:#f3f0ff;color:#7c3aed;border:1px solid #c4b5fd">
+        <span class="badge-dot"></span>Dihapus Admin
+    </span>
+<?php elseif(($item->status ?? '') === 'approved'): ?>
+    <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
+<?php elseif(($item->status ?? '') === 'rejected'): ?>
+    <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
+<?php else: ?>
+    <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
+<?php endif; ?>
                             </td>
                         </tr>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
@@ -945,13 +1017,17 @@
                             </div>
                         </div>
                         <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
-                            <?php if(($k->status ?? '') === 'approved'): ?>
-                                <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
-                            <?php elseif(($k->status ?? '') === 'rejected'): ?>
-                                <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
-                            <?php else: ?>
-                                <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
-                            <?php endif; ?>
+                        <?php if(!empty($k->deleted_at)): ?>
+    <span class="badge" style="background:#f3f0ff;color:#7c3aed;border:1px solid #c4b5fd">
+        <span class="badge-dot"></span>Dihapus Admin
+    </span>
+<?php elseif(($k->status ?? '') === 'approved'): ?>
+    <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
+<?php elseif(($k->status ?? '') === 'rejected'): ?>
+    <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
+<?php else: ?>
+    <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
+<?php endif; ?>
 
                             <?php
                             $jumlahPendaftar = \App\Models\PendaftaranProgram::where('program_id', $k->id)->count();
@@ -1155,28 +1231,39 @@
                                 <td style="font-size:13px;"><?php echo e(\Carbon\Carbon::parse($event->tanggal)->translatedFormat('d M Y')); ?></td>
                                 <td style="font-size:13px;"><?php echo e($event->kapasitas ?? '-'); ?></td>
                                 <td>
-                                    <?php if($event->status === 'approved'): ?> <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
-                                    <?php elseif($event->status === 'rejected'): ?> <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
-                                    <?php else: ?> <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
-                                    <?php endif; ?>
+                                <?php if(!empty($event->deleted_by_admin_at)): ?>
+    <span class="badge" style="background:#f3f0ff;color:#7c3aed;border:1px solid #c4b5fd">
+        <span class="badge-dot"></span>Dihapus Admin
+    </span>
+<?php elseif($event->status === 'approved'): ?>
+    <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
+<?php elseif($event->status === 'rejected'): ?>
+    <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
+<?php else: ?>
+    <span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>
+<?php endif; ?>
                                 </td>
                                 <td>
-                                    <div style="display:flex;gap:6px;align-items:center;">
-                                        <button class="btn-icon <?php echo e($event->status === 'rejected' ? 'btn-resubmit' : ''); ?>"
-                                            style="<?php echo e($event->status === 'rejected' ? 'background:#fff0ed;border-color:#e76f51;color:#e76f51;' : ''); ?>"
-                                            onclick="editEvent(<?php echo e($event->id); ?>,'<?php echo e(addslashes($event->judul ?? $event->nama)); ?>','<?php echo e($eTanggal); ?>','<?php echo e($eWaktuMulai); ?>','<?php echo e($eWaktuSelesai); ?>','<?php echo e(addslashes($event->lokasi ?? '')); ?>','<?php echo e($event->kapasitas ?? ''); ?>','<?php echo e(addslashes($event->biaya ?? '')); ?>','<?php echo e(addslashes($event->deskripsi ?? '')); ?>','<?php echo e($eGambar); ?>','<?php echo e($event->phone ?? auth()->user()->phone ?? ''); ?>')"
-                                            title="<?php echo e($event->status === 'rejected' ? 'Edit & Kirim Ulang' : 'Edit'); ?>">
-                                            <?php if($event->status === 'rejected'): ?>
-                                                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
-                                            <?php else: ?>
-                                                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                                            <?php endif; ?>
-                                        </button>
-                                        <button class="btn-icon btn-icon-danger" onclick="hapusEvent(<?php echo e($event->id); ?>)" title="Hapus">
-                                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
-                                        </button>
-                                    </div>
-                                </td>
+    <div style="display:flex;gap:6px;align-items:center;">
+        <?php if(empty($event->deleted_by_admin_at)): ?>
+            <button class="btn-icon <?php echo e($event->status === 'rejected' ? 'btn-resubmit' : ''); ?>"
+                style="<?php echo e($event->status === 'rejected' ? 'background:#fff0ed;border-color:#e76f51;color:#e76f51;' : ''); ?>"
+                onclick="editEvent(<?php echo e($event->id); ?>,'<?php echo e(addslashes($event->judul ?? $event->nama)); ?>','<?php echo e($eTanggal); ?>','<?php echo e($eWaktuMulai); ?>','<?php echo e($eWaktuSelesai); ?>','<?php echo e(addslashes($event->lokasi ?? '')); ?>','<?php echo e($event->kapasitas ?? ''); ?>','<?php echo e(addslashes($event->biaya ?? '')); ?>','<?php echo e(addslashes($event->deskripsi ?? '')); ?>','<?php echo e($eGambar); ?>','<?php echo e($event->phone ?? auth()->user()->phone ?? ''); ?>')"
+                title="<?php echo e($event->status === 'rejected' ? 'Edit & Kirim Ulang' : 'Edit'); ?>">
+                <?php if($event->status === 'rejected'): ?>
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+                <?php else: ?>
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <?php endif; ?>
+            </button>
+            <button class="btn-icon btn-icon-danger" onclick="hapusEvent(<?php echo e($event->id); ?>)" title="Hapus">
+                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+            </button>
+        <?php else: ?>
+            <span style="font-size:11px;color:#7c3aed;font-style:italic">—</span>
+        <?php endif; ?>
+    </div>
+</td>
                             </tr>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tbody>
@@ -1368,6 +1455,83 @@
         </div>
     <?php endif; ?>
 </div>
+
+
+<div class="page-section <?php echo e(isset($activePage) && $activePage === 'deleted-event' ? 'active' : ''); ?>" id="page-deleted-event">
+    <div class="section-header">
+        <div>
+            <div class="section-title">Event Dihapus Admin</div>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">
+                Event di bawah ini dihapus oleh admin. Anda bisa memulihkannya — event akan dikirim ulang sebagai pending.
+            </p>
+        </div>
+    </div>
+
+    <?php if(!isset($deletedEventLogs) || $deletedEventLogs->isEmpty()): ?>
+        <div class="empty-state">
+            <div class="empty-icon">🗑️</div>
+            <h3>Tidak ada event yang dihapus</h3>
+            <p>Semua event Anda masih aktif.</p>
+        </div>
+    <?php else: ?>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nama Event</th>
+                        <th>Tanggal Event</th>
+                        <th>Dihapus Pada</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php $__currentLoopData = $deletedEventLogs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $log): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <tr style="<?php echo e(!$log->is_read ? 'background:#f0f4ff;' : ''); ?>">
+                        <td>
+                            <div style="display:flex;align-items:center;gap:10px">
+                                <div style="font-size:20px;flex-shrink:0">🎪</div>
+                                <div>
+                                    <strong><?php echo e($log->event_title); ?></strong>
+                                    <?php if(!$log->is_read): ?>
+                                        <span class="badge" style="background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe;font-size:10px;margin-left:6px;">Baru</span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-size:13px;color:var(--text-muted);">
+                            <?php echo e($log->event_tanggal ? \Carbon\Carbon::parse($log->event_tanggal)->translatedFormat('d M Y') : '-'); ?>
+
+                        </td>
+                        <td>
+                            <?php echo e($log->deleted_at_by_admin
+                                ? $log->deleted_at_by_admin->translatedFormat('d M Y, H:i')
+                                : '-'); ?>
+
+                        </td>
+                        <td>
+                            <span class="badge badge-rejected">
+                                <span class="badge-dot"></span>Dihapus Admin
+                            </span>
+                        </td>
+                        <td>
+                            <button type="button"
+                                class="btn btn-secondary btn-sm"
+                                onclick="bukaModalPulihkanEvent(
+                                    <?php echo e($log->id); ?>,
+                                    '<?php echo e(addslashes($log->event_title)); ?>',
+                                    '<?php echo e($log->deleted_at_by_admin?->translatedFormat('d M Y, H:i')); ?>'
+                                )">
+                                ♻️ Pulihkan
+                            </button>
+                        </td>
+                    </tr>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
+</div>
         
         <div class="page-section" id="page-profil">
             <?php if(session('success')): ?><div class="alert alert-success">✅ <?php echo e(session('success')); ?></div><?php endif; ?>
@@ -1387,7 +1551,6 @@
                 </div>
                 <button class="btn" style="background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.3);margin-left:auto" onclick="openModal('modal-profil')">Edit Profil</button>
             </div>
-            <div class="profile-form-card">
             <div class="profile-form-card">
         <div class="form-row">
             <div class="form-group">
@@ -1525,10 +1688,7 @@ $sosmedCfg2 = [
         </div>
     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 </div>
-    </div>
     </div> 
-    </div>
-    </div>
     </div>
     </main>
 
@@ -2583,6 +2743,45 @@ if ($trainer && $trainer->sosmed) {
     <form id="form-hapus-event" method="POST" style="display:none"><?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?></form>
 
     <script>
+
+    /* ================================================================
+TANDAI EVENT LOG SUDAH DIBACA
+================================================================ */
+function tandaiEventSudahDibaca() {
+    fetch('/trainer/deleted-event-log/mark-read', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.success) {
+            const wrap = document.getElementById('notif-deleted-event-wrap');
+            if (wrap) {
+                wrap.style.transition = 'opacity .3s';
+                wrap.style.opacity = '0';
+                setTimeout(() => wrap.remove(), 300);
+            }
+            const badge = document.getElementById('deleted-event-badge');
+            if (badge) badge.remove();
+        }
+    })
+    .catch(() => alert('Gagal menandai. Coba lagi.'));
+}
+
+/* ================================================================
+MODAL PULIHKAN EVENT
+================================================================ */
+function bukaModalPulihkanEvent(logId, judul, tanggalHapus) {
+    document.getElementById('pulihkan-event-judul').textContent = judul;
+    document.getElementById('pulihkan-event-meta').textContent  =
+        'Event · Dihapus ' + tanggalHapus + ' WIB';
+    document.getElementById('form-pulihkan-event').action =
+        '/trainer/deleted-event-log/' + logId + '/restore';
+    openModal('modal-pulihkan-event');
+}
     /* ================================================================
     DAFTAR PESERTA PENDAFTARAN
     ================================================================ */
@@ -2850,21 +3049,7 @@ if ($trainer && $trainer->sosmed) {
         // TIDAK mengosongkan nilai
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        var grup = document.getElementById('k-alamat-group');
-        if (grup) {
-            grup.style.transition = 'max-height .3s ease, opacity .3s ease, margin-bottom .3s ease';
-            grup.style.maxHeight    = '0';
-            grup.style.overflow     = 'hidden';
-            grup.style.opacity      = '0';
-            grup.style.marginBottom = '0';
-
-            
-        }
-        <?php if($errors->any()): ?>
-        showPage('profil');
-    <?php endif; ?>
-    });
+    
 
     /* ================================================================
     SIDEBAR TOGGLE (MOBILE)
@@ -2890,13 +3075,20 @@ if ($trainer && $trainer->sosmed) {
     document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     document.getElementById('page-' + id).classList.add('active');
-    const titles = { beranda:'Dashboard Trainer', program:'Program / Pelatihan', event:'Event', ulasan:'Ulasan', deleted:'Program Dihapus', profil:'Profil Saya' }
+    const titles = {
+        beranda: 'Dashboard Trainer',
+        program: 'Program / Pelatihan',
+        event: 'Event',
+        ulasan: 'Ulasan',
+        deleted: 'Program Dihapus',
+        'deleted-event': 'Event Dihapus',
+        profil: 'Profil Saya',
+    };
     document.getElementById('page-title').textContent = titles[id] || 'Dashboard';
     document.querySelectorAll('.nav-item').forEach(item => {
         if ((item.getAttribute('onclick') || '').includes("'" + id + "'")) item.classList.add('active');
     });
 
-    // ← tambahkan langsung di sini
     if (id === 'deleted') {
         fetch('<?php echo e(route("trainer.deleted-log.mark-read")); ?>', {
             method: 'POST',
@@ -2906,6 +3098,19 @@ if ($trainer && $trainer->sosmed) {
             }
         }).then(() => {
             const badge = document.getElementById('deleted-badge');
+            if (badge) badge.remove();
+        });
+    }
+
+    if (id === 'deleted-event') {
+        fetch('/trainer/deleted-event-log/mark-read', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
+                'Content-Type': 'application/json'
+            }
+        }).then(() => {
+            const badge = document.getElementById('deleted-event-badge');
             if (badge) badge.remove();
         });
     }
@@ -3435,24 +3640,7 @@ if ($trainer && $trainer->sosmed) {
     /* ================================================================
     INIT
     ================================================================ */
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('k-absensi-mulai').addEventListener('change', updateAbsensiPreview);
-        document.getElementById('k-absensi-selesai').addEventListener('change', updateAbsensiPreview);
-        ['m-judul', 'm-deskripsi', 'm-urutan'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.addEventListener('input', updatePreview);
-        });
-        initAbsensiTimers();
-        const hash = window.location.hash.replace('#', '');
-        if (['beranda', 'program', 'event', 'ulasan', 'deleted', 'profil'].includes(hash)) {
-            showPage(hash);
-        } else {
-            <?php if(session('active_page')): ?>
-                showPage('<?php echo e(session("active_page")); ?>');
-            <?php endif; ?>
-        }
-    });
-
+    
     /* ================================================================
     PROFIL CHIPS — BIDANG KEAHLIAN
     ================================================================ */
@@ -3545,16 +3733,49 @@ if ($trainer && $trainer->sosmed) {
             : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
             <circle cx="12" cy="12" r="3"/>`;
     }
-
-    /* ================================================================
-    PASSWORD MATCH CHECKER
-    ================================================================ */
     document.addEventListener('DOMContentLoaded', function () {
-        const pw1  = document.getElementById('input-password-baru');
-        const pw2  = document.getElementById('input-password-confirm');
-        const hint = document.getElementById('password-match-hint');
-        if (!pw1 || !pw2 || !hint) return;
+    // Alamat group transition
+    var grup = document.getElementById('k-alamat-group');
+    if (grup) {
+        grup.style.transition = 'max-height .3s ease, opacity .3s ease, margin-bottom .3s ease';
+        grup.style.maxHeight    = '0';
+        grup.style.overflow     = 'hidden';
+        grup.style.opacity      = '0';
+        grup.style.marginBottom = '0';
+    }
 
+    <?php if($errors->any()): ?>
+        showPage('profil');
+    <?php endif; ?>
+
+    // Absensi listeners
+    document.getElementById('k-absensi-mulai').addEventListener('change', updateAbsensiPreview);
+    document.getElementById('k-absensi-selesai').addEventListener('change', updateAbsensiPreview);
+
+    // Modul preview listeners
+    ['m-judul', 'm-deskripsi', 'm-urutan'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', updatePreview);
+    });
+
+    // Absensi timers
+    initAbsensiTimers();
+
+    // Hash/session routing
+    const hash = window.location.hash.replace('#', '');
+    if (['beranda','program','event','ulasan','deleted','deleted-event','profil'].includes(hash)) {
+        showPage(hash);
+    } else {
+        <?php if(session('active_page')): ?>
+            showPage('<?php echo e(session("active_page")); ?>');
+        <?php endif; ?>
+    }
+
+    // Password match
+    const pw1  = document.getElementById('input-password-baru');
+    const pw2  = document.getElementById('input-password-confirm');
+    const hint = document.getElementById('password-match-hint');
+    if (pw1 && pw2 && hint) {
         function checkMatch() {
             if (!pw2.value) { hint.style.display = 'none'; return; }
             hint.style.display = 'block';
@@ -3570,8 +3791,8 @@ if ($trainer && $trainer->sosmed) {
         }
         pw1.addEventListener('input', checkMatch);
         pw2.addEventListener('input', checkMatch);
-    });
-
+    }
+});
     /* ================================================================
     PROFIL FOTO PREVIEW
     ================================================================ */
@@ -3644,6 +3865,9 @@ function tandaiSudahDibaca() {
                 setTimeout(() => wrap.remove(), 300);
             }
         }
+
+        const badge = document.getElementById('deleted-badge');
+    if (badge) badge.remove();
     })
     .catch(() => alert('Gagal menandai. Coba lagi.'));
 }
@@ -3716,6 +3940,63 @@ function bukaModalPulihkan(logId, judul, tipe, tanggalHapus) {
                 <button type="submit" class="btn btn-primary"
                         style="flex:1;justify-content:center;background:#7c3aed">
                     ♻️ Ya, Pulihkan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div class="modal-overlay" id="modal-pulihkan-event">
+    <div class="modal" style="width:460px;text-align:center;padding:36px 32px">
+        <div style="width:68px;height:68px;border-radius:20px;background:#dbeafe;
+                    display:flex;align-items:center;justify-content:center;
+                    font-size:30px;margin:0 auto 18px;border:2px solid #bfdbfe">
+            ♻️
+        </div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;
+                    color:var(--text);margin-bottom:8px">
+            Pulihkan Event?
+        </div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:22px;line-height:1.7">
+            Event akan dikirim ulang ke admin sebagai
+            <strong style="color:var(--warning)">pending</strong>
+            dan perlu disetujui kembali sebelum aktif.
+        </p>
+
+        <div style="background:#faf8f5;border:1.5px solid #e8e0d6;border-radius:14px;
+                    padding:14px 18px;margin-bottom:24px;text-align:left">
+            <div style="font-size:10px;font-weight:700;color:var(--text-muted);
+                        text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px">
+                Detail Event
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+                <div style="width:40px;height:40px;border-radius:10px;background:#dbeafe;
+                            display:flex;align-items:center;justify-content:center;
+                            font-size:20px;flex-shrink:0;border:1px solid #bfdbfe">
+                    🎪
+                </div>
+                <div style="min-width:0;flex:1">
+                    <div style="font-size:14px;font-weight:700;color:var(--text);
+                                white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
+                         id="pulihkan-event-judul">–</div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:3px"
+                         id="pulihkan-event-meta">–</div>
+                </div>
+            </div>
+        </div>
+
+        <form id="form-pulihkan-event" method="POST">
+            <?php echo csrf_field(); ?>
+            <div style="display:flex;gap:10px">
+                <button type="button" class="btn btn-ghost"
+                        onclick="closeModal('modal-pulihkan-event')"
+                        style="flex:1;justify-content:center">
+                    Batal
+                </button>
+                <button type="submit" class="btn btn-secondary"
+                        style="flex:1;justify-content:center">
+                    ♻️ Ya, Pulihkan Event
                 </button>
             </div>
         </form>

@@ -6,6 +6,7 @@ use App\Models\Produk;
 use App\Models\Program;
 use App\Models\User;
 use App\Models\Mentor;
+use App\Models\DeletedEventLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 class AdminController extends Controller
@@ -99,58 +100,83 @@ class AdminController extends Controller
     // APPROVAL PROGRAM (kurikulum + modul)
     // ═════════════════════════════════════════════════════════════════════
     public function approvalProgram(Request $request)
+    {
+        $status = $request->get('status', 'pending');
+        $tipe   = $request->get('tipe', 'all');
+    
+        // Tab dihapus
+        $deletedLogs = \App\Models\DeletedProgramLog::latest('deleted_at_by_admin')
+    ->paginate(15, ['*'], 'deleted_page')
+    ->withQueryString();
+    
+        $programs = Program::with('trainer')
+            ->when($status !== 'all', fn($q) => $q->where('status', $status))
+            ->when($tipe   !== 'all', fn($q) => $q->where('tipe', $tipe))
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+    
+        $counts = [
+            'pending'  => Program::where('status', 'pending')->count(),
+            'approved' => Program::where('status', 'approved')->count(),
+            'rejected' => Program::where('status', 'rejected')->count(),
+            'deleted'  => \App\Models\DeletedProgramLog::count(),  // ← tambah
+        ];
+    
+        $tipeBase = $status !== 'all'
+            ? Program::where('status', $status)
+            : Program::query();
+    
+        $countTipe = [
+            'all'       => (clone $tipeBase)->count(),
+            'kurikulum' => (clone $tipeBase)->where('tipe', 'kurikulum')->count(),
+            'modul'     => (clone $tipeBase)->where('tipe', 'modul')->count(),
+        ];
+    
+        $statusDaftar = $request->get('status_daftar',
+            $request->get('tab') === 'pendaftaran'
+                ? ($status === 'approved' ? 'diterima' : ($status === 'rejected' ? 'ditolak' : 'menunggu_verifikasi'))
+                : 'menunggu_verifikasi'
+        );
+    
+        $pendaftarans = \App\Models\PendaftaranProgram::with(['user', 'program'])
+            ->when($statusDaftar !== 'all', fn($q) => $q->where('status', $statusDaftar))
+            ->latest()
+            ->paginate(20, ['*'], 'daftar_page')
+            ->withQueryString();
+    
+        $countsDaftar = [
+            'menunggu_verifikasi' => \App\Models\PendaftaranProgram::where('status', 'menunggu_verifikasi')->count(),
+            'diterima'            => \App\Models\PendaftaranProgram::where('status', 'diterima')->count(),
+            'ditolak'             => \App\Models\PendaftaranProgram::where('status', 'ditolak')->count(),
+        ];
+    
+        return view('admin.approval-program', compact(
+            'programs', 'counts', 'countTipe', 'status', 'tipe',
+            'pendaftarans', 'countsDaftar', 'statusDaftar',
+            'deletedLogs'  // ← tambah
+        ));
+    }
+
+    public function restoreProgramAdmin($id)
 {
-    $status = $request->get('status', 'pending');
-    $tipe   = $request->get('tipe', 'all');
+    $log = \App\Models\DeletedProgramLog::findOrFail($id);
 
-    $programs = Program::with('trainer')
-        ->when($status !== 'all', fn($q) => $q->where('status', $status))
-        ->when($tipe   !== 'all', fn($q) => $q->where('tipe', $tipe))
-        ->latest()
-        ->paginate(15)
-        ->withQueryString();
+    $program = Program::withTrashed()->find($log->program_id);
 
-    $counts = [
-        'pending'  => Program::where('status', 'pending')->count(),
-        'approved' => Program::where('status', 'approved')->count(),
-        'rejected' => Program::where('status', 'rejected')->count(),
-    ];
+    if ($program) {
+        $program->restore();
+        $program->update([
+            'status'        => 'pending',
+            'catatan_admin' => null,
+            'deleted_by'    => null,
+        ]);
+    }
 
-    $tipeBase = $status !== 'all'
-        ? Program::where('status', $status)
-        : Program::query();
+    $judul = $log->program_title;
+    $log->delete();
 
-    $countTipe = [
-        'all'       => (clone $tipeBase)->count(),
-        'kurikulum' => (clone $tipeBase)->where('tipe', 'kurikulum')->count(),
-        'modul'     => (clone $tipeBase)->where('tipe', 'modul')->count(),
-    ];
-
-    // ── Tambahan untuk tab pendaftaran ──────────────────────────────
-    // Di method approvalProgram, ganti baris $statusDaftar
-$statusDaftar = $request->get('status_daftar',
-$request->get('tab') === 'pendaftaran'
-    ? ($status === 'approved' ? 'diterima' : ($status === 'rejected' ? 'ditolak' : 'menunggu_verifikasi'))
-    : 'menunggu_verifikasi'
-);
-
-    $pendaftarans = \App\Models\PendaftaranProgram::with(['user', 'program'])
-        ->when($statusDaftar !== 'all', fn($q) => $q->where('status', $statusDaftar))
-        ->latest()
-        ->paginate(20, ['*'], 'daftar_page')
-        ->withQueryString();
-
-    $countsDaftar = [
-        'menunggu_verifikasi' => \App\Models\PendaftaranProgram::where('status', 'menunggu_verifikasi')->count(),
-        'diterima'            => \App\Models\PendaftaranProgram::where('status', 'diterima')->count(),
-        'ditolak'             => \App\Models\PendaftaranProgram::where('status', 'ditolak')->count(),
-    ];
-    // ────────────────────────────────────────────────────────────────
-
-    return view('admin.approval-program', compact(
-        'programs', 'counts', 'countTipe', 'status', 'tipe',
-        'pendaftarans', 'countsDaftar', 'statusDaftar'  // ← pastikan ini ada
-    ));
+    return back()->with('success', "Program \"{$judul}\" berhasil dipulihkan.");
 }
     public function detailProgram(Program $program)
     {
@@ -405,6 +431,54 @@ public function unsuspendPengguna(Request $request, User $user)
     ));
 }
 
+public function exportCsvProduk(Request $request)
+{
+    $status = $request->query('status', 'pending');
+    $type   = $request->query('type', 'profil');
+
+    if ($type === 'items') {
+        // Export semua produk item dari UMKM approved
+        $produks  = Produk::with('produkItems')->where('status', $status)->get();
+        $filename = "produk-items-{$status}-" . now()->format('Ymd-His') . '.csv';
+
+        return response()->streamDownload(function () use ($produks) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['ID Item', 'Nama Item', 'UMKM', 'Kategori', 'Harga', 'Stok', 'Satuan']);
+            foreach ($produks as $p) {
+                foreach ($p->produkItems as $item) {
+                    fputcsv($file, [
+                        $item->id,
+                        $item->nama,
+                        $p->nama,
+                        $item->kategori ?? '-',
+                        $item->harga,
+                        $item->stok ?? '-',
+                        $item->satuan ?? '-',
+                    ]);
+                }
+            }
+            fclose($file);
+        }, $filename, ['Content-Type' => 'text/csv']);
+    }
+
+    // Default: export profil UMKM
+    $produks  = Produk::where('status', $status)->get();
+    $filename = "umkm-{$status}-" . now()->format('Ymd-His') . '.csv';
+
+    return response()->streamDownload(function () use ($produks) {
+        $file = fopen('php://output', 'w');
+        fputcsv($file, ['ID', 'Nama Usaha', 'Pemilik', 'Kategori', 'NIB', 'Kontak', 'Provinsi', 'Kab/Kota', 'Status', 'Didaftarkan']);
+        foreach ($produks as $p) {
+            fputcsv($file, [
+                $p->id, $p->nama, $p->owner, $p->kategori,
+                $p->nib, $p->kontak, $p->provinsi, $p->kabupaten_kota,
+                $p->status, $p->created_at?->format('d/m/Y'),
+            ]);
+        }
+        fclose($file);
+    }, $filename, ['Content-Type' => 'text/csv']);
+}
+
     
     public function detailProduk(Produk $produk)
     {
@@ -479,14 +553,36 @@ public function rejectProduk(Request $request, Produk $produk)
     // APPROVAL EVENT — (diperbarui dari AdminEventController)
     // ═════════════════════════════════════════════════════════════════════
     public function approvalEvent(Request $request)
-    {
-        $status = $request->get('status', 'pending');
-        $events = Event::with('trainer')
-            ->where('status', $status)
-            ->latest()
+{
+    $status = $request->get('status', 'pending');
+
+    // Query base — exclude yang dihapus admin (kecuali tab deleted)
+    $query = Event::with(['trainer', 'deletedByAdmin'])
+        ->orderBy('created_at', 'desc');
+
+    if ($status === 'deleted') {
+        // Hanya tampilkan yang dihapus admin
+        $events = (clone $query)
+            ->whereNotNull('deleted_by_admin_at')
             ->get();
-        return view('admin.approval-event', compact('events', 'status'));
+    } else {
+        // Tab normal: exclude yang dihapus admin
+        $events = (clone $query)
+            ->whereNull('deleted_by_admin_at')
+            ->where('status', $status)
+            ->get();
     }
+
+    // Count per tab (exclude yang dihapus admin untuk tab normal)
+    $counts = [
+        'pending'  => Event::whereNull('deleted_by_admin_at')->where('status', 'pending')->count(),
+        'approved' => Event::whereNull('deleted_by_admin_at')->where('status', 'approved')->count(),
+        'rejected' => Event::whereNull('deleted_by_admin_at')->where('status', 'rejected')->count(),
+        'deleted'  => Event::whereNotNull('deleted_by_admin_at')->count(),
+    ];
+
+    return view('admin.approval-event', compact('events', 'status', 'counts'));
+}
     public function detailEvent(Event $event)
     {
         return response()->json($event->load('trainer'));
@@ -520,6 +616,49 @@ public function rejectProduk(Request $request, Produk $produk)
         ]);
         return back()->with('success', 'Event "' . $event->judul . '" ditolak dengan catatan.');
     }
+
+    public function destroyEvent(Request $request, $id)
+{
+    $event = Event::findOrFail($id);
+
+    // Catat ke deleted_event_logs agar trainer bisa lihat & pulihkan
+    \App\Models\DeletedEventLog::create([
+        'trainer_user_id'     => $event->trainer_id,
+        'event_title'         => $event->judul ?? $event->nama,
+        'event_tanggal'       => $event->tanggal,
+        'deleted_at_by_admin' => now(),
+        'is_read'             => false,
+    ]);
+
+    // Tandai sebagai dihapus admin — JANGAN delete dari DB
+    $event->update([
+        'deleted_by_admin_at' => now(),
+        'deleted_by_admin'    => Auth::id(),
+        'deleted_reason'      => $request->input('reason'),
+    ]);
+
+    $judul = $event->judul ?? $event->nama;
+
+    return back()->with('success', "Event \"{$judul}\" berhasil dihapus.");
+}
+
+public function restoreEventAdmin($id)
+{
+    $event = Event::whereNotNull('deleted_by_admin_at')->findOrFail($id);
+
+    $event->update([
+        'deleted_by_admin_at' => null,
+        'deleted_by_admin'    => null,
+        'deleted_reason'      => null,
+    ]);
+
+    // Hapus log agar tidak muncul lagi di trainer dashboard
+    \App\Models\DeletedEventLog::where('event_title', $event->judul)
+        ->where('trainer_user_id', $event->trainer_id)
+        ->delete();
+
+    return back()->with('success', 'Event "' . ($event->judul ?? $event->nama) . '" berhasil dipulihkan.');
+}
 
     // ═════════════════════════════════════════════════════════════════════
     // MANAJEMEN PENGGUNA
