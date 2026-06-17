@@ -315,6 +315,12 @@
             <span class="count-pill" style="background:#9ca3af">{{ $counts['rejected'] }}</span>
         @endif
     </button>
+    <button class="tab-btn" data-tab="deleted" onclick="switchTab('deleted',this)">
+        🗑️ Dihapus
+        @if(($counts['deleted'] ?? 0) > 0)
+            <span class="count-pill" style="background:#ef4444">{{ $counts['deleted'] }}</span>
+        @endif
+    </button>
 </div>
 
 {{-- ════════════════════════════════════════════════
@@ -783,6 +789,88 @@
     </div>
 </div>
 
+{{-- ════════════════════════════════════════════════
+     TAB 4 — DIHAPUS
+════════════════════════════════════════════════ --}}
+<div id="tab-deleted" style="display:none">
+    <div class="table-card">
+        <div class="table-card-header">
+            <div class="table-card-title">
+                🗑️ UMKM Dihapus Admin
+                <span class="table-card-subtitle">{{ $counts['deleted'] ?? 0 }} data</span>
+            </div>
+        </div>
+
+        @if($deleted->isEmpty())
+            <div class="empty-state">
+                <div class="empty-state-icon">✅</div>
+                <div class="empty-state-text">Tidak ada UMKM yang dihapus.</div>
+            </div>
+        @else
+            <table>
+                <thead>
+                    <tr>
+                        <th>Usaha</th>
+                        <th>Pemilik</th>
+                        <th>Kategori</th>
+                        <th>Dihapus Pada</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($deleted as $produk)
+                    <tr>
+                        <td>
+                            <div class="submitter">
+                                <div class="submitter-avatar" style="background:var(--surface2);border:1px solid var(--border);">
+                                    @if($produk->logo)
+                                        <img src="{{ asset('storage/'.$produk->logo) }}" alt="{{ $produk->nama }}">
+                                    @elseif($produk->foto_produk)
+                                        <img src="{{ asset('storage/'.$produk->foto_produk) }}" alt="{{ $produk->nama }}">
+                                    @else
+                                        🏪
+                                    @endif
+                                </div>
+                                <div>
+                                    <div class="submitter-name">{{ $produk->nama }}</div>
+                                    <div class="submitter-sub">{{ $produk->kontak ?? '-' }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-size:13px;">{{ $produk->owner ?? '-' }}</td>
+                        <td style="font-size:12px;color:var(--text-muted);">{{ $produk->kategori ?? '-' }}</td>
+                        <td style="font-size:12px;color:#ef4444;">
+                            {{ $produk->deleted_at?->format('d M Y, H:i') }}
+                        </td>
+                        <td>
+    <div class="action-group">
+        <button type="button" class="btn btn-approve btn-sm"
+            onclick="openRestoreModal({{ $produk->id }}, '{{ addslashes($produk->nama) }}')">
+            ♻️ Pulihkan
+        </button>
+        <button type="button" class="btn btn-danger btn-sm"
+            onclick="openForceDeleteModal({{ $produk->id }}, '{{ addslashes($produk->nama) }}')">
+            🗑️ Hapus Permanen
+        </button>
+    </div>
+    {{-- Form tersembunyi --}}
+    <form id="restore-form-{{ $produk->id }}" method="POST"
+          action="{{ route('admin.approval.produk.restore', $produk->id) }}" style="display:none">
+        @csrf
+    </form>
+    <form id="force-delete-form-{{ $produk->id }}" method="POST"
+          action="{{ route('admin.approval.produk.force-delete', $produk->id) }}" style="display:none">
+        @csrf @method('DELETE')
+    </form>
+</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+    </div>
+</div>
+
 {{-- ════════════ MODAL DETAIL ════════════ --}}
 <div class="modal-overlay" id="modal-detail">
     <div class="modal">
@@ -911,9 +999,79 @@
     </div>
 </div>
 
+{{-- ════════════ MODAL PULIHKAN ════════════ --}}
+<div class="modal-overlay" id="modal-restore">
+    <div class="modal" style="width:420px">
+        <div class="modal-header">
+            <div class="modal-title">♻️ Pulihkan UMKM</div>
+            <button class="modal-close" onclick="closeModal('modal-restore')">✕</button>
+        </div>
+        <div style="text-align:center;padding:10px 0 20px">
+            <div style="font-size:48px;margin-bottom:12px">♻️</div>
+            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">
+                Pulihkan <span id="restore-umkm-name" style="color:var(--accent)"></span>?
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);line-height:1.6">
+                UMKM ini akan dikembalikan ke status <strong>Menunggu</strong> dan dapat ditinjau ulang oleh admin.
+            </div>
+        </div>
+        <div style="display:flex;gap:10px">
+            <button type="button" class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-restore')">Batal</button>
+            <button type="button" class="btn btn-approve" style="flex:1" id="btn-confirm-restore">
+                ♻️ Ya, Pulihkan
+            </button>
+        </div>
+    </div>
+</div>
+
+{{-- ════════════ MODAL HAPUS PERMANEN ════════════ --}}
+<div class="modal-overlay" id="modal-force-delete">
+    <div class="modal" style="width:420px">
+        <div class="modal-header">
+            <div class="modal-title">🗑️ Hapus Permanen</div>
+            <button class="modal-close" onclick="closeModal('modal-force-delete')">✕</button>
+        </div>
+        <div style="text-align:center;padding:10px 0 20px">
+            <div style="font-size:48px;margin-bottom:12px">⚠️</div>
+            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">
+                Hapus permanen <span id="force-delete-umkm-name" style="color:#dc2626"></span>?
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:12px">
+                Semua data UMKM beserta produknya akan <strong>dihapus selamanya</strong> dan tidak dapat dipulihkan kembali.
+            </div>
+            <div style="background:#fff0ed;border:1px solid #fca5a588;border-radius:10px;padding:10px 14px;font-size:12px;color:#dc2626;font-weight:600;">
+                ⚠️ Tindakan ini tidak dapat dibatalkan!
+            </div>
+        </div>
+        <div style="display:flex;gap:10px">
+            <button type="button" class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-force-delete')">Batal</button>
+            <button type="button" class="btn btn-danger" style="flex:1" id="btn-confirm-force-delete">
+                🗑️ Ya, Hapus Permanen
+            </button>
+        </div>
+    </div>
+</div>
+
 
 {{-- ════════════ JAVASCRIPT ════════════ --}}
 <script>
+// ── Modal Pulihkan ──
+function openRestoreModal(id, nama) {
+    document.getElementById('restore-umkm-name').textContent = nama;
+    document.getElementById('btn-confirm-restore').onclick = () => {
+        document.getElementById('restore-form-' + id).submit();
+    };
+    openModal('modal-restore');
+}
+
+// ── Modal Hapus Permanen ──
+function openForceDeleteModal(id, nama) {
+    document.getElementById('force-delete-umkm-name').textContent = nama;
+    document.getElementById('btn-confirm-force-delete').onclick = () => {
+        document.getElementById('force-delete-form-' + id).submit();
+    };
+    openModal('modal-force-delete');
+}
 const produkData   = @json($pending->merge($approved)->merge($rejected)->keyBy('id'));
 const approvedData = @json($approved->keyBy('id'));
 const csrfToken    = '{{ csrf_token() }}';
@@ -976,7 +1134,7 @@ function changeProdukPage(dir) {
 }
 
 function switchTab(tab, btn) {
-    ['pending','approved','rejected'].forEach(t => {
+    ['pending','approved','rejected','deleted'].forEach(t => {
         document.getElementById('tab-'+t).style.display = t === tab ? 'block' : 'none';
     });
     btn.closest('.tab-bar').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1013,7 +1171,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (tab === 'approved') {
         const subBtn = document.querySelector(`.sub-tab-btn[data-subtab="${subtab}"]`);
         if (subBtn) switchSubTab(subtab, subBtn);
-        // init pagination langsung jika subtab produk
         if (subtab === 'produk') setTimeout(() => initProdukPagination(), 50);
     }
 });

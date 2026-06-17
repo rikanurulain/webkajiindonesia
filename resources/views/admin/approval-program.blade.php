@@ -679,22 +679,25 @@
                 </td>
                 <td>
                     <div class="action-group">
-                        <form method="POST"
-                            action="{{ route('admin.approval.program.restore', $log->id) }}">
-                            @csrf
-                            <button type="submit" class="btn btn-approve btn-sm"
-                                onclick="return confirm('Pulihkan program ini ke status pending?')">
-                                ♻️ Pulihkan
-                            </button>
-                        </form>
-                        <form method="POST"
-                            action="{{ route('admin.approval.program.deleted.destroy', $log->id) }}"
-                            onsubmit="return confirm('Hapus log ini secara permanen?')">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-delete btn-sm">
-                                🗑️ Hapus Log
-                            </button>
-                        </form>
+                    <form method="POST"
+    action="{{ route('admin.approval.program.restore', $log->id) }}"
+    id="form-restore-{{ $log->id }}" style="display:none;">
+    @csrf
+</form>
+<button type="button" class="btn btn-approve btn-sm"
+    onclick="confirmRestoreProgram({{ $log->id }}, '{{ addslashes($log->program_title) }}')">
+    ♻️ Pulihkan
+</button>
+
+<form method="POST"
+    action="{{ route('admin.approval.program.deleted.destroy', $log->id) }}"
+    id="form-destroy-log-{{ $log->id }}" style="display:none;">
+    @csrf @method('DELETE')
+</form>
+<button type="button" class="btn btn-delete btn-sm"
+    onclick="confirmDestroyLog({{ $log->id }}, '{{ addslashes($log->program_title) }}')">
+    🗑️ Hapus Log
+</button>
                     </div>
                 </td>
             </tr>
@@ -964,6 +967,40 @@
 
 @push('scripts')
 <script>
+function confirmRestoreProgram(id, title) {
+    swalApprove.fire({
+        title: 'Pulihkan Program?',
+        html: `<span style="font-size:14px;color:#6b7280;line-height:1.6;">
+                Program <strong>${title}</strong> akan dikembalikan ke status <strong>Pending</strong> dan dapat ditinjau ulang.
+               </span>`,
+        icon: 'question', iconColor: '#10b981',
+        showCancelButton: true,
+        confirmButtonText: '♻️ Ya, Pulihkan',
+        cancelButtonText: 'Batal',
+        reverseButtons: true, focusCancel: true,
+    }).then(r => {
+        if (r.isConfirmed) document.getElementById('form-restore-' + id).submit();
+    });
+}
+
+function confirmDestroyLog(id, title) {
+    swalDelete.fire({
+        title: 'Hapus Log Permanen?',
+        html: `<span style="font-size:14px;color:#6b7280;line-height:1.6;">
+                Log program <strong>${title}</strong> akan dihapus secara permanen.<br>
+                <span style="color:#ef4444;font-size:13px;margin-top:6px;display:block;">
+                    ⚠️ Tindakan ini tidak dapat dibatalkan.
+                </span>
+               </span>`,
+        icon: 'warning', iconColor: '#ea580c',
+        showCancelButton: true,
+        confirmButtonText: '🗑️ Ya, Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true, focusCancel: true,
+    }).then(r => {
+        if (r.isConfirmed) document.getElementById('form-destroy-log-' + id).submit();
+    });
+}
 
 const _state = {
     status:        '{{ $status }}',

@@ -235,6 +235,9 @@ Route::delete('/approval/program/deleted/{id}',        [AdminController::class, 
     Route::delete('/approval/produk/{produk}',         [AdminController::class, 'destroyProduk'])->name('approval.produk.destroy');
     Route::delete('/approval/produk/{produk}/destroy-umkm',        [AdminController::class, 'destroyUmkm'])->name('approval.umkm.destroy');
     Route::delete('/approval/produk/{produkId}/item/{itemId}',     [AdminController::class, 'destroyProdukItem'])->name('approval.umkm.item.destroy');
+    Route::post('/approval/produk/deleted/{id}/restore',  [AdminController::class, 'restoreProduk'])->name('approval.produk.restore');
+Route::delete('/approval/produk/deleted/{id}/force',  [AdminController::class, 'forceDeleteProduk'])->name('approval.produk.force-delete');
+
     Route::get('/approval/produk/export-csv', [AdminController::class, 'exportCsvProduk'])
     ->name('approval.produk.export-csv');
 

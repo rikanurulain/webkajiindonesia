@@ -408,27 +408,39 @@ public function unsuspendPengguna(Request $request, User $user)
     // ═════════════════════════════════════════════════════════════════════
     public function approvalProduk(Request $request)
 {
-    $pending  = Produk::with(['items'])
-                    ->where('status', 'pending')
-                    ->latest()->get();
-
-    $approved = Produk::with(['items'])
-                    ->where('status', 'approved')
-                    ->latest()->get();
-
-    $rejected = Produk::with(['items'])
-                    ->where('status', 'rejected')
-                    ->latest()->get();
+    $pending  = Produk::with(['items'])->where('status', 'pending')->whereNull('deleted_at')->latest()->get();
+    $approved = Produk::with(['items'])->where('status', 'approved')->whereNull('deleted_at')->latest()->get();
+    $rejected = Produk::with(['items'])->where('status', 'rejected')->whereNull('deleted_at')->latest()->get();
+    $deleted  = Produk::with(['items'])->onlyTrashed()->latest('deleted_at')->get();
 
     $counts = [
         'pending'  => $pending->count(),
         'approved' => $approved->count(),
         'rejected' => $rejected->count(),
+        'deleted'  => $deleted->count(), // ← pastikan ini ada
     ];
 
     return view('admin.approval-produk', compact(
-        'pending', 'approved', 'rejected', 'counts'
+        'pending', 'approved', 'rejected', 'deleted', 'counts' // ← 'deleted' harus ikut
     ));
+}
+
+public function restoreProduk($id)
+{
+    $produk = Produk::onlyTrashed()->findOrFail($id);
+    $produk->restore();
+    $produk->update(['status' => 'pending']);
+
+    return back()->with('success', "UMKM \"{$produk->nama}\" berhasil dipulihkan.");
+}
+
+public function forceDeleteProduk($id)
+{
+    $produk = Produk::onlyTrashed()->findOrFail($id);
+    $nama = $produk->nama;
+    $produk->forceDelete();
+
+    return back()->with('success', "UMKM \"{$nama}\" dihapus permanen.");
 }
 
 public function exportCsvProduk(Request $request)
@@ -547,6 +559,27 @@ public function rejectProduk(Request $request, Produk $produk)
     $item->delete(); // soft delete — UMKM masih bisa pulihkan
 
     return back()->with('success', "Item \"{$item->nama}\" berhasil dihapus.");
+}
+
+public function destroyUmkm($produk)
+{
+    $umkm = Produk::findOrFail($produk);
+    $nama = $umkm->nama;
+
+    // Reset role user jika ada
+    if ($umkm->user_id) {
+        User::where('id', $umkm->user_id)->update([
+            'role' => 'umum',
+        ]);
+    }
+
+    // Hapus semua produk items terkait
+    $umkm->items()->delete();
+
+    // Soft delete profil UMKM
+    $umkm->delete();
+
+    return back()->with('success', "UMKM \"{$nama}\" beserta datanya berhasil dihapus.");
 }
 
     // ═════════════════════════════════════════════════════════════════════

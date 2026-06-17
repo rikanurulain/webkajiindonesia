@@ -314,6 +314,12 @@
             <span class="count-pill" style="background:#9ca3af"><?php echo e($counts['rejected']); ?></span>
         <?php endif; ?>
     </button>
+    <button class="tab-btn" data-tab="deleted" onclick="switchTab('deleted',this)">
+        🗑️ Dihapus
+        <?php if(($counts['deleted'] ?? 0) > 0): ?>
+            <span class="count-pill" style="background:#ef4444"><?php echo e($counts['deleted']); ?></span>
+        <?php endif; ?>
+    </button>
 </div>
 
 
@@ -781,6 +787,87 @@
 </div>
 
 
+<div id="tab-deleted" style="display:none">
+    <div class="table-card">
+        <div class="table-card-header">
+            <div class="table-card-title">
+                🗑️ UMKM Dihapus Admin
+                <span class="table-card-subtitle"><?php echo e($counts['deleted'] ?? 0); ?> data</span>
+            </div>
+        </div>
+
+        <?php if($deleted->isEmpty()): ?>
+            <div class="empty-state">
+                <div class="empty-state-icon">✅</div>
+                <div class="empty-state-text">Tidak ada UMKM yang dihapus.</div>
+            </div>
+        <?php else: ?>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Usaha</th>
+                        <th>Pemilik</th>
+                        <th>Kategori</th>
+                        <th>Dihapus Pada</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php $__currentLoopData = $deleted; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $produk): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <tr>
+                        <td>
+                            <div class="submitter">
+                                <div class="submitter-avatar" style="background:var(--surface2);border:1px solid var(--border);">
+                                    <?php if($produk->logo): ?>
+                                        <img src="<?php echo e(asset('storage/'.$produk->logo)); ?>" alt="<?php echo e($produk->nama); ?>">
+                                    <?php elseif($produk->foto_produk): ?>
+                                        <img src="<?php echo e(asset('storage/'.$produk->foto_produk)); ?>" alt="<?php echo e($produk->nama); ?>">
+                                    <?php else: ?>
+                                        🏪
+                                    <?php endif; ?>
+                                </div>
+                                <div>
+                                    <div class="submitter-name"><?php echo e($produk->nama); ?></div>
+                                    <div class="submitter-sub"><?php echo e($produk->kontak ?? '-'); ?></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-size:13px;"><?php echo e($produk->owner ?? '-'); ?></td>
+                        <td style="font-size:12px;color:var(--text-muted);"><?php echo e($produk->kategori ?? '-'); ?></td>
+                        <td style="font-size:12px;color:#ef4444;">
+                            <?php echo e($produk->deleted_at?->format('d M Y, H:i')); ?>
+
+                        </td>
+                        <td>
+    <div class="action-group">
+        <button type="button" class="btn btn-approve btn-sm"
+            onclick="openRestoreModal(<?php echo e($produk->id); ?>, '<?php echo e(addslashes($produk->nama)); ?>')">
+            ♻️ Pulihkan
+        </button>
+        <button type="button" class="btn btn-danger btn-sm"
+            onclick="openForceDeleteModal(<?php echo e($produk->id); ?>, '<?php echo e(addslashes($produk->nama)); ?>')">
+            🗑️ Hapus Permanen
+        </button>
+    </div>
+    
+    <form id="restore-form-<?php echo e($produk->id); ?>" method="POST"
+          action="<?php echo e(route('admin.approval.produk.restore', $produk->id)); ?>" style="display:none">
+        <?php echo csrf_field(); ?>
+    </form>
+    <form id="force-delete-form-<?php echo e($produk->id); ?>" method="POST"
+          action="<?php echo e(route('admin.approval.produk.force-delete', $produk->id)); ?>" style="display:none">
+        <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
+    </form>
+</td>
+                    </tr>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
+    </div>
+</div>
+
+
 <div class="modal-overlay" id="modal-detail">
     <div class="modal">
         <div class="modal-header">
@@ -909,8 +996,78 @@
 </div>
 
 
+<div class="modal-overlay" id="modal-restore">
+    <div class="modal" style="width:420px">
+        <div class="modal-header">
+            <div class="modal-title">♻️ Pulihkan UMKM</div>
+            <button class="modal-close" onclick="closeModal('modal-restore')">✕</button>
+        </div>
+        <div style="text-align:center;padding:10px 0 20px">
+            <div style="font-size:48px;margin-bottom:12px">♻️</div>
+            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">
+                Pulihkan <span id="restore-umkm-name" style="color:var(--accent)"></span>?
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);line-height:1.6">
+                UMKM ini akan dikembalikan ke status <strong>Menunggu</strong> dan dapat ditinjau ulang oleh admin.
+            </div>
+        </div>
+        <div style="display:flex;gap:10px">
+            <button type="button" class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-restore')">Batal</button>
+            <button type="button" class="btn btn-approve" style="flex:1" id="btn-confirm-restore">
+                ♻️ Ya, Pulihkan
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal-overlay" id="modal-force-delete">
+    <div class="modal" style="width:420px">
+        <div class="modal-header">
+            <div class="modal-title">🗑️ Hapus Permanen</div>
+            <button class="modal-close" onclick="closeModal('modal-force-delete')">✕</button>
+        </div>
+        <div style="text-align:center;padding:10px 0 20px">
+            <div style="font-size:48px;margin-bottom:12px">⚠️</div>
+            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">
+                Hapus permanen <span id="force-delete-umkm-name" style="color:#dc2626"></span>?
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:12px">
+                Semua data UMKM beserta produknya akan <strong>dihapus selamanya</strong> dan tidak dapat dipulihkan kembali.
+            </div>
+            <div style="background:#fff0ed;border:1px solid #fca5a588;border-radius:10px;padding:10px 14px;font-size:12px;color:#dc2626;font-weight:600;">
+                ⚠️ Tindakan ini tidak dapat dibatalkan!
+            </div>
+        </div>
+        <div style="display:flex;gap:10px">
+            <button type="button" class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-force-delete')">Batal</button>
+            <button type="button" class="btn btn-danger" style="flex:1" id="btn-confirm-force-delete">
+                🗑️ Ya, Hapus Permanen
+            </button>
+        </div>
+    </div>
+</div>
+
+
 
 <script>
+// ── Modal Pulihkan ──
+function openRestoreModal(id, nama) {
+    document.getElementById('restore-umkm-name').textContent = nama;
+    document.getElementById('btn-confirm-restore').onclick = () => {
+        document.getElementById('restore-form-' + id).submit();
+    };
+    openModal('modal-restore');
+}
+
+// ── Modal Hapus Permanen ──
+function openForceDeleteModal(id, nama) {
+    document.getElementById('force-delete-umkm-name').textContent = nama;
+    document.getElementById('btn-confirm-force-delete').onclick = () => {
+        document.getElementById('force-delete-form-' + id).submit();
+    };
+    openModal('modal-force-delete');
+}
 const produkData   = <?php echo json_encode($pending->merge($approved)->merge($rejected)->keyBy('id'), 15, 512) ?>;
 const approvedData = <?php echo json_encode($approved->keyBy('id'), 15, 512) ?>;
 const csrfToken    = '<?php echo e(csrf_token()); ?>';
@@ -973,7 +1130,7 @@ function changeProdukPage(dir) {
 }
 
 function switchTab(tab, btn) {
-    ['pending','approved','rejected'].forEach(t => {
+    ['pending','approved','rejected','deleted'].forEach(t => {
         document.getElementById('tab-'+t).style.display = t === tab ? 'block' : 'none';
     });
     btn.closest('.tab-bar').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1010,7 +1167,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (tab === 'approved') {
         const subBtn = document.querySelector(`.sub-tab-btn[data-subtab="${subtab}"]`);
         if (subBtn) switchSubTab(subtab, subBtn);
-        // init pagination langsung jika subtab produk
         if (subtab === 'produk') setTimeout(() => initProdukPagination(), 50);
     }
 });

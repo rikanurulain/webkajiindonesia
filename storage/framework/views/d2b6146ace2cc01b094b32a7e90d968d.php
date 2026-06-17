@@ -403,6 +403,18 @@
                                 ↩️ Pulihkan
                             </button>
                         </form>
+
+                        <form method="POST"
+      action="<?php echo e(route('admin.approval.event.destroy', $event->id)); ?>"
+      id="form-force-delete-event-<?php echo e($event->id); ?>"
+      style="display:none;">
+    <?php echo csrf_field(); ?>
+    <?php echo method_field('DELETE'); ?>
+</form>
+<button type="button" class="btn btn-delete btn-sm"
+        onclick="confirmForceDeleteEvent(<?php echo e($event->id); ?>, '<?php echo e(addslashes($event->judul)); ?>')">
+    🗑️ Hapus Permanen
+</button>
                         <?php endif; ?>
 
                     </div>
@@ -680,6 +692,29 @@ document.querySelectorAll('.modal-overlay').forEach(function(el) {
         if (e.target === el) closeModal(el.id);
     });
 });
+
+const swalDelete = Swal.mixin({
+    customClass: { confirmButton: 'swal-btn-confirm-delete', cancelButton: 'swal-btn-cancel' },
+    buttonsStyling: false,
+});
+function confirmForceDeleteEvent(id, name) {
+    swalDelete.fire({
+        title: 'Hapus Permanen?',
+        html: `<span style="font-size:14px;color:#6b7280;line-height:1.6;">
+                Event <strong>${name}</strong> akan dihapus selamanya.<br>
+                <span style="color:#ef4444;font-size:13px;margin-top:6px;display:block;">
+                    ⚠️ Tindakan ini tidak dapat dibatalkan dan trainer tidak bisa memulihkannya kembali.
+                </span>
+               </span>`,
+        icon: 'warning', iconColor: '#ea580c',
+        showCancelButton: true,
+        confirmButtonText: '🗑️ Ya, Hapus Permanen',
+        cancelButtonText: 'Batal',
+        reverseButtons: true, focusCancel: true,
+    }).then(function(result) {
+        if (result.isConfirmed) document.getElementById('form-force-delete-event-' + id).submit();
+    });
+}
 </script>
 <?php $__env->stopPush(); ?>
 <?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\Kaji-indo-main\resources\views/admin/approval-event.blade.php ENDPATH**/ ?>
