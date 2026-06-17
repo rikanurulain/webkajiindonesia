@@ -728,32 +728,57 @@ public function restoreEventAdmin($id)
     // ═════════════════════════════════════════════════════════════════════
     // APPROVAL TRAINER
     // ═════════════════════════════════════════════════════════════════════
-   public function approvalTrainer()
-{
-    // Query dari tabel trainer (bukan users)
-    $pending  = \App\Models\Trainer::with('user')
-                    ->where('status', 'pending')
-                    ->latest('applied_at')
-                    ->get();
- 
-    $approved = \App\Models\Trainer::with('user')
-                    ->where('status', 'approved')
-                    ->latest('updated_at')
-                    ->get();
- 
-    $rejected = \App\Models\Trainer::with('user')
-                    ->where('status', 'rejected')
-                    ->latest('updated_at')
-                    ->get();
- 
-    $counts = [
-        'pending'  => $pending->count(),
-        'approved' => $approved->count(),
-        'rejected' => $rejected->count(),
-    ];
- 
-    return view('admin.approval-trainer', compact('pending', 'approved', 'rejected', 'counts'));
-}
+    public function approvalTrainer()
+    {
+        // ── Export CSV ────────────────────────────────────────────────────
+        if (request()->get('export') === 'csv') {
+            $status = request()->get('status', 'pending');
+            $data   = \App\Models\Trainer::with('user')->where('status', $status)->get();
+            $filename = "trainer-{$status}-" . now()->format('Ymd') . '.csv';
+    
+            return response()->streamDownload(function () use ($data) {
+                $h = fopen('php://output', 'w');
+                fprintf($h, chr(0xEF).chr(0xBB).chr(0xBF));
+                fputcsv($h, ['ID','Nama','Email','NIK','Status','Tanggal Daftar']);
+                foreach ($data as $t) {
+                    fputcsv($h, [
+                        $t->id,
+                        $t->nama,
+                        $t->user->email ?? $t->email ?? '-',
+                        $t->nik ?? '-',
+                        $t->status,
+                        $t->created_at->format('d/m/Y'),
+                    ]);
+                }
+                fclose($h);
+            }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+        }
+        // ─────────────────────────────────────────────────────────────────
+    
+        // Query dari tabel trainer (bukan users) — kode yang sudah ada
+        $pending  = \App\Models\Trainer::with('user')
+                        ->where('status', 'pending')
+                        ->latest('applied_at')
+                        ->get();
+    
+        $approved = \App\Models\Trainer::with('user')
+                        ->where('status', 'approved')
+                        ->latest('updated_at')
+                        ->get();
+    
+        $rejected = \App\Models\Trainer::with('user')
+                        ->where('status', 'rejected')
+                        ->latest('updated_at')
+                        ->get();
+    
+        $counts = [
+            'pending'  => $pending->count(),
+            'approved' => $approved->count(),
+            'rejected' => $rejected->count(),
+        ];
+    
+        return view('admin.approval-trainer', compact('pending', 'approved', 'rejected', 'counts'));
+    }
  
 public function approveTrainer(\App\Models\Trainer $trainer)
 {
@@ -854,18 +879,44 @@ public function destroyTrainer(\App\Models\Trainer $trainer)
     // ═════════════════════════════════════════════════════════════════════
     // APPROVAL MENTOR
     // ═════════════════════════════════════════════════════════════════════
-    public function approvalMentor()
-    {
-        $pending  = Mentor::where('status', 'pending')->get();
-        $approved = Mentor::where('status', 'approved')->get();
-        $rejected = Mentor::where('status', 'rejected')->get();
-        $stats = [
-            'pending'  => $pending->count(),
-            'approved' => $approved->count(),
-            'rejected' => $rejected->count(),
-        ];
-        return view('admin.approval-mentor', compact('pending', 'approved', 'rejected', 'stats'));
+    public function approvalMentor(Request $request)
+{
+    // ── Export CSV ────────────────────────────────────────────────────
+    if ($request->get('export') === 'csv') {
+        $status = $request->get('status', 'pending');
+        $data   = Mentor::where('status', $status)->get();
+        $filename = "mentor-{$status}-" . now()->format('Ymd') . '.csv';
+
+        return response()->streamDownload(function () use ($data) {
+            $h = fopen('php://output', 'w');
+            fprintf($h, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM UTF-8
+            fputcsv($h, ['ID', 'Nama', 'Email', 'No. WhatsApp', 'Lokasi', 'Status', 'Tanggal Daftar']);
+            foreach ($data as $m) {
+                fputcsv($h, [
+                    $m->id,
+                    $m->full_name,
+                    $m->email,
+                    $m->phone,
+                    $m->gmaps_location ?? '-',
+                    $m->status,
+                    $m->created_at->format('d/m/Y'),
+                ]);
+            }
+            fclose($h);
+        }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
+    // ─────────────────────────────────────────────────────────────────
+
+    $pending  = Mentor::where('status', 'pending')->get();
+    $approved = Mentor::where('status', 'approved')->get();
+    $rejected = Mentor::where('status', 'rejected')->get();
+    $stats = [
+        'pending'  => $pending->count(),
+        'approved' => $approved->count(),
+        'rejected' => $rejected->count(),
+    ];
+    return view('admin.approval-mentor', compact('pending', 'approved', 'rejected', 'stats'));
+}
     public function approveMentor(Mentor $mentor)
 {
     \Illuminate\Support\Facades\DB::transaction(function () use ($mentor) {

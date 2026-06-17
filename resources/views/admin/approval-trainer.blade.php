@@ -7,6 +7,15 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.all.min.js"></script>
 <style>
+    
+    .btn-csv-export {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 16px; border-radius: 8px; font-size: 12px; font-weight: 600;
+    background: #f0fdf4; color: #15803d; border: 1.5px solid #86efac;
+    text-decoration: none; cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.btn-csv-export:hover { background: #dcfce7; border-color: #4ade80; color: #166534; }
+@media (max-width: 768px) { .btn-csv-export { font-size: 11px; padding: 5px 10px; } }
     .doc-btn-group {
         display: flex;
         flex-wrap: wrap;
@@ -353,15 +362,22 @@
 {{-- ======================== TAB PENDING ======================== --}}
 <div id="tab-pending">
     <div class="table-card">
-        <div class="table-card-header">
-            <div class="table-card-title">
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                Pendaftaran Menunggu Review
-                <span class="table-card-subtitle">{{ $counts['pending'] }} pendaftar</span>
-            </div>
-        </div>
+    <div class="table-card-header">
+    <div class="table-card-title">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Pendaftaran Menunggu Review
+        <span class="table-card-subtitle">{{ $counts['pending'] }} pendaftar</span>
+    </div>
+    <a href="{{ route('admin.approval.trainer') }}?export=csv&status=pending"
+       class="btn-csv-export">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        Export CSV
+    </a>
+</div>
 
         @if($pending->isEmpty())
             <div class="empty-state">
@@ -490,15 +506,23 @@
 {{-- ======================== TAB APPROVED ======================== --}}
 <div id="tab-approved" style="display:none;">
     <div class="table-card">
-        <div class="table-card-header">
-            <div class="table-card-title">
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                Trainer Disetujui
-                <span class="table-card-subtitle">{{ $counts['approved'] }} trainer aktif</span>
-            </div>
-        </div>
+    <div class="table-card-header">
+    <div class="table-card-title">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Trainer Disetujui
+        <span class="table-card-subtitle">{{ $counts['approved'] }} trainer aktif</span>
+    </div>
+    <a href="{{ route('admin.approval.trainer') }}?export=csv&status=approved"
+       class="btn-csv-export">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        Export CSV
+    </a>
+</div>
+        
 
         @if($approved->isEmpty())
             <div class="empty-state">
@@ -624,15 +648,23 @@
 {{-- ======================== TAB REJECTED ======================== --}}
 <div id="tab-rejected" style="display:none;">
     <div class="table-card">
-        <div class="table-card-header">
-            <div class="table-card-title">
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                Pendaftaran Ditolak
-                <span class="table-card-subtitle">{{ $counts['rejected'] }} ditolak</span>
-            </div>
-        </div>
+    <div class="table-card-header">
+    <div class="table-card-title">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Pendaftaran Ditolak
+        <span class="table-card-subtitle">{{ $counts['rejected'] }} ditolak</span>
+    </div>
+    <a href="{{ route('admin.approval.trainer') }}?export=csv&status=rejected"
+       class="btn-csv-export">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        Export CSV
+    </a>
+</div>
+        
 
         @if($rejected->isEmpty())
             <div class="empty-state">
