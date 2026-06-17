@@ -286,18 +286,38 @@
                     </div>
                 </td>
                 <td>
-                <?php if($user->role === 'admin'): ?>
-    <span class="role-tag role-admin">Admin</span>
-<?php elseif($user->role === 'trainer' || $user->role === 'pembimbing' || $user->is_pembimbing): ?>
-    <span class="role-tag role-pembimbing">Trainer / Pembimbing</span>
-<?php elseif($user->role === 'mentor'): ?>
-    <span class="role-tag" style="background:#f3e8ff;color:#7e22ce;border:1px solid #e9d5ff;">Mentor</span>
-<?php elseif($user->role === 'umkm' || $user->is_umkm): ?>
-    <span class="role-tag role-umkm">UMKM</span>
-<?php else: ?>
-    <span class="role-tag role-user">Umum</span>
-<?php endif; ?>
-                </td>
+    <div style="display:flex;flex-direction:column;gap:4px;">
+        
+        <?php if($user->role === 'admin'): ?>
+            <span class="role-tag role-admin">🛡️ Admin</span>
+        <?php elseif($user->role === 'trainer'): ?>
+            <span class="role-tag role-pembimbing">🎓 Trainer</span>
+        <?php elseif($user->role === 'mentor'): ?>
+            <span class="role-tag" style="background:#f3e8ff;color:#7e22ce;border:1px solid #e9d5ff;">💡 Mentor</span>
+        <?php elseif($user->role === 'umkm'): ?>
+            <span class="role-tag role-umkm">🏪 UMKM</span>
+        <?php else: ?>
+            <span class="role-tag role-user">👤 Umum</span>
+        <?php endif; ?>
+
+        
+        <?php if($user->is_pembimbing && $user->role !== 'trainer'): ?>
+            <span class="role-tag role-pembimbing" style="font-size:10px;padding:2px 7px;">+ Pembimbing</span>
+        <?php endif; ?>
+
+        <?php if($user->trainer_status === 'approved' && $user->role !== 'trainer'): ?>
+            <span class="role-tag role-pembimbing" style="font-size:10px;padding:2px 7px;">+ Trainer ✓</span>
+        <?php endif; ?>
+
+        <?php if($user->mentor_status === 'approved' && $user->role !== 'mentor'): ?>
+            <span class="role-tag" style="background:#f3e8ff;color:#7e22ce;border:1px solid #e9d5ff;font-size:10px;padding:2px 7px;">+ Mentor ✓</span>
+        <?php endif; ?>
+
+        <?php if($user->is_umkm && $user->role !== 'umkm'): ?>
+            <span class="role-tag role-umkm" style="font-size:10px;padding:2px 7px;">+ UMKM</span>
+        <?php endif; ?>
+    </div>
+</td>
                 <td style="font-size:12px;color:var(--text-muted);"><?php echo e($user->email); ?></td>
                 <td style="font-size:12px;"><?php echo e(Str::limit($user->address ?? '-', 18)); ?></td>
                 <td style="font-size:12px;color:var(--text-muted);">
@@ -445,11 +465,20 @@
         const u = usersData.find(x => x.id === id);
         if (!u) return;
 
-        const roleName = u.role === 'admin' ? 'Admin'
-    : (u.role === 'trainer' || u.role === 'pembimbing' || u.is_pembimbing) ? 'Trainer / Pembimbing'
-    : u.role === 'mentor' ? 'Mentor'
-    : (u.role === 'umkm' || u.is_umkm) ? 'UMKM'
-    : 'Umum';
+        const roleMain = u.role === 'admin' ? '🛡️ Admin'
+    : u.role === 'trainer'  ? '🎓 Trainer'
+    : u.role === 'mentor'   ? '💡 Mentor'
+    : u.role === 'umkm'     ? '🏪 UMKM'
+    : '👤 Umum';
+
+const roleExtras = [
+    (u.is_pembimbing && u.role !== 'trainer')                      ? '+ Pembimbing'  : null,
+    (u.trainer_status === 'approved' && u.role !== 'trainer')      ? '+ Trainer ✓'   : null,
+    (u.mentor_status  === 'approved' && u.role !== 'mentor')       ? '+ Mentor ✓'    : null,
+    (u.is_umkm        && u.role !== 'umkm')                        ? '+ UMKM'        : null,
+].filter(Boolean);
+
+const roleName = roleMain + (roleExtras.length ? ' <span style="font-size:11px;color:var(--text-muted);">(' + roleExtras.join(', ') + ')</span>' : '');
         const initials = u.name.substring(0, 2).toUpperCase();
         const avatarColors = ['var(--accent)','var(--accent3)','var(--warning)','#8b5cf6','#ec4899'];
         const color = avatarColors[id % 5];
@@ -469,8 +498,8 @@
                 <div class="detail-item"><div class="detail-label">No. Telepon</div><div class="detail-value">${u.phone ?? '-'}</div></div>
                 <div class="detail-item full"><div class="detail-label">Alamat</div><div class="detail-value" style="font-weight:400;font-size:13px;">${u.address ?? '-'}</div></div>
                 <div class="detail-item full"><div class="detail-label">Bio</div><div class="detail-value" style="font-weight:400;font-size:13px;color:var(--text-muted);line-height:1.6;">${u.bio ?? 'Belum ada bio'}</div></div>
-                <div class="detail-item"><div class="detail-label">Member UMKM</div><div class="detail-value">${u.is_umkm ? '✅ Aktif' : '—'}</div></div>
-                <div class="detail-item"><div class="detail-label">Member Pembimbing</div><div class="detail-value">${u.is_pembimbing ? '✅ Aktif' : '—'}</div></div>
+                <div class="detail-item"><div class="detail-label">Trainer Status</div><div class="detail-value">${u.trainer_status === 'approved' ? '✅ Approved' : u.trainer_status === 'pending' ? '⏳ Pending' : u.trainer_status === 'rejected' ? '❌ Rejected' : '—'}</div></div>
+<div class="detail-item"><div class="detail-label">Mentor Status</div><div class="detail-value">${u.mentor_status === 'approved' ? '✅ Approved' : u.mentor_status === 'pending' ? '⏳ Pending' : u.mentor_status === 'rejected' ? '❌ Rejected' : '—'}</div></div>
             </div>
         `;
 
