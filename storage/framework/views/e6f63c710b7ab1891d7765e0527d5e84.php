@@ -1,7 +1,5 @@
-@extends('layouts.app')
+<?php $__env->startSection('content'); ?>
 
-@section('content')
-{{-- 1. HERO --}}
 <section
     class="relative overflow-hidden"
     style="min-height: 580px;"
@@ -39,7 +37,7 @@
     }"
     x-init="init()">
 
-    {{-- ── SLIDE BACKGROUNDS ── --}}
+    
     <div class="absolute inset-0 z-0">
         <template x-for="(slide, index) in slides" :key="index">
             <div
@@ -53,7 +51,7 @@
              style="background-image:url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23fff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
     </div>
 
-    {{-- ── ARROW PREV ── --}}
+    
     <button @click="go(active - 1)"
         class="absolute left-2 sm:left-4 top-1/2 z-20 -translate-y-1/2
                flex h-8 w-8 sm:h-11 sm:w-11 items-center justify-center
@@ -65,7 +63,7 @@
         </svg>
     </button>
 
-    {{-- ── ARROW NEXT ── --}}
+    
     <button @click="go(active + 1)"
         class="absolute right-2 sm:right-4 top-1/2 z-20 -translate-y-1/2
                flex h-8 w-8 sm:h-11 sm:w-11 items-center justify-center
@@ -77,12 +75,12 @@
         </svg>
     </button>
 
-    {{-- ── KONTEN UTAMA ── --}}
-    {{-- px-12 di mobile: cukup ruang untuk arrow (w-8 = 32px + left-2 = 8px = 40px) --}}
+    
+    
     <div class="relative z-10 mx-auto max-w-7xl px-12 py-16 sm:px-16 sm:py-24 lg:px-20 lg:py-28 lg:flex lg:items-center lg:gap-12">
         <div class="w-full max-w-2xl mx-auto lg:mx-0 lg:max-w-xl text-center lg:text-left">
 
-            {{-- Label slide aktif --}}
+            
             <div class="mb-3 sm:mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 sm:px-4 sm:py-1.5 backdrop-blur-sm ring-1 ring-white/20">
                 <span class="h-1.5 w-1.5 rounded-full bg-secondary animate-pulse flex-shrink-0"></span>
                 <span class="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-white/90 truncate max-w-[180px] sm:max-w-none"
@@ -108,7 +106,7 @@
         </div>
     </div>
 
-    {{-- ── DOTS ── --}}
+    
     <div class="absolute bottom-5 left-1/2 z-20 -translate-x-1/2 flex items-center gap-1.5 sm:gap-2">
         <template x-for="(slide, index) in slides" :key="index">
             <button
@@ -122,7 +120,7 @@
         </template>
     </div>
 
-    {{-- ── PROGRESS BAR ── --}}
+    
     <div class="absolute bottom-0 left-0 right-0 z-20 h-[3px] bg-white/10">
         <div id="hero-progress-bar" class="h-full bg-white/70 rounded-r-full"></div>
     </div>
@@ -135,7 +133,7 @@
     to   { width: 100%; }
 }
 </style>
- {{-- 2. STATISTIK --}}
+ 
 <section class="bg-white py-16 sm:py-20" id="statistik"
          x-data="{
              shown: false,
@@ -174,28 +172,28 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
 
-{{-- Acara --}}
+
 <div class="rounded-2xl border border-gray-100 bg-gray-50 p-6 text-center transition-all duration-300 hover:border-primary/20 hover:bg-primary/5">
     <p class="text-3xl font-bold tracking-tight text-primary sm:text-4xl lg:text-5xl"
        x-text="counters.event.toLocaleString('id-ID')">0</p>
     <p class="mt-2 text-sm text-gray-500">Acara</p>
 </div>
 
-{{-- Pembicara --}}
+
 <div class="rounded-2xl border border-gray-100 bg-gray-50 p-6 text-center transition-all duration-300 hover:border-primary/20 hover:bg-primary/5">
     <p class="text-3xl font-bold tracking-tight text-primary sm:text-4xl lg:text-5xl"
        x-text="counters.speakers.toLocaleString('id-ID')">0</p>
     <p class="mt-2 text-sm text-gray-500">Pembicara</p>
 </div>
 
-{{-- Peserta --}}
+
 <div class="rounded-2xl border border-gray-100 bg-gray-50 p-6 text-center transition-all duration-300 hover:border-primary/20 hover:bg-primary/5">
     <p class="text-3xl font-bold tracking-tight text-primary sm:text-4xl lg:text-5xl"
        x-text="counters.participants.toLocaleString('id-ID')">0</p>
     <p class="mt-2 text-sm text-gray-500">Peserta</p>
 </div>
 
-{{-- Topik Dibahas --}}
+
 <div class="rounded-2xl border border-gray-100 bg-gray-50 p-6 text-center transition-all duration-300 hover:border-primary/20 hover:bg-primary/5">
     <p class="text-3xl font-bold tracking-tight text-primary sm:text-4xl lg:text-5xl"
        x-text="counters.topics.toLocaleString('id-ID')">0</p>
@@ -206,7 +204,7 @@
     </div>
 </section>
 
-{{-- 3. LAYANAN UNGGULAN --}}
+
 <section class="bg-gray-50 py-10 sm:py-16 lg:py-20" id="layanan">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="text-center">
@@ -214,7 +212,7 @@
             <p class="mx-auto mt-3 max-w-2xl text-sm sm:text-base text-gray-600">Berbagai program dan layanan untuk mendukung perkembangan bisnis dan SDM Anda.</p>
         </div>
         <div class="mt-8 sm:mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        @php
+        <?php
     $layanan = [
         ['route' => 'pelatihan.program',   'external' => false, 'icon' => 'academic', 'title' => 'Pelatihan',    'desc' => 'Program pelatihan berkualitas untuk peningkatan kompetensi SDM dan profesional.'],
         ['route' => 'umkm.produk',         'external' => false, 'icon' => 'store',    'title' => 'UMKM',         'desc' => 'Pendampingan dan penguatan kapasitas usaha mikro, kecil, dan menengah.'],
@@ -223,73 +221,73 @@
         ['route' => 'https://infojawatimur.com', 'external' => true, 'icon' => 'media', 'title' => 'Media',      'desc' => 'Konten edukatif dan informasi seputar kajian, bisnis, dan halal.'],
         ['route' => null,                  'external' => false, 'icon' => 'book',     'title' => 'Kajian',       'desc' => 'Forum kajian dan diskusi untuk pengembangan wawasan dan jaringan.'],
     ];
-@endphp
-            @foreach ($layanan as $item)
+?>
+            <?php $__currentLoopData = $layanan; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="rounded-2xl bg-white p-5 sm:p-6 shadow-sm ring-1 ring-gray-200/50 transition-shadow hover:shadow-lg">
                     <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                        @if (($item['icon'] ?? '') === 'academic')
+                        <?php if(($item['icon'] ?? '') === 'academic'): ?>
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
-                        @elseif (($item['icon'] ?? '') === 'store')
+                        <?php elseif(($item['icon'] ?? '') === 'store'): ?>
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                        @elseif (($item['icon'] ?? '') === 'halal')
+                        <?php elseif(($item['icon'] ?? '') === 'halal'): ?>
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        @elseif (($item['icon'] ?? '') === 'consult')
+                        <?php elseif(($item['icon'] ?? '') === 'consult'): ?>
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                        @elseif (($item['icon'] ?? '') === 'media')
+                        <?php elseif(($item['icon'] ?? '') === 'media'): ?>
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                        @else
+                        <?php else: ?>
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                        @endif
+                        <?php endif; ?>
                     </div>
-                    <h3 class="mt-4 font-serif text-lg sm:text-xl font-semibold text-gray-900">{{ $item['title'] }}</h3>
-                    <p class="mt-2 text-sm text-gray-600 leading-relaxed">{{ $item['desc'] }}</p>
-                    @if ($item['external'])
-                        <a href="{{ $item['route'] }}" target="_blank" rel="noopener noreferrer"
+                    <h3 class="mt-4 font-serif text-lg sm:text-xl font-semibold text-gray-900"><?php echo e($item['title']); ?></h3>
+                    <p class="mt-2 text-sm text-gray-600 leading-relaxed"><?php echo e($item['desc']); ?></p>
+                    <?php if($item['external']): ?>
+                        <a href="<?php echo e($item['route']); ?>" target="_blank" rel="noopener noreferrer"
                            class="mt-4 inline-flex items-center text-sm font-semibold text-primary hover:underline">
                             Selengkapnya
                             <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                         </a>
-                    @elseif (!empty($item['route']))
-                        <a href="{{ route($item['route']) }}"
+                    <?php elseif(!empty($item['route'])): ?>
+                        <a href="<?php echo e(route($item['route'])); ?>"
                            class="mt-4 inline-flex items-center text-sm font-semibold text-primary hover:underline">
                             Selengkapnya
                             <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </a>
-                    @else
+                    <?php else: ?>
                         <a href="#kontak" class="mt-4 inline-flex items-center text-sm font-semibold text-primary hover:underline">
                             Selengkapnya
                             <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </a>
-                    @endif
+                    <?php endif; ?>
                 </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </div>
 </section>
 
- {{-- 4. TENTANG KAMI --}}
+ 
 <section class="bg-white py-16 sm:py-20" id="tentang-kami">
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
 
-        {{-- Header Tengah --}}
+        
         <div class="text-center mb-6">
             <h2 class="font-serif text-3xl font-bold text-gray-900 sm:text-4xl">Tentang Kami</h2>
         </div>
 
-        {{-- Konten: Logo kiri sejajar Teks kanan --}}
+        
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:items-stretch">
 
-         {{-- Kiri: Logo --}}
+         
 <div class="flex items-center justify-center" style="min-height: 280px;">
     <img
-        src="{{ asset('storage/logo/LOGO KAJI KATA.jpeg') }}"
+        src="<?php echo e(asset('storage/logo/LOGO KAJI KATA.jpeg')); ?>"
         alt="Logo Kaji Indonesia"
         class="object-contain"
         style="height: 280px; width: auto;"
     />
 </div>
 
-            {{-- Kanan: Deskripsi --}}
+            
             <div class="flex flex-col justify-center" style="min-height: 280px;">
                 <p class="text-gray-600 leading-relaxed text-sm sm:text-base text-justify">
                     <span class="font-semibold text-gray-800">KAJI Indonesia</span> adalah lembaga yang berfokus pada penguatan kolaborasi antar komunitas, organisasi, dan instansi. Berdiri sejak <span class="font-semibold text-primary">2008</span> sebagai penghubung komunitas di Jawa Timur, kini berkembang menjadi jaringan kolaboratif berskala nasional.
@@ -312,11 +310,11 @@
     </div>
 </section>
 
-   {{-- 5. TESTIMONI / PARTNER --}}
+   
 <section class="bg-gray-50 py-16 sm:py-20">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
-        {{-- Testimoni --}}
+        
         <div class="text-center">
             <h2 class="font-serif text-3xl font-bold text-gray-900 sm:text-4xl">Apa Kata Mereka</h2>
             <p class="mx-auto mt-3 max-w-2xl text-gray-600">Testimoni dari mitra dan peserta program KAJI Indonesia.</p>
@@ -339,11 +337,11 @@
             </div>
         </div>
 
-        {{-- Partner --}}
+        
         <div class="mt-16 border-t border-gray-200 pt-12">
             <p class="text-center text-sm font-medium uppercase tracking-wider text-gray-500">Dipercaya oleh</p>
 
-            @php
+            <?php
                 $partners = [
                     ['image' => 'partners/Partner-01.png', 'name' => 'Partner 1'],
                     ['image' => 'partners/partner-02.png', 'name' => 'Partner 2'],
@@ -363,33 +361,35 @@
                     ['image' => 'partners/partner-16.png', 'name' => 'Partner 16'],
                     ['image' => 'partners/partner-17.png', 'name' => 'Partner 17'],
                 ];
-            @endphp
+            ?>
 
             <div class="mt-8 grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6">
-                @foreach ($partners as $partner)
+                <?php $__currentLoopData = $partners; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $partner): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="group flex aspect-square items-center justify-center rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-200/60 transition-all duration-300 hover:shadow-md hover:ring-gray-300">
                         <img
-                            src="{{ asset('storage/' . $partner['image']) }}"
-                            alt="{{ $partner['name'] }}"
+                            src="<?php echo e(asset('storage/' . $partner['image'])); ?>"
+                            alt="<?php echo e($partner['name']); ?>"
                             class="h-full w-full object-contain transition-all duration-300 group-hover:scale-105"
                             loading="lazy"
                         />
                     </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
         </div>
 
     </div>
 </section>
 
-    {{-- 6. CTA BANNER --}}
+    
     <section class="bg-primary py-16 sm:py-20" id="kontak">
         <div class="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
             <h2 class="font-serif text-3xl font-bold text-white sm:text-4xl">Siap Berkembang Bersama Kami?</h2>
             <p class="mt-4 text-lg text-white/90">Daftar sekarang untuk program pelatihan, pendampingan UMKM, atau konsultasi. Tim kami siap mendampingi Anda.</p>
-            <a href="{{ route('register') }}" class="mt-8 inline-flex items-center justify-center rounded-xl bg-secondary px-8 py-4 text-base font-semibold text-gray-900 shadow-lg transition-all hover:bg-secondary-dark hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-primary">
+            <a href="<?php echo e(route('register')); ?>" class="mt-8 inline-flex items-center justify-center rounded-xl bg-secondary px-8 py-4 text-base font-semibold text-gray-900 shadow-lg transition-all hover:bg-secondary-dark hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-primary">
                 Daftar Sekarang
             </a>
         </div>
     </section>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\webkajiindonesia\resources\views/pages/home.blade.php ENDPATH**/ ?>

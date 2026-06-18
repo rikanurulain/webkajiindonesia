@@ -1,0 +1,755 @@
+<?php $__env->startSection('page-title', 'Approval Produk'); ?>
+
+<?php $__env->startPush('styles'); ?>
+<style>
+/* ===================== RESPONSIVE MOBILE - APPROVAL PRODUK ===================== */
+
+/* Tab bar scroll horizontal */
+@media (max-width: 768px) {
+    .tab-bar {
+        width: 100% !important;
+        overflow-x: auto !important;
+        flex-wrap: nowrap !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tab-btn {
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* Table card header */
+    .table-card-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 6px !important;
+        padding: 12px 14px !important;
+    }
+
+    /* ── TAB PENDING: kolom Kategori, Lokasi, Dikirim disembunyikan ── */
+    #tab-pending table,
+    #tab-approved table,
+    #tab-rejected table {
+        table-layout: fixed !important;
+        width: 100% !important;
+    }
+
+    /* Pending: sembunyikan Kategori(2), Harga(3), Lokasi(4), Dikirim(5) */
+    #tab-pending thead tr th:nth-child(2),
+    #tab-pending tbody tr td:nth-child(2),
+    #tab-pending thead tr th:nth-child(3),
+    #tab-pending tbody tr td:nth-child(3),
+    #tab-pending thead tr th:nth-child(4),
+    #tab-pending tbody tr td:nth-child(4),
+    #tab-pending thead tr th:nth-child(5),
+    #tab-pending tbody tr td:nth-child(5) {
+        display: none !important;
+    }
+
+    /* Pending: lebar kolom Produk(1) dan Aksi(6) */
+    #tab-pending thead tr th:nth-child(1),
+    #tab-pending tbody tr td:nth-child(1) {
+        width: 60% !important;
+    }
+    #tab-pending thead tr th:nth-child(6),
+    #tab-pending tbody tr td:nth-child(6) {
+        width: 40% !important;
+    }
+
+    /* Approved: sembunyikan Kategori(2), Harga(3), Lokasi(4), Disetujui(5), Status(6) */
+    #tab-approved thead tr th:nth-child(2),
+    #tab-approved tbody tr td:nth-child(2),
+    #tab-approved thead tr th:nth-child(3),
+    #tab-approved tbody tr td:nth-child(3),
+    #tab-approved thead tr th:nth-child(4),
+    #tab-approved tbody tr td:nth-child(4),
+    #tab-approved thead tr th:nth-child(5),
+    #tab-approved tbody tr td:nth-child(5),
+    #tab-approved thead tr th:nth-child(6),
+    #tab-approved tbody tr td:nth-child(6) {
+        display: none !important;
+    }
+
+    /* Approved: lebar kolom Produk(1) dan Aksi(7) */
+    #tab-approved thead tr th:nth-child(1),
+    #tab-approved tbody tr td:nth-child(1) {
+        width: 65% !important;
+    }
+    #tab-approved thead tr th:nth-child(7),
+    #tab-approved tbody tr td:nth-child(7) {
+        width: 35% !important;
+    }
+
+    /* Rejected: sembunyikan Kategori(2), Alasan(3), Ditolak(4) */
+    #tab-rejected thead tr th:nth-child(2),
+    #tab-rejected tbody tr td:nth-child(2),
+    #tab-rejected thead tr th:nth-child(3),
+    #tab-rejected tbody tr td:nth-child(3),
+    #tab-rejected thead tr th:nth-child(4),
+    #tab-rejected tbody tr td:nth-child(4) {
+        display: none !important;
+    }
+
+    /* Rejected: lebar kolom Produk(1) dan Aksi(5) */
+    #tab-rejected thead tr th:nth-child(1),
+    #tab-rejected tbody tr td:nth-child(1) {
+        width: 60% !important;
+    }
+    #tab-rejected thead tr th:nth-child(5),
+    #tab-rejected tbody tr td:nth-child(5) {
+        width: 40% !important;
+    }
+
+    /* Thead & tbody padding */
+    thead th {
+        padding: 10px 10px !important;
+        font-size: 9px !important;
+    }
+    tbody td {
+        padding: 10px 10px !important;
+    }
+
+    /* Submitter cell (dipakai sebagai preview produk) */
+    .submitter {
+        gap: 6px !important;
+    }
+
+    .submitter-avatar {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 14px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .submitter-name {
+        font-size: 11px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        max-width: 120px !important;
+    }
+
+    .submitter-sub {
+        font-size: 10px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        max-width: 120px !important;
+    }
+
+/* Tombol aksi: susun vertikal, semua sama lebar */
+    .action-group {
+        flex-direction: column !important;
+        gap: 4px !important;
+        align-items: stretch !important;
+        width: 100% !important;
+    }
+
+    /* Semua tombol sama lebar & tinggi */
+    .action-group .btn-sm {
+        font-size: 11px !important;
+        padding: 6px 4px !important;
+        white-space: nowrap !important;
+        justify-content: center !important;
+        width: 100% !important;
+        display: flex !important;
+        box-sizing: border-box !important;
+        min-height: 30px !important;
+    }
+
+    /* Tombol Detail: tampilkan ikon + teks kecil */
+    .action-group .btn-ghost.btn-sm {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px !important;
+    }
+
+    .action-group .btn-ghost.btn-sm svg {
+        width: 13px !important;
+        height: 13px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .action-group .btn-ghost.btn-sm svg {
+        width: 14px !important;
+        height: 14px !important;
+        font-size: 14px !important; /* kembalikan ukuran ikon */
+    }
+
+    /* ── Modal: tampil di tengah ── */
+    .modal-overlay {
+        align-items: center !important;
+        padding: 16px !important;
+    }
+
+    .modal {
+        width: 100% !important;
+        max-width: 420px !important;
+        border-radius: 20px !important;
+        padding: 20px 16px 24px !important;
+        max-height: 88vh !important;
+        margin: auto !important;
+    }
+
+    #modal-reject .modal {
+        width: 100% !important;
+        max-width: 420px !important;
+    }
+
+    /* Detail grid: 1 kolom */
+    .detail-grid {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+
+    .detail-item.full {
+        grid-column: 1 !important;
+    }
+
+    /* Gambar preview di modal lebih kecil */
+    .img-preview {
+        height: 130px !important;
+        margin-bottom: 14px !important;
+    }
+
+    /* Tombol aksi di modal: susun vertikal */
+    #d-action-btns {
+        flex-direction: column-reverse !important;
+        gap: 8px !important;
+    }
+
+    #d-action-btns .btn {
+        flex: unset !important;
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    /* Form reject */
+    .form-textarea {
+        font-size: 14px !important;
+    }
+}
+</style>
+<?php $__env->stopPush(); ?>
+
+<?php $__env->startSection('content'); ?>
+
+
+<div class="tab-bar">
+    <button class="tab-btn active" data-tab="pending" onclick="switchTab('pending', this)">
+        Menunggu
+        <?php if($counts['pending'] > 0): ?>
+            <span class="count-pill"><?php echo e($counts['pending']); ?></span>
+        <?php endif; ?>
+    </button>
+    <button class="tab-btn" data-tab="approved" onclick="switchTab('approved', this)">
+        Disetujui
+        <?php if($counts['approved'] > 0): ?>
+            <span class="count-pill" style="background:var(--accent);"><?php echo e($counts['approved']); ?></span>
+        <?php endif; ?>
+    </button>
+    <button class="tab-btn" data-tab="rejected" onclick="switchTab('rejected', this)">
+        Ditolak
+        <?php if($counts['rejected'] > 0): ?>
+            <span class="count-pill" style="background:#9ca3af;"><?php echo e($counts['rejected']); ?></span>
+        <?php endif; ?>
+    </button>
+</div>
+
+
+<div id="tab-pending">
+    <div class="table-card">
+        <div class="table-card-header">
+            <div class="table-card-title">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Produk Menunggu Review
+                <span class="table-card-subtitle"><?php echo e($counts['pending']); ?> produk</span>
+            </div>
+        </div>
+
+        <?php if($pending->isEmpty()): ?>
+            <div class="empty-state">
+                <div class="empty-state-icon">🎉</div>
+                <div class="empty-state-text">Tidak ada produk yang menunggu review.</div>
+            </div>
+        <?php else: ?>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produk</th>
+                        <th>Kategori</th>
+                        <th>Harga</th>
+                        <th>Lokasi</th>
+                        <th>Dikirim</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php $__currentLoopData = $pending; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $produk): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <tr>
+                        <td>
+                            <div class="submitter">
+                                <div class="submitter-avatar" style="background:var(--accent3);border-radius:8px;overflow:hidden;">
+                                    <?php if($produk->foto): ?>
+                                        <img src="<?php echo e(asset('storage/' . $produk->foto)); ?>" alt="<?php echo e($produk->nama); ?>" style="width:100%;height:100%;object-fit:cover;">
+                                    <?php else: ?>
+                                        🛍️
+                                    <?php endif; ?>
+                                </div>
+                                <div>
+                                    <div class="submitter-name"><?php echo e($produk->nama); ?></div>
+                                    <div class="submitter-sub"><?php echo e(Str::limit($produk->deskripsi ?? '', 35)); ?></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><div style="font-size:13px;"><?php echo e($produk->kategori ?? '-'); ?></div></td>
+                        <td><div style="font-size:13px;">Rp <?php echo e(number_format($produk->harga ?? 0, 0, ',', '.')); ?></div></td>
+                        <td>
+                            <div style="font-size:12px;color:var(--text-muted);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                <?php echo e($produk->alamat ?? '-'); ?>
+
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-size:12px;color:var(--text-muted);">
+                                <?php echo e($produk->created_at->diffForHumans()); ?>
+
+                            </div>
+                        </td>
+                        <td>
+                            <div class="action-group">
+                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal(<?php echo e($produk->id); ?>)">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    Detail
+                                </button>
+                                
+                                <form method="POST" action="<?php echo e(route('admin.approval.produk.approve', $produk)); ?>" style="display:inline;">
+                                    <?php echo csrf_field(); ?>
+                                    <button type="submit" class="btn btn-approve btn-sm">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Setujui
+                                    </button>
+                                </form>
+                                <button class="btn btn-reject btn-sm" onclick="openRejectModal(<?php echo e($produk->id); ?>, '<?php echo e(addslashes($produk->nama)); ?>')">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                    Tolak
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
+    </div>
+</div>
+
+
+<div id="tab-approved" style="display:none;">
+    <div class="table-card">
+        <div class="table-card-header">
+            <div class="table-card-title">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Produk Disetujui
+                <span class="table-card-subtitle"><?php echo e($counts['approved']); ?> produk aktif</span>
+            </div>
+        </div>
+
+        <?php if($approved->isEmpty()): ?>
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <div class="empty-state-text">Belum ada produk yang disetujui.</div>
+            </div>
+        <?php else: ?>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produk</th>
+                        <th>Kategori</th>
+                        <th>Harga</th>
+                        <th>Lokasi</th>
+                        <th>Disetujui</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php $__currentLoopData = $approved; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $produk): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <tr>
+                        <td>
+                            <div class="submitter">
+                                <div class="submitter-avatar" style="background:var(--accent3);border-radius:8px;overflow:hidden;">
+                                    <?php if($produk->foto): ?>
+                                        <img src="<?php echo e(asset('storage/' . $produk->foto)); ?>" alt="<?php echo e($produk->nama); ?>" style="width:100%;height:100%;object-fit:cover;">
+                                    <?php else: ?>
+                                        🛍️
+                                    <?php endif; ?>
+                                </div>
+                                <div>
+                                    <div class="submitter-name"><?php echo e($produk->nama); ?></div>
+                                    <div class="submitter-sub"><?php echo e(Str::limit($produk->deskripsi ?? '', 35)); ?></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><div style="font-size:13px;"><?php echo e($produk->kategori ?? '-'); ?></div></td>
+                        <td><div style="font-size:13px;">Rp <?php echo e(number_format($produk->harga ?? 0, 0, ',', '.')); ?></div></td>
+                        <td>
+                            <div style="font-size:12px;color:var(--text-muted);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                <?php echo e($produk->alamat ?? '-'); ?>
+
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-size:12px;color:var(--text-muted);">
+                                <?php echo e($produk->approved_at?->diffForHumans() ?? '-'); ?>
+
+                            </div>
+                        </td>
+                        <td><span class="badge badge-approved"><span class="badge-dot"></span>Aktif</span></td>
+                        <td>
+                            <div class="action-group">
+                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal(<?php echo e($produk->id); ?>)">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    Detail
+                                </button>
+                                <form method="POST"
+                                      action="<?php echo e(route('admin.approval.produk.destroy', $produk)); ?>"
+                                      style="display:inline;"
+                                      onsubmit="return confirmHapus('<?php echo e(addslashes($produk->nama)); ?>')">
+                                    <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
+                                    <button type="submit" class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                        Hapus
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
+    </div>
+</div>
+
+
+<div id="tab-rejected" style="display:none;">
+    <div class="table-card">
+        <div class="table-card-header">
+            <div class="table-card-title">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Produk Ditolak
+                <span class="table-card-subtitle"><?php echo e($counts['rejected']); ?> ditolak</span>
+            </div>
+        </div>
+
+        <?php if($rejected->isEmpty()): ?>
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <div class="empty-state-text">Tidak ada produk yang ditolak.</div>
+            </div>
+        <?php else: ?>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produk</th>
+                        <th>Kategori</th>
+                        <th>Alasan Penolakan</th>
+                        <th>Ditolak</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php $__currentLoopData = $rejected; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $produk): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <tr>
+                        <td>
+                            <div class="submitter">
+                                <div class="submitter-avatar" style="background:#9ca3af;border-radius:8px;overflow:hidden;">
+                                    <?php if($produk->foto): ?>
+                                        <img src="<?php echo e(asset('storage/' . $produk->foto)); ?>" alt="<?php echo e($produk->nama); ?>" style="width:100%;height:100%;object-fit:cover;">
+                                    <?php else: ?>
+                                        🛍️
+                                    <?php endif; ?>
+                                </div>
+                                <div>
+                                    <div class="submitter-name"><?php echo e($produk->nama); ?></div>
+                                    <div class="submitter-sub"><?php echo e(Str::limit($produk->deskripsi ?? '', 35)); ?></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><div style="font-size:13px;"><?php echo e($produk->kategori ?? '-'); ?></div></td>
+                        <td>
+                            <div style="font-size:12px;color:var(--accent2);max-width:200px;">
+                                <?php echo e(Str::limit($produk->catatan_admin ?? '-', 60)); ?>
+
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-size:12px;color:var(--text-muted);">
+                                <?php echo e($produk->rejected_at?->diffForHumans() ?? '-'); ?>
+
+                            </div>
+                        </td>
+                        <td>
+                            <div class="action-group">
+                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal(<?php echo e($produk->id); ?>)">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    Detail
+                                </button>
+                                <form method="POST"
+                                      action="<?php echo e(route('admin.approval.produk.destroy', $produk)); ?>"
+                                      style="display:inline;"
+                                      onsubmit="return confirmHapus('<?php echo e(addslashes($produk->nama)); ?>')">
+                                    <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
+                                    <button type="submit" class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                        Hapus
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
+    </div>
+</div>
+
+
+<div class="modal-overlay" id="modal-detail">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Detail Produk</div>
+            <button class="modal-close" onclick="closeModal('modal-detail')">✕</button>
+        </div>
+
+        <div class="img-preview" id="detail-img">
+            <span>🛍️</span>
+        </div>
+
+        <div class="detail-grid">
+            <div class="detail-item">
+                <div class="detail-label">Nama Produk</div>
+                <div class="detail-value" id="d-nama">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Status</div>
+                <div class="detail-value" id="d-status">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Kategori</div>
+                <div class="detail-value" id="d-kategori">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Harga</div>
+                <div class="detail-value" id="d-harga">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">No. WhatsApp</div>
+                <div class="detail-value" id="d-whatsapp">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Didaftarkan</div>
+                <div class="detail-value" id="d-tanggal">-</div>
+            </div>
+            <div class="detail-item full">
+                <div class="detail-label">Deskripsi</div>
+                <div class="detail-value" id="d-deskripsi" style="font-weight:400;line-height:1.6;font-size:13px;color:var(--text-muted);">-</div>
+            </div>
+            <div class="detail-item full">
+                <div class="detail-label">Alamat</div>
+                <div class="detail-value" id="d-alamat" style="font-weight:400;font-size:13px;">-</div>
+            </div>
+            <div class="detail-item full" id="d-reject-wrap" style="display:none;">
+                <div class="detail-label" style="color:var(--accent2);">Alasan Penolakan</div>
+                <div class="detail-value" id="d-reject" style="font-weight:400;font-size:13px;color:var(--accent2);">-</div>
+            </div>
+        </div>
+
+        <div id="d-action-btns" style="display:flex;gap:10px;margin-top:4px;">
+            <button class="btn btn-ghost" style="flex:1;" onclick="closeModal('modal-detail')">Tutup</button>
+            <button class="btn btn-reject" id="btn-detail-reject" style="flex:1;">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+                Tolak
+            </button>
+            <button class="btn btn-approve" id="btn-detail-approve" style="flex:1;">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path d="M5 13l4 4L19 7"/>
+                </svg>
+                Setujui
+            </button>
+        </div>
+        <div id="d-close-only" style="display:none;margin-top:4px;">
+            <button class="btn btn-ghost" style="width:100%;" onclick="closeModal('modal-detail')">Tutup</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal-overlay" id="modal-reject">
+    <div class="modal" style="width:460px;">
+        <div class="modal-header">
+            <div class="modal-title">Tolak Produk</div>
+            <button class="modal-close" onclick="closeModal('modal-reject')">✕</button>
+        </div>
+        <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:18px;line-height:1.6;">
+            Berikan alasan penolakan untuk <strong id="reject-name"></strong>. Alasan ini akan tersimpan sebagai catatan.
+        </p>
+        
+        <form id="reject-form" method="POST">
+            <?php echo csrf_field(); ?>
+            <div class="form-group">
+                <label class="form-label">Alasan Penolakan *</label>
+                <textarea name="alasan" class="form-textarea" rows="4"
+                    placeholder="Contoh: Foto produk kurang jelas, deskripsi tidak lengkap..."
+                    required></textarea>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:6px;">
+                <button type="button" class="btn btn-ghost" style="flex:1;" onclick="closeModal('modal-reject')">Batal</button>
+                <button type="submit" class="btn btn-reject" style="flex:1;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    Konfirmasi Tolak
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+const produkData = <?php echo json_encode($pending->merge($approved)->merge($rejected)->keyBy('id'), 15, 512) ?>;
+const csrfToken  = '<?php echo e(csrf_token()); ?>';
+
+function switchTab(tab, btn) {
+    ['pending', 'approved', 'rejected'].forEach(t => {
+        document.getElementById('tab-' + t).style.display = t === tab ? 'block' : 'none';
+    });
+    btn.closest('.tab-bar').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const url = new URL(window.location);
+    url.searchParams.set('tab', tab);
+    window.history.replaceState({}, '', url);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const params    = new URLSearchParams(window.location.search);
+    const activeTab = params.get('tab') || 'pending';
+    const tabBtn    = document.querySelector(`.tab-btn[data-tab="${activeTab}"]`);
+    if (tabBtn) switchTab(activeTab, tabBtn);
+});
+
+function openDetailModal(id) {
+    const p = produkData[id];
+    if (!p) return;
+
+    const imgEl = document.getElementById('detail-img');
+    if (p.foto) {
+        imgEl.innerHTML = `<img src="/storage/${p.foto}" alt="${p.nama}" style="width:100%;height:100%;object-fit:cover;">`;
+    } else {
+        imgEl.innerHTML = '<span>🛍️</span>';
+    }
+
+    document.getElementById('d-nama').textContent      = p.nama;
+    document.getElementById('d-kategori').textContent  = p.kategori ?? '-';
+    document.getElementById('d-harga').textContent     = 'Rp ' + (p.harga ?? 0).toLocaleString('id');
+    document.getElementById('d-whatsapp').textContent  = p.whatsapp ?? '-';
+    document.getElementById('d-deskripsi').textContent = p.deskripsi ?? '-';
+    document.getElementById('d-alamat').textContent    = p.alamat ?? '-';
+    document.getElementById('d-tanggal').textContent   = p.created_at
+        ? new Date(p.created_at).toLocaleDateString('id-ID', {day:'2-digit',month:'long',year:'numeric'})
+        : '-';
+
+    const statusMap = {
+        pending:  '<span class="badge badge-pending"><span class="badge-dot"></span>Menunggu</span>',
+        approved: '<span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>',
+        rejected: '<span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>',
+    };
+    document.getElementById('d-status').innerHTML = statusMap[p.status] ?? p.status;
+
+    const rejectWrap = document.getElementById('d-reject-wrap');
+    if (p.status === 'rejected' && p.catatan_admin) {
+        rejectWrap.style.display = 'block';
+        document.getElementById('d-reject').textContent = p.catatan_admin;
+    } else {
+        rejectWrap.style.display = 'none';
+    }
+
+    const actionBtns = document.getElementById('d-action-btns');
+    const closeOnly  = document.getElementById('d-close-only');
+    if (p.status === 'pending') {
+        actionBtns.style.display = 'flex';
+        closeOnly.style.display  = 'none';
+        document.getElementById('btn-detail-approve').onclick = () => {
+            closeModal('modal-detail');
+            submitApprove(id);
+        };
+        document.getElementById('btn-detail-reject').onclick = () => {
+            closeModal('modal-detail');
+            openRejectModal(id, p.nama);
+        };
+    } else {
+        actionBtns.style.display = 'none';
+        closeOnly.style.display  = 'block';
+    }
+
+    openModal('modal-detail');
+}
+
+
+function submitApprove(id) {
+    const form  = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/admin/approval/produk/${id}/approve`;
+
+    const token   = document.createElement('input');
+    token.type    = 'hidden';
+    token.name    = '_token';
+    token.value   = csrfToken;
+
+    form.appendChild(token);
+    document.body.appendChild(form);
+    form.submit();
+}
+
+function openRejectModal(id, nama) {
+    document.getElementById('reject-name').textContent = nama;
+    document.getElementById('reject-form').action = `/admin/approval/produk/${id}/reject?tab=rejected`;
+    openModal('modal-reject');
+}
+
+function confirmHapus(nama) {
+    return confirm(`Hapus produk "${nama}"?\n\nTindakan ini tidak dapat dibatalkan.`);
+}
+</script>
+
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\webkajiindonesia\resources\views/admin/approval-produk.blade.php ENDPATH**/ ?>
