@@ -280,7 +280,7 @@
          
 <div class="flex items-center justify-center" style="min-height: 280px;">
     <img
-        src="<?php echo e(asset('storage/logo/logo.png')); ?>"
+        src="<?php echo e(asset('storage/logo/LOGO KAJI KATA.jpeg')); ?>"
         alt="Logo Kaji Indonesia"
         class="object-contain"
         style="height: 280px; width: auto;"
