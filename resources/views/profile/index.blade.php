@@ -115,6 +115,28 @@
                     {{-- Grid 2 kolom di mobile untuk status cards --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
 
+                        {{-- STATUS ADMIN --}}
+                        @if($user->role === 'admin')
+                        <div class="p-4 lg:p-6 rounded-2xl text-white shadow-md bg-emerald-800">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="p-1 bg-white rounded-full flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-emerald-800" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <h4 class="font-bold text-sm">Administrator ✓</h4>
+                            </div>
+                            <p class="text-xs text-emerald-100 leading-relaxed mb-3 hidden lg:block">
+                                Anda login sebagai Admin. Kelola seluruh data platform dari sini.
+                            </p>
+                            <a href="{{ route('admin.dashboard') }}"
+                               class="block w-full bg-white text-emerald-800 py-2 rounded-lg font-bold text-xs lg:text-sm text-center hover:bg-gray-100 transition">
+                                Dashboard Admin →
+                            </a>
+                        </div>
+                        @endif
+                        @if($user->role !== 'admin')
+
                         {{-- STATUS UMKM (sudah aktif) --}}
                         @if($user->role === 'umkm')
                         <div class="p-4 lg:p-6 rounded-2xl text-white shadow-md bg-emerald-800">
@@ -318,7 +340,7 @@
                             @endif
                         </div>
                         @endif
-
+                        @endif {{-- end bukan admin --}}
                     </div>{{-- end status grid --}}
                 </div>
 

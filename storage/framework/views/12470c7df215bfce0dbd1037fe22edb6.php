@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title', 'Daftar Program: ' . $program->judul . ' - KAJI INDONESIA'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -170,8 +168,8 @@ unset($__errorArgs, $__bag); ?>
                         </p>
                         
                         <div class="mt-2 bg-white border border-amber-200 rounded-lg px-3 py-2 text-xs text-gray-700 space-y-0.5">
-                            <p><span class="font-semibold">Bank BCA</span> — 1234567890</p>
-                            <p>a.n. <span class="font-semibold">KAJI Indonesia</span></p>
+                            <p><span class="font-semibold">Bank BNI</span> — 873873298</p>
+                            <p>a.n. <span class="font-semibold">ARI PRABOWO</span></p>
                         </div>
                     </div>
                 </div>
@@ -272,4 +270,4 @@ function previewBukti(input) {
 <?php $__env->stopPush(); ?>
 
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\Kaji-indo-main\resources\views/pages/pendaftaran-program.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\webkajiindonesia\resources\views/pages/pendaftaran-program.blade.php ENDPATH**/ ?>

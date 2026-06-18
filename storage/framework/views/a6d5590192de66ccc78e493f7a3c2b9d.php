@@ -16,6 +16,18 @@
         background: #ef4444; color: #fff; border: none; cursor: pointer; transition: background 0.15s;
     }
     .swal-btn-confirm-reject:hover { background: #dc2626; }
+    .swal-btn-confirm-delete {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600;
+        background: #ea580c; color: #fff; border: none; cursor: pointer; transition: background 0.15s;
+    }
+    .swal-btn-confirm-delete:hover { background: #c2410c; }
+    .swal-btn-confirm-restore {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600;
+        background: #7c3aed; color: #fff; border: none; cursor: pointer; transition: background 0.15s;
+    }
+    .swal-btn-confirm-restore:hover { background: #6d28d9; }
     .swal-btn-cancel {
         display: inline-flex; align-items: center;
         padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 500;
@@ -27,38 +39,59 @@
     .swal2-actions{ gap: 10px !important; margin-top: 24px !important; }
 
     /* ── Biaya badge ── */
-    .badge-gratis  { background:#dcfce7; color:#15803d; border:1px solid #86efac; }
-    .badge-berbayar{ background:#fef3c7; color:#92400e; border:1px solid #fde68a; }
+    .badge-gratis   { background:#dcfce7; color:#15803d; border:1px solid #86efac; }
+    .badge-berbayar { background:#fef3c7; color:#92400e; border:1px solid #fde68a; }
 
-    /* ===================== RESPONSIVE MOBILE - APPROVAL EVENT ===================== */
+    /* ── Delete badge ── */
+    .badge-deleted  {
+        background: #fff7ed; color: #c2410c;
+        border: 1px solid #fed7aa;
+    }
 
+    /* ── Btn delete & restore ── */
+    .btn-delete {
+        background: #fff7ed; color: #c2410c;
+        border: 1.5px solid #fed7aa;
+    }
+    .btn-delete:hover { background: #ffedd5; border-color: #fb923c; }
+
+    .btn-restore {
+        background: #f5f3ff; color: #7c3aed;
+        border: 1.5px solid #ddd6fe;
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 600;
+        cursor: pointer; font-family: inherit; transition: all .15s; text-decoration: none;
+    }
+    .btn-restore:hover { background: #ede9fe; border-color: #c4b5fd; }
+
+    /* ── Row dihapus: redup ── */
+    tr.row-deleted td { opacity: 0.6; }
+    tr.row-deleted:hover td { opacity: 0.85; }
+
+    /* ── Info banner dihapus ── */
+    .deleted-info-banner {
+        display: flex; align-items: center; gap: 8px;
+        background: #fff7ed; border: 1px solid #fed7aa;
+        border-radius: 10px; padding: 8px 12px; margin-top: 4px;
+        font-size: 11px; color: #c2410c; line-height: 1.4;
+    }
+
+    /* ===================== RESPONSIVE MOBILE ===================== */
     @media (max-width: 768px) {
-
-        /* Tab bar scroll horizontal */
         .tab-bar {
             width: 100% !important;
             overflow-x: auto !important;
             flex-wrap: nowrap !important;
             -webkit-overflow-scrolling: touch;
         }
-        .tab-btn {
-            white-space: nowrap !important;
-            flex-shrink: 0 !important;
-        }
-
-        /* Table card header */
+        .tab-btn { white-space: nowrap !important; flex-shrink: 0 !important; }
         .table-card-header {
             flex-direction: column !important;
             align-items: flex-start !important;
             gap: 6px !important;
             padding: 12px 14px !important;
         }
-
-        /* Tabel: fixed layout */
-        .table-card table {
-            table-layout: fixed !important;
-            width: 100% !important;
-        }
+        .table-card table { table-layout: fixed !important; width: 100% !important; }
 
         /* Sembunyikan: Pembimbing(2), Lokasi(3), Tanggal(4), Kapasitas(5), Status(6) */
         .table-card table thead tr th:nth-child(2),
@@ -70,138 +103,34 @@
         .table-card table thead tr th:nth-child(5),
         .table-card table tbody tr td:nth-child(5),
         .table-card table thead tr th:nth-child(6),
-        .table-card table tbody tr td:nth-child(6) {
-            display: none !important;
-        }
+        .table-card table tbody tr td:nth-child(6) { display: none !important; }
 
-        /* Lebar kolom Event(1) dan Aksi(7) */
         .table-card table thead tr th:nth-child(1),
-        .table-card table tbody tr td:nth-child(1) {
-            width: 60% !important;
-        }
+        .table-card table tbody tr td:nth-child(1) { width: 60% !important; }
         .table-card table thead tr th:nth-child(7),
-        .table-card table tbody tr td:nth-child(7) {
-            width: 40% !important;
-        }
+        .table-card table tbody tr td:nth-child(7) { width: 40% !important; }
 
-        /* Padding baris */
-        thead th {
-            padding: 10px 10px !important;
-            font-size: 9px !important;
-        }
-        tbody td {
-            padding: 10px 10px !important;
-        }
+        thead th { padding: 10px 10px !important; font-size: 9px !important; }
+        tbody td  { padding: 10px 10px !important; }
 
-        /* Preview cell (kolom Event) */
         .preview-cell { gap: 6px !important; }
+        .preview-thumb { width: 36px !important; height: 36px !important; font-size: 16px !important; flex-shrink: 0 !important; }
+        .preview-name { font-size: 11px !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; max-width: 110px !important; }
+        .preview-cell .badge-gratis, .preview-cell .badge-berbayar { display: none !important; }
 
-        .preview-thumb {
-            width: 36px !important;
-            height: 36px !important;
-            font-size: 16px !important;
-            flex-shrink: 0 !important;
-        }
+        .action-group { flex-direction: column !important; gap: 4px !important; align-items: stretch !important; width: 100% !important; }
+        .action-group .btn-sm { font-size: 11px !important; padding: 6px 4px !important; white-space: nowrap !important; justify-content: center !important; width: 100% !important; display: flex !important; box-sizing: border-box !important; min-height: 30px !important; }
+        .action-group .btn-ghost.btn-sm { display: flex !important; align-items: center !important; justify-content: center !important; }
 
-        .preview-name {
-            font-size: 11px !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            white-space: nowrap !important;
-            max-width: 110px !important;
-        }
-
-        /* Sembunyikan badge biaya di tabel, tetap tampil di modal */
-        .preview-cell .badge-gratis,
-        .preview-cell .badge-berbayar {
-            display: none !important;
-        }
-
-        /* Tombol aksi: susun vertikal, semua sama lebar */
-        .action-group {
-            flex-direction: column !important;
-            gap: 4px !important;
-            align-items: stretch !important;
-            width: 100% !important;
-        }
-
-        .action-group .btn-sm {
-            font-size: 11px !important;
-            padding: 6px 4px !important;
-            white-space: nowrap !important;
-            justify-content: center !important;
-            width: 100% !important;
-            display: flex !important;
-            box-sizing: border-box !important;
-            min-height: 30px !important;
-        }
-
-        /* Tombol Detail tetap tampil */
-        .action-group .btn-ghost.btn-sm {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-        }
-
-        .action-group .btn-ghost.btn-sm svg {
-            width: 13px !important;
-            height: 13px !important;
-            flex-shrink: 0 !important;
-        }
-
-        /* ── Modal: slide dari bawah ── */
-        .modal-overlay {
-            align-items: flex-end !important;
-            padding: 0 !important;
-        }
-
-        .modal {
-            width: 100% !important;
-            max-width: 100% !important;
-            border-radius: 20px 20px 0 0 !important;
-            padding: 20px 16px 32px !important;
-            max-height: 90vh !important;
-        }
-
-        #modal-reject .modal {
-            width: 100% !important;
-        }
-
-        /* Gambar preview di modal */
-        .img-preview {
-            height: 130px !important;
-            margin-bottom: 14px !important;
-        }
-
-        /* Detail grid: 1 kolom */
-        .detail-grid {
-            grid-template-columns: 1fr !important;
-            gap: 8px !important;
-        }
-
-        /* Tombol footer modal */
-        #modal-detail .modal > div:last-child {
-            flex-direction: column-reverse !important;
-            gap: 8px !important;
-        }
-
-        #modal-detail .modal > div:last-child .btn {
-            width: 100% !important;
-            justify-content: center !important;
-        }
-
-        /* Form reject */
-        .form-textarea {
-            font-size: 14px !important;
-        }
-
-        /* SweetAlert2 */
-        .swal2-popup {
-            width: 92% !important;
-            padding: 24px 18px !important;
-        }
+        .modal-overlay { align-items: flex-end !important; padding: 0 !important; }
+        .modal { width: 100% !important; max-width: 100% !important; border-radius: 20px 20px 0 0 !important; padding: 20px 16px 32px !important; max-height: 90vh !important; }
+        #modal-reject .modal { width: 100% !important; }
+        #modal-delete .modal { width: 100% !important; }
+        .img-preview { height: 130px !important; margin-bottom: 14px !important; }
+        .detail-grid { grid-template-columns: 1fr !important; gap: 8px !important; }
+        .form-textarea { font-size: 14px !important; }
+        .swal2-popup { width: 92% !important; padding: 24px 18px !important; }
     }
-
 </style>
 <?php $__env->stopPush(); ?>
 
@@ -212,25 +141,31 @@
     <button class="tab-btn <?php echo e($status === 'pending'  ? 'active' : ''); ?>"
         onclick="location.href='<?php echo e(route('admin.approval.event')); ?>?status=pending'">
         Pending
-        <?php $cntPending = \App\Models\Event::where('status','pending')->count() ?>
-        <?php if($cntPending > 0): ?>
-            <span class="count-pill"><?php echo e($cntPending); ?></span>
+        <?php if($counts['pending'] > 0): ?>
+            <span class="count-pill"><?php echo e($counts['pending']); ?></span>
         <?php endif; ?>
     </button>
     <button class="tab-btn <?php echo e($status === 'approved' ? 'active' : ''); ?>"
         onclick="location.href='<?php echo e(route('admin.approval.event')); ?>?status=approved'">
         Disetujui
-        <?php $cntApproved = \App\Models\Event::where('status','approved')->count() ?>
-        <?php if($cntApproved > 0): ?>
-            <span class="count-pill" style="background:var(--accent);"><?php echo e($cntApproved); ?></span>
+        <?php if($counts['approved'] > 0): ?>
+            <span class="count-pill" style="background:var(--accent);"><?php echo e($counts['approved']); ?></span>
         <?php endif; ?>
     </button>
     <button class="tab-btn <?php echo e($status === 'rejected' ? 'active' : ''); ?>"
         onclick="location.href='<?php echo e(route('admin.approval.event')); ?>?status=rejected'">
         Ditolak
-        <?php $cntRejected = \App\Models\Event::where('status','rejected')->count() ?>
-        <?php if($cntRejected > 0): ?>
-            <span class="count-pill" style="background:#9ca3af;"><?php echo e($cntRejected); ?></span>
+        <?php if($counts['rejected'] > 0): ?>
+            <span class="count-pill" style="background:#9ca3af;"><?php echo e($counts['rejected']); ?></span>
+        <?php endif; ?>
+    </button>
+    
+    <button class="tab-btn <?php echo e($status === 'deleted' ? 'active' : ''); ?>"
+        onclick="location.href='<?php echo e(route('admin.approval.event')); ?>?status=deleted'"
+        style="<?php echo e($status === 'deleted' ? '' : ''); ?>">
+        🗑️ Dihapus
+        <?php if($counts['deleted'] > 0): ?>
+            <span class="count-pill" style="background:#c2410c;"><?php echo e($counts['deleted']); ?></span>
         <?php endif; ?>
     </button>
 </div>
@@ -238,27 +173,40 @@
 <div class="table-card">
     <div class="table-card-header">
         <div class="table-card-title">
-            📅 Daftar Event
+            <?php if($status === 'deleted'): ?>
+                🗑️ Event Dihapus Admin
+            <?php else: ?>
+                📅 Daftar Event
+            <?php endif; ?>
             <span class="table-card-subtitle"><?php echo e($events->count()); ?> event</span>
         </div>
+
+        
+        <?php if($status === 'deleted'): ?>
+        <div class="deleted-info-banner" style="margin-top:0;width:100%;box-sizing:border-box;">
+            ℹ️ Event di bawah ini dihapus oleh admin namun <strong>tidak dihapus permanen</strong>.
+            Trainer dapat memulihkannya dari dashboard mereka. Admin juga bisa memulihkan di sini.
+        </div>
+        <?php endif; ?>
     </div>
 
     <table>
         <thead>
             <tr>
                 <th>Event</th>
-                <th>Pembimbing</th>
+                <th><?php echo e($status === 'deleted' ? 'Dihapus Oleh' : 'Pembimbing'); ?></th>
                 <th>Lokasi</th>
                 <th>Tanggal</th>
                 <th>Kapasitas</th>
-                <th>Status</th>
+                <th><?php echo e($status === 'deleted' ? 'Alasan Hapus' : 'Status'); ?></th>
                 <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
             <?php $__empty_1 = true; $__currentLoopData = $events; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $event): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
             <?php $st = $event->status ?? 'pending'; ?>
-            <tr>
+            <tr class="<?php echo e($event->deleted_by_admin_at ? 'row-deleted' : ''); ?>">
+
                 
                 <td>
                     <div class="preview-cell">
@@ -273,7 +221,6 @@
                         </div>
                         <div>
                             <div class="preview-name"><?php echo e($event->judul); ?></div>
-                            
                             <?php if(empty($event->biaya) || $event->biaya == '0' || strtolower($event->biaya) === 'gratis'): ?>
                                 <span class="badge badge-gratis"
                                       style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;margin-top:3px;">
@@ -292,19 +239,41 @@
 
                 
                 <td>
-                    <?php if($event->trainer): ?>
-                    <div class="submitter">
-                        <div class="submitter-avatar" style="background:var(--accent);">
-                            <?php echo e(strtoupper(substr($event->trainer->name ?? 'T', 0, 2))); ?>
+                    <?php if($status === 'deleted'): ?>
+                        
+                        <?php if($event->deletedByAdmin): ?>
+                            <div class="submitter">
+                                <div class="submitter-avatar" style="background:#ea580c;">
+                                    <?php echo e(strtoupper(substr($event->deletedByAdmin->name ?? 'A', 0, 2))); ?>
 
-                        </div>
-                        <div>
-                            <div class="submitter-name"><?php echo e($event->trainer->name); ?></div>
-                            <div class="submitter-sub">Trainer</div>
-                        </div>
-                    </div>
+                                </div>
+                                <div>
+                                    <div class="submitter-name"><?php echo e($event->deletedByAdmin->name ?? 'Admin'); ?></div>
+                                    <div class="submitter-sub">
+                                        <?php echo e($event->deleted_by_admin_at?->format('d M Y')); ?>
+
+                                    </div>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <span style="color:var(--text-muted);font-size:12px;">Admin</span>
+                        <?php endif; ?>
                     <?php else: ?>
-                        <span style="color:var(--text-muted);font-size:12px;">-</span>
+                        
+                        <?php if($event->trainer): ?>
+                        <div class="submitter">
+                            <div class="submitter-avatar" style="background:var(--accent);">
+                                <?php echo e(strtoupper(substr($event->trainer->name ?? 'T', 0, 2))); ?>
+
+                            </div>
+                            <div>
+                                <div class="submitter-name"><?php echo e($event->trainer->name); ?></div>
+                                <div class="submitter-sub">Trainer</div>
+                            </div>
+                        </div>
+                        <?php else: ?>
+                            <span style="color:var(--text-muted);font-size:12px;">-</span>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </td>
 
@@ -336,13 +305,24 @@
 
                 
                 <td>
-                    <?php if($st === 'approved'): ?>
+                    <?php if($status === 'deleted'): ?>
+                        <div style="font-size:12px;color:#c2410c;line-height:1.5;max-width:160px;">
+                            <?php echo e($event->deleted_reason
+                                ? \Illuminate\Support\Str::limit($event->deleted_reason, 60)
+                                : '—'); ?>
+
+                        </div>
+                        <div style="font-size:10px;color:#9ca3af;margin-top:3px;">
+                            Trainer: <?php echo e($event->trainer->name ?? '-'); ?>
+
+                        </div>
+                    <?php elseif($st === 'approved'): ?>
                         <span class="badge badge-approved"><span class="badge-dot"></span>Disetujui</span>
                     <?php elseif($st === 'rejected'): ?>
                         <span class="badge badge-rejected"><span class="badge-dot"></span>Ditolak</span>
                         <?php if($event->catatan_admin): ?>
                             <div style="font-size:10px;color:#ef4444;margin-top:3px;max-width:140px;line-height:1.4;">
-                                <?php echo e(Str::limit($event->catatan_admin, 40)); ?>
+                                <?php echo e(\Illuminate\Support\Str::limit($event->catatan_admin, 40)); ?>
 
                             </div>
                         <?php endif; ?>
@@ -356,6 +336,7 @@
                     <div class="action-group">
 
                         
+                        <?php if($status !== 'deleted'): ?>
                         <button class="btn btn-ghost btn-sm btn-icon" title="Detail"
                                 onclick="openDetailModal(<?php echo e($event->id); ?>)">
                             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -363,9 +344,10 @@
                                 <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                             </svg>
                         </button>
+                        <?php endif; ?>
 
                         
-                        <?php if($st !== 'approved'): ?>
+                        <?php if($st !== 'approved' && $status !== 'deleted'): ?>
                         <form method="POST"
                               action="<?php echo e(route('admin.approval.event.approve', $event->id)); ?>"
                               id="form-approve-<?php echo e($event->id); ?>"
@@ -379,12 +361,49 @@
                         <?php endif; ?>
 
                         
-                        <?php if($st !== 'rejected'): ?>
+                        <?php if($st !== 'rejected' && $status !== 'deleted'): ?>
                         <button class="btn btn-reject btn-sm"
                                 onclick="confirmReject(<?php echo e($event->id); ?>, '<?php echo e(addslashes($event->judul)); ?>')">
                             ✕ Tolak
                         </button>
                         <?php endif; ?>
+
+                        
+                        <?php if($st === 'approved' && $status !== 'deleted'): ?>
+                        <button type="button" class="btn btn-delete btn-sm"
+                                onclick="confirmDelete(<?php echo e($event->id); ?>, '<?php echo e(addslashes($event->judul)); ?>')">
+                            🗑️ Hapus
+                        </button>
+                        
+                        <?php endif; ?>
+
+                        
+                        <?php if($status === 'deleted'): ?>
+    
+    <form method="POST"
+          action="<?php echo e(route('admin.approval.event.restore', $event->id)); ?>"
+          id="form-restore-<?php echo e($event->id); ?>"
+          style="display:inline;">
+        <?php echo csrf_field(); ?>
+        <button type="button" class="btn btn-restore btn-sm"
+                onclick="confirmRestore(<?php echo e($event->id); ?>, '<?php echo e(addslashes($event->judul)); ?>')">
+            ↩️ Pulihkan
+        </button>
+    </form>
+
+    
+    <form method="POST"
+          action="<?php echo e(route('admin.approval.event.force-delete', $event->id)); ?>"
+          id="form-force-delete-event-<?php echo e($event->id); ?>"
+          style="display:none;">
+        <?php echo csrf_field(); ?>
+        <?php echo method_field('DELETE'); ?>
+    </form>
+    <button type="button" class="btn btn-delete btn-sm"
+            onclick="confirmForceDeleteEvent(<?php echo e($event->id); ?>, '<?php echo e(addslashes($event->judul)); ?>')">
+        🗑️ Hapus Permanen
+    </button>
+<?php endif; ?>
 
                     </div>
                 </td>
@@ -393,8 +412,13 @@
             <tr>
                 <td colspan="7">
                     <div class="empty-state">
-                        <div class="empty-state-icon">🎉</div>
-                        <div class="empty-state-text">Tidak ada event dengan status ini</div>
+                        <?php if($status === 'deleted'): ?>
+                            <div class="empty-state-icon">🗂️</div>
+                            <div class="empty-state-text">Tidak ada event yang dihapus admin</div>
+                        <?php else: ?>
+                            <div class="empty-state-icon">🎉</div>
+                            <div class="empty-state-text">Tidak ada event dengan status ini</div>
+                        <?php endif; ?>
                     </div>
                 </td>
             </tr>
@@ -411,22 +435,14 @@
             <div class="modal-title">Detail Event</div>
             <button class="modal-close" onclick="closeModal('modal-detail')">✕</button>
         </div>
-
-        
         <div class="img-preview" id="detail-img">🎪</div>
-
-        
         <div class="detail-grid" id="detail-grid"></div>
-
-        
         <div class="detail-item full" id="d-reject-wrap" style="display:none;margin-bottom:12px;">
             <div class="detail-label" style="color:#ef4444;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">
                 Alasan Penolakan
             </div>
-            <div class="detail-value" id="d-reject"
-                 style="font-weight:400;font-size:13px;color:#ef4444;"></div>
+            <div class="detail-value" id="d-reject" style="font-weight:400;font-size:13px;color:#ef4444;"></div>
         </div>
-
         <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px;">
             <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-detail')">Tutup</button>
             <button class="btn btn-reject btn-sm"  id="btn-detail-reject"  style="display:none;">✕ Tolak</button>
@@ -456,8 +472,7 @@
                           required></textarea>
             </div>
             <div style="display:flex;gap:10px;margin-top:6px;">
-                <button type="button" class="btn btn-ghost" style="flex:1;"
-                        onclick="closeModal('modal-reject')">Batal</button>
+                <button type="button" class="btn btn-ghost" style="flex:1;" onclick="closeModal('modal-reject')">Batal</button>
                 <button type="submit" class="btn btn-reject" style="flex:1;">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14">
                         <path d="M6 18L18 6M6 6l12 12"/>
@@ -469,20 +484,56 @@
     </div>
 </div>
 
+
+
+<div class="modal-overlay" id="modal-delete">
+    <div class="modal" style="max-width:460px;">
+        <div class="modal-header">
+            <div class="modal-title">🗑️ Hapus Event</div>
+            <button class="modal-close" onclick="closeModal('modal-delete')">✕</button>
+        </div>
+        <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:6px;line-height:1.6;">
+            Hapus event <strong id="delete-event-name"></strong> dari tampilan publik.
+        </p>
+        <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:10px 14px;margin-bottom:18px;font-size:12px;color:#c2410c;line-height:1.6;">
+            ⚠️ Event <strong>tidak dihapus permanen</strong>. Trainer masih bisa memulihkannya dari dashboard mereka, dan admin juga bisa memulihkan dari tab <em>Dihapus</em>.
+        </div>
+        <form id="form-delete-modal" method="POST">
+            <?php echo csrf_field(); ?>
+            <?php echo method_field('DELETE'); ?>
+            <div class="form-group">
+                <label class="form-label">Alasan Penghapusan <span style="color:#9ca3af;font-weight:400;">(opsional)</span></label>
+                <textarea name="reason" id="delete-reason-input" class="form-textarea" rows="3"
+                          placeholder="Contoh: Konten tidak sesuai pedoman, event sudah lewat batas waktu..."></textarea>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:6px;">
+                <button type="button" class="btn btn-ghost" style="flex:1;" onclick="closeModal('modal-delete')">Batal</button>
+                <button type="submit" class="btn btn-delete" style="flex:1;border-radius:10px;font-size:12px;font-weight:600;padding:8px 14px;justify-content:center;">
+                    🗑️ Hapus Event
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startPush('scripts'); ?>
 <script>
-// Data event dari server untuk modal detail
 const eventData = <?php echo json_encode($events->values(), 15, 512) ?>;
+const csrfToken = '<?php echo e(csrf_token()); ?>';
 
-// ── SweetAlert2 config ────────────────────────────────────────────────────────
+// ── SweetAlert2 mixins ────────────────────────────────────────────────────────
 const swalApprove = Swal.mixin({
     customClass: { confirmButton: 'swal-btn-confirm-approve', cancelButton: 'swal-btn-cancel' },
     buttonsStyling: false,
 });
 const swalReject = Swal.mixin({
     customClass: { confirmButton: 'swal-btn-confirm-reject', cancelButton: 'swal-btn-cancel' },
+    buttonsStyling: false,
+});
+const swalRestore = Swal.mixin({
+    customClass: { confirmButton: 'swal-btn-confirm-restore', cancelButton: 'swal-btn-cancel' },
     buttonsStyling: false,
 });
 
@@ -497,9 +548,7 @@ function confirmApprove(id, name) {
         cancelButtonText:  'Batal',
         reverseButtons: true, focusCancel: true,
     }).then(function(result) {
-        if (result.isConfirmed) {
-            document.getElementById('form-approve-' + id).submit();
-        }
+        if (result.isConfirmed) document.getElementById('form-approve-' + id).submit();
     });
 }
 
@@ -518,12 +567,36 @@ function confirmReject(id, name) {
     });
 }
 
+// ── Confirm Delete (soft delete) ──────────────────────────────────────────────
+function confirmDelete(id, name) {
+    // Buka modal delete (ada textarea alasan)
+    document.getElementById('delete-event-name').textContent = name;
+    document.getElementById('delete-reason-input').value = '';
+    document.getElementById('form-delete-modal').action =
+    '/admin/approval/event/' + id;
+    openModal('modal-delete');
+}
+
+// ── Confirm Restore ───────────────────────────────────────────────────────────
+function confirmRestore(id, name) {
+    swalRestore.fire({
+        title: 'Pulihkan Event?',
+        html:  '<span style="font-size:14px;color:#6b7280;">Event <strong>' + name + '</strong> akan dipulihkan dan aktif kembali. Trainer juga akan melihat event ini di dashboard mereka.</span>',
+        icon:  'question', iconColor: '#7c3aed',
+        showCancelButton: true,
+        confirmButtonText: '↩️ Ya, Pulihkan',
+        cancelButtonText:  'Batal',
+        reverseButtons: true, focusCancel: true,
+    }).then(function(result) {
+        if (result.isConfirmed) document.getElementById('form-restore-' + id).submit();
+    });
+}
+
 // ── Modal Detail ──────────────────────────────────────────────────────────────
 function openDetailModal(id) {
     const e = eventData.find(function(x) { return x.id === id; });
     if (!e) return;
 
-    // Gambar
     const imgEl = document.getElementById('detail-img');
     if (e.gambar) {
         imgEl.innerHTML = '<img src="/storage/' + e.gambar + '" alt="' + e.judul + '" style="width:100%;height:100%;object-fit:cover;">';
@@ -531,19 +604,16 @@ function openDetailModal(id) {
         imgEl.textContent = '🎪';
     }
 
-    // Biaya label
     const biayaLabel = (!e.biaya || e.biaya === '0' || e.biaya.toLowerCase() === 'gratis')
         ? '✅ Gratis'
         : '💰 ' + e.biaya;
 
-    // Waktu
     let jamStr = '-';
     if (e.waktu_mulai && e.waktu_selesai) {
         const fmt = function(t) { return t.substring(0,5).replace(':', '.'); };
         jamStr = fmt(e.waktu_mulai) + ' – ' + fmt(e.waktu_selesai) + ' WIB';
     }
 
-    // Grid info
     document.getElementById('detail-grid').innerHTML =
         '<div class="detail-item">' +
             '<div class="detail-label">Nama Event</div>' +
@@ -576,7 +646,6 @@ function openDetailModal(id) {
             '</div>' +
         '</div>';
 
-    // Catatan penolakan
     const rejectWrap = document.getElementById('d-reject-wrap');
     if (e.status === 'rejected' && e.catatan_admin) {
         rejectWrap.style.display = 'block';
@@ -585,7 +654,6 @@ function openDetailModal(id) {
         rejectWrap.style.display = 'none';
     }
 
-    // Tombol aksi dalam modal
     const btnApprove = document.getElementById('btn-detail-approve');
     const btnReject  = document.getElementById('btn-detail-reject');
     btnApprove.style.display = e.status !== 'approved' ? 'inline-flex' : 'none';
@@ -598,13 +666,12 @@ function openDetailModal(id) {
 
 // ── Modal Reject ──────────────────────────────────────────────────────────────
 function openRejectModal(id, name) {
-    document.getElementById('reject-name').textContent  = name;
-    document.getElementById('form-reject').action       =
-        '/admin/approval/event/' + id + '/reject';
+    document.getElementById('reject-name').textContent = name;
+    document.getElementById('form-reject').action = '/admin/approval/event/' + id + '/reject';
     openModal('modal-reject');
 }
 
-// ── Helper modal ──────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
@@ -613,6 +680,29 @@ document.querySelectorAll('.modal-overlay').forEach(function(el) {
         if (e.target === el) closeModal(el.id);
     });
 });
+
+const swalDelete = Swal.mixin({
+    customClass: { confirmButton: 'swal-btn-confirm-delete', cancelButton: 'swal-btn-cancel' },
+    buttonsStyling: false,
+});
+function confirmForceDeleteEvent(id, name) {
+    swalDelete.fire({
+        title: 'Hapus Permanen?',
+        html: `<span style="font-size:14px;color:#6b7280;line-height:1.6;">
+                Event <strong>${name}</strong> akan dihapus selamanya.<br>
+                <span style="color:#ef4444;font-size:13px;margin-top:6px;display:block;">
+                    ⚠️ Tindakan ini tidak dapat dibatalkan dan trainer tidak bisa memulihkannya kembali.
+                </span>
+               </span>`,
+        icon: 'warning', iconColor: '#ea580c',
+        showCancelButton: true,
+        confirmButtonText: '🗑️ Ya, Hapus Permanen',
+        cancelButtonText: 'Batal',
+        reverseButtons: true, focusCancel: true,
+    }).then(function(result) {
+        if (result.isConfirmed) document.getElementById('form-force-delete-event-' + id).submit();
+    });
+}
 </script>
 <?php $__env->stopPush(); ?>
 <?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\webkajiindonesia\resources\views/admin/approval-event.blade.php ENDPATH**/ ?>

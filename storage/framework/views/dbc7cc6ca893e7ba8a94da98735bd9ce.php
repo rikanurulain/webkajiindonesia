@@ -180,19 +180,75 @@
     </div>
 
     
-    <div style="display:flex;gap:8px;align-items:center;">
-        <form method="GET" style="display:flex;gap:8px;">
-            <select name="role" class="form-select" style="width:auto;padding:7px 12px;"
-                onchange="this.form.submit()">
-                <option value="admin"      <?php echo e(request('role') === 'admin' ? 'selected' : ''); ?>>Admin</option>
-<option value="trainer"    <?php echo e(request('role') === 'trainer' ? 'selected' : ''); ?>>Trainer</option>
-<option value="pembimbing" <?php echo e(request('role') === 'pembimbing' ? 'selected' : ''); ?>>Pembimbing</option>
-<option value="mentor"     <?php echo e(request('role') === 'mentor' ? 'selected' : ''); ?>>Mentor</option>
-<option value="umkm"       <?php echo e(request('role') === 'umkm' ? 'selected' : ''); ?>>UMKM</option>
-<option value="umum"       <?php echo e(request('role') === 'umum' ? 'selected' : ''); ?>>Umum</option>
-            </select>
-        </form>
-    </div>
+<div style="display:flex;gap:8px;align-items:center;">
+    <form method="GET" style="display:flex;gap:8px;align-items:center;">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <?php
+                $roles = [
+                    ''        => ['label' => 'Semua',    'icon' => '👥'],
+                    'admin'   => ['label' => 'Admin',    'icon' => '🛡️'],
+                    'trainer' => ['label' => 'Trainer',  'icon' => '🎓'],
+                    'mentor'  => ['label' => 'Mentor',   'icon' => '💡'],
+                    'umkm'    => ['label' => 'UMKM',     'icon' => '🏪'],
+                    'umum'    => ['label' => 'Umum',     'icon' => '👤'],
+                ];
+                $activeRole = request('role', '');
+            ?>
+
+            <?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $meta): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <button type="submit" name="role" value="<?php echo e($value); ?>"
+                    style="
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 5px;
+                        padding: 6px 13px;
+                        border-radius: 20px;
+                        font-size: 12px;
+                        font-weight: 600;
+                        border: 1.5px solid <?php echo e($activeRole === $value ? 'var(--accent)' : 'var(--border)'); ?>;
+                        background: <?php echo e($activeRole === $value ? 'var(--accent)' : 'var(--surface)'); ?>;
+                        color: <?php echo e($activeRole === $value ? '#fff' : 'var(--text-muted)'); ?>;
+                        cursor: pointer;
+                        transition: all 0.15s;
+                        white-space: nowrap;
+                    "
+                    onmouseover="if('<?php echo e($activeRole); ?>' !== '<?php echo e($value); ?>'){this.style.borderColor='var(--accent)';this.style.color='var(--accent)';this.style.background='var(--surface2)';}"
+                    onmouseout="if('<?php echo e($activeRole); ?>' !== '<?php echo e($value); ?>'){this.style.borderColor='var(--border)';this.style.color='var(--text-muted)';this.style.background='var(--surface)';}">
+                    <span><?php echo e($meta['icon']); ?></span>
+                    <?php echo e($meta['label']); ?>
+
+                    
+                    
+                </button>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </div>
+    </form>
+
+    
+    <a href="<?php echo e(route('admin.pengguna.export')); ?>?role=<?php echo e(request('role', '')); ?>"
+        style="
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1.5px solid var(--border);
+            background: var(--surface);
+            color: var(--text-muted);
+            text-decoration: none;
+            white-space: nowrap;
+            transition: all 0.15s;
+        "
+        onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)';this.style.background='var(--surface2)';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)';this.style.background='var(--surface)';">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        Export CSV
+    </a>
+</div>
 </div>
 
 <div class="table-card">
@@ -230,18 +286,38 @@
                     </div>
                 </td>
                 <td>
-                <?php if($user->role === 'admin'): ?>
-    <span class="role-tag role-admin">Admin</span>
-<?php elseif($user->role === 'trainer' || $user->role === 'pembimbing' || $user->is_pembimbing): ?>
-    <span class="role-tag role-pembimbing">Trainer / Pembimbing</span>
-<?php elseif($user->role === 'mentor'): ?>
-    <span class="role-tag" style="background:#f3e8ff;color:#7e22ce;border:1px solid #e9d5ff;">Mentor</span>
-<?php elseif($user->role === 'umkm' || $user->is_umkm): ?>
-    <span class="role-tag role-umkm">UMKM</span>
-<?php else: ?>
-    <span class="role-tag role-user">Umum</span>
-<?php endif; ?>
-                </td>
+    <div style="display:flex;flex-direction:column;gap:4px;">
+        
+        <?php if($user->role === 'admin'): ?>
+            <span class="role-tag role-admin">🛡️ Admin</span>
+        <?php elseif($user->role === 'trainer'): ?>
+            <span class="role-tag role-pembimbing">🎓 Trainer</span>
+        <?php elseif($user->role === 'mentor'): ?>
+            <span class="role-tag" style="background:#f3e8ff;color:#7e22ce;border:1px solid #e9d5ff;">💡 Mentor</span>
+        <?php elseif($user->role === 'umkm'): ?>
+            <span class="role-tag role-umkm">🏪 UMKM</span>
+        <?php else: ?>
+            <span class="role-tag role-user">👤 Umum</span>
+        <?php endif; ?>
+
+        
+        <?php if($user->is_pembimbing && $user->role !== 'trainer'): ?>
+            <span class="role-tag role-pembimbing" style="font-size:10px;padding:2px 7px;">+ Pembimbing</span>
+        <?php endif; ?>
+
+        <?php if($user->trainer_status === 'approved' && $user->role !== 'trainer'): ?>
+            <span class="role-tag role-pembimbing" style="font-size:10px;padding:2px 7px;">+ Trainer ✓</span>
+        <?php endif; ?>
+
+        <?php if($user->mentor_status === 'approved' && $user->role !== 'mentor'): ?>
+            <span class="role-tag" style="background:#f3e8ff;color:#7e22ce;border:1px solid #e9d5ff;font-size:10px;padding:2px 7px;">+ Mentor ✓</span>
+        <?php endif; ?>
+
+        <?php if($user->is_umkm && $user->role !== 'umkm'): ?>
+            <span class="role-tag role-umkm" style="font-size:10px;padding:2px 7px;">+ UMKM</span>
+        <?php endif; ?>
+    </div>
+</td>
                 <td style="font-size:12px;color:var(--text-muted);"><?php echo e($user->email); ?></td>
                 <td style="font-size:12px;"><?php echo e(Str::limit($user->address ?? '-', 18)); ?></td>
                 <td style="font-size:12px;color:var(--text-muted);">
@@ -389,11 +465,20 @@
         const u = usersData.find(x => x.id === id);
         if (!u) return;
 
-        const roleName = u.role === 'admin' ? 'Admin'
-    : (u.role === 'trainer' || u.role === 'pembimbing' || u.is_pembimbing) ? 'Trainer / Pembimbing'
-    : u.role === 'mentor' ? 'Mentor'
-    : (u.role === 'umkm' || u.is_umkm) ? 'UMKM'
-    : 'Umum';
+        const roleMain = u.role === 'admin' ? '🛡️ Admin'
+    : u.role === 'trainer'  ? '🎓 Trainer'
+    : u.role === 'mentor'   ? '💡 Mentor'
+    : u.role === 'umkm'     ? '🏪 UMKM'
+    : '👤 Umum';
+
+const roleExtras = [
+    (u.is_pembimbing && u.role !== 'trainer')                      ? '+ Pembimbing'  : null,
+    (u.trainer_status === 'approved' && u.role !== 'trainer')      ? '+ Trainer ✓'   : null,
+    (u.mentor_status  === 'approved' && u.role !== 'mentor')       ? '+ Mentor ✓'    : null,
+    (u.is_umkm        && u.role !== 'umkm')                        ? '+ UMKM'        : null,
+].filter(Boolean);
+
+const roleName = roleMain + (roleExtras.length ? ' <span style="font-size:11px;color:var(--text-muted);">(' + roleExtras.join(', ') + ')</span>' : '');
         const initials = u.name.substring(0, 2).toUpperCase();
         const avatarColors = ['var(--accent)','var(--accent3)','var(--warning)','#8b5cf6','#ec4899'];
         const color = avatarColors[id % 5];
@@ -413,8 +498,8 @@
                 <div class="detail-item"><div class="detail-label">No. Telepon</div><div class="detail-value">${u.phone ?? '-'}</div></div>
                 <div class="detail-item full"><div class="detail-label">Alamat</div><div class="detail-value" style="font-weight:400;font-size:13px;">${u.address ?? '-'}</div></div>
                 <div class="detail-item full"><div class="detail-label">Bio</div><div class="detail-value" style="font-weight:400;font-size:13px;color:var(--text-muted);line-height:1.6;">${u.bio ?? 'Belum ada bio'}</div></div>
-                <div class="detail-item"><div class="detail-label">Member UMKM</div><div class="detail-value">${u.is_umkm ? '✅ Aktif' : '—'}</div></div>
-                <div class="detail-item"><div class="detail-label">Member Pembimbing</div><div class="detail-value">${u.is_pembimbing ? '✅ Aktif' : '—'}</div></div>
+                <div class="detail-item"><div class="detail-label">Trainer Status</div><div class="detail-value">${u.trainer_status === 'approved' ? '✅ Approved' : u.trainer_status === 'pending' ? '⏳ Pending' : u.trainer_status === 'rejected' ? '❌ Rejected' : '—'}</div></div>
+<div class="detail-item"><div class="detail-label">Mentor Status</div><div class="detail-value">${u.mentor_status === 'approved' ? '✅ Approved' : u.mentor_status === 'pending' ? '⏳ Pending' : u.mentor_status === 'rejected' ? '❌ Rejected' : '—'}</div></div>
             </div>
         `;
 

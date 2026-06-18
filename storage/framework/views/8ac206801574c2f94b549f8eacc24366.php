@@ -220,7 +220,7 @@
 </style>
 <?php $__env->startSection('content'); ?>
 
-
+ 
 <div class="stats-grid">
     <div class="stat-card green">
         <div class="stat-icon">📋</div>
@@ -478,7 +478,7 @@
     <div class="modal confirm-modal">
         <div class="confirm-icon">✅</div>
         <div class="confirm-title">Konfirmasi Persetujuan</div>
-        <div class="confirm-desc">Anda akan menyetujui item ini. Item akan langsung aktif dan terlihat di platform Kaji Indonesia.</div>
+        <div class="confirm-desc">Anda akan menyetujui item ini. Item akan langsung aktif dan terlihat di platform KAJI Indonesia.</div>
         <form id="form-approve" method="POST">
             <?php echo csrf_field(); ?>
             <?php echo method_field('PATCH'); ?>
