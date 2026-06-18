@@ -170,8 +170,8 @@ unset($__errorArgs, $__bag); ?>
                         </p>
                         
                         <div class="mt-2 bg-white border border-amber-200 rounded-lg px-3 py-2 text-xs text-gray-700 space-y-0.5">
-                            <p><span class="font-semibold">Bank BCA</span> — 1234567890</p>
-                            <p>a.n. <span class="font-semibold">KAJI Indonesia</span></p>
+                            <p><span class="font-semibold">Bank BNI</span> — 873873298</p>
+                            <p>a.n. <span class="font-semibold">Ari Prabowo</span></p>
                         </div>
                     </div>
                 </div>

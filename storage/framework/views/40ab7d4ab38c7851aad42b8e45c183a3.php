@@ -280,7 +280,7 @@
          
 <div class="flex items-center justify-center" style="min-height: 280px;">
     <img
-        src="<?php echo e(asset('storage/logo/logo.png')); ?>"
+        src="<?php echo e(asset('storage/logo/LOGO KAJI KATA.jpeg')); ?>"
         alt="Logo Kaji Indonesia"
         class="object-contain"
         style="height: 280px; width: auto;"
@@ -301,7 +301,8 @@
                 <div class="mt-6 flex flex-wrap gap-2">
                     <span class="inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary ring-1 ring-primary/20">Sejak 2008</span>
                     <span class="inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary ring-1 ring-primary/20">Lembaga Nasional</span>
-                    <span class="inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary ring-1 ring-primary/20">Jaringan Global</span>
+                    <span class="inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary ring-1 ring-primary/20">Go Global</span>
+                    <span class="inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary ring-1 ring-primary/20">Go Legal</span>
                 </div>
             </div>
 
@@ -362,18 +363,19 @@
                 ];
             ?>
 
-           <div class="mt-8 flex flex-wrap justify-center gap-4">
-    <?php $__currentLoopData = $partners; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $partner): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-        <div class="group flex items-center justify-center rounded-xl bg-white px-8 py-5 shadow-sm ring-1 ring-gray-200/60 transition-all duration-300 hover:shadow-md hover:ring-gray-300">
-            <img
-                src="<?php echo e(asset('storage/' . $partner['image'])); ?>"
-                alt="<?php echo e($partner['name']); ?>"
-                class="h-14 w-auto max-w-[140px] object-contain transition-all duration-300 group-hover:scale-105"
-                loading="lazy"
-            />
+            <div class="mt-8 grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6">
+                <?php $__currentLoopData = $partners; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $partner): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div class="group flex aspect-square items-center justify-center rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-200/60 transition-all duration-300 hover:shadow-md hover:ring-gray-300">
+                        <img
+                            src="<?php echo e(asset('storage/' . $partner['image'])); ?>"
+                            alt="<?php echo e($partner['name']); ?>"
+                            class="h-full w-full object-contain transition-all duration-300 group-hover:scale-105"
+                            loading="lazy"
+                        />
+                    </div>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </div>
         </div>
-    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-</div>
 
     </div>
 </section>
