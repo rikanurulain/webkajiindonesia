@@ -379,7 +379,6 @@
                     'partner-10.png',
                     'partner-11.png',
                     'partner-12.png',
-                    'partner-13.jpeg',
                     'partner-14.jpeg',
                     'partner-15.jpg',
                     'partner-16.png',
