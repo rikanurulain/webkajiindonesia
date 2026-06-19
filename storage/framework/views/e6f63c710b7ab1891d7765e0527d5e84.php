@@ -344,7 +344,7 @@
             <?php
                 $partners = [
                     ['image' => 'partners/Partner-01.png', 'name' => 'Partner 1'],
-                    ['image' => 'partners/partner-02.png', 'name' => 'Partner 2'],
+                    ['image' => 'partners/PERTAMINA.jpeg', 'name' => 'PERTAMINA'],
                     ['image' => 'partners/partner-03.png', 'name' => 'Partner 3'],
                     ['image' => 'partners/partner-04.png', 'name' => 'Partner 4'],
                     ['image' => 'partners/partner-05.png', 'name' => 'Partner 5'],
