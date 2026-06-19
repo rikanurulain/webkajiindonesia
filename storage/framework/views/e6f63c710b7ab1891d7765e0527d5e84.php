@@ -361,175 +361,187 @@
 
         
         <div class="mt-16 border-t border-gray-200 pt-12">
-            <p class="text-center text-sm font-medium uppercase tracking-wider text-gray-500">Dipercaya oleh</p>
+            <p class="text-center text-sm font-medium uppercase tracking-wider text-gray-500">
+                Dipercaya oleh
+            </p>
 
             <?php
-            $partners = [
-                // === 16 LAMA ===
-                'partner-01.png', 'partner-03.png', 'partner-04.png', 'partner-05.png',
-                'partner-06.jpg', 'partner-07.png', 'partner-08.png', 'partner-09.jpg',
-                'partner-10.png', 'partner-11.png', 'partner-12.png', 'partner-13.jpeg',
-                'partner-14.jpeg', 'partner-15.jpg', 'partner-16.png', 'partner-17.png',
+                $partners = [
+                    // ── 16 LAMA ──────────────────────────────
+                    'partner-01.png',
+                    'partner-03.png',
+                    'partner-04.png',
+                    'partner-05.png',
+                    'partner-06.jpg',
+                    'partner-07.png',
+                    'partner-08.png',
+                    'partner-09.jpg',
+                    'partner-10.png',
+                    'partner-11.png',
+                    'partner-12.png',
+                    'partner-13.jpeg',
+                    'partner-14.jpeg',
+                    'partner-15.jpg',
+                    'partner-16.png',
+                    'partner-17.png',
 
-                // === 81 BARU ===
-                'PERTAMINA.jpeg',
-                'DISKOP JATENG.jpg',
-                'LOGO DISKOP SURABAYA.png',
-                'LOGO INDOSAT.png',
-                'LOGO BAZNAS SURABAYA.jpg',
-                'LOGO 1080x380_INIJAWATIMUR.COM _.png',
-                'DISKOP TUBAN.jpg',
-                'LOGO GSE.png',
-                'KARYA KAMI LOGO.jpg',
-                'LOGO IKUTIAJA.png',
-                'LOGO IKASMANCA.png',
-                'KAMPUS-BERDAMPAK.png',
-                'LOGO DISKOP MALUKU TENGAH.jpg',
-                'LOGO BPJSTK.png',
-                'Cropped_LOGO_BRGM_512PX (1).png',
-                'LOGO (1) (1).png',
-                'LOGO IKA ITS.jpg',
-                'KONSTRUKSITALK (1).png',
-                'LOGO D_SEAFOOD.jpg',
-                '1200px-Logo_UNPAR.png',
-                'LOGO INFINIX.png',
-                'LOGO JOSSTODAY.png',
-                'LOGO JMKP.png',
-                'LOGO KADINJATIM (1).png',
-                'LOGO KEMBANG SETAMAN (1).png',
-                'LOGO LEAF CENA (1).jpeg',
-                'LOGO KIPPS.png',
-                'LOGO LIONS MAHARDHIKA.jpg',
-                'LOGO PKPOT.jpg',
-                'LOGO MIE SEHAT CEMPAKA 1.png',
-                'LOGO PPNS.jpg',
-                'LOGO STIE MAHARDHIKA.png',
-                'LOGO RB SIDOARJO.jpg',
-                'LOGO Dapurnya kopi probolinggo-02 - Siti Romlah.jpg',
-                'LOGO RB SUMSEL.jpg',
-                'LOGO SERAGAMKUPURNAMAMU.jpg',
-                'LOGO RB SURABAYA.png',
-                'LOGO SAGUQU MERBAU 22.png',
-                'LOGO ROMADU.png',
-                'LOGO_FONT_HITAM-removebg-preview (1) - Muhammad Najih Islahuddin.png',
-                'Logo APIK.png',
-                'Logo KC.jpg',
-                'Logo CITAMA.png',
-                'Logo AWPI.png',
-                'Logo HALAL HUB 6.png',
-                'Logo SPEKAL (1).png',
-                'Logo Unusida.png',
-                'Logo UNUSA.png',
-                'Logo FBI.png',
-                'Logo Yayasan Bina Insan Berkarya.jpeg',
-                'LogoBKPM (1).png',
-                'Logo-iniSurabaya-2021_web.png',
-                'Logo_Kementerian_Investasi_-_BKPM_(2021).png',
-                'Logo_Wadah_Warna@2x (1).png',
-                'PN MEKAR.png',
-                'Logo_Universitas_Darussalam_Gontor.jpg',
-                'RayTja Logo 2021 (1).jpg',
-                'TUGAS LOGO_ARI PRABOWO.png',
-                'logo Kemenkop.jpg',
-                'favicon kosntruksinews (1).png',
-                'bsn_logo_master_res.png',
-                'TUGAS LOGO_JULIMARINI.jpeg',
-                'institut asia.jpg',
-                'logo PENS (1).png',
-                'logo PelatihanBISA.png',
-                'logo UMKM Fest (1).png',
-                'logo UNAIR.png',
-                'logo UPN.png',
-                'logo logo (3) (1).png',
-                'logo logo (2) (1).png',
-                'Logo_of_the_Ministry_of_Villages,_Disadvantage_Region_Developments,_and_Transmigrations_of_the_Republic_of_Indonesia.svg.png',
-                'logo logo (8) (1).png',
-                'logo logo (5) (1).png',
-                'logo logo (6) (1).png',
-                'logo logo (7) (1).png',
-                'logo-PMR.png',
-                'logo psd.png',
-                'logo logo (9) (1).png',
-                'logo-pemkab-jember.png',
-                'logo-unitomo.png',
-                'logo_web_PCNU_SBY2.png',
-            ];
+                    // ── 81 BARU ──────────────────────────────
+                    'PERTAMINA.jpeg',
+                    'DISKOP JATENG.jpg',
+                    'LOGO DISKOP SURABAYA.png',
+                    'LOGO INDOSAT.png',
+                    'LOGO BAZNAS SURABAYA.jpg',
+                    'LOGO 1080x380_INIJAWATIMUR.COM _.png',
+                    'DISKOP TUBAN.jpg',
+                    'LOGO GSE.png',
+                    'KARYA KAMI LOGO.jpg',
+                    'LOGO IKUTIAJA.png',
+                    'LOGO IKASMANCA.png',
+                    'KAMPUS-BERDAMPAK.png',
+                    'LOGO DISKOP MALUKU TENGAH.jpg',
+                    'LOGO BPJSTK.png',
+                    'Cropped_LOGO_BRGM_512PX (1).png',
+                    'LOGO (1) (1).png',
+                    'LOGO IKA ITS.jpg',
+                    'KONSTRUKSITALK (1).png',
+                    'LOGO D_SEAFOOD.jpg',
+                    '1200px-Logo_UNPAR.png',
+                    'LOGO INFINIX.png',
+                    'LOGO JOSSTODAY.png',
+                    'LOGO JMKP.png',
+                    'LOGO KADINJATIM (1).png',
+                    'LOGO KEMBANG SETAMAN (1).png',
+                    'LOGO LEAF CENA (1).jpeg',
+                    'LOGO KIPPS.png',
+                    'LOGO LIONS MAHARDHIKA.jpg',
+                    'LOGO PKPOT.jpg',
+                    'LOGO MIE SEHAT CEMPAKA 1.png',
+                    'LOGO PPNS.jpg',
+                    'LOGO STIE MAHARDHIKA.png',
+                    'LOGO RB SIDOARJO.jpg',
+                    'LOGO Dapurnya kopi probolinggo-02 - Siti Romlah.jpg',
+                    'LOGO RB SUMSEL.jpg',
+                    'LOGO SERAGAMKUPURNAMAMU.jpg',
+                    'LOGO RB SURABAYA.png',
+                    'LOGO SAGUQU MERBAU 22.png',
+                    'LOGO ROMADU.png',
+                    'LOGO_FONT_HITAM-removebg-preview (1) - Muhammad Najih Islahuddin.png',
+                    'Logo APIK.png',
+                    'Logo KC.jpg',
+                    'Logo CITAMA.png',
+                    'Logo AWPI.png',
+                    'Logo HALAL HUB 6.png',
+                    'Logo SPEKAL (1).png',
+                    'Logo Unusida.png',
+                    'Logo UNUSA.png',
+                    'Logo FBI.png',
+                    'Logo Yayasan Bina Insan Berkarya.jpeg',
+                    'LogoBKPM (1).png',
+                    'Logo-iniSurabaya-2021_web.png',
+                    'Logo_Kementerian_Investasi_-_BKPM_(2021).png',
+                    'Logo_Wadah_Warna@2x (1).png',
+                    'PN MEKAR.png',
+                    'Logo_Universitas_Darussalam_Gontor.jpg',
+                    'RayTja Logo 2021 (1).jpg',
+                    'TUGAS LOGO_ARI PRABOWO.png',
+                    'logo Kemenkop.jpg',
+                    'favicon kosntruksinews (1).png',
+                    'bsn_logo_master_res.png',
+                    'TUGAS LOGO_JULIMARINI.jpeg',
+                    'institut asia.jpg',
+                    'logo PENS (1).png',
+                    'logo PelatihanBISA.png',
+                    'logo UMKM Fest (1).png',
+                    'logo UNAIR.png',
+                    'logo UPN.png',
+                    'logo logo (3) (1).png',
+                    'logo logo (2) (1).png',
+                    'Logo_of_the_Ministry_of_Villages,_Disadvantage_Region_Developments,_and_Transmigrations_of_the_Republic_of_Indonesia.svg.png',
+                    'logo logo (8) (1).png',
+                    'logo logo (5) (1).png',
+                    'logo logo (6) (1).png',
+                    'logo logo (7) (1).png',
+                    'logo-PMR.png',
+                    'logo psd.png',
+                    'logo logo (9) (1).png',
+                    'logo-pemkab-jember.png',
+                    'logo-unitomo.png',
+                    'logo_web_PCNU_SBY2.png',
+                ];
 
-            // 18 logo per slide → 6 slide total
-            $slides = array_chunk($partners, 18);
+                $slidesDesktop = array_chunk($partners, 18); // 6 col × 3 baris
+                $slidesMobile  = array_chunk($partners, 9);  // 3 col × 3 baris
             ?>
 
-            <div class="mt-8 relative"
+
+            
+            <div class="mt-8 relative hidden md:block"
                 x-data="{
                     active: 0,
-                    direction: 'next',
-                    total: <?php echo e(count($slides)); ?>,
+                    total: <?php echo e(count($slidesDesktop)); ?>,
                     autoplay: null,
                     go(i) {
-                        const next = (i + this.total) % this.total;
-                        this.direction = next > this.active || (this.active === this.total - 1 && next === 0) ? 'next' : 'prev';
-                        this.active = next;
+                        this.active = (i + this.total) % this.total;
                         clearInterval(this.autoplay);
-                        this.autoplay = setInterval(() => { this.go(this.active + 1); }, 5000);
+                        this.autoplay = setInterval(() => this.go(this.active + 1), 5000);
                     },
                     init() {
-                        this.autoplay = setInterval(() => { this.go(this.active + 1); }, 5000);
+                        this.autoplay = setInterval(() => this.go(this.active + 1), 5000);
                     }
                 }"
                 x-init="init()">
 
                 
-                <div class="overflow-hidden px-10 sm:px-12">
+                <div class="overflow-hidden px-12">
                     <div class="relative" style="min-height: 220px;">
-                        <?php $__currentLoopData = $slides; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $slideIndex => $slide): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <div
-                            x-show="active === <?php echo e($slideIndex); ?>"
-                            x-transition:enter="transition ease-in-out duration-500"
-                            x-transition:enter-start="opacity-0"
-                            x-transition:enter-end="opacity-100"
-                            x-transition:leave="transition ease-in-out duration-500"
-                            x-transition:leave-start="opacity-100"
-                            x-transition:leave-end="opacity-0"
-                            :class="active === <?php echo e($slideIndex); ?> ? 'relative' : 'absolute inset-0'"
-                            class="w-full grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-4">
-                            <?php $__currentLoopData = $slide; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $logo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <div class="flex aspect-square items-center justify-center rounded-xl bg-white p-3 shadow-sm ring-1 ring-gray-200/60 transition-all duration-300 hover:shadow-md hover:ring-gray-300">
-                                <img
-                                    src="<?php echo e(asset('storage/partners/' . rawurlencode($logo))); ?>"
-                                    alt="Partner"
-                                    class="h-full w-full object-contain"
-                                    loading="lazy"
-                                />
+                        <?php $__currentLoopData = $slidesDesktop; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $slide): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div
+                                x-show="active === <?php echo e($i); ?>"
+                                x-transition:enter="transition ease-in-out duration-500"
+                                x-transition:enter-start="opacity-0"
+                                x-transition:enter-end="opacity-100"
+                                x-transition:leave="transition ease-in-out duration-500"
+                                x-transition:leave-start="opacity-100"
+                                x-transition:leave-end="opacity-0"
+                                :class="active === <?php echo e($i); ?> ? 'relative' : 'absolute inset-0'"
+                                class="w-full grid grid-cols-6 gap-4">
+                                <?php $__currentLoopData = $slide; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $logo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <div class="flex aspect-square items-center justify-center rounded-xl bg-white p-3 shadow-sm ring-1 ring-gray-200/60 transition-all duration-300 hover:shadow-md hover:ring-gray-300">
+                                        <img
+                                            src="<?php echo e(asset('storage/partners/' . rawurlencode($logo))); ?>"
+                                            alt="Partner"
+                                            class="h-full w-full object-contain"
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </div>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
+                </div>
 
                 
-                <button @click="go(active - 1)"
+                <button @click="go(active - 1)" aria-label="Sebelumnya"
                     class="absolute left-0 top-1/2 -translate-y-1/2
                         flex h-9 w-9 items-center justify-center rounded-full
-                        bg-white shadow-md ring-1 ring-gray-200
-                        text-gray-600 transition-all duration-200
+                        bg-white shadow-md ring-1 ring-gray-200 text-gray-600
+                        transition-all duration-200
                         hover:bg-primary hover:text-white hover:ring-primary
-                        focus:outline-none"
-                    aria-label="Sebelumnya">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        focus:outline-none">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
                     </svg>
                 </button>
 
                 
-                <button @click="go(active + 1)"
+                <button @click="go(active + 1)" aria-label="Berikutnya"
                     class="absolute right-0 top-1/2 -translate-y-1/2
                         flex h-9 w-9 items-center justify-center rounded-full
-                        bg-white shadow-md ring-1 ring-gray-200
-                        text-gray-600 transition-all duration-200
+                        bg-white shadow-md ring-1 ring-gray-200 text-gray-600
+                        transition-all duration-200
                         hover:bg-primary hover:text-white hover:ring-primary
-                        focus:outline-none"
-                    aria-label="Berikutnya">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        focus:outline-none">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
                     </svg>
                 </button>
@@ -540,15 +552,105 @@
                         <button
                             @click="go(i - 1)"
                             :class="active === i - 1
-                                ? 'w-6 sm:w-7 bg-primary shadow-[0_0_6px_rgba(0,128,0,0.4)]'
+                                ? 'w-7 bg-primary shadow-[0_0_6px_rgba(0,128,0,0.4)]'
                                 : 'w-2 bg-gray-300 hover:bg-gray-400'"
-                            class="h-2 rounded-full transition-all duration-300 focus:outline-none cursor-pointer"
+                            class="h-2 rounded-full transition-all duration-300 focus:outline-none"
                             :aria-label="'Slide ' + i">
                         </button>
                     </template>
                 </div>
 
             </div>
+
+
+            
+            <div class="mt-8 relative block md:hidden"
+                x-data="{
+                    active: 0,
+                    total: <?php echo e(count($slidesMobile)); ?>,
+                    autoplay: null,
+                    go(i) {
+                        this.active = (i + this.total) % this.total;
+                        clearInterval(this.autoplay);
+                        this.autoplay = setInterval(() => this.go(this.active + 1), 5000);
+                    },
+                    init() {
+                        this.autoplay = setInterval(() => this.go(this.active + 1), 5000);
+                    }
+                }"
+                x-init="init()">
+
+                
+                <div class="overflow-hidden px-10">
+                    <div class="relative" style="min-height: 280px;">
+                        <?php $__currentLoopData = $slidesMobile; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $slide): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div
+                                x-show="active === <?php echo e($i); ?>"
+                                x-transition:enter="transition ease-in-out duration-500"
+                                x-transition:enter-start="opacity-0"
+                                x-transition:enter-end="opacity-100"
+                                x-transition:leave="transition ease-in-out duration-500"
+                                x-transition:leave-start="opacity-100"
+                                x-transition:leave-end="opacity-0"
+                                :class="active === <?php echo e($i); ?> ? 'relative' : 'absolute inset-0'"
+                                class="w-full grid grid-cols-3 gap-3">
+                                <?php $__currentLoopData = $slide; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $logo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <div class="flex aspect-square items-center justify-center rounded-xl bg-white p-3 shadow-sm ring-1 ring-gray-200/60 transition-all duration-300 hover:shadow-md hover:ring-gray-300">
+                                        <img
+                                            src="<?php echo e(asset('storage/partners/' . rawurlencode($logo))); ?>"
+                                            alt="Partner"
+                                            class="h-full w-full object-contain"
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+                </div>
+
+                
+                <button @click="go(active - 1)" aria-label="Sebelumnya"
+                    class="absolute left-0 top-1/2 -translate-y-1/2
+                        flex h-8 w-8 items-center justify-center rounded-full
+                        bg-white shadow-md ring-1 ring-gray-200 text-gray-600
+                        transition-all duration-200
+                        hover:bg-primary hover:text-white hover:ring-primary
+                        focus:outline-none">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+
+                
+                <button @click="go(active + 1)" aria-label="Berikutnya"
+                    class="absolute right-0 top-1/2 -translate-y-1/2
+                        flex h-8 w-8 items-center justify-center rounded-full
+                        bg-white shadow-md ring-1 ring-gray-200 text-gray-600
+                        transition-all duration-200
+                        hover:bg-primary hover:text-white hover:ring-primary
+                        focus:outline-none">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+
+                
+                <div class="mt-8 flex justify-center items-center gap-1.5">
+                    <template x-for="i in total" :key="i">
+                        <button
+                            @click="go(i - 1)"
+                            :class="active === i - 1
+                                ? 'w-5 bg-primary shadow-[0_0_6px_rgba(0,128,0,0.4)]'
+                                : 'w-2 bg-gray-300 hover:bg-gray-400'"
+                            class="h-2 rounded-full transition-all duration-300 focus:outline-none"
+                            :aria-label="'Slide ' + i">
+                        </button>
+                    </template>
+                </div>
+
+            </div>
+
         </div>
 
     </div>
