@@ -133,7 +133,29 @@
 @keyframes hero-progress {
     from { width: 0%; }
     to   { width: 100%; }
+
+    /* ── PARTNER MARQUEE ── */
+    @keyframes marquee-left {
+        from { transform: translateX(0); }
+        to   { transform: translateX(-50%); }
+    }
+    @keyframes marquee-right {
+        from { transform: translateX(-50%); }
+        to   { transform: translateX(0); }
+    }
+    .marquee-row-left {
+        animation: marquee-left 80s linear infinite;
+    }
+    .marquee-row-right {
+        animation: marquee-right 80s linear infinite;
+    }
+    .partner-marquee:hover .marquee-row-left,
+    .partner-marquee:hover .marquee-row-right {
+        animation-play-state: paused;
+    }
+
 }
+
 </style>
  {{-- 2. STATISTIK --}}
 <section class="bg-white py-16 sm:py-20" id="statistik"
@@ -344,38 +366,190 @@
             <p class="text-center text-sm font-medium uppercase tracking-wider text-gray-500">Dipercaya oleh</p>
 
             @php
-                $partners = [
-                    ['image' => 'partners/Partner-01.png', 'name' => 'Partner 1'],
-                    ['image' => 'partners/PERTAMINA.jpeg', 'name' => 'PERTAMINA'],
-                    ['image' => 'partners/partner-03.png', 'name' => 'Partner 3'],
-                    ['image' => 'partners/partner-04.png', 'name' => 'Partner 4'],
-                    ['image' => 'partners/partner-05.png', 'name' => 'Partner 5'],
-                    ['image' => 'partners/partner-06.jpg', 'name' => 'Partner 6'],
-                    ['image' => 'partners/partner-07.png', 'name' => 'Partner 7'],
-                    ['image' => 'partners/partner-08.png', 'name' => 'Partner 8'],
-                    ['image' => 'partners/partner-09.jpg', 'name' => 'Partner 9'],
-                    ['image' => 'partners/partner-10.png', 'name' => 'Partner 10'],
-                    ['image' => 'partners/partner-11.png', 'name' => 'Partner 11'],
-                    ['image' => 'partners/partner-12.png', 'name' => 'Partner 12'],
-                    ['image' => 'partners/partner-13.jpeg', 'name' => 'Partner 13'],
-                    ['image' => 'partners/partner-14.jpeg', 'name' => 'Partner 14'],
-                    ['image' => 'partners/partner-15.jpg', 'name' => 'Partner 15'],
-                    ['image' => 'partners/partner-16.png', 'name' => 'Partner 16'],
-                    ['image' => 'partners/partner-17.png', 'name' => 'Partner 17'],
-                ];
+            $partners = [
+                // === 16 LAMA ===
+                'partner-01.png', 'partner-03.png', 'partner-04.png', 'partner-05.png',
+                'partner-06.jpg', 'partner-07.png', 'partner-08.png', 'partner-09.jpg',
+                'partner-10.png', 'partner-11.png', 'partner-12.png', 'partner-13.jpeg',
+                'partner-14.jpeg', 'partner-15.jpg', 'partner-16.png', 'partner-17.png',
+
+                // === 81 BARU ===
+                'PERTAMINA.jpeg',
+                'DISKOP JATENG.jpg',
+                'LOGO DISKOP SURABAYA.png',
+                'LOGO INDOSAT.png',
+                'LOGO BAZNAS SURABAYA.jpg',
+                'LOGO 1080x380_INIJAWATIMUR.COM _.png',
+                'DISKOP TUBAN.jpg',
+                'LOGO GSE.png',
+                'KARYA KAMI LOGO.jpg',
+                'LOGO IKUTIAJA.png',
+                'LOGO IKASMANCA.png',
+                'KAMPUS-BERDAMPAK.png',
+                'LOGO DISKOP MALUKU TENGAH.jpg',
+                'LOGO BPJSTK.png',
+                'Cropped_LOGO_BRGM_512PX (1).png',
+                'LOGO (1) (1).png',
+                'LOGO IKA ITS.jpg',
+                'KONSTRUKSITALK (1).png',
+                'LOGO D_SEAFOOD.jpg',
+                '1200px-Logo_UNPAR.png',
+                'LOGO INFINIX.png',
+                'LOGO JOSSTODAY.png',
+                'LOGO JMKP.png',
+                'LOGO KADINJATIM (1).png',
+                'LOGO KEMBANG SETAMAN (1).png',
+                'LOGO LEAF CENA (1).jpeg',
+                'LOGO KIPPS.png',
+                'LOGO LIONS MAHARDHIKA.jpg',
+                'LOGO PKPOT.jpg',
+                'LOGO MIE SEHAT CEMPAKA 1.png',
+                'LOGO PPNS.jpg',
+                'LOGO STIE MAHARDHIKA.png',
+                'LOGO RB SIDOARJO.jpg',
+                'LOGO Dapurnya kopi probolinggo-02 - Siti Romlah.jpg',
+                'LOGO RB SUMSEL.jpg',
+                'LOGO SERAGAMKUPURNAMAMU.jpg',
+                'LOGO RB SURABAYA.png',
+                'LOGO SAGUQU MERBAU 22.png',
+                'LOGO ROMADU.png',
+                'LOGO_FONT_HITAM-removebg-preview (1) - Muhammad Najih Islahuddin.png',
+                'Logo APIK.png',
+                'Logo KC.jpg',
+                'Logo CITAMA.png',
+                'Logo AWPI.png',
+                'Logo HALAL HUB 6.png',
+                'Logo SPEKAL (1).png',
+                'Logo Unusida.png',
+                'Logo UNUSA.png',
+                'Logo FBI.png',
+                'Logo Yayasan Bina Insan Berkarya.jpeg',
+                'LogoBKPM (1).png',
+                'Logo-iniSurabaya-2021_web.png',
+                'Logo_Kementerian_Investasi_-_BKPM_(2021).png',
+                'Logo_Wadah_Warna@2x (1).png',
+                'PN MEKAR.png',
+                'Logo_Universitas_Darussalam_Gontor.jpg',
+                'RayTja Logo 2021 (1).jpg',
+                'TUGAS LOGO_ARI PRABOWO.png',
+                'logo Kemenkop.jpg',
+                'favicon kosntruksinews (1).png',
+                'bsn_logo_master_res.png',
+                'TUGAS LOGO_JULIMARINI.jpeg',
+                'institut asia.jpg',
+                'logo PENS (1).png',
+                'logo PelatihanBISA.png',
+                'logo UMKM Fest (1).png',
+                'logo UNAIR.png',
+                'logo UPN.png',
+                'logo logo (3) (1).png',
+                'logo logo (2) (1).png',
+                'Logo_of_the_Ministry_of_Villages,_Disadvantage_Region_Developments,_and_Transmigrations_of_the_Republic_of_Indonesia.svg.png',
+                'logo logo (8) (1).png',
+                'logo logo (5) (1).png',
+                'logo logo (6) (1).png',
+                'logo logo (7) (1).png',
+                'logo-PMR.png',
+                'logo psd.png',
+                'logo logo (9) (1).png',
+                'logo-pemkab-jember.png',
+                'logo-unitomo.png',
+                'logo_web_PCNU_SBY2.png',
+            ];
+
+            // 18 logo per slide → 6 slide total
+            $slides = array_chunk($partners, 18);
             @endphp
 
-            <div class="mt-8 flex flex-wrap justify-center gap-4">
-                @foreach ($partners as $partner)
-                    <div class="group flex aspect-square w-24 sm:w-28 md:w-32 items-center justify-center rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-200/60 transition-all duration-300 hover:shadow-md hover:ring-gray-300">
-                        <img
-                            src="{{ asset('storage/' . $partner['image']) }}"
-                            alt="{{ $partner['name'] }}"
-                            class="h-full w-full object-contain transition-all duration-300 group-hover:scale-105"
-                            loading="lazy"
-                        />
+            <div class="mt-8 relative"
+                x-data="{
+                    active: 0,
+                    direction: 'next',
+                    total: {{ count($slides) }},
+                    autoplay: null,
+                    go(i) {
+                        const next = (i + this.total) % this.total;
+                        this.direction = next > this.active || (this.active === this.total - 1 && next === 0) ? 'next' : 'prev';
+                        this.active = next;
+                        clearInterval(this.autoplay);
+                        this.autoplay = setInterval(() => { this.go(this.active + 1); }, 5000);
+                    },
+                    init() {
+                        this.autoplay = setInterval(() => { this.go(this.active + 1); }, 5000);
+                    }
+                }"
+                x-init="init()">
+
+                {{-- ── SLIDES ── --}}
+                <div class="overflow-hidden px-10 sm:px-12">
+                    <div class="relative" style="min-height: 220px;">
+                        @foreach ($slides as $slideIndex => $slide)
+                        <div
+                            x-show="active === {{ $slideIndex }}"
+                            x-transition:enter="transition ease-in-out duration-500"
+                            x-transition:enter-start="opacity-0"
+                            x-transition:enter-end="opacity-100"
+                            x-transition:leave="transition ease-in-out duration-500"
+                            x-transition:leave-start="opacity-100"
+                            x-transition:leave-end="opacity-0"
+                            :class="active === {{ $slideIndex }} ? 'relative' : 'absolute inset-0'"
+                            class="w-full grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-4">
+                            @foreach ($slide as $logo)
+                            <div class="flex aspect-square items-center justify-center rounded-xl bg-white p-3 shadow-sm ring-1 ring-gray-200/60 transition-all duration-300 hover:shadow-md hover:ring-gray-300">
+                                <img
+                                    src="{{ asset('storage/partners/' . rawurlencode($logo)) }}"
+                                    alt="Partner"
+                                    class="h-full w-full object-contain"
+                                    loading="lazy"
+                                />
+                            </div>
+                            @endforeach
+                        </div>
+                        @endforeach
                     </div>
-                @endforeach
+
+                {{-- ── ARROW PREV ── --}}
+                <button @click="go(active - 1)"
+                    class="absolute left-0 top-1/2 -translate-y-1/2
+                        flex h-9 w-9 items-center justify-center rounded-full
+                        bg-white shadow-md ring-1 ring-gray-200
+                        text-gray-600 transition-all duration-200
+                        hover:bg-primary hover:text-white hover:ring-primary
+                        focus:outline-none"
+                    aria-label="Sebelumnya">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+
+                {{-- ── ARROW NEXT ── --}}
+                <button @click="go(active + 1)"
+                    class="absolute right-0 top-1/2 -translate-y-1/2
+                        flex h-9 w-9 items-center justify-center rounded-full
+                        bg-white shadow-md ring-1 ring-gray-200
+                        text-gray-600 transition-all duration-200
+                        hover:bg-primary hover:text-white hover:ring-primary
+                        focus:outline-none"
+                    aria-label="Berikutnya">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+
+                {{-- ── DOTS ── --}}
+                <div class="mt-8 flex justify-center items-center gap-2">
+                    <template x-for="i in total" :key="i">
+                        <button
+                            @click="go(i - 1)"
+                            :class="active === i - 1
+                                ? 'w-6 sm:w-7 bg-primary shadow-[0_0_6px_rgba(0,128,0,0.4)]'
+                                : 'w-2 bg-gray-300 hover:bg-gray-400'"
+                            class="h-2 rounded-full transition-all duration-300 focus:outline-none cursor-pointer"
+                            :aria-label="'Slide ' + i">
+                        </button>
+                    </template>
+                </div>
+
             </div>
         </div>
 
