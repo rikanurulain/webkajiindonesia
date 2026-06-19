@@ -365,9 +365,9 @@
                 ];
             @endphp
 
-            <div class="mt-8 grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6">
+            <div class="mt-8 flex flex-wrap justify-center gap-4">
                 @foreach ($partners as $partner)
-                    <div class="group flex aspect-square items-center justify-center rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-200/60 transition-all duration-300 hover:shadow-md hover:ring-gray-300">
+                    <div class="group flex aspect-square w-24 sm:w-28 md:w-32 items-center justify-center rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-200/60 transition-all duration-300 hover:shadow-md hover:ring-gray-300">
                         <img
                             src="{{ asset('storage/' . $partner['image']) }}"
                             alt="{{ $partner['name'] }}"
