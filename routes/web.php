@@ -23,10 +23,7 @@ use App\Http\Controllers\UmkmDashboardController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/media', [MediaController::class, 'index'])->name('media');
 
-// Wajib login
-Route::middleware('auth')->group(function () {
-    Route::get('/produk/{id}', [UmkmController::class, 'produkDetail'])->name('produk.show');
-});
+
 // Auth System
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
@@ -70,10 +67,14 @@ Route::prefix('umkm')->group(function () {
 
     // Wajib login
     Route::middleware('auth')->group(function () {
-        Route::get('/pembimbing/{id}', [UmkmController::class, 'showMentor'])->name('umkm.mentor.detail'); // ← di sini
+        Route::get('/pembimbing/{id}', [UmkmController::class, 'showMentor'])->name('umkm.mentor.detail');
         Route::get('/lokasi', [UmkmController::class, 'lokasi'])->name('umkm.lokasi');
         Route::post('/pembimbing/{id}/ulasan', [UmkmMentorUlasanController::class, 'store'])->name('umkm.mentor.ulasan.store');
         Route::delete('/pembimbing/{mentorId}/ulasan/{ulasanId}', [UmkmMentorUlasanController::class, 'destroy'])->name('umkm.mentor.ulasan.destroy');
+
+        // ✅ profil/{id} HARUS di atas {id} agar tidak bentrok
+        Route::get('/produk/profil/{id}', [UmkmController::class, 'produkProfil'])->name('produk.profil');
+        Route::get('/produk/{id}', [UmkmController::class, 'produkDetail'])->name('produk.show');
     });
 });
 
@@ -261,12 +262,17 @@ Route::delete('/approval/event/{event}',               [AdminController::class, 
     Route::get('/approval/trainer',                        [AdminController::class, 'approvalTrainer'])->name('approval.trainer');
     Route::post('/approval/trainer/{trainer}/approve',     [AdminController::class, 'approveTrainer'])->name('trainer.approve');
     Route::post('/approval/trainer/{trainer}/reject',      [AdminController::class, 'rejectTrainer'])->name('trainer.reject');
-    Route::delete('/approval/trainer/{trainer}',           [AdminController::class, 'destroyTrainer'])->name('trainer.destroy');
+    Route::post('/approval/trainer/{id}/restore',          [AdminController::class, 'restoreTrainer'])->name('trainer.restore');
+Route::delete('/approval/trainer/{id}/force-delete',   [AdminController::class, 'forceDeleteTrainer'])->name('trainer.force-delete');
+Route::delete('/approval/trainer/{trainer}',           [AdminController::class, 'destroyTrainer'])->name('trainer.destroy');
+
 
     // ── Approval Mentor ──────────────────────────────────────────────
     Route::get('/approval/mentor',                     [AdminController::class, 'approvalMentor'])->name('approval.mentor');
     Route::post('/approval/mentor/{mentor}/approve',   [AdminController::class, 'approveMentor'])->name('approval.mentor.approve');
     Route::post('/approval/mentor/{mentor}/reject',    [AdminController::class, 'rejectMentor'])->name('approval.mentor.reject');
+    Route::post('/approval/mentor/{id}/restore',       [AdminController::class, 'restoreMentor'])->name('approval.mentor.restore');
+Route::delete('/approval/mentor/{id}/force-delete',[AdminController::class, 'forceDeleteMentor'])->name('approval.mentor.force-delete');
     Route::delete('/approval/mentor/{mentor}',         [AdminController::class, 'destroyMentor'])->name('approval.mentor.destroy');
 
     // ── Manajemen Pengguna ───────────────────────────────────────────

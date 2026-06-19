@@ -131,7 +131,29 @@
 @keyframes hero-progress {
     from { width: 0%; }
     to   { width: 100%; }
+
+    /* ── PARTNER MARQUEE ── */
+    @keyframes marquee-left {
+        from { transform: translateX(0); }
+        to   { transform: translateX(-50%); }
+    }
+    @keyframes marquee-right {
+        from { transform: translateX(-50%); }
+        to   { transform: translateX(0); }
+    }
+    .marquee-row-left {
+        animation: marquee-left 80s linear infinite;
+    }
+    .marquee-row-right {
+        animation: marquee-right 80s linear infinite;
+    }
+    .partner-marquee:hover .marquee-row-left,
+    .partner-marquee:hover .marquee-row-right {
+        animation-play-state: paused;
+    }
+
 }
+
 </style>
  
 <section class="bg-white py-16 sm:py-20" id="statistik"
@@ -278,14 +300,19 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:items-stretch">
 
          
-<div class="flex items-center justify-center" style="min-height: 280px;">
-    <img
-        src="<?php echo e(asset('storage/logo/LOGO KAJI KATA.jpeg')); ?>"
-        alt="Logo Kaji Indonesia"
-        class="object-contain"
-        style="height: 280px; width: auto;"
-    />
-</div>
+            <div class="flex flex-col items-center justify-center gap-5">
+
+                
+                <img
+                    src="<?php echo e(asset('storage/logo/LOGO KAJI KATA.jpeg')); ?>"
+                    alt="Logo Kaji Indonesia"
+                    class="object-contain"
+                    style="height: 200px; width: auto;"
+                />
+
+                
+
+            </div>
 
             
             <div class="flex flex-col justify-center" style="min-height: 280px;">
@@ -307,6 +334,38 @@
             </div>
 
         </div>
+    </div>
+</section>
+
+
+<section class="bg-gray-50 py-12 sm:py-16">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+
+        
+        <div class="text-center mb-8">
+            <span class="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary ring-1 ring-primary/20">
+                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Legalitas & Sertifikasi
+            </span>
+            <h2 class="mt-3 font-serif text-2xl font-bold text-gray-900 sm:text-3xl">
+                Terdaftar Resmi di KEMENKUMHAM
+            </h2>
+            <p class="mt-2 text-sm text-gray-500">
+                No: IDM001176552 – 2023 · Dilindungi UU No. 20 Tahun 2016 tentang Merek
+            </p>
+        </div>
+
+        
+        <div class="rounded-2xl overflow-hidden shadow-md ring-1 ring-gray-200">
+            <img
+                src="<?php echo e(asset('storage/logo/LOGOKAJIKEMENKUHAM.jpeg')); ?>"
+                alt="Sertifikat KEMENKUMHAM KAJI Indonesia IDM001176552 2023"
+                class="w-full h-auto object-contain"
+            />
+        </div>
+
     </div>
 </section>
 
@@ -339,42 +398,295 @@
 
         
         <div class="mt-16 border-t border-gray-200 pt-12">
-            <p class="text-center text-sm font-medium uppercase tracking-wider text-gray-500">Dipercaya oleh</p>
+            <p class="text-center text-sm font-medium uppercase tracking-wider text-gray-500">
+                Dipercaya oleh
+            </p>
 
             <?php
                 $partners = [
-                    ['image' => 'partners/Partner-01.png', 'name' => 'Partner 1'],
-                    ['image' => 'partners/partner-02.png', 'name' => 'Partner 2'],
-                    ['image' => 'partners/partner-03.png', 'name' => 'Partner 3'],
-                    ['image' => 'partners/partner-04.png', 'name' => 'Partner 4'],
-                    ['image' => 'partners/partner-05.png', 'name' => 'Partner 5'],
-                    ['image' => 'partners/partner-06.jpg', 'name' => 'Partner 6'],
-                    ['image' => 'partners/partner-07.png', 'name' => 'Partner 7'],
-                    ['image' => 'partners/partner-08.png', 'name' => 'Partner 8'],
-                    ['image' => 'partners/partner-09.jpg', 'name' => 'Partner 9'],
-                    ['image' => 'partners/partner-10.png', 'name' => 'Partner 10'],
-                    ['image' => 'partners/partner-11.png', 'name' => 'Partner 11'],
-                    ['image' => 'partners/partner-12.png', 'name' => 'Partner 12'],
-                    ['image' => 'partners/partner-13.jpeg', 'name' => 'Partner 13'],
-                    ['image' => 'partners/partner-14.jpeg', 'name' => 'Partner 14'],
-                    ['image' => 'partners/partner-15.jpg', 'name' => 'Partner 15'],
-                    ['image' => 'partners/partner-16.png', 'name' => 'Partner 16'],
-                    ['image' => 'partners/partner-17.png', 'name' => 'Partner 17'],
+                    // ── 16 LAMA ──────────────────────────────
+                    'partner-01.png',
+                    'partner-03.png',
+                    'partner-04.png',
+                    'partner-05.png',
+                    'partner-06.jpg',
+                    'partner-07.png',
+                    'partner-08.png',
+                    'partner-09.jpg',
+                    'partner-10.png',
+                    'partner-11.png',
+                    'partner-12.png',
+                    'partner-14.jpeg',
+                    'partner-15.jpg',
+                    'partner-16.png',
+                    'partner-17.png',
+
+                    // ── 81 BARU ──────────────────────────────
+                    'PERTAMINA.jpeg',
+                    'DISKOP JATENG.jpg',
+                    'LOGO DISKOP SURABAYA.png',
+                    'LOGO INDOSAT.png',
+                    'LOGO BAZNAS SURABAYA.jpg',
+                    'LOGO 1080x380_INIJAWATIMUR.COM _.png',
+                    'DISKOP TUBAN.jpg',
+                    'LOGO GSE.png',
+                    'KARYA KAMI LOGO.jpg',
+                    'LOGO IKUTIAJA.png',
+                    'LOGO IKASMANCA.png',
+                    'KAMPUS-BERDAMPAK.png',
+                    'LOGO DISKOP MALUKU TENGAH.jpg',
+                    'LOGO BPJSTK.png',
+                    'Cropped_LOGO_BRGM_512PX (1).png',
+                    'LOGO (1) (1).png',
+                    'LOGO IKA ITS.jpg',
+                    'KONSTRUKSITALK (1).png',
+                    'LOGO D_SEAFOOD.jpg',
+                    '1200px-Logo_UNPAR.png',
+                    'LOGO INFINIX.png',
+                    'LOGO JOSSTODAY.png',
+                    'LOGO JMKP.png',
+                    'LOGO KADINJATIM (1).png',
+                    'LOGO KEMBANG SETAMAN (1).png',
+                    'LOGO LEAF CENA (1).jpeg',
+                    'LOGO KIPPS.png',
+                    'LOGO LIONS MAHARDHIKA.jpg',
+                    'LOGO PKPOT.jpg',
+                    'LOGO MIE SEHAT CEMPAKA 1.png',
+                    'LOGO PPNS.jpg',
+                    'LOGO STIE MAHARDHIKA.png',
+                    'LOGO RB SIDOARJO.jpg',
+                    'LOGO Dapurnya kopi probolinggo-02 - Siti Romlah.jpg',
+                    'LOGO RB SUMSEL.jpg',
+                    'LOGO SERAGAMKUPURNAMAMU.jpg',
+                    'LOGO RB SURABAYA.png',
+                    'LOGO SAGUQU MERBAU 22.png',
+                    'LOGO ROMADU.png',
+                    'LOGO_FONT_HITAM-removebg-preview (1) - Muhammad Najih Islahuddin.png',
+                    'Logo APIK.png',
+                    'Logo KC.jpg',
+                    'Logo CITAMA.png',
+                    'Logo AWPI.png',
+                    'Logo HALAL HUB 6.png',
+                    'Logo SPEKAL (1).png',
+                    'Logo Unusida.png',
+                    'Logo UNUSA.png',
+                    'Logo FBI.png',
+                    'Logo Yayasan Bina Insan Berkarya.jpeg',
+                    'LogoBKPM (1).png',
+                    'Logo-iniSurabaya-2021_web.png',
+                    'Logo_Kementerian_Investasi_-_BKPM_(2021).png',
+                    'Logo_Wadah_Warna@2x (1).png',
+                    'PN MEKAR.png',
+                    'Logo_Universitas_Darussalam_Gontor.jpg',
+                    'RayTja Logo 2021 (1).jpg',
+                    'TUGAS LOGO_ARI PRABOWO.png',
+                    'logo Kemenkop.jpg',
+                    'favicon kosntruksinews (1).png',
+                    'bsn_logo_master_res.png',
+                    'TUGAS LOGO_JULIMARINI.jpeg',
+                    'institut asia.jpg',
+                    'logo PENS (1).png',
+                    'logo PelatihanBISA.png',
+                    'logo UMKM Fest (1).png',
+                    'logo UNAIR.png',
+                    'logo UPN.png',
+                    'logo logo (3) (1).png',
+                    'logo logo (2) (1).png',
+                    'Logo_of_the_Ministry_of_Villages,_Disadvantage_Region_Developments,_and_Transmigrations_of_the_Republic_of_Indonesia.svg.png',
+                    'logo logo (8) (1).png',
+                    'logo logo (5) (1).png',
+                    'logo logo (6) (1).png',
+                    'logo logo (7) (1).png',
+                    'logo-PMR.png',
+                    'logo psd.png',
+                    'logo logo (9) (1).png',
+                    'logo-pemkab-jember.png',
+                    'logo-unitomo.png',
+                    'logo_web_PCNU_SBY2.png',
                 ];
+
+                $slidesDesktop = array_chunk($partners, 18); // 6 col × 3 baris
+                $slidesMobile  = array_chunk($partners, 9);  // 3 col × 3 baris
             ?>
 
-            <div class="mt-8 grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6">
-                <?php $__currentLoopData = $partners; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $partner): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <div class="group flex aspect-square items-center justify-center rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-200/60 transition-all duration-300 hover:shadow-md hover:ring-gray-300">
-                        <img
-                            src="<?php echo e(asset('storage/' . $partner['image'])); ?>"
-                            alt="<?php echo e($partner['name']); ?>"
-                            class="h-full w-full object-contain transition-all duration-300 group-hover:scale-105"
-                            loading="lazy"
-                        />
+
+            
+            <div class="mt-8 relative hidden md:block"
+                x-data="{
+                    active: 0,
+                    total: <?php echo e(count($slidesDesktop)); ?>,
+                    autoplay: null,
+                    go(i) {
+                        this.active = (i + this.total) % this.total;
+                        clearInterval(this.autoplay);
+                        this.autoplay = setInterval(() => this.go(this.active + 1), 5000);
+                    },
+                    init() {
+                        this.autoplay = setInterval(() => this.go(this.active + 1), 5000);
+                    }
+                }"
+                x-init="init()">
+
+                
+                <div class="overflow-hidden px-12">
+                    <div class="relative" style="min-height: 220px;">
+                        <?php $__currentLoopData = $slidesDesktop; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $slide): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div
+                                x-show="active === <?php echo e($i); ?>"
+                                x-transition:enter="transition ease-in-out duration-500"
+                                x-transition:enter-start="opacity-0"
+                                x-transition:enter-end="opacity-100"
+                                x-transition:leave="transition ease-in-out duration-500"
+                                x-transition:leave-start="opacity-100"
+                                x-transition:leave-end="opacity-0"
+                                :class="active === <?php echo e($i); ?> ? 'relative' : 'absolute inset-0'"
+                                class="w-full grid grid-cols-6 gap-4">
+                                <?php $__currentLoopData = $slide; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $logo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <div class="flex aspect-square items-center justify-center rounded-xl bg-white p-3 shadow-sm ring-1 ring-gray-200/60 transition-all duration-300 hover:shadow-md hover:ring-gray-300">
+                                        <img
+                                            src="<?php echo e(asset('storage/partners/' . rawurlencode($logo))); ?>"
+                                            alt="Partner"
+                                            class="h-full w-full object-contain"
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </div>
+
+                
+                <button @click="go(active - 1)" aria-label="Sebelumnya"
+                    class="absolute left-0 top-1/2 -translate-y-1/2
+                        flex h-9 w-9 items-center justify-center rounded-full
+                        bg-white shadow-md ring-1 ring-gray-200 text-gray-600
+                        transition-all duration-200
+                        hover:bg-primary hover:text-white hover:ring-primary
+                        focus:outline-none">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+
+                
+                <button @click="go(active + 1)" aria-label="Berikutnya"
+                    class="absolute right-0 top-1/2 -translate-y-1/2
+                        flex h-9 w-9 items-center justify-center rounded-full
+                        bg-white shadow-md ring-1 ring-gray-200 text-gray-600
+                        transition-all duration-200
+                        hover:bg-primary hover:text-white hover:ring-primary
+                        focus:outline-none">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+
+                
+                <div class="mt-8 flex justify-center items-center gap-2">
+                    <template x-for="i in total" :key="i">
+                        <button
+                            @click="go(i - 1)"
+                            :class="active === i - 1
+                                ? 'w-7 bg-primary shadow-[0_0_6px_rgba(0,128,0,0.4)]'
+                                : 'w-2 bg-gray-300 hover:bg-gray-400'"
+                            class="h-2 rounded-full transition-all duration-300 focus:outline-none"
+                            :aria-label="'Slide ' + i">
+                        </button>
+                    </template>
+                </div>
+
             </div>
+
+
+            
+            <div class="mt-8 relative block md:hidden"
+                x-data="{
+                    active: 0,
+                    total: <?php echo e(count($slidesMobile)); ?>,
+                    autoplay: null,
+                    go(i) {
+                        this.active = (i + this.total) % this.total;
+                        clearInterval(this.autoplay);
+                        this.autoplay = setInterval(() => this.go(this.active + 1), 5000);
+                    },
+                    init() {
+                        this.autoplay = setInterval(() => this.go(this.active + 1), 5000);
+                    }
+                }"
+                x-init="init()">
+
+                
+                <div class="overflow-hidden px-10">
+                    <div class="relative" style="min-height: 280px;">
+                        <?php $__currentLoopData = $slidesMobile; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $slide): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div
+                                x-show="active === <?php echo e($i); ?>"
+                                x-transition:enter="transition ease-in-out duration-500"
+                                x-transition:enter-start="opacity-0"
+                                x-transition:enter-end="opacity-100"
+                                x-transition:leave="transition ease-in-out duration-500"
+                                x-transition:leave-start="opacity-100"
+                                x-transition:leave-end="opacity-0"
+                                :class="active === <?php echo e($i); ?> ? 'relative' : 'absolute inset-0'"
+                                class="w-full grid grid-cols-3 gap-3">
+                                <?php $__currentLoopData = $slide; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $logo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <div class="flex aspect-square items-center justify-center rounded-xl bg-white p-3 shadow-sm ring-1 ring-gray-200/60 transition-all duration-300 hover:shadow-md hover:ring-gray-300">
+                                        <img
+                                            src="<?php echo e(asset('storage/partners/' . rawurlencode($logo))); ?>"
+                                            alt="Partner"
+                                            class="h-full w-full object-contain"
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+                </div>
+
+                
+                <button @click="go(active - 1)" aria-label="Sebelumnya"
+                    class="absolute left-0 top-1/2 -translate-y-1/2
+                        flex h-8 w-8 items-center justify-center rounded-full
+                        bg-white shadow-md ring-1 ring-gray-200 text-gray-600
+                        transition-all duration-200
+                        hover:bg-primary hover:text-white hover:ring-primary
+                        focus:outline-none">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+
+                
+                <button @click="go(active + 1)" aria-label="Berikutnya"
+                    class="absolute right-0 top-1/2 -translate-y-1/2
+                        flex h-8 w-8 items-center justify-center rounded-full
+                        bg-white shadow-md ring-1 ring-gray-200 text-gray-600
+                        transition-all duration-200
+                        hover:bg-primary hover:text-white hover:ring-primary
+                        focus:outline-none">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+
+                
+                <div class="mt-8 flex justify-center items-center gap-1.5">
+                    <template x-for="i in total" :key="i">
+                        <button
+                            @click="go(i - 1)"
+                            :class="active === i - 1
+                                ? 'w-5 bg-primary shadow-[0_0_6px_rgba(0,128,0,0.4)]'
+                                : 'w-2 bg-gray-300 hover:bg-gray-400'"
+                            class="h-2 rounded-full transition-all duration-300 focus:outline-none"
+                            :aria-label="'Slide ' + i">
+                        </button>
+                    </template>
+                </div>
+
+            </div>
+
         </div>
 
     </div>

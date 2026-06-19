@@ -863,13 +863,21 @@ public function restoreEventAdmin($id)
                         ->latest('updated_at')
                         ->get();
     
-        $counts = [
-            'pending'  => $pending->count(),
-            'approved' => $approved->count(),
-            'rejected' => $rejected->count(),
-        ];
-    
-        return view('admin.approval-trainer', compact('pending', 'approved', 'rejected', 'counts'));
+                        $deleted = \App\Models\Trainer::onlyTrashed()
+                        ->with('user')
+                        ->latest('deleted_at')
+                        ->get();
+                    
+                    $counts = [
+                        'pending'  => $pending->count(),
+                        'approved' => $approved->count(),
+                        'rejected' => $rejected->count(),
+                        'deleted'  => $deleted->count(), // ← tambah
+                    ];
+                    
+                    return view('admin.approval-trainer', compact(
+                        'pending', 'approved', 'rejected', 'deleted', 'counts' // ← tambah 'deleted'
+                    ));
     }
  
 public function approveTrainer(\App\Models\Trainer $trainer)
@@ -968,6 +976,46 @@ public function destroyTrainer(\App\Models\Trainer $trainer)
         ->with('success', "Data trainer {$nama} berhasil dihapus.");
 }
 
+public function restoreTrainer($id)
+{
+    $trainer = \App\Models\Trainer::onlyTrashed()->findOrFail($id);
+    $trainer->restore();
+    $trainer->update([
+        'status'           => 'pending',
+        'reviewed_at'      => null,
+        'rejection_reason' => null,
+    ]);
+
+    // Sinkronkan status user
+    if ($trainer->user_id) {
+        \App\Models\User::where('id', $trainer->user_id)->update([
+            'trainer_status' => 'pending',
+        ]);
+    }
+
+    return redirect()->route('admin.approval.trainer')
+        ->with('success', "Trainer {$trainer->nama} berhasil dipulihkan.");
+}
+
+public function forceDeleteTrainer($id)
+{
+    $trainer = \App\Models\Trainer::onlyTrashed()->findOrFail($id);
+
+    // Hapus file dokumen dari storage
+    $fileCols = ['ktp_scan', 'bnsp_certificate', 'white_bg_photo', 'ijazah_file', 'bukti_transfer', 'foto'];
+    foreach ($fileCols as $col) {
+        if (!empty($trainer->$col)) {
+            \Storage::disk('public')->delete($trainer->$col);
+        }
+    }
+
+    $nama = $trainer->nama;
+    $trainer->forceDelete();
+
+    return redirect()->route('admin.approval.trainer')
+        ->with('success', "Data trainer {$nama} dihapus permanen.");
+}
+
     // ═════════════════════════════════════════════════════════════════════
     // APPROVAL MENTOR
     // ═════════════════════════════════════════════════════════════════════
@@ -999,15 +1047,21 @@ public function destroyTrainer(\App\Models\Trainer $trainer)
     }
     // ─────────────────────────────────────────────────────────────────
 
-    $pending  = Mentor::where('status', 'pending')->get();
-    $approved = Mentor::where('status', 'approved')->get();
-    $rejected = Mentor::where('status', 'rejected')->get();
+    $pending  = Mentor::where('status', 'pending')->whereNull('deleted_at')->get();
+    $approved = Mentor::where('status', 'approved')->whereNull('deleted_at')->get();
+    $rejected = Mentor::where('status', 'rejected')->whereNull('deleted_at')->get();
+    $deleted  = Mentor::onlyTrashed()->latest('deleted_at')->get(); // ← TAMBAH
+
     $stats = [
         'pending'  => $pending->count(),
         'approved' => $approved->count(),
         'rejected' => $rejected->count(),
+        'deleted'  => $deleted->count(), // ← TAMBAH
     ];
-    return view('admin.approval-mentor', compact('pending', 'approved', 'rejected', 'stats'));
+
+    return view('admin.approval-mentor', compact(
+        'pending', 'approved', 'rejected', 'deleted', 'stats'
+    ));
 }
     public function approveMentor(Mentor $mentor)
 {
@@ -1047,9 +1101,57 @@ public function rejectMentor(Request $request, Mentor $mentor)
 
     return back()->with('success', "Pendaftaran {$mentor->full_name} telah ditolak.");
 }
-    public function destroyMentor(Mentor $mentor)
-    {
-        $mentor->delete();
-        return back()->with('success', 'Data mentor berhasil dihapus.');
+public function destroyMentor(Mentor $mentor)
+{
+    $nama = $mentor->full_name;
+    $mentor->delete(); // soft delete — masih bisa dipulihkan
+
+    // Cabut akses sementara
+    if ($mentor->user_id) {
+        \App\Models\User::where('id', $mentor->user_id)->update([
+            'role'          => 'umum',
+            'mentor_status' => 'none',
+        ]);
     }
+
+    return back()->with('success', "Mentor \"{$nama}\" berhasil dihapus.");
+}
+
+public function restoreMentor($id)
+{
+    $mentor = Mentor::onlyTrashed()->findOrFail($id);
+    $mentor->restore();
+    $mentor->update([
+        'status'           => 'pending',
+        'reviewed_at'      => null,
+        'rejection_reason' => null,
+    ]);
+
+    if ($mentor->user_id) {
+        \App\Models\User::where('id', $mentor->user_id)->update([
+            'mentor_status' => 'pending',
+        ]);
+    }
+
+    return redirect()->route('admin.approval.mentor')
+        ->with('success', "Mentor \"{$mentor->full_name}\" berhasil dipulihkan.");
+}
+
+public function forceDeleteMentor($id)
+{
+    $mentor = Mentor::onlyTrashed()->findOrFail($id);
+
+    // Hapus file dokumen dari storage
+    foreach (['ktp_scan', 'white_bg_photo', 'bukti_transfer'] as $col) {
+        if (!empty($mentor->$col)) {
+            \Storage::disk('public')->delete($mentor->$col);
+        }
+    }
+
+    $nama = $mentor->full_name;
+    $mentor->forceDelete();
+
+    return redirect()->route('admin.approval.mentor')
+        ->with('success', "Data mentor \"{$nama}\" dihapus permanen.");
+}
 }

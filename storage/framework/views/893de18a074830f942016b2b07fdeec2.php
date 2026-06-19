@@ -1,9 +1,6 @@
-{{-- resources/views/admin/approval-trainer.blade.php --}}
-@extends('layouts.admin')
+<?php $__env->startSection('page-title', 'Approval Trainer'); ?>
 
-@section('page-title', 'Approval Trainer')
-
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.all.min.js"></script>
 <style>
@@ -242,39 +239,39 @@
         .doc-btn { font-size: 10px !important; padding: 4px 8px !important; }
     }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
-{{-- Tab Bar --}}
+
 <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('pending', this)">
         Menunggu
-        @if($counts['pending'] > 0)
-            <span class="count-pill">{{ $counts['pending'] }}</span>
-        @endif
+        <?php if($counts['pending'] > 0): ?>
+            <span class="count-pill"><?php echo e($counts['pending']); ?></span>
+        <?php endif; ?>
     </button>
     <button class="tab-btn" onclick="switchTab('approved', this)">
         Disetujui
-        @if($counts['approved'] > 0)
-            <span class="count-pill" style="background:var(--accent);">{{ $counts['approved'] }}</span>
-        @endif
+        <?php if($counts['approved'] > 0): ?>
+            <span class="count-pill" style="background:var(--accent);"><?php echo e($counts['approved']); ?></span>
+        <?php endif; ?>
     </button>
     <button class="tab-btn" onclick="switchTab('rejected', this)">
         Ditolak
-        @if($counts['rejected'] > 0)
-            <span class="count-pill" style="background:#9ca3af;">{{ $counts['rejected'] }}</span>
-        @endif
+        <?php if($counts['rejected'] > 0): ?>
+            <span class="count-pill" style="background:#9ca3af;"><?php echo e($counts['rejected']); ?></span>
+        <?php endif; ?>
     </button>
     <button class="tab-btn" onclick="switchTab('deleted', this)">
         🗑️ Dihapus
-        @if(($counts['deleted'] ?? 0) > 0)
-            <span class="count-pill" style="background:#ef4444;">{{ $counts['deleted'] }}</span>
-        @endif
+        <?php if(($counts['deleted'] ?? 0) > 0): ?>
+            <span class="count-pill" style="background:#ef4444;"><?php echo e($counts['deleted']); ?></span>
+        <?php endif; ?>
     </button>
 </div>
 
-{{-- ======================== TAB PENDING ======================== --}}
+
 <div id="tab-pending">
     <div class="table-card">
         <div class="table-card-header">
@@ -283,9 +280,9 @@
                     <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 Pendaftaran Menunggu Review
-                <span class="table-card-subtitle">{{ $counts['pending'] }} pendaftar</span>
+                <span class="table-card-subtitle"><?php echo e($counts['pending']); ?> pendaftar</span>
             </div>
-            <a href="{{ route('admin.approval.trainer') }}?export=csv&status=pending" class="btn-csv-export">
+            <a href="<?php echo e(route('admin.approval.trainer')); ?>?export=csv&status=pending" class="btn-csv-export">
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                 </svg>
@@ -293,12 +290,12 @@
             </a>
         </div>
 
-        @if($pending->isEmpty())
+        <?php if($pending->isEmpty()): ?>
             <div class="empty-state">
                 <div class="empty-state-icon">🎉</div>
                 <div class="empty-state-text">Tidak ada pendaftaran trainer yang menunggu review.</div>
             </div>
-        @else
+        <?php else: ?>
             <table>
                 <thead>
                     <tr>
@@ -311,85 +308,88 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($pending as $trainer)
+                    <?php $__currentLoopData = $pending; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trainer): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>
                         <td>
                             <div class="submitter">
                                 <div class="submitter-avatar" style="background:var(--accent);">
-                                    {{ strtoupper(substr($trainer->nama ?? '', 0, 2)) }}
+                                    <?php echo e(strtoupper(substr($trainer->nama ?? '', 0, 2))); ?>
+
                                 </div>
                                 <div>
-                                    <div class="submitter-name">{{ $trainer->academic_degree ?? $trainer->nama }}</div>
-                                    <div class="submitter-sub">{{ $trainer->email }}</div>
+                                    <div class="submitter-name"><?php echo e($trainer->academic_degree ?? $trainer->nama); ?></div>
+                                    <div class="submitter-sub"><?php echo e($trainer->email); ?></div>
                                 </div>
                             </div>
                         </td>
-                        <td style="font-size:12px;color:var(--text-muted);">{{ $trainer->nik ?? '-' }}</td>
+                        <td style="font-size:12px;color:var(--text-muted);"><?php echo e($trainer->nik ?? '-'); ?></td>
                         <td>
                             <div class="doc-btn-group">
-                                @if($trainer->ktp_scan)
-                                    @php $p = str_replace('public/', '', $trainer->ktp_scan); @endphp
-                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-ktp">
+                                <?php if($trainer->ktp_scan): ?>
+                                    <?php $p = str_replace('public/', '', $trainer->ktp_scan); ?>
+                                    <a href="<?php echo e(asset('storage/' . $p)); ?>" target="_blank" class="doc-btn doc-btn-ktp">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>KTP
                                     </a>
-                                @else
+                                <?php else: ?>
                                     <span class="doc-btn doc-btn-disabled">KTP</span>
-                                @endif
-                                @if($trainer->bnsp_certificate)
-                                    @php $p = str_replace('public/', '', $trainer->bnsp_certificate); @endphp
-                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-bnsp">
+                                <?php endif; ?>
+                                <?php if($trainer->bnsp_certificate): ?>
+                                    <?php $p = str_replace('public/', '', $trainer->bnsp_certificate); ?>
+                                    <a href="<?php echo e(asset('storage/' . $p)); ?>" target="_blank" class="doc-btn doc-btn-bnsp">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>BNSP
                                     </a>
-                                @else
+                                <?php else: ?>
                                     <span class="doc-btn doc-btn-disabled">BNSP</span>
-                                @endif
-                                @if($trainer->bukti_transfer)
-                                    @php $p = str_replace('public/', '', $trainer->bukti_transfer); @endphp
-                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-transfer">
+                                <?php endif; ?>
+                                <?php if($trainer->bukti_transfer): ?>
+                                    <?php $p = str_replace('public/', '', $trainer->bukti_transfer); ?>
+                                    <a href="<?php echo e(asset('storage/' . $p)); ?>" target="_blank" class="doc-btn doc-btn-transfer">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>Transfer
                                     </a>
-                                @else
+                                <?php else: ?>
                                     <span class="doc-btn doc-btn-disabled">Transfer</span>
-                                @endif
-                                @if($trainer->white_bg_photo)
-                                    @php $p = str_replace('public/', '', $trainer->white_bg_photo); @endphp
-                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-foto">
+                                <?php endif; ?>
+                                <?php if($trainer->white_bg_photo): ?>
+                                    <?php $p = str_replace('public/', '', $trainer->white_bg_photo); ?>
+                                    <a href="<?php echo e(asset('storage/' . $p)); ?>" target="_blank" class="doc-btn doc-btn-foto">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Pas Foto
                                     </a>
-                                @else
+                                <?php else: ?>
                                     <span class="doc-btn doc-btn-disabled">Pas Foto</span>
-                                @endif
-                                @if($trainer->drive_link_documentation)
-                                    <a href="{{ $trainer->drive_link_documentation }}" target="_blank" class="doc-btn doc-btn-drive">
+                                <?php endif; ?>
+                                <?php if($trainer->drive_link_documentation): ?>
+                                    <a href="<?php echo e($trainer->drive_link_documentation); ?>" target="_blank" class="doc-btn doc-btn-drive">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>Drive
                                     </a>
-                                @endif
+                                <?php endif; ?>
                             </div>
                         </td>
                         <td style="max-width:180px;font-size:12px;color:var(--text-muted);">
-                            {{ Str::limit($trainer->experience, 55) }}
+                            <?php echo e(Str::limit($trainer->experience, 55)); ?>
+
                         </td>
                         <td>
                             <span class="relative-time"
-                                  data-time="{{ ($trainer->applied_at ?? $trainer->created_at)->toIso8601String() }}"
-                                  title="{{ ($trainer->applied_at ?? $trainer->created_at)->format('d M Y, H:i') }}">
-                                {{ ($trainer->applied_at ?? $trainer->created_at)->diffForHumans() }}
+                                  data-time="<?php echo e(($trainer->applied_at ?? $trainer->created_at)->toIso8601String()); ?>"
+                                  title="<?php echo e(($trainer->applied_at ?? $trainer->created_at)->format('d M Y, H:i')); ?>">
+                                <?php echo e(($trainer->applied_at ?? $trainer->created_at)->diffForHumans()); ?>
+
                             </span>
                         </td>
                         <td>
                             <div class="action-group">
-                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal({{ $trainer->id }})">
+                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal(<?php echo e($trainer->id); ?>)">
                                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                     </svg>
                                     Detail
                                 </button>
-                                <form method="POST" action="{{ route('admin.trainer.approve', $trainer->id) }}"
-                                      id="form-approve-{{ $trainer->id }}" style="display:inline;">
-                                    @csrf
+                                <form method="POST" action="<?php echo e(route('admin.trainer.approve', $trainer->id)); ?>"
+                                      id="form-approve-<?php echo e($trainer->id); ?>" style="display:inline;">
+                                    <?php echo csrf_field(); ?>
                                     <button type="button" class="btn btn-approve btn-sm"
-                                        onclick="confirmApprove({{ $trainer->id }}, '{{ addslashes($trainer->academic_degree ?? $trainer->nama) }}')">
+                                        onclick="confirmApprove(<?php echo e($trainer->id); ?>, '<?php echo e(addslashes($trainer->academic_degree ?? $trainer->nama)); ?>')">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path d="M5 13l4 4L19 7"/>
                                         </svg>
@@ -397,7 +397,7 @@
                                     </button>
                                 </form>
                                 <button class="btn btn-reject btn-sm"
-                                    onclick="confirmReject({{ $trainer->id }}, '{{ addslashes($trainer->academic_degree ?? $trainer->nama) }}')">
+                                    onclick="confirmReject(<?php echo e($trainer->id); ?>, '<?php echo e(addslashes($trainer->academic_degree ?? $trainer->nama)); ?>')">
                                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path d="M6 18L18 6M6 6l12 12"/>
                                     </svg>
@@ -406,14 +406,14 @@
                             </div>
                         </td>
                     </tr>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 
-{{-- ======================== TAB APPROVED ======================== --}}
+
 <div id="tab-approved" style="display:none;">
     <div class="table-card">
         <div class="table-card-header">
@@ -422,9 +422,9 @@
                     <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 Trainer Disetujui
-                <span class="table-card-subtitle">{{ $counts['approved'] }} trainer aktif</span>
+                <span class="table-card-subtitle"><?php echo e($counts['approved']); ?> trainer aktif</span>
             </div>
-            <a href="{{ route('admin.approval.trainer') }}?export=csv&status=approved" class="btn-csv-export">
+            <a href="<?php echo e(route('admin.approval.trainer')); ?>?export=csv&status=approved" class="btn-csv-export">
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                 </svg>
@@ -432,12 +432,12 @@
             </a>
         </div>
 
-        @if($approved->isEmpty())
+        <?php if($approved->isEmpty()): ?>
             <div class="empty-state">
                 <div class="empty-state-icon">📭</div>
                 <div class="empty-state-text">Belum ada trainer yang disetujui.</div>
             </div>
-        @else
+        <?php else: ?>
             <table>
                 <thead>
                     <tr>
@@ -451,68 +451,71 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($approved as $trainer)
+                    <?php $__currentLoopData = $approved; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trainer): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>
                         <td>
                             <div class="submitter">
                                 <div class="submitter-avatar" style="background:var(--accent);">
-                                    {{ strtoupper(substr($trainer->nama ?? '', 0, 2)) }}
+                                    <?php echo e(strtoupper(substr($trainer->nama ?? '', 0, 2))); ?>
+
                                 </div>
                                 <div>
-                                    <div class="submitter-name">{{ $trainer->academic_degree ?? $trainer->nama }}</div>
-                                    <div class="submitter-sub">{{ $trainer->email }}</div>
+                                    <div class="submitter-name"><?php echo e($trainer->academic_degree ?? $trainer->nama); ?></div>
+                                    <div class="submitter-sub"><?php echo e($trainer->email); ?></div>
                                 </div>
                             </div>
                         </td>
-                        <td style="font-size:12px;color:var(--text-muted);">{{ $trainer->nik ?? '-' }}</td>
+                        <td style="font-size:12px;color:var(--text-muted);"><?php echo e($trainer->nik ?? '-'); ?></td>
                         <td>
                             <div class="doc-btn-group">
-                                @if($trainer->ktp_scan)
-                                    @php $p = str_replace('public/', '', $trainer->ktp_scan); @endphp
-                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-ktp">
+                                <?php if($trainer->ktp_scan): ?>
+                                    <?php $p = str_replace('public/', '', $trainer->ktp_scan); ?>
+                                    <a href="<?php echo e(asset('storage/' . $p)); ?>" target="_blank" class="doc-btn doc-btn-ktp">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>KTP
                                     </a>
-                                @else
+                                <?php else: ?>
                                     <span class="doc-btn doc-btn-disabled">KTP</span>
-                                @endif
-                                @if($trainer->bnsp_certificate)
-                                    @php $p = str_replace('public/', '', $trainer->bnsp_certificate); @endphp
-                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-bnsp">
+                                <?php endif; ?>
+                                <?php if($trainer->bnsp_certificate): ?>
+                                    <?php $p = str_replace('public/', '', $trainer->bnsp_certificate); ?>
+                                    <a href="<?php echo e(asset('storage/' . $p)); ?>" target="_blank" class="doc-btn doc-btn-bnsp">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>BNSP
                                     </a>
-                                @else
+                                <?php else: ?>
                                     <span class="doc-btn doc-btn-disabled">BNSP</span>
-                                @endif
-                                @if($trainer->bukti_transfer)
-                                    @php $p = str_replace('public/', '', $trainer->bukti_transfer); @endphp
-                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-transfer">
+                                <?php endif; ?>
+                                <?php if($trainer->bukti_transfer): ?>
+                                    <?php $p = str_replace('public/', '', $trainer->bukti_transfer); ?>
+                                    <a href="<?php echo e(asset('storage/' . $p)); ?>" target="_blank" class="doc-btn doc-btn-transfer">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>Transfer
                                     </a>
-                                @else
+                                <?php else: ?>
                                     <span class="doc-btn doc-btn-disabled">Transfer</span>
-                                @endif
-                                @if($trainer->white_bg_photo)
-                                    @php $p = str_replace('public/', '', $trainer->white_bg_photo); @endphp
-                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-foto">
+                                <?php endif; ?>
+                                <?php if($trainer->white_bg_photo): ?>
+                                    <?php $p = str_replace('public/', '', $trainer->white_bg_photo); ?>
+                                    <a href="<?php echo e(asset('storage/' . $p)); ?>" target="_blank" class="doc-btn doc-btn-foto">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Pas Foto
                                     </a>
-                                @else
+                                <?php else: ?>
                                     <span class="doc-btn doc-btn-disabled">Pas Foto</span>
-                                @endif
-                                @if($trainer->drive_link_documentation)
-                                    <a href="{{ $trainer->drive_link_documentation }}" target="_blank" class="doc-btn doc-btn-drive">
+                                <?php endif; ?>
+                                <?php if($trainer->drive_link_documentation): ?>
+                                    <a href="<?php echo e($trainer->drive_link_documentation); ?>" target="_blank" class="doc-btn doc-btn-drive">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>Drive
                                     </a>
-                                @endif
+                                <?php endif; ?>
                             </div>
                         </td>
                         <td style="max-width:180px;font-size:12px;color:var(--text-muted);">
-                            {{ Str::limit($trainer->experience, 55) }}
+                            <?php echo e(Str::limit($trainer->experience, 55)); ?>
+
                         </td>
                         <td>
-                            <span class="relative-time" data-time="{{ $trainer->reviewed_at?->toIso8601String() ?? $trainer->updated_at->toIso8601String() }}"
-                                  title="{{ ($trainer->reviewed_at ?? $trainer->updated_at)->format('d M Y, H:i') }}">
-                                {{ ($trainer->reviewed_at ?? $trainer->updated_at)->diffForHumans() }}
+                            <span class="relative-time" data-time="<?php echo e($trainer->reviewed_at?->toIso8601String() ?? $trainer->updated_at->toIso8601String()); ?>"
+                                  title="<?php echo e(($trainer->reviewed_at ?? $trainer->updated_at)->format('d M Y, H:i')); ?>">
+                                <?php echo e(($trainer->reviewed_at ?? $trainer->updated_at)->diffForHumans()); ?>
+
                             </span>
                         </td>
                         <td>
@@ -520,19 +523,19 @@
                         </td>
                         <td>
                             <div class="action-group">
-                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal({{ $trainer->id }})">
+                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal(<?php echo e($trainer->id); ?>)">
                                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                     </svg>
                                     Detail
                                 </button>
-                                <form method="POST" action="{{ route('admin.trainer.destroy', $trainer->id) }}"
-                                      id="form-destroy-trainer-{{ $trainer->id }}" style="display:none;">
-                                    @csrf @method('DELETE')
+                                <form method="POST" action="<?php echo e(route('admin.trainer.destroy', $trainer->id)); ?>"
+                                      id="form-destroy-trainer-<?php echo e($trainer->id); ?>" style="display:none;">
+                                    <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                 </form>
                                 <button type="button" class="btn btn-ghost btn-sm" style="color:var(--accent2);"
-                                        onclick="confirmDestroyTrainer({{ $trainer->id }}, '{{ addslashes($trainer->academic_degree ?? $trainer->nama) }}', 'approved')">
+                                        onclick="confirmDestroyTrainer(<?php echo e($trainer->id); ?>, '<?php echo e(addslashes($trainer->academic_degree ?? $trainer->nama)); ?>', 'approved')">
                                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                     </svg>
@@ -541,14 +544,14 @@
                             </div>
                         </td>
                     </tr>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 
-{{-- ======================== TAB REJECTED ======================== --}}
+
 <div id="tab-rejected" style="display:none;">
     <div class="table-card">
         <div class="table-card-header">
@@ -557,9 +560,9 @@
                     <path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 Pendaftaran Ditolak
-                <span class="table-card-subtitle">{{ $counts['rejected'] }} ditolak</span>
+                <span class="table-card-subtitle"><?php echo e($counts['rejected']); ?> ditolak</span>
             </div>
-            <a href="{{ route('admin.approval.trainer') }}?export=csv&status=rejected" class="btn-csv-export">
+            <a href="<?php echo e(route('admin.approval.trainer')); ?>?export=csv&status=rejected" class="btn-csv-export">
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                 </svg>
@@ -567,12 +570,12 @@
             </a>
         </div>
 
-        @if($rejected->isEmpty())
+        <?php if($rejected->isEmpty()): ?>
             <div class="empty-state">
                 <div class="empty-state-icon">📭</div>
                 <div class="empty-state-text">Tidak ada pendaftaran trainer yang ditolak.</div>
             </div>
-        @else
+        <?php else: ?>
             <table>
                 <thead>
                     <tr>
@@ -585,83 +588,86 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($rejected as $trainer)
+                    <?php $__currentLoopData = $rejected; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trainer): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>
                         <td>
                             <div class="submitter">
                                 <div class="submitter-avatar" style="background:#9ca3af;">
-                                    {{ strtoupper(substr($trainer->nama ?? '', 0, 2)) }}
+                                    <?php echo e(strtoupper(substr($trainer->nama ?? '', 0, 2))); ?>
+
                                 </div>
                                 <div>
-                                    <div class="submitter-name">{{ $trainer->academic_degree ?? $trainer->nama }}</div>
-                                    <div class="submitter-sub">{{ $trainer->email }}</div>
+                                    <div class="submitter-name"><?php echo e($trainer->academic_degree ?? $trainer->nama); ?></div>
+                                    <div class="submitter-sub"><?php echo e($trainer->email); ?></div>
                                 </div>
                             </div>
                         </td>
-                        <td style="font-size:12px;color:var(--text-muted);">{{ $trainer->nik ?? '-' }}</td>
+                        <td style="font-size:12px;color:var(--text-muted);"><?php echo e($trainer->nik ?? '-'); ?></td>
                         <td>
                             <div class="doc-btn-group">
-                                @if($trainer->ktp_scan)
-                                    @php $p = str_replace('public/', '', $trainer->ktp_scan); @endphp
-                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-ktp">
+                                <?php if($trainer->ktp_scan): ?>
+                                    <?php $p = str_replace('public/', '', $trainer->ktp_scan); ?>
+                                    <a href="<?php echo e(asset('storage/' . $p)); ?>" target="_blank" class="doc-btn doc-btn-ktp">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>KTP
                                     </a>
-                                @else
+                                <?php else: ?>
                                     <span class="doc-btn doc-btn-disabled">KTP</span>
-                                @endif
-                                @if($trainer->bnsp_certificate)
-                                    @php $p = str_replace('public/', '', $trainer->bnsp_certificate); @endphp
-                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-bnsp">
+                                <?php endif; ?>
+                                <?php if($trainer->bnsp_certificate): ?>
+                                    <?php $p = str_replace('public/', '', $trainer->bnsp_certificate); ?>
+                                    <a href="<?php echo e(asset('storage/' . $p)); ?>" target="_blank" class="doc-btn doc-btn-bnsp">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>BNSP
                                     </a>
-                                @else
+                                <?php else: ?>
                                     <span class="doc-btn doc-btn-disabled">BNSP</span>
-                                @endif
-                                @if($trainer->bukti_transfer)
-                                    @php $p = str_replace('public/', '', $trainer->bukti_transfer); @endphp
-                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-transfer">
+                                <?php endif; ?>
+                                <?php if($trainer->bukti_transfer): ?>
+                                    <?php $p = str_replace('public/', '', $trainer->bukti_transfer); ?>
+                                    <a href="<?php echo e(asset('storage/' . $p)); ?>" target="_blank" class="doc-btn doc-btn-transfer">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>Transfer
                                     </a>
-                                @else
+                                <?php else: ?>
                                     <span class="doc-btn doc-btn-disabled">Transfer</span>
-                                @endif
-                                @if($trainer->white_bg_photo)
-                                    @php $p = str_replace('public/', '', $trainer->white_bg_photo); @endphp
-                                    <a href="{{ asset('storage/' . $p) }}" target="_blank" class="doc-btn doc-btn-foto">
+                                <?php endif; ?>
+                                <?php if($trainer->white_bg_photo): ?>
+                                    <?php $p = str_replace('public/', '', $trainer->white_bg_photo); ?>
+                                    <a href="<?php echo e(asset('storage/' . $p)); ?>" target="_blank" class="doc-btn doc-btn-foto">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Pas Foto
                                     </a>
-                                @else
+                                <?php else: ?>
                                     <span class="doc-btn doc-btn-disabled">Pas Foto</span>
-                                @endif
+                                <?php endif; ?>
                             </div>
                         </td>
                         <td style="max-width:200px;">
                             <div style="font-size:12px;color:var(--accent2);">
-                                {{ Str::limit($trainer->rejection_reason ?? '-', 60) }}
+                                <?php echo e(Str::limit($trainer->rejection_reason ?? '-', 60)); ?>
+
                             </div>
                         </td>
                         <td>
                             <span class="relative-time"
-                                  data-time="{{ $trainer->reviewed_at?->toIso8601String() ?? $trainer->updated_at->toIso8601String() }}"
-                                  title="{{ ($trainer->reviewed_at ?? $trainer->updated_at)->format('d M Y, H:i') }}">
-                                {{ ($trainer->reviewed_at ?? $trainer->updated_at)->diffForHumans() }}
+                                  data-time="<?php echo e($trainer->reviewed_at?->toIso8601String() ?? $trainer->updated_at->toIso8601String()); ?>"
+                                  title="<?php echo e(($trainer->reviewed_at ?? $trainer->updated_at)->format('d M Y, H:i')); ?>">
+                                <?php echo e(($trainer->reviewed_at ?? $trainer->updated_at)->diffForHumans()); ?>
+
                             </span>
                         </td>
                         <td>
                             <div class="action-group">
-                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal({{ $trainer->id }})">
+                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal(<?php echo e($trainer->id); ?>)">
                                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                     </svg>
                                     Detail
                                 </button>
-                                <form method="POST" action="{{ route('admin.trainer.destroy', $trainer->id) }}"
-                                      id="form-destroy-trainer-{{ $trainer->id }}" style="display:none;">
-                                    @csrf @method('DELETE')
+                                <form method="POST" action="<?php echo e(route('admin.trainer.destroy', $trainer->id)); ?>"
+                                      id="form-destroy-trainer-<?php echo e($trainer->id); ?>" style="display:none;">
+                                    <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                 </form>
                                 <button type="button" class="btn btn-ghost btn-sm" style="color:var(--accent2);"
-                                        onclick="confirmDestroyTrainer({{ $trainer->id }}, '{{ addslashes($trainer->academic_degree ?? $trainer->nama) }}', 'rejected')">
+                                        onclick="confirmDestroyTrainer(<?php echo e($trainer->id); ?>, '<?php echo e(addslashes($trainer->academic_degree ?? $trainer->nama)); ?>', 'rejected')">
                                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                     </svg>
@@ -670,29 +676,29 @@
                             </div>
                         </td>
                     </tr>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 
-{{-- ======================== TAB DELETED ======================== --}}
+
 <div id="tab-deleted" style="display:none;">
     <div class="table-card">
         <div class="table-card-header">
             <div class="table-card-title">
                 🗑️ Trainer Dihapus Admin
-                <span class="table-card-subtitle">{{ $counts['deleted'] ?? 0 }} data</span>
+                <span class="table-card-subtitle"><?php echo e($counts['deleted'] ?? 0); ?> data</span>
             </div>
         </div>
 
-        @if($deleted->isEmpty())
+        <?php if($deleted->isEmpty()): ?>
             <div class="empty-state">
                 <div class="empty-state-icon">✅</div>
                 <div class="empty-state-text">Tidak ada trainer yang dihapus.</div>
             </div>
-        @else
+        <?php else: ?>
             <table>
                 <thead>
                     <tr>
@@ -704,69 +710,72 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($deleted as $trainer)
+                    <?php $__currentLoopData = $deleted; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trainer): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>
                         <td>
                             <div class="submitter">
                                 <div class="submitter-avatar" style="background:#9ca3af;">
-                                    {{ strtoupper(substr($trainer->nama ?? '', 0, 2)) }}
+                                    <?php echo e(strtoupper(substr($trainer->nama ?? '', 0, 2))); ?>
+
                                 </div>
                                 <div>
-                                    <div class="submitter-name">{{ $trainer->academic_degree ?? $trainer->nama }}</div>
-                                    <div class="submitter-sub">{{ $trainer->email }}</div>
+                                    <div class="submitter-name"><?php echo e($trainer->academic_degree ?? $trainer->nama); ?></div>
+                                    <div class="submitter-sub"><?php echo e($trainer->email); ?></div>
                                 </div>
                             </div>
                         </td>
-                        <td style="font-size:12px;color:var(--text-muted);">{{ $trainer->nik ?? '-' }}</td>
+                        <td style="font-size:12px;color:var(--text-muted);"><?php echo e($trainer->nik ?? '-'); ?></td>
                         <td>
-                            @php
+                            <?php
                                 $prevStatus = $trainer->status ?? 'pending';
                                 $statusLabel = ['pending' => 'Menunggu', 'approved' => 'Disetujui', 'rejected' => 'Ditolak'][$prevStatus] ?? $prevStatus;
                                 $statusClass = ['pending' => 'badge-pending', 'approved' => 'badge-approved', 'rejected' => 'badge-rejected'][$prevStatus] ?? 'badge-inactive';
-                            @endphp
-                            <span class="badge {{ $statusClass }}">
-                                <span class="badge-dot"></span>{{ $statusLabel }}
+                            ?>
+                            <span class="badge <?php echo e($statusClass); ?>">
+                                <span class="badge-dot"></span><?php echo e($statusLabel); ?>
+
                             </span>
                         </td>
                         <td style="font-size:12px;color:#ef4444;">
-                            {{ $trainer->deleted_at?->format('d M Y, H:i') }}
+                            <?php echo e($trainer->deleted_at?->format('d M Y, H:i')); ?>
+
                         </td>
                         <td>
                             <div class="action-group">
                                 <button type="button" class="btn btn-approve btn-sm"
-                                    onclick="confirmRestoreTrainer({{ $trainer->id }}, '{{ addslashes($trainer->academic_degree ?? $trainer->nama) }}')">
+                                    onclick="confirmRestoreTrainer(<?php echo e($trainer->id); ?>, '<?php echo e(addslashes($trainer->academic_degree ?? $trainer->nama)); ?>')">
                                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                                     </svg>
                                     Pulihkan
                                 </button>
                                 <button type="button" class="btn btn-ghost btn-sm" style="color:#dc2626;"
-                                    onclick="confirmForceDeleteTrainer({{ $trainer->id }}, '{{ addslashes($trainer->academic_degree ?? $trainer->nama) }}')">
+                                    onclick="confirmForceDeleteTrainer(<?php echo e($trainer->id); ?>, '<?php echo e(addslashes($trainer->academic_degree ?? $trainer->nama)); ?>')">
                                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                     </svg>
                                     Hapus Permanen
                                 </button>
                             </div>
-                            {{-- Form tersembunyi --}}
-                            <form id="restore-trainer-form-{{ $trainer->id }}" method="POST"
-                                  action="{{ route('admin.trainer.restore', $trainer->id) }}" style="display:none;">
-                                @csrf
+                            
+                            <form id="restore-trainer-form-<?php echo e($trainer->id); ?>" method="POST"
+                                  action="<?php echo e(route('admin.trainer.restore', $trainer->id)); ?>" style="display:none;">
+                                <?php echo csrf_field(); ?>
                             </form>
-                            <form id="force-delete-trainer-form-{{ $trainer->id }}" method="POST"
-                                  action="{{ route('admin.trainer.force-delete', $trainer->id) }}" style="display:none;">
-                                @csrf @method('DELETE')
+                            <form id="force-delete-trainer-form-<?php echo e($trainer->id); ?>" method="POST"
+                                  action="<?php echo e(route('admin.trainer.force-delete', $trainer->id)); ?>" style="display:none;">
+                                <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                             </form>
                         </td>
                     </tr>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 
-{{-- ======================== MODAL DETAIL ======================== --}}
+
 <div class="modal-overlay" id="modal-detail">
     <div class="modal">
         <div class="modal-header">
@@ -837,7 +846,7 @@
     </div>
 </div>
 
-{{-- ======================== MODAL TOLAK ======================== --}}
+
 <div class="modal-overlay" id="modal-reject">
     <div class="modal" style="max-width:460px;">
         <div class="modal-header">
@@ -848,7 +857,7 @@
             Berikan alasan penolakan untuk <strong id="reject-name"></strong>. Alasan ini akan tersimpan sebagai catatan.
         </p>
         <form id="reject-form" method="POST">
-            @csrf
+            <?php echo csrf_field(); ?>
             <div class="form-group">
                 <label class="form-label">Alasan Penolakan *</label>
                 <textarea name="rejection_reason" class="form-textarea" rows="4"
@@ -868,9 +877,9 @@
     </div>
 </div>
 
-{{-- ======================== DATA + SCRIPT ======================== --}}
+
 <script>
-const trainerData = @json(
+const trainerData = <?php echo json_encode(
     $pending->concat($approved)->concat($rejected)
         ->map(function ($t) {
             $arr = $t->toArray();
@@ -880,7 +889,7 @@ const trainerData = @json(
             return $arr;
         })
         ->keyBy('id')
-);
+, 15, 512) ?>;
 
 // ── Relative time ──
 function formatRelativeTime(isoString) {
@@ -1117,4 +1126,5 @@ document.querySelectorAll('.modal-overlay').forEach(function(el) {
 });
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\Kaji-indo-main\resources\views/admin/approval-trainer.blade.php ENDPATH**/ ?>

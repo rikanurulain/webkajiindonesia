@@ -63,6 +63,30 @@ public function produkDetail($id): View
     ]);
 }
 
+public function produkProfil($id): View
+{
+    $produk = Produk::where('status', 'approved')->findOrFail($id);
+
+    $items = ProdukItem::where('produk_id', $produk->id)
+        ->orderByDesc('is_unggulan')
+        ->latest()
+        ->get();
+
+    $item = $items->first();
+
+    // $itemLainnya = semua item selain yang pertama (unggulan)
+    $itemLainnya = $items->skip(1)->values();
+
+    return view('pages.detail-produk', [
+        'title'           => $produk->nama,
+        'metaDescription' => $produk->deskripsi ?? '',
+        'produk'          => $produk,
+        'items'           => $items,
+        'item'            => $item,
+        'itemLainnya'     => $itemLainnya, // ← tambah ini
+    ]);
+}
+
     public function pembimbing(): View
     {
         $trainers = Mentor::where('status', 'approved')
@@ -207,29 +231,33 @@ public function produkDetail($id): View
     }
 
     public function petaData()
-    {
-        $this->geocodeBelumAda();
+{
+    $this->geocodeBelumAda();
 
-        $totalApproved = Produk::where('status', 'approved')->count();
+    $totalApproved = Produk::where('status', 'approved')
+        ->whereHas('user', fn($q) => $q->where('role', 'umkm'))
+        ->count();
 
-        $produks = Produk::where('status', 'approved')
-            ->whereNotNull('lat')
-            ->whereNotNull('lng')
-            ->where('lat', '!=', 0)
-            ->where('lng', '!=', 0)
-            ->select([
-                'id',
-                'nama',
-                'logo',
-                'foto_produk',
-                'alamat',
-                'lat',
-                'lng',
-                'provinsi',
-                'kabupaten_kota',
-                'kecamatan'
-            ])
-            ->get();
+    $produks = Produk::where('status', 'approved')
+        ->whereHas('user', fn($q) => $q->where('role', 'umkm'))
+        ->whereNotNull('lat')
+        ->whereNotNull('lng')
+        ->where('lat', '!=', 0)
+        ->where('lng', '!=', 0)
+        ->select([
+            'id',
+            'nama',
+            'logo',
+            'foto_produk',
+            'alamat',
+            'lat',
+            'lng',
+            'provinsi',
+            'kabupaten_kota',
+            'kecamatan',
+            'user_id'
+        ])
+        ->get();
 
         $data = [];
 
@@ -276,9 +304,12 @@ public function produkDetail($id): View
 
     public function petaDataMentor()
     {
-        $totalApproved = Mentor::where('status', 'approved')->count();
-
+        $totalApproved = Mentor::where('status', 'approved')
+            ->whereHas('user', fn($q) => $q->where('role', 'mentor'))
+            ->count();
+    
         $mentors = Mentor::where('status', 'approved')
+            ->whereHas('user', fn($q) => $q->where('role', 'mentor'))
             ->get();
 
         $data = [];
@@ -348,13 +379,14 @@ public function produkDetail($id): View
     // =========================================================
 
     private function geocodeBelumAda(): void
-    {
-        $belum = Produk::where('status', 'approved')
-            ->where(function ($q) {
-                $q->whereNull('lat')
-                  ->orWhereNull('lng');
-            })
-            ->get();
+{
+    $belum = Produk::where('status', 'approved')
+        ->whereHas('user', fn($q) => $q->where('role', 'umkm'))
+        ->where(function ($q) {
+            $q->whereNull('lat')
+              ->orWhereNull('lng');
+        })
+        ->get();
 
         foreach ($belum as $produk) {
 

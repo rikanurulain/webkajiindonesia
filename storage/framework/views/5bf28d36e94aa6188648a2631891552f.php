@@ -1,8 +1,6 @@
-@extends('layouts.app')
+<?php $__env->startSection('content'); ?>
 
-@section('content')
 
-{{-- Hero Section --}}
 <section class="bg-gradient-to-br from-primary-dark via-primary to-primary- py-16 text-white">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-8">
         <div class="max-w-2xl">
@@ -14,19 +12,19 @@
             </p>
         </div>
         <div>
-                <img src="{{ asset('storage/logo/KARYAKAMI.png') }}"
+                <img src="<?php echo e(asset('storage/logo/KARYAKAMI.png')); ?>"
                  alt="Logo Karya Kami"
                  class="w-32 md:w-40 object-contain">
         </div>
     </div>
 </section>
 
-{{-- Info Bar --}}
+
 <div class="bg-white border-b border-gray-200 shadow-sm" style="position: relative; z-index: 1;">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
         <p class="text-sm text-gray-500">Klik marker pada peta untuk melihat detail UMKM atau Mentor</p>
         <div class="flex items-center gap-3 flex-wrap">
-            {{-- Legenda --}}
+            
             <div class="flex items-center gap-4 text-sm">
                 <div class="flex items-center gap-1.5">
                     <span style="display:inline-block;width:14px;height:14px;background:#1a73e8;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.3);"></span>
@@ -49,7 +47,7 @@
     </div>
 </div>
 
-{{-- Leaflet CSS --}}
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css"/>
 
 <style>
@@ -160,10 +158,10 @@
     }
 </style>
 
-{{-- Peta --}}
+
 <div class="relative">
 
-    {{-- Loading --}}
+    
     <div id="loading"
          class="absolute inset-0 flex flex-col items-center justify-center bg-white/80 gap-3"
          style="z-index: 1;">
@@ -171,7 +169,7 @@
         <p class="text-sm text-gray-500">Memuat data peta...</p>
     </div>
 
-    {{-- Error --}}
+    
     <div id="error-box"
          class="hidden absolute top-4 left-1/2 -translate-x-1/2
                 bg-red-50 border border-red-200 text-red-700
@@ -179,19 +177,19 @@
          style="z-index: 2;">
     </div>
 
-    {{-- Map --}}
+    
     <div id="map" class="w-full" style="height: 600px;"></div>
 
 </div>
 
-{{-- Leaflet JS --}}
+
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
 
 <script>
-const API_UMKM_URL   = '{{ route("umkm.peta-data") }}';
-const API_MENTOR_URL = '{{ route("umkm.peta-data-mentor") }}';
-const DETAIL_URL        = '{{ url("/umkm/produk/profil") }}';
-const MENTOR_DETAIL_URL = '{{ url("/umkm/pembimbing") }}';
+const API_UMKM_URL   = '<?php echo e(route("umkm.peta-data")); ?>';
+const API_MENTOR_URL = '<?php echo e(route("umkm.peta-data-mentor")); ?>';
+const DETAIL_URL        = '<?php echo e(url("/umkm/produk/profil")); ?>';
+const MENTOR_DETAIL_URL = '<?php echo e(url("/umkm/pembimbing")); ?>';
 
 const map = L.map('map').setView([-2.5, 118], 5);
 
@@ -402,4 +400,5 @@ muatSemuaData();
 setInterval(muatSemuaData, 300000);
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\Kaji-indo-main\resources\views/pages/umkm-lokasi.blade.php ENDPATH**/ ?>

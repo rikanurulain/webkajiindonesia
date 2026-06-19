@@ -1,9 +1,6 @@
-{{-- resources/views/admin/approval-produk.blade.php --}}
-@extends('layouts.admin')
+<?php $__env->startSection('page-title', 'Approval UMKM'); ?>
 
-@section('page-title', 'Approval UMKM')
-
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
 /* ── CSV Export Button ── */
 .btn-csv-export {
@@ -280,49 +277,47 @@
     .action-group .btn-sm { font-size:11px; padding:6px 4px; white-space:nowrap; justify-content:center; width:100%; display:flex; box-sizing:border-box; min-height:30px; }
 }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content') 
+<?php $__env->startSection('content'); ?> 
 
-{{-- ════════════ TAB BAR UTAMA ════════════ --}}
+
 <div class="tab-bar">
     <button class="tab-btn" data-tab="pending" onclick="switchTab('pending',this)">
         ⏳ Menunggu
-        @if($counts['pending'] > 0)
-            <span class="count-pill">{{ $counts['pending'] }}</span>
-        @endif
+        <?php if($counts['pending'] > 0): ?>
+            <span class="count-pill"><?php echo e($counts['pending']); ?></span>
+        <?php endif; ?>
     </button>
     <button class="tab-btn" data-tab="approved" onclick="switchTab('approved',this)">
         ✅ Disetujui
-        @if($counts['approved'] > 0)
-            <span class="count-pill" style="background:var(--accent)">{{ $counts['approved'] }}</span>
-        @endif
+        <?php if($counts['approved'] > 0): ?>
+            <span class="count-pill" style="background:var(--accent)"><?php echo e($counts['approved']); ?></span>
+        <?php endif; ?>
     </button>
     <button class="tab-btn" data-tab="rejected" onclick="switchTab('rejected',this)">
         ✕ Ditolak
-        @if($counts['rejected'] > 0)
-            <span class="count-pill" style="background:#9ca3af">{{ $counts['rejected'] }}</span>
-        @endif
+        <?php if($counts['rejected'] > 0): ?>
+            <span class="count-pill" style="background:#9ca3af"><?php echo e($counts['rejected']); ?></span>
+        <?php endif; ?>
     </button>
     <button class="tab-btn" data-tab="deleted" onclick="switchTab('deleted',this)">
         🗑️ Dihapus
-        @if(($counts['deleted'] ?? 0) > 0)
-            <span class="count-pill" style="background:#ef4444">{{ $counts['deleted'] }}</span>
-        @endif
+        <?php if(($counts['deleted'] ?? 0) > 0): ?>
+            <span class="count-pill" style="background:#ef4444"><?php echo e($counts['deleted']); ?></span>
+        <?php endif; ?>
     </button>
 </div>
 
-{{-- ════════════════════════════════════════════════
-     TAB 1 — MENUNGGU (table view)
-════════════════════════════════════════════════ --}}
+
 <div id="tab-pending" style="display:none">
     <div class="table-card">
     <div class="table-card-header">
     <div class="table-card-title">
         ⏳ Pendaftaran UMKM Menunggu
-        <span class="table-card-subtitle">{{ $counts['pending'] }} pendaftaran</span>
+        <span class="table-card-subtitle"><?php echo e($counts['pending']); ?> pendaftaran</span>
     </div>
-    <a href="{{ route('admin.approval.produk.export-csv', ['status' => 'pending']) }}"
+    <a href="<?php echo e(route('admin.approval.produk.export-csv', ['status' => 'pending'])); ?>"
        class="btn-csv-export">
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -331,12 +326,12 @@
     </a>
 </div>
 
-        @if($pending->isEmpty())
+        <?php if($pending->isEmpty()): ?>
             <div class="empty-state">
                 <div class="empty-state-icon">🎉</div>
                 <div class="empty-state-text">Tidak ada pendaftaran UMKM yang menunggu persetujuan.</div>
             </div>
-        @else
+        <?php else: ?>
             <table>
                 <thead>
                     <tr>
@@ -349,90 +344,87 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($pending as $produk)
+                    <?php $__currentLoopData = $pending; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $produk): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>
                         <td>
                             <div class="submitter">
                                 <div class="submitter-avatar" style="background:var(--surface2);border:1px solid var(--border);">
-                                    @if($produk->logo)
-                                        <img src="{{ asset('storage/'.$produk->logo) }}" alt="{{ $produk->nama }}">
-                                    @elseif($produk->foto_produk)
-                                        <img src="{{ asset('storage/'.$produk->foto_produk) }}" alt="{{ $produk->nama }}">
-                                    @else
+                                    <?php if($produk->logo): ?>
+                                        <img src="<?php echo e(asset('storage/'.$produk->logo)); ?>" alt="<?php echo e($produk->nama); ?>">
+                                    <?php elseif($produk->foto_produk): ?>
+                                        <img src="<?php echo e(asset('storage/'.$produk->foto_produk)); ?>" alt="<?php echo e($produk->nama); ?>">
+                                    <?php else: ?>
                                         🏪
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
                                 <div>
-                                    <div class="submitter-name">{{ $produk->nama }}</div>
-                                    <div class="submitter-sub">{{ $produk->kategori ?? '-' }}</div>
+                                    <div class="submitter-name"><?php echo e($produk->nama); ?></div>
+                                    <div class="submitter-sub"><?php echo e($produk->kategori ?? '-'); ?></div>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            <div style="font-size:13px;font-weight:600;">{{ $produk->owner ?? '-' }}</div>
-                            <div style="font-size:11px;color:var(--text-muted);">{{ $produk->kontak ?? '-' }}</div>
+                            <div style="font-size:13px;font-weight:600;"><?php echo e($produk->owner ?? '-'); ?></div>
+                            <div style="font-size:11px;color:var(--text-muted);"><?php echo e($produk->kontak ?? '-'); ?></div>
                         </td>
                         <td>
-                            <div style="font-size:12px;">{{ $produk->kabupaten_kota ?? '-' }}</div>
-                            <div style="font-size:11px;color:var(--text-muted);">{{ $produk->provinsi ?? '-' }}</div>
+                            <div style="font-size:12px;"><?php echo e($produk->kabupaten_kota ?? '-'); ?></div>
+                            <div style="font-size:11px;color:var(--text-muted);"><?php echo e($produk->provinsi ?? '-'); ?></div>
                         </td>
-                        <td style="font-size:12px;color:var(--text-muted);">{{ $produk->nib ?? '-' }}</td>
-                        <td style="font-size:12px;color:var(--text-muted);">{{ $produk->created_at->format('d M Y') }}</td>
+                        <td style="font-size:12px;color:var(--text-muted);"><?php echo e($produk->nib ?? '-'); ?></td>
+                        <td style="font-size:12px;color:var(--text-muted);"><?php echo e($produk->created_at->format('d M Y')); ?></td>
                         <td>
                             <div class="action-group">
-                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal({{ $produk->id }})">
+                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal(<?php echo e($produk->id); ?>)">
                                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="13" height="13">
                                         <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                     </svg>
                                     Detail
                                 </button>
-                                <form method="POST" action="{{ route('admin.approval.produk.approve', $produk) }}" style="display:inline;">
-                                    @csrf
+                                <form method="POST" action="<?php echo e(route('admin.approval.produk.approve', $produk)); ?>" style="display:inline;">
+                                    <?php echo csrf_field(); ?>
                                     <button type="submit" class="btn btn-approve btn-sm">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="12" height="12"><path d="M5 13l4 4L19 7"/></svg>
                                         Setujui
                                     </button>
                                 </form>
-                                <button class="btn btn-reject btn-sm" onclick="openRejectModal({{ $produk->id }}, '{{ addslashes($produk->nama) }}')">
+                                <button class="btn btn-reject btn-sm" onclick="openRejectModal(<?php echo e($produk->id); ?>, '<?php echo e(addslashes($produk->nama)); ?>')">
                                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="12" height="12"><path d="M6 18L18 6M6 6l12 12"/></svg>
                                     Tolak
                                 </button>
                             </div>
                         </td>
                     </tr>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 
-{{-- ════════════════════════════════════════════════
-     TAB 2 — DISETUJUI
-     Sub-tab: Profil UMKM (table) & Produk Item (card)
-════════════════════════════════════════════════ --}}
+
 <div id="tab-approved" style="display:none">
 
     <div class="sub-tab-bar">
         <button class="sub-tab-btn active" data-subtab="profil" onclick="switchSubTab('profil',this)">
             🏪 Profil UMKM
-            <span style="background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;">{{ $counts['approved'] }}</span>
+            <span style="background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;"><?php echo e($counts['approved']); ?></span>
         </button>
         <button class="sub-tab-btn" data-subtab="produk" onclick="switchSubTab('produk',this)">
             🛍️ Produk Item
         </button>
     </div>
 
-    {{-- ── Sub-tab: Profil UMKM (TABLE VIEW) ── --}}
+    
     <div id="subtab-profil">
         <div class="table-card">
         <div class="table-card-header">
     <div class="table-card-title">
         🏪 Data UMKM Disetujui
-        <span class="table-card-subtitle">{{ $counts['approved'] }} UMKM aktif</span>
+        <span class="table-card-subtitle"><?php echo e($counts['approved']); ?> UMKM aktif</span>
     </div>
-    <a href="{{ route('admin.approval.produk.export-csv', ['status' => 'approved']) }}"
+    <a href="<?php echo e(route('admin.approval.produk.export-csv', ['status' => 'approved'])); ?>"
        class="btn-csv-export">
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -441,12 +433,12 @@
     </a>
 </div>
 
-            @if($approved->isEmpty())
+            <?php if($approved->isEmpty()): ?>
                 <div class="empty-state">
                     <div class="empty-state-icon">📭</div>
                     <div class="empty-state-text">Belum ada UMKM yang disetujui.</div>
                 </div>
-            @else
+            <?php else: ?>
                 <table>
                     <thead>
                         <tr>
@@ -459,40 +451,41 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($approved as $produk)
+                        <?php $__currentLoopData = $approved; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $produk): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <tr>
                             <td>
                                 <div class="submitter">
                                     <div class="submitter-avatar" style="background:var(--surface2);border:1px solid var(--border);">
-                                        @if($produk->logo)
-                                            <img src="{{ asset('storage/'.$produk->logo) }}" alt="{{ $produk->nama }}">
-                                        @elseif($produk->foto_produk)
-                                            <img src="{{ asset('storage/'.$produk->foto_produk) }}" alt="{{ $produk->nama }}">
-                                        @else
+                                        <?php if($produk->logo): ?>
+                                            <img src="<?php echo e(asset('storage/'.$produk->logo)); ?>" alt="<?php echo e($produk->nama); ?>">
+                                        <?php elseif($produk->foto_produk): ?>
+                                            <img src="<?php echo e(asset('storage/'.$produk->foto_produk)); ?>" alt="<?php echo e($produk->nama); ?>">
+                                        <?php else: ?>
                                             🏪
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                     <div>
-                                        <div class="submitter-name">{{ $produk->nama }}</div>
-                                        <div class="submitter-sub">{{ $produk->kategori ?? '-' }}</div>
+                                        <div class="submitter-name"><?php echo e($produk->nama); ?></div>
+                                        <div class="submitter-sub"><?php echo e($produk->kategori ?? '-'); ?></div>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <div style="font-size:13px;font-weight:600;">{{ $produk->owner ?? '-' }}</div>
-                                <div style="font-size:11px;color:var(--text-muted);">{{ $produk->kontak ?? '-' }}</div>
+                                <div style="font-size:13px;font-weight:600;"><?php echo e($produk->owner ?? '-'); ?></div>
+                                <div style="font-size:11px;color:var(--text-muted);"><?php echo e($produk->kontak ?? '-'); ?></div>
                             </td>
                             <td>
-                                <div style="font-size:12px;">{{ $produk->kabupaten_kota ?? '-' }}</div>
-                                <div style="font-size:11px;color:var(--text-muted);">{{ $produk->provinsi ?? '-' }}</div>
+                                <div style="font-size:12px;"><?php echo e($produk->kabupaten_kota ?? '-'); ?></div>
+                                <div style="font-size:11px;color:var(--text-muted);"><?php echo e($produk->provinsi ?? '-'); ?></div>
                             </td>
-                            <td style="font-size:12px;color:var(--text-muted);">{{ $produk->nib ?? '-' }}</td>
+                            <td style="font-size:12px;color:var(--text-muted);"><?php echo e($produk->nib ?? '-'); ?></td>
                             <td style="font-size:12px;color:var(--accent);font-weight:600;">
-                                {{ $produk->approved_at?->format('d M Y') ?? '-' }}
+                                <?php echo e($produk->approved_at?->format('d M Y') ?? '-'); ?>
+
                             </td>
                             <td>
                                 <div class="action-group">
-                                    <button class="btn btn-ghost btn-sm" onclick="openDetailModal({{ $produk->id }})">
+                                    <button class="btn btn-ghost btn-sm" onclick="openDetailModal(<?php echo e($produk->id); ?>)">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="13" height="13">
                                             <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                             <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -500,35 +493,35 @@
                                         Detail
                                     </button>
                                     <button type="button" class="btn btn-danger btn-sm"
-    onclick="openHapusUmkmModal({{ $produk->id }}, '{{ addslashes($produk->nama) }}')">
+    onclick="openHapusUmkmModal(<?php echo e($produk->id); ?>, '<?php echo e(addslashes($produk->nama)); ?>')">
     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12">
         <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 6V4h6v2M4 7h16"/>
     </svg>
     Hapus
 </button>
-<form id="hapus-umkm-form-{{ $produk->id }}" method="POST"
-      action="{{ route('admin.approval.umkm.destroy', $produk) }}" style="display:none">
-    @csrf @method('DELETE')
+<form id="hapus-umkm-form-<?php echo e($produk->id); ?>" method="POST"
+      action="<?php echo e(route('admin.approval.umkm.destroy', $produk)); ?>" style="display:none">
+    <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
 </form>
                                 </div>
                             </td>
                         </tr>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </tbody>
                 </table>
-            @endif
+            <?php endif; ?>
         </div>
     </div>
 
-    {{-- ── Sub-tab: Produk Item (CARD VIEW) ── --}}
+    
 <div id="subtab-produk" style="display:none">
 
-    {{-- Header dengan Export CSV --}}
+    
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
         <div style="font-size:13px;color:var(--text-muted);">
             Menampilkan produk dari UMKM yang telah disetujui
         </div>
-        <a href="{{ route('admin.approval.produk.export-csv', ['status' => 'approved', 'type' => 'items']) }}"
+        <a href="<?php echo e(route('admin.approval.produk.export-csv', ['status' => 'approved', 'type' => 'items'])); ?>"
            class="btn-csv-export">
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -537,52 +530,54 @@
         </a>
     </div>
 
-    @if($approved->isEmpty())
+    <?php if($approved->isEmpty()): ?>
         <div class="empty-state">
             <div class="empty-state-icon">📦</div>
             <div class="empty-state-text">Belum ada UMKM yang disetujui.</div>
         </div>
-    @else
-        {{-- Grid Cards --}}
+    <?php else: ?>
+        
         <div class="items-grid" id="produk-cards-grid">
-            @foreach($approved as $produk)
-            @php
+            <?php $__currentLoopData = $approved; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $produk): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <?php
                 $items     = $produk->items ?? collect();
                 $itemCount = $items->count();
                 $hargaMin  = $items->min('harga');
                 $hargaMax  = $items->max('harga');
-            @endphp
+            ?>
             <div class="umkm-card produk-card-item" style="display:none">
                 <div class="umkm-card-header">
                     <div class="umkm-avatar">
-                        @if($produk->logo)
-                            <img src="{{ asset('storage/'.$produk->logo) }}" alt="{{ $produk->nama }}">
-                        @elseif($produk->foto_produk)
-                            <img src="{{ asset('storage/'.$produk->foto_produk) }}" alt="{{ $produk->nama }}">
-                        @else
+                        <?php if($produk->logo): ?>
+                            <img src="<?php echo e(asset('storage/'.$produk->logo)); ?>" alt="<?php echo e($produk->nama); ?>">
+                        <?php elseif($produk->foto_produk): ?>
+                            <img src="<?php echo e(asset('storage/'.$produk->foto_produk)); ?>" alt="<?php echo e($produk->nama); ?>">
+                        <?php else: ?>
                             🏪
-                        @endif
+                        <?php endif; ?>
                     </div>
                     <div style="flex:1;min-width:0">
-                        <div class="umkm-name">{{ $produk->nama }}</div>
-                        @if($produk->owner)
-                            <div class="umkm-owner">👤 {{ $produk->owner }}</div>
-                        @endif
+                        <div class="umkm-name"><?php echo e($produk->nama); ?></div>
+                        <?php if($produk->owner): ?>
+                            <div class="umkm-owner">👤 <?php echo e($produk->owner); ?></div>
+                        <?php endif; ?>
                         <div class="umkm-meta">
-                            @if($produk->kategori)
-                                <span class="umkm-meta-chip">{{ $produk->kategori }}</span>
-                            @endif
-                            @if($produk->kabupaten_kota)
-                                <span class="umkm-meta-chip">📍 {{ $produk->kabupaten_kota }}</span>
-                            @endif
-                            @if($itemCount > 0)
+                            <?php if($produk->kategori): ?>
+                                <span class="umkm-meta-chip"><?php echo e($produk->kategori); ?></span>
+                            <?php endif; ?>
+                            <?php if($produk->kabupaten_kota): ?>
+                                <span class="umkm-meta-chip">📍 <?php echo e($produk->kabupaten_kota); ?></span>
+                            <?php endif; ?>
+                            <?php if($itemCount > 0): ?>
                                 <span class="harga-range">
-                                    Rp {{ number_format($hargaMin, 0, ',', '.') }}
-                                    @if($hargaMin !== $hargaMax)
-                                        – {{ number_format($hargaMax, 0, ',', '.') }}
-                                    @endif
+                                    Rp <?php echo e(number_format($hargaMin, 0, ',', '.')); ?>
+
+                                    <?php if($hargaMin !== $hargaMax): ?>
+                                        – <?php echo e(number_format($hargaMax, 0, ',', '.')); ?>
+
+                                    <?php endif; ?>
                                 </span>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
                     <span class="badge badge-approved"><span class="badge-dot"></span>Aktif</span>
@@ -590,31 +585,31 @@
 
                 <div style="padding:14px 18px;">
                     <div class="umkm-items-title">
-                        <span>🛍️ Produk ({{ $itemCount }})</span>
-                        @if($itemCount > 0)
-                            <button class="btn btn-ghost btn-sm" onclick="openUmkmDetailModal({{ $produk->id }})">Lihat Semua</button>
-                        @endif
+                        <span>🛍️ Produk (<?php echo e($itemCount); ?>)</span>
+                        <?php if($itemCount > 0): ?>
+                            <button class="btn btn-ghost btn-sm" onclick="openUmkmDetailModal(<?php echo e($produk->id); ?>)">Lihat Semua</button>
+                        <?php endif; ?>
                     </div>
 
-                    @if($items->isEmpty())
+                    <?php if($items->isEmpty()): ?>
                         <div class="no-items">Belum ada produk ditambahkan</div>
-                    @else
+                    <?php else: ?>
                         <div class="items-scroll">
-                            @foreach($items as $item)
+                            <?php $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="item-row">
                                 <div class="item-thumb">
-                                    @if($item->foto)
-                                        <img src="{{ asset('storage/'.$item->foto) }}" alt="{{ $item->nama }}">
-                                    @else 📦 @endif
+                                    <?php if($item->foto): ?>
+                                        <img src="<?php echo e(asset('storage/'.$item->foto)); ?>" alt="<?php echo e($item->nama); ?>">
+                                    <?php else: ?> 📦 <?php endif; ?>
                                 </div>
                                 <div style="flex:1;min-width:0">
-                                    <div class="item-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $item->nama }}</div>
-                                    <div class="item-price">{{ $item->harga_format }}</div>
+                                    <div class="item-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><?php echo e($item->nama); ?></div>
+                                    <div class="item-price"><?php echo e($item->harga_format); ?></div>
                                 </div>
                                 <form method="POST"
-                                      action="{{ route('admin.approval.umkm.item.destroy', [$produk->id, $item->id]) }}"
-                                      onsubmit="return confirm('Hapus produk \"{{ addslashes($item->nama) }}\"?')">
-                                    @csrf @method('DELETE')
+                                      action="<?php echo e(route('admin.approval.umkm.item.destroy', [$produk->id, $item->id])); ?>"
+                                      onsubmit="return confirm('Hapus produk \"<?php echo e(addslashes($item->nama)); ?>\"?')">
+                                    <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                     <button type="submit" class="item-del-btn" title="Hapus produk">
                                         <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                             <path d="M18 6L6 18M6 6l12 12"/>
@@ -622,19 +617,19 @@
                                     </button>
                                 </form>
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
-                        @if($itemCount > 2)
+                        <?php if($itemCount > 2): ?>
                             <div style="font-size:10px;color:var(--text-muted);text-align:center;padding:4px 0 2px;display:flex;align-items:center;justify-content:center;gap:4px">
                                 <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M19 9l-7 7-7-7"/></svg>
-                                scroll untuk {{ $itemCount - 2 }} produk lainnya
+                                scroll untuk <?php echo e($itemCount - 2); ?> produk lainnya
                             </div>
-                        @endif
-                    @endif
+                        <?php endif; ?>
+                    <?php endif; ?>
                 </div>
 
                 <div class="umkm-card-footer">
-                    <button class="btn btn-ghost btn-sm" onclick="openUmkmDetailModal({{ $produk->id }})" style="flex:1;justify-content:center">
+                    <button class="btn btn-ghost btn-sm" onclick="openUmkmDetailModal(<?php echo e($produk->id); ?>)" style="flex:1;justify-content:center">
                         <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0"/>
                             <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -642,9 +637,9 @@
                         Detail Produk
                     </button>
                     <form method="POST"
-                          action="{{ route('admin.approval.umkm.destroy', $produk) }}"
-                          onsubmit="return confirm('Hapus UMKM \"{{ addslashes($produk->nama) }}\" beserta semua produknya?')">
-                        @csrf @method('DELETE')
+                          action="<?php echo e(route('admin.approval.umkm.destroy', $produk)); ?>"
+                          onsubmit="return confirm('Hapus UMKM \"<?php echo e(addslashes($produk->nama)); ?>\" beserta semua produknya?')">
+                        <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                         <button type="submit" class="btn btn-danger btn-sm">
                             <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 6V4h6v2M4 7h16"/>
@@ -654,10 +649,10 @@
                     </form>
                 </div>
             </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
 
-        {{-- Pagination Controls --}}
+        
         <div id="produk-pagination" style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;flex-wrap:wrap;gap:10px;">
             <div style="font-size:12px;color:var(--text-muted);" id="produk-page-info"></div>
             <div style="display:flex;gap:8px;align-items:center;">
@@ -676,22 +671,20 @@
                 </button>
             </div>
         </div>
-    @endif
+    <?php endif; ?>
 </div>
 
 </div>
 
-{{-- ════════════════════════════════════════════════
-     TAB 3 — DITOLAK (table view)
-════════════════════════════════════════════════ --}}
+
 <div id="tab-rejected" style="display:none">
     <div class="table-card">
     <div class="table-card-header">
     <div class="table-card-title">
         ✕ Pendaftaran UMKM Ditolak
-        <span class="table-card-subtitle">{{ $counts['rejected'] }} ditolak</span>
+        <span class="table-card-subtitle"><?php echo e($counts['rejected']); ?> ditolak</span>
     </div>
-    <a href="{{ route('admin.approval.produk.export-csv', ['status' => 'rejected']) }}"
+    <a href="<?php echo e(route('admin.approval.produk.export-csv', ['status' => 'rejected'])); ?>"
        class="btn-csv-export">
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -700,12 +693,12 @@
     </a>
 </div>
 
-        @if($rejected->isEmpty())
+        <?php if($rejected->isEmpty()): ?>
             <div class="empty-state">
                 <div class="empty-state-icon">📭</div>
                 <div class="empty-state-text">Tidak ada pendaftaran UMKM yang ditolak.</div>
             </div>
-        @else
+        <?php else: ?>
             <table>
                 <thead>
                     <tr>
@@ -717,38 +710,40 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($rejected as $produk)
+                    <?php $__currentLoopData = $rejected; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $produk): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>
                         <td>
                             <div class="submitter">
                                 <div class="submitter-avatar" style="background:var(--surface2);border:1px solid var(--border);">
-                                    @if($produk->logo)
-                                        <img src="{{ asset('storage/'.$produk->logo) }}" alt="{{ $produk->nama }}">
-                                    @elseif($produk->foto_produk)
-                                        <img src="{{ asset('storage/'.$produk->foto_produk) }}" alt="{{ $produk->nama }}">
-                                    @else
+                                    <?php if($produk->logo): ?>
+                                        <img src="<?php echo e(asset('storage/'.$produk->logo)); ?>" alt="<?php echo e($produk->nama); ?>">
+                                    <?php elseif($produk->foto_produk): ?>
+                                        <img src="<?php echo e(asset('storage/'.$produk->foto_produk)); ?>" alt="<?php echo e($produk->nama); ?>">
+                                    <?php else: ?>
                                         🏪
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
                                 <div>
-                                    <div class="submitter-name">{{ $produk->nama }}</div>
-                                    <div class="submitter-sub">{{ $produk->kategori ?? '-' }}</div>
+                                    <div class="submitter-name"><?php echo e($produk->nama); ?></div>
+                                    <div class="submitter-sub"><?php echo e($produk->kategori ?? '-'); ?></div>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            <div style="font-size:13px;font-weight:600;">{{ $produk->owner ?? '-' }}</div>
-                            <div style="font-size:11px;color:var(--text-muted);">{{ $produk->kontak ?? '-' }}</div>
+                            <div style="font-size:13px;font-weight:600;"><?php echo e($produk->owner ?? '-'); ?></div>
+                            <div style="font-size:11px;color:var(--text-muted);"><?php echo e($produk->kontak ?? '-'); ?></div>
                         </td>
                         <td style="font-size:12px;color:#e76f51;max-width:200px;line-height:1.5;">
-                            {{ Str::limit($produk->catatan_admin ?? $produk->rejection_reason ?? '-', 60) }}
+                            <?php echo e(Str::limit($produk->catatan_admin ?? $produk->rejection_reason ?? '-', 60)); ?>
+
                         </td>
                         <td style="font-size:12px;color:#e76f51;">
-                            {{ $produk->rejected_at?->format('d M Y') ?? '-' }}
+                            <?php echo e($produk->rejected_at?->format('d M Y') ?? '-'); ?>
+
                         </td>
                         <td>
                             <div class="action-group">
-                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal({{ $produk->id }})">
+                                <button class="btn btn-ghost btn-sm" onclick="openDetailModal(<?php echo e($produk->id); ?>)">
                                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="13" height="13">
                                         <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -756,10 +751,10 @@
                                     Detail
                                 </button>
                                 <form method="POST"
-                                      action="{{ route('admin.approval.produk.destroy', $produk) }}"
+                                      action="<?php echo e(route('admin.approval.produk.destroy', $produk)); ?>"
                                       style="display:inline;"
-                                      onsubmit="return confirm('Hapus data UMKM \"{{ addslashes($produk->nama) }}\"?')">
-                                    @csrf @method('DELETE')
+                                      onsubmit="return confirm('Hapus data UMKM \"<?php echo e(addslashes($produk->nama)); ?>\"?')">
+                                    <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                     <button type="submit" class="btn btn-danger btn-sm">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="12" height="12">
                                             <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 6V4h6v2M4 7h16"/>
@@ -770,31 +765,29 @@
                             </div>
                         </td>
                     </tr>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 
-{{-- ════════════════════════════════════════════════
-     TAB 4 — DIHAPUS
-════════════════════════════════════════════════ --}}
+
 <div id="tab-deleted" style="display:none">
     <div class="table-card">
         <div class="table-card-header">
             <div class="table-card-title">
                 🗑️ UMKM Dihapus Admin
-                <span class="table-card-subtitle">{{ $counts['deleted'] ?? 0 }} data</span>
+                <span class="table-card-subtitle"><?php echo e($counts['deleted'] ?? 0); ?> data</span>
             </div>
         </div>
 
-        @if($deleted->isEmpty())
+        <?php if($deleted->isEmpty()): ?>
             <div class="empty-state">
                 <div class="empty-state-icon">✅</div>
                 <div class="empty-state-text">Tidak ada UMKM yang dihapus.</div>
             </div>
-        @else
+        <?php else: ?>
             <table>
                 <thead>
                     <tr>
@@ -806,60 +799,61 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($deleted as $produk)
+                    <?php $__currentLoopData = $deleted; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $produk): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>
                         <td>
                             <div class="submitter">
                                 <div class="submitter-avatar" style="background:var(--surface2);border:1px solid var(--border);">
-                                    @if($produk->logo)
-                                        <img src="{{ asset('storage/'.$produk->logo) }}" alt="{{ $produk->nama }}">
-                                    @elseif($produk->foto_produk)
-                                        <img src="{{ asset('storage/'.$produk->foto_produk) }}" alt="{{ $produk->nama }}">
-                                    @else
+                                    <?php if($produk->logo): ?>
+                                        <img src="<?php echo e(asset('storage/'.$produk->logo)); ?>" alt="<?php echo e($produk->nama); ?>">
+                                    <?php elseif($produk->foto_produk): ?>
+                                        <img src="<?php echo e(asset('storage/'.$produk->foto_produk)); ?>" alt="<?php echo e($produk->nama); ?>">
+                                    <?php else: ?>
                                         🏪
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
                                 <div>
-                                    <div class="submitter-name">{{ $produk->nama }}</div>
-                                    <div class="submitter-sub">{{ $produk->kontak ?? '-' }}</div>
+                                    <div class="submitter-name"><?php echo e($produk->nama); ?></div>
+                                    <div class="submitter-sub"><?php echo e($produk->kontak ?? '-'); ?></div>
                                 </div>
                             </div>
                         </td>
-                        <td style="font-size:13px;">{{ $produk->owner ?? '-' }}</td>
-                        <td style="font-size:12px;color:var(--text-muted);">{{ $produk->kategori ?? '-' }}</td>
+                        <td style="font-size:13px;"><?php echo e($produk->owner ?? '-'); ?></td>
+                        <td style="font-size:12px;color:var(--text-muted);"><?php echo e($produk->kategori ?? '-'); ?></td>
                         <td style="font-size:12px;color:#ef4444;">
-                            {{ $produk->deleted_at?->format('d M Y, H:i') }}
+                            <?php echo e($produk->deleted_at?->format('d M Y, H:i')); ?>
+
                         </td>
                         <td>
     <div class="action-group">
         <button type="button" class="btn btn-approve btn-sm"
-            onclick="openRestoreModal({{ $produk->id }}, '{{ addslashes($produk->nama) }}')">
+            onclick="openRestoreModal(<?php echo e($produk->id); ?>, '<?php echo e(addslashes($produk->nama)); ?>')">
             ♻️ Pulihkan
         </button>
         <button type="button" class="btn btn-danger btn-sm"
-            onclick="openForceDeleteModal({{ $produk->id }}, '{{ addslashes($produk->nama) }}')">
+            onclick="openForceDeleteModal(<?php echo e($produk->id); ?>, '<?php echo e(addslashes($produk->nama)); ?>')">
             🗑️ Hapus Permanen
         </button>
     </div>
-    {{-- Form tersembunyi --}}
-    <form id="restore-form-{{ $produk->id }}" method="POST"
-          action="{{ route('admin.approval.produk.restore', $produk->id) }}" style="display:none">
-        @csrf
+    
+    <form id="restore-form-<?php echo e($produk->id); ?>" method="POST"
+          action="<?php echo e(route('admin.approval.produk.restore', $produk->id)); ?>" style="display:none">
+        <?php echo csrf_field(); ?>
     </form>
-    <form id="force-delete-form-{{ $produk->id }}" method="POST"
-          action="{{ route('admin.approval.produk.force-delete', $produk->id) }}" style="display:none">
-        @csrf @method('DELETE')
+    <form id="force-delete-form-<?php echo e($produk->id); ?>" method="POST"
+          action="<?php echo e(route('admin.approval.produk.force-delete', $produk->id)); ?>" style="display:none">
+        <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
     </form>
 </td>
                     </tr>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 
-{{-- ════════════ MODAL DETAIL ════════════ --}}
+
 <div class="modal-overlay" id="modal-detail">
     <div class="modal">
         <div class="modal-header">
@@ -938,7 +932,7 @@
     </div>
 </div>
 
-{{-- ════════════ MODAL PRODUK ITEMS ════════════ --}}
+
 <div class="modal-overlay" id="modal-umkm-items">
     <div class="modal" style="width:600px">
         <div class="modal-header">
@@ -959,7 +953,7 @@
     </div>
 </div>
 
-{{-- ════════════ MODAL TOLAK ════════════ --}}
+
 <div class="modal-overlay" id="modal-reject">
     <div class="modal" style="width:460px">
         <div class="modal-header">
@@ -970,7 +964,7 @@
             Berikan alasan penolakan untuk <strong id="reject-name"></strong>.
         </p>
         <form id="reject-form" method="POST">
-            @csrf
+            <?php echo csrf_field(); ?>
             <div class="form-group">
                 <label class="form-label">Alasan Penolakan *</label>
                 <textarea name="alasan" class="form-textarea" rows="4"
@@ -987,7 +981,7 @@
     </div>
 </div>
 
-{{-- ════════════ MODAL PULIHKAN ════════════ --}}
+
 <div class="modal-overlay" id="modal-restore">
     <div class="modal" style="width:420px">
         <div class="modal-header">
@@ -1012,7 +1006,7 @@
     </div>
 </div>
 
-{{-- ════════════ MODAL HAPUS PERMANEN ════════════ --}}
+
 <div class="modal-overlay" id="modal-force-delete">
     <div class="modal" style="width:420px">
         <div class="modal-header">
@@ -1041,7 +1035,7 @@
 </div>
 
 
-{{-- ════════════ JAVASCRIPT ════════════ --}}
+
 <script>
 // ── Modal Pulihkan ──
 function openRestoreModal(id, nama) {
@@ -1060,9 +1054,9 @@ function openForceDeleteModal(id, nama) {
     };
     openModal('modal-force-delete');
 }
-const produkData   = @json($pending->merge($approved)->merge($rejected)->keyBy('id'));
-const approvedData = @json($approved->keyBy('id'));
-const csrfToken    = '{{ csrf_token() }}';
+const produkData   = <?php echo json_encode($pending->merge($approved)->merge($rejected)->keyBy('id'), 15, 512) ?>;
+const approvedData = <?php echo json_encode($approved->keyBy('id'), 15, 512) ?>;
+const csrfToken    = '<?php echo e(csrf_token()); ?>';
 
 // ── Produk Item Pagination ──
 const PRODUK_PER_PAGE = 6;
@@ -1249,7 +1243,7 @@ function openUmkmDetailModal(id) {
                 </div>
                 <form method="POST" action="/admin/approval/produk/${id}/item/${item.id}"
                       onsubmit="return confirm('Hapus produk ini?')">
-                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>">
                     <input type="hidden" name="_method" value="DELETE">
                     <button type="submit" class="item-del-btn">
                         <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -1292,7 +1286,7 @@ function openHapusUmkmModal(id, nama) {
     openModal('modal-hapus-umkm');
 }
 </script>
-{{-- ════════════ MODAL HAPUS UMKM ════════════ --}}
+
 <div class="modal-overlay" id="modal-hapus-umkm">
     <div class="modal" style="width:420px">
         <div class="modal-header">
@@ -1323,4 +1317,5 @@ function openHapusUmkmModal(id, nama) {
     </div>
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\Kaji-indo-main\resources\views/admin/approval-produk.blade.php ENDPATH**/ ?>
