@@ -22,8 +22,11 @@ use App\Http\Controllers\UmkmDashboardController;
 // =====================
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/media', [MediaController::class, 'index'])->name('media');
-Route::get('/produk/{id}', [UmkmController::class, 'produkDetail'])->name('produk.show');
 
+// Wajib login
+Route::middleware('auth')->group(function () {
+    Route::get('/produk/{id}', [UmkmController::class, 'produkDetail'])->name('produk.show');
+});
 // Auth System
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
