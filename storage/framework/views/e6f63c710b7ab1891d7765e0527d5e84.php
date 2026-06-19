@@ -300,14 +300,19 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:items-stretch">
 
          
-<div class="flex items-center justify-center" style="min-height: 280px;">
-    <img
-        src="<?php echo e(asset('storage/logo/LOGO KAJI KATA.jpeg')); ?>"
-        alt="Logo Kaji Indonesia"
-        class="object-contain"
-        style="height: 280px; width: auto;"
-    />
-</div>
+            <div class="flex flex-col items-center justify-center gap-5">
+
+                
+                <img
+                    src="<?php echo e(asset('storage/logo/LOGO KAJI KATA.jpeg')); ?>"
+                    alt="Logo Kaji Indonesia"
+                    class="object-contain"
+                    style="height: 200px; width: auto;"
+                />
+
+                
+
+            </div>
 
             
             <div class="flex flex-col justify-center" style="min-height: 280px;">
@@ -329,6 +334,38 @@
             </div>
 
         </div>
+    </div>
+</section>
+
+
+<section class="bg-gray-50 py-12 sm:py-16">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+
+        
+        <div class="text-center mb-8">
+            <span class="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary ring-1 ring-primary/20">
+                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Legalitas & Sertifikasi
+            </span>
+            <h2 class="mt-3 font-serif text-2xl font-bold text-gray-900 sm:text-3xl">
+                Terdaftar Resmi di KEMENKUMHAM
+            </h2>
+            <p class="mt-2 text-sm text-gray-500">
+                No: IDM001176552 – 2023 · Dilindungi UU No. 20 Tahun 2016 tentang Merek
+            </p>
+        </div>
+
+        
+        <div class="rounded-2xl overflow-hidden shadow-md ring-1 ring-gray-200">
+            <img
+                src="<?php echo e(asset('storage/logo/LOGOKAJIKEMENKUHAM.jpeg')); ?>"
+                alt="Sertifikat KEMENKUMHAM KAJI Indonesia IDM001176552 2023"
+                class="w-full h-auto object-contain"
+            />
+        </div>
+
     </div>
 </section>
 
